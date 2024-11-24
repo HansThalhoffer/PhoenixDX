@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using System.Windows.Interop;
 using System.Windows.Media.Media3D;
 using System.Windows;
+using System.ComponentModel;
+
+// <local:MonoGameHost Grid.Column="0" Grid.Row="0" Width="800" Height="600"/>
 
 namespace PhoenixWPF
 {
@@ -60,13 +63,15 @@ namespace PhoenixWPF
         {
         }
 
-        protected override void OnWindowPositionChanged(Rect rcBoundingBox)
+        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
         {
-            base.OnWindowPositionChanged(rcBoundingBox);
+            base.OnRenderSizeChanged(sizeInfo);
 
             if (_hWnd != IntPtr.Zero)
             {
-                SetWindowPos(_hWnd, IntPtr.Zero, 0, 0, (int)rcBoundingBox.Width, (int)rcBoundingBox.Height, SWP_NOZORDER | SWP_NOACTIVATE);
+                int width = (int)sizeInfo.NewSize.Width;
+                int height = (int)sizeInfo.NewSize.Height;
+                _map?.Resize(width, height);
             }
         }
 
@@ -96,9 +101,15 @@ namespace PhoenixWPF
                  throw new System.ComponentModel.Win32Exception(error, "Failed to create window.");
              }
 
-             // Initialize MonoGame with the window handle
-             _map = new PhoenixDX.MappaMundi(_hWnd);
-             _map.Run();
+            // Check if the application is running in design mode
+            if (DesignerProperties.GetIsInDesignMode(new DependencyObject()) == false)
+            {
+                // Exit the function if in design mode
+                // Initialize MonoGame with the window handle
+                _map = new PhoenixDX.MappaMundi(_hWnd);
+                _map.Run();
+            }
+            
 
              return new HandleRef(this, _hWnd);
         }

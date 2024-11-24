@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 // using SharpDX;
 using System;
+using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 
 namespace PhoenixDX
@@ -13,8 +14,14 @@ namespace PhoenixDX
         private SpriteBatch _spriteBatch;
 
         private IntPtr _windowHandle;
+        private readonly ConcurrentQueue<Action> _actionQueue = new ConcurrentQueue<Action>();
 
-        public Spiel(IntPtr windowHandle)
+        public void EnqueueAction(Action action)
+        {
+            _actionQueue.Enqueue(action);
+        }
+
+        public Spiel(IntPtr windowHandle, int width, int height)
         {
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -22,43 +29,46 @@ namespace PhoenixDX
             _windowHandle = windowHandle;
             _graphics = new GraphicsDeviceManager(this);
 
-            // Set the window handle
             _graphics.PreparingDeviceSettings += Graphics_PreparingDeviceSettings;
+            _graphics.PreferredBackBufferWidth = width; 
+            _graphics.PreferredBackBufferHeight = height; 
 
-            // Optional: Set the preferred back buffer size to match the control
-            _graphics.PreferredBackBufferWidth = 0; // Set appropriate width
-            _graphics.PreferredBackBufferHeight = 0; // Set appropriate height
-
-            // Hide the MonoGame window when the game starts
             Activated += Spiel_Activated;
-           
         }
+
+        protected override void Initialize()
+        {
+            // Disable vertical sync
+            _graphics.SynchronizeWithVerticalRetrace = false;
+            IsFixedTimeStep = false;
+
+            base.Initialize();
+        }
+
 
         [DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern bool SetWindowPos(
-           IntPtr hWnd,
-           IntPtr hWndInsertAfter,
-           int X,
-           int Y,
-           int cx,
-           int cy,
-           uint uFlags);
+        [DllImport("user32.dll")]
+        private static extern bool SetWindowPos( IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y,int cx,int cy,uint uFlags);
 
-        private const int SW_HIDE = 0;
 
-        private void Spiel_Activated(object sender, EventArgs e)
+        // Hide the MonoGame window as we use the 
+        private void HideGameWindow()
         {
-            // Hide the MonoGame window
             var windowHandle = this.Window.Handle;
             if (windowHandle != IntPtr.Zero)
             {
                 const int SWP_NOZORDER = 0x0004;
                 const int SWP_NOACTIVATE = 0x0010;
+                const int SW_HIDE = 0;
                 ShowWindow(windowHandle, SW_HIDE);
                 SetWindowPos(windowHandle, IntPtr.Zero, -400, -400, 0, 0, SWP_NOZORDER | SWP_NOACTIVATE);
             }
+        }
+        
+        private void Spiel_Activated(object sender, EventArgs e)
+        {
+            HideGameWindow();
         }
 
         private void Graphics_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
@@ -67,11 +77,15 @@ namespace PhoenixDX
             e.GraphicsDeviceInformation.PresentationParameters.DeviceWindowHandle = _windowHandle;
         }
 
-        protected override void Initialize()
+       public void Resize(int width, int height)
         {
-            // TODO: Add your initialization logic here
-
-            base.Initialize();
+            EnqueueAction(() =>
+            {
+                _graphics.PreferredBackBufferWidth = width;
+                _graphics.PreferredBackBufferHeight = height;
+                _graphics.ApplyChanges();
+                HideGameWindow();
+            });
         }
 
         protected override void LoadContent()
@@ -83,11 +97,13 @@ namespace PhoenixDX
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            // Process queued actions
+            while (_actionQueue.TryDequeue(out var action))
+            {
+                action();
+            }
 
             // TODO: Add your update logic here
-
             base.Update(gameTime);
         }
 
@@ -96,7 +112,6 @@ namespace PhoenixDX
             GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-
             base.Draw(gameTime);
         }
     }
