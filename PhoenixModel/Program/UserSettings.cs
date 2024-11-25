@@ -13,7 +13,8 @@ namespace PhoenixModel.Program
         private string _databaseLocationKarte;
         private bool _showWindowNavigator;
         private bool _showWindowProperties;
-        private bool _showWindowDiplomaty;
+        private bool _showWindowDiplomacy;
+        private string _passworPZE;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -56,15 +57,27 @@ namespace PhoenixModel.Program
             }
         }
 
-        public bool ShowWindowDiplomaty
+        public bool ShowWindowDiplomacy
         {
-            get => _showWindowDiplomaty;
+            get => _showWindowDiplomacy;
             set
             {
-                if (_showWindowDiplomaty != value)
+                if (_showWindowDiplomacy != value)
                 {
-                    _showWindowDiplomaty = value;
-                    OnPropertyChanged(nameof(ShowWindowDiplomaty));
+                    _showWindowDiplomacy = value;
+                    OnPropertyChanged(nameof(ShowWindowDiplomacy));
+                }
+            }
+        }
+
+        public string PassworPZE { 
+            get => _passworPZE; 
+            set
+            {
+                if (_passworPZE != value)
+                {
+                    _passworPZE = value;
+                    OnPropertyChanged(nameof(PassworPZE));
                 }
             }
         }
@@ -74,7 +87,8 @@ namespace PhoenixModel.Program
             _databaseLocationKarte = "_Data\\Database\\PZE.mdb";
             _showWindowNavigator = true;
             _showWindowProperties = true;
-            _showWindowDiplomaty = true;
+            _showWindowDiplomacy = true;
+            _passworPZE = string.Empty;
         }
 
         protected virtual void OnPropertyChanged(string propertyName)

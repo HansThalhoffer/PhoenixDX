@@ -1,5 +1,8 @@
+using PhoenixModel.Database;
 using PhoenixModel.Program;
 using PhoenixWPF.Database;
+using PhoenixWPF.Dialogs;
+using static PhoenixModel.Database.PasswordHolder;
 
 namespace Tests
 {
@@ -15,7 +18,7 @@ namespace Tests
                 DatabaseLocationKarte = "_Data\\Database\\CustomDB.mdb",
                 ShowWindowNavigator = false,
                 ShowWindowProperties = true,
-                ShowWindowDiplomaty = false
+                ShowWindowDiplomacy = false
             };
 
             // Act
@@ -36,7 +39,41 @@ namespace Tests
             Assert.Equal(userSettings.DatabaseLocationKarte, loadedSettings.DatabaseLocationKarte);
             Assert.Equal(userSettings.ShowWindowNavigator, loadedSettings.ShowWindowNavigator);
             Assert.Equal(userSettings.ShowWindowProperties, loadedSettings.ShowWindowProperties);
-            Assert.Equal(userSettings.ShowWindowDiplomaty, loadedSettings.ShowWindowDiplomaty);
+            Assert.Equal(userSettings.ShowWindowDiplomacy, loadedSettings.ShowWindowDiplomacy);
+        }
+        
+        class PasswortProvider : PasswordHolder.IPasswordProvider
+        {
+            public EncryptedString Password
+            {
+                get
+                {
+                    PasswordDialog dialog = new PasswordDialog("Das Passwort für die UnitTest bitte eingeben");
+                    dialog.ShowDialog();
+                    return dialog.ProvidePassword();
+                }
+            }
+        }
+
+        [StaFact]
+        public void EncryptDecryptPassword_ShouldReturnOriginalPassword()
+        {
+            // PasswordHolder pwdHolderDialog = new PasswordHolder(null, new PasswortProvider());
+          
+            // Arrange
+            EncryptedString expected = "MySecurePassword123!";
+            PasswordHolder pwdHolder = new PasswordHolder(expected, new PasswortProvider());
+
+            string? actual  = pwdHolder.DecryptPassword();
+
+            // Assert
+            Assert.Equal(expected, actual);
+
+            string json = System.Text.Json.JsonSerializer.Serialize(pwdHolder);
+            PasswordHolder? deserializedPwdHolder = System.Text.Json.JsonSerializer.Deserialize<PasswordHolder>(json);
+
+            actual = deserializedPwdHolder?.DecryptPassword();
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -55,7 +92,7 @@ namespace Tests
             Assert.Equal(settings1.UserSettings.DatabaseLocationKarte, settings2.UserSettings.DatabaseLocationKarte);
             Assert.Equal(settings1.UserSettings.ShowWindowNavigator, settings2.UserSettings.ShowWindowNavigator);
             Assert.Equal(settings1.UserSettings.ShowWindowProperties, settings2.UserSettings.ShowWindowProperties);
-            Assert.Equal(settings1.UserSettings.ShowWindowDiplomaty, settings2.UserSettings.ShowWindowDiplomaty);
+            Assert.Equal(settings1.UserSettings.ShowWindowDiplomacy, settings2.UserSettings.ShowWindowDiplomacy);
         }
     }
 }

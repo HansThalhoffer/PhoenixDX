@@ -12,8 +12,6 @@ namespace PhoenixWPF.Program
 {
     public class Main :IDisposable
     {
-       
-
         private static Main _instance = new Main();
         public AppSettings? Settings { get; private set; }
         
@@ -23,6 +21,8 @@ namespace PhoenixWPF.Program
         {
             Settings = new AppSettings("Settings.jpk");
             Settings.InitializeSettings();
+
+            Settings.UserSettings.DatabaseLocationKarte = FileSystem.LocateFile(Settings.UserSettings.DatabaseLocationKarte);
         }
 
         public void Dispose()

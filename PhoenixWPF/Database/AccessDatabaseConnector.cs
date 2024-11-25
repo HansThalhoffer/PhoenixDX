@@ -10,7 +10,7 @@ namespace PhoenixWPF.Database
     {
         private readonly OleDbConnection _connection;
 
-        public AccessDatabaseConnector(string databaseFilePath, string pw)
+        public AccessDatabaseConnector(string databaseFilePath, string? pw)
         {
             if (string.IsNullOrWhiteSpace(databaseFilePath))
                 throw new ArgumentException("Database file path must be provided.", nameof(databaseFilePath));
@@ -21,6 +21,11 @@ namespace PhoenixWPF.Database
                 connectionString += "Jet OLEDB:Database Password=" + pw + ";";
             }
             _connection = new OleDbConnection(connectionString);
+        }
+
+        public bool IsConnected()
+        {
+            return _connection != null && _connection.State == ConnectionState.Open;
         }
 
         /// <summary>
