@@ -48,16 +48,7 @@ namespace PhoenixWPF.Program
                 if (connector?.Open() == false)
                     return 0;
 
-                int count = 0;
-                using (var reader = connector?.OpenReader("SELECT Count(*) AS Anzahl FROM " + Gemark.TableName))
-                {
-                    if (reader != null)
-                        count = AccessDatabase.ToInt(reader["Anzahl"]);
-                }
-                if (count == 0)
-                    return 0;
-
-                Dictionary<string, Gemark> map = new Dictionary<string, Gemark>(count);
+                Dictionary<string, Gemark> map = new Dictionary<string, Gemark>();
 
                 using (var reader = connector?.OpenReader("SELECT * FROM " + Gemark.TableName))
                 {
@@ -79,7 +70,7 @@ namespace PhoenixWPF.Program
                 SharedData.Map = new BlockingCollection<Dictionary<string, Gemark>>(1);
                 SharedData.Map.Add(map);
                 SharedData.Map.CompleteAdding();
-                return count;
+                return total;
             }
         }       
 
