@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using PhoenixDX.Structures;
 using PhoenixModel.Helper;
 using PhoenixModel.Karte;
 
@@ -20,9 +21,10 @@ namespace PhoenixDX
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private CancellationToken _cancellationToken;
-
         private IntPtr _windowHandle;
         private readonly ConcurrentQueue<Action> _actionQueue = new ConcurrentQueue<Action>();
+
+        public Welt Weltkarte { get; private set; }
 
         public void EnqueueAction(Action action)
         {
@@ -117,9 +119,10 @@ namespace PhoenixDX
                 action();
             }
 
-            if (SharedData.Map != null && SharedData.Map.IsAddingCompleted)
+            if (SharedData.Map != null && SharedData.Map.IsAddingCompleted && Weltkarte == null)
             {
                 Dictionary<string, Gemark> map = SharedData.Map.FirstOrDefault();
+                Weltkarte = new Welt(map);
             }
 
             // TODO: Add your update logic here
