@@ -70,16 +70,16 @@ namespace PhoenixWPF.Helper
         /// </summary>
         /// <param name="filePath">The path to the JSON file.</param>
         /// <returns>A string containing the contents of the JSON file.</returns>
-        public static string LoadJsonFile(string filePath)
+        public static string? LoadJsonFile(string filePath)
         {
             if (string.IsNullOrWhiteSpace(filePath))
-                throw new ArgumentException("The file path must not be null or empty.", nameof(filePath));
+                return null;
 
             try
             {
                 // Ensure the file exists
                 if (!File.Exists(filePath))
-                    throw new FileNotFoundException("The specified JSON file was not found.", filePath);
+                    return null;
 
                 // Read all text from the file
                 string jsonContent = File.ReadAllText(filePath);

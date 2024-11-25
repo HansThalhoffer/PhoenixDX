@@ -43,13 +43,13 @@ namespace Tests
         public void AppSettings()
         {
             // Arrange
-            var settings1 = new AppSettings();
+            var settings1 = new AppSettings("Test.jpk");
 
-            settings1.InitializeSettings("Test.jpk");
+            settings1.InitializeSettings();
             settings1.UserSettings.DatabaseLocationKarte = "ABC";
 
-            var settings2 = new AppSettings();
-            settings2.InitializeSettings("Test.jpk");
+            var settings2 = new AppSettings("Test.jpk");
+            settings2.InitializeSettings();
 
             // Assert
             Assert.Equal(settings1.UserSettings.DatabaseLocationKarte, settings2.UserSettings.DatabaseLocationKarte);

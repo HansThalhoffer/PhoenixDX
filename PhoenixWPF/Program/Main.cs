@@ -21,8 +21,8 @@ namespace PhoenixWPF.Program
 
         public void InitInstance() 
         {
-            Settings = new AppSettings();
-            Settings.InitializeSettings(FileSystem.AppSettingsFile("Settings.jpk"));
+            Settings = new AppSettings("Settings.jpk");
+            Settings.InitializeSettings();
         }
 
         public void Dispose()
