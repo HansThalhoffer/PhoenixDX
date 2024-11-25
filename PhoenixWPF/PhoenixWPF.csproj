@@ -10,10 +10,12 @@
 
   <ItemGroup>
     <PackageReference Include="DynamicAero2" Version="1.2.1" />
+    <PackageReference Include="System.Data.OleDb" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PhoenixDX\PhoenixDX.csproj" />
+    <ProjectReference Include="..\PhoenixModel\PhoenixModel.csproj" />
   </ItemGroup>
 
 </Project>

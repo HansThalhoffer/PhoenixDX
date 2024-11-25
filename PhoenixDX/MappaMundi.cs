@@ -13,11 +13,11 @@ namespace PhoenixDX
 {
     public class MappaMundi
     {
-        private Spiel? _game;
+        private Spiel _game;
         IntPtr _hWnd;
         int _width = 800;
         int _height = 600;
-        Thread? _gameThread;
+        Thread _gameThread;
 
         public MappaMundi(IntPtr hWWnd)
         {

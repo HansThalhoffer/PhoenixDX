@@ -48,17 +48,7 @@ namespace PhoenixWPF
         private IntPtr _hWnd;
         int hostHeight = 600, hostWidth= 800;
 
-        internal const int
-            WS_CHILD = 0x40000000,
-            WS_VISIBLE = 0x10000000,
-            LBS_NOTIFY = 0x00000001,
-            HOST_ID = 0x00000002,
-            LISTBOX_ID = 0x00000001,
-            WS_VSCROLL = 0x00200000,
-            WS_BORDER = 0x00800000,
-            SWP_NOZORDER = 0x0004,
-            SWP_NOACTIVATE = 0x0010;
-
+     
         public MonoGameHost()
         {
         }
@@ -83,10 +73,21 @@ namespace PhoenixWPF
             }
             base.Dispose(disposing);
         }
+
         protected override HandleRef BuildWindowCore(HandleRef hwndParent)
         {
-            // Create a child window to host MonoGame
-             _hWnd = CreateWindowEx(0, "STATIC", "Host",
+            const int
+             WS_CHILD = 0x40000000,
+             WS_VISIBLE = 0x10000000,
+             HOST_ID = 0x00000002;
+                // LISTBOX_ID = 0x00000001,
+                // WS_VSCROLL = 0x00200000,
+                // WS_BORDER = 0x00800000,
+                // SWP_NOZORDER = 0x0004,
+                // SWP_NOACTIVATE = 0x0010;
+
+        // Create a child window to host MonoGame
+        _hWnd = CreateWindowEx(0, "STATIC", "Host",
                  WS_CHILD | WS_VISIBLE,
                  0, 0,
                  hostWidth, hostHeight,

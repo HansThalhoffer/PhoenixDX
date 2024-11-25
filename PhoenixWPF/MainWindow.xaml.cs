@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using PhoenixWPF.Program;
 
 namespace PhoenixWPF
 {
@@ -8,13 +9,20 @@ namespace PhoenixWPF
         public MainWindow()
         {
             InitializeComponent();
+            this.Loaded += OnLoaded;
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            Main.Instance.InitInstance();
+            this.Loaded -= OnLoaded;
         }
 
         private void MenuItem_Checked(object sender, RoutedEventArgs e)
         {
             if (sender is MenuItem menuItem)
             {
-                string tag = menuItem.Tag as string;
+                string? tag = menuItem.Tag as string;
 
                 // Show the corresponding tab
                 if (FindName(tag) is TabItem tabItem)
@@ -28,7 +36,7 @@ namespace PhoenixWPF
         {
             if (sender is MenuItem menuItem)
             {
-                string tag = menuItem.Tag as string;
+                string? tag = menuItem.Tag as string;
 
                 // Hide the corresponding tab
                 if (FindName(tag) is TabItem tabItem)
