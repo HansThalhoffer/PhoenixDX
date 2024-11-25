@@ -13,7 +13,7 @@ namespace PhoenixWPF.Helper
             string appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
             // Optionally, create a subfolder for your application
-            string appFolder = Path.Combine(appDataFolder, "YourAppName");
+            string appFolder = Path.Combine(appDataFolder, "PhoenixWPF");
             Directory.CreateDirectory(appFolder); // Ensures the folder exists
 
             // Combine the folder path with the file name

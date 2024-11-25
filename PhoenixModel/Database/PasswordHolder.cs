@@ -40,22 +40,23 @@ namespace PhoenixModel.Database
         public PasswordHolder()
         { encryptedPasswordBase64 = string.Empty; }
 
-        public PasswordHolder(string encryptedpassword)
-        {
-            encryptedPasswordBase64 = encryptedpassword;
-        }
+        public PasswordHolder(string plainPassword)
+        { encryptedPasswordBase64 = EncryptPassword(plainPassword); }
 
         // Constructor that accepts a password
-        public PasswordHolder(string? password, IPasswordProvider provider)
+        public PasswordHolder(EncryptedString? password, IPasswordProvider provider)
         {
-            if (password == null)
+            if (password == null || string.IsNullOrEmpty(password))
             {
                 // Show dialog to enter password
                 password = provider.Password;
+                // Encrypt the password using the computer name
+                encryptedPasswordBase64 = EncryptPassword(password);
             }
-
-            // Encrypt the password using the computer name
-            encryptedPasswordBase64 = EncryptPassword(password);
+            else
+            {
+                encryptedPasswordBase64 = password;
+            }
         }
 
         // Method to encrypt password using computer name

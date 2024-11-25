@@ -1,8 +1,12 @@
 using PhoenixModel.Database;
 using PhoenixModel.Program;
+using PhoenixModel.Karte;
 using PhoenixWPF.Database;
+using PhoenixWPF.Program;
 using PhoenixWPF.Dialogs;
+
 using static PhoenixModel.Database.PasswordHolder;
+using PhoenixWPF.Helper;
 
 namespace Tests
 {
@@ -56,13 +60,34 @@ namespace Tests
         }
 
         [StaFact]
+        public void LoadKarte()
+        {
+            AppSettings settings = new AppSettings("Tests.jpk");
+            settings.InitializeSettings();
+            settings.UserSettings.DatabaseLocationKarte = FileSystem.LocateFile(settings.UserSettings.DatabaseLocationKarte);
+
+            // Arrange
+            PasswordHolder pwdHolder = new PasswordHolder(settings.UserSettings.PassworPZE, new PasswortProvider());
+            settings.UserSettings.PassworPZE = pwdHolder.EncryptedPasswordBase64;
+            string? databasePassword = pwdHolder.DecryptPassword();
+            Assert.NotNull(databasePassword);
+            Assert.NotEmpty(databasePassword);
+
+            using (Karte karte = new Karte(settings.UserSettings.DatabaseLocationKarte, settings.UserSettings.PassworPZE))
+            {
+                int count = karte.Load();
+                Assert.Equal(9306, count);
+            }
+        }
+
+        [StaFact]
         public void EncryptDecryptPassword_ShouldReturnOriginalPassword()
         {
             // PasswordHolder pwdHolderDialog = new PasswordHolder(null, new PasswortProvider());
           
             // Arrange
             EncryptedString expected = "MySecurePassword123!";
-            PasswordHolder pwdHolder = new PasswordHolder(expected, new PasswortProvider());
+            PasswordHolder pwdHolder = new PasswordHolder(expected);
 
             string? actual  = pwdHolder.DecryptPassword();
 

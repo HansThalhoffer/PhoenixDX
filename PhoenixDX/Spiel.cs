@@ -1,10 +1,17 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using PhoenixModel.Helper;
+using PhoenixModel.Karte;
+
+
 // using SharpDX;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace PhoenixDX
 {
@@ -12,6 +19,7 @@ namespace PhoenixDX
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private CancellationToken _cancellationToken;
 
         private IntPtr _windowHandle;
         private readonly ConcurrentQueue<Action> _actionQueue = new ConcurrentQueue<Action>();
@@ -21,8 +29,9 @@ namespace PhoenixDX
             _actionQueue.Enqueue(action);
         }
 
-        public Spiel(IntPtr windowHandle, int width, int height)
+        public Spiel(IntPtr windowHandle, int width, int height, CancellationToken token)
         {
+            _cancellationToken = token;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
@@ -97,10 +106,20 @@ namespace PhoenixDX
 
         protected override void Update(GameTime gameTime)
         {
+            if (_cancellationToken.IsCancellationRequested)
+            {
+                Exit();
+            }
+
             // Process queued actions
             while (_actionQueue.TryDequeue(out var action))
             {
                 action();
+            }
+
+            if (SharedData.Map != null && SharedData.Map.IsAddingCompleted)
+            {
+                Dictionary<string, Gemark> map = SharedData.Map.FirstOrDefault();
             }
 
             // TODO: Add your update logic here
@@ -113,6 +132,11 @@ namespace PhoenixDX
 
             // TODO: Add your drawing code here
             base.Draw(gameTime);
+        }
+
+        public void ShowKarte()
+        {
+
         }
     }
 }

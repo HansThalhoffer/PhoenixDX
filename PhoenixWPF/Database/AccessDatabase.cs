@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Data;
+using System.Data.Common;
 using System.Data.OleDb;
 
 namespace PhoenixWPF.Database
 {
 
 
-    public class AccessDatabaseConnector : IDisposable
+    public class AccessDatabase : IDisposable
     {
         private readonly OleDbConnection _connection;
 
-        public AccessDatabaseConnector(string databaseFilePath, string? pw)
+        public AccessDatabase(string databaseFilePath, string? pw)
         {
             if (string.IsNullOrWhiteSpace(databaseFilePath))
                 throw new ArgumentException("Database file path must be provided.", nameof(databaseFilePath));
@@ -31,10 +32,21 @@ namespace PhoenixWPF.Database
         /// <summary>
         /// Opens the database connection.
         /// </summary>
-        public void Open()
+        public bool Open()
         {
             if (_connection.State != ConnectionState.Open)
-                _connection.Open();
+            {
+                try
+                {
+                    _connection.Open();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Fehler beim Öffnen der PZE Datenbank: " + ex.Message);
+                    return false;
+                }
+            }
+            return true;
         }
 
         /// <summary>
@@ -61,6 +73,20 @@ namespace PhoenixWPF.Database
             var result = new DataTable();
             adapter.Fill(result);
             return result;
+        }
+
+        /// <summary>
+        /// Executes a query that returns a reader.
+        /// </summary>
+        /// <param name="query">The SQL query to execute.</param>
+        /// <returns>A DataTable containing the result set.</returns>
+        public DbDataReader OpenReader(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                throw new ArgumentException("Query must be provided.", nameof(query));
+
+            using var command = new OleDbCommand(query, _connection);
+            return command.ExecuteReader();
         }
 
         /// <summary>
@@ -98,6 +124,48 @@ namespace PhoenixWPF.Database
         {
             Close();
             _connection.Dispose();
+        }
+
+        /// <summary>
+        /// converts a database field object to Int
+        /// </summary>
+        static public int ToInt(object o)
+        {
+            try
+            {
+                if (o == null)
+                    throw new ArgumentNullException("Unbekanntes Feld in der Tabelle");
+                if (o is DBNull)
+                    return 0;
+                if (o.GetType() == typeof(int))
+                    return Convert.ToInt32(o);
+                if (o.GetType() == typeof(double))
+                    return Convert.ToInt32(o);
+                if (o.GetType() == typeof(float))
+                    return Convert.ToInt32(o);
+
+                string? s = o.ToString();
+                if (String.IsNullOrEmpty(s))
+                    return 0;
+                return int.Parse(s);
+            }
+            catch { }
+            return -1;
+        }
+
+        /// <summary>
+        /// converts a database field object to Int
+        /// </summary>
+        static public string ToString(object o)
+        {
+            if (o == null)
+                throw new ArgumentNullException("Unbekanntes Feld in der Tabelle"); 
+            if (o is DBNull)
+                return string.Empty;
+            string? s = o.ToString();
+            if (String.IsNullOrEmpty(s))
+                return string.Empty;
+            return s;
         }
     }
 }
