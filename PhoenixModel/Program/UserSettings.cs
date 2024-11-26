@@ -84,7 +84,7 @@ namespace PhoenixModel.Program
 
         public UserSettings()
         {
-            _databaseLocationKarte = "_Data\\Database\\PZE.mdb";
+            _databaseLocationKarte = "_Data\\Kartendaten\\Erkenfarakarte.mdb";
             _showWindowNavigator = true;
             _showWindowProperties = true;
             _showWindowDiplomacy = true;
