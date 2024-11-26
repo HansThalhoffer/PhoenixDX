@@ -128,18 +128,28 @@ namespace PhoenixDX
             // TODO: Add your update logic here
             base.Update(gameTime);
         }
+       
+        
+        Vector2 cameraPosition = Vector2.Zero;
+        float zoom = 1f;
+
+        private Matrix GetTransformMatrix()
+        {
+            return Matrix.CreateTranslation(-cameraPosition.X, -cameraPosition.Y, 0) * Matrix.CreateScale(zoom);
+        }
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.CornflowerBlue);
+            Matrix transformMatrix = GetTransformMatrix();
 
+            if (Weltkarte != null)
+            {
+                Weltkarte.Draw(this.GraphicsDevice, transformMatrix, _spriteBatch);
+            }
             // TODO: Add your drawing code here
             base.Draw(gameTime);
         }
-
-        public void ShowKarte()
-        {
-
-        }
+              
     }
 }

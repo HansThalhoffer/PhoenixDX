@@ -16,7 +16,11 @@ namespace PhoenixDX.Structures
     {
         public int ReichKennzahl { get; set; }
         public KartenKoordinaten Koordinaten { get; private set; }
-        
+
+        public static readonly int Width = 138;
+        public static readonly int Height = 160;
+
+
         TerrainType _terrainType  = TerrainType.Default;
 
         Dictionary<string, KleinfeldAdorner> _adorner = new Dictionary<string, KleinfeldAdorner>();
