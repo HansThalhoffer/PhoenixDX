@@ -1,4 +1,5 @@
-﻿using PhoenixModel.Karte;
+﻿using Microsoft.Xna.Framework.Content;
+using PhoenixModel.Karte;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,13 @@ namespace PhoenixDX.Structures
                 }
             }
         }
+
+        public static void LoadContent(ContentManager contentManager)
+        {
+            Gelaende.LoadContent(contentManager);
+            Kleinfeld.LoadContent(contentManager);
+        }
+
 
         public Provinz? GetProvinz(int gf)
         {

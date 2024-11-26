@@ -1,0 +1,19 @@
+﻿using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection.Metadata;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace PhoenixDX
+{
+    internal class FontManager
+    {
+        public static void LoadContent(ContentManager contentManager)
+        {
+            contentManager.Load<SpriteFont>("DefaultFont");
+        }
+    }
+}

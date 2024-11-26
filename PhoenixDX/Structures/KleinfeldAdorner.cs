@@ -3,18 +3,43 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace PhoenixDX.Structures
 {
-    enum Direction 
+    public enum Direction 
     {
         NW = 0, NO =1, O=2 , SO=3, SW=4, W=5
     }
-    public class KleinfeldAdorner
+
+    public class AdornerTexture
+    {
+        public string ImageStartsWith = string.Empty;
+
+        public AdornerTexture(string imageStartsWith)
+        {
+            ImageStartsWith = imageStartsWith;
+        }
+
+        Texture2D[]? _hexTexture;
+        public void SetTextures(Texture2D[] texture)
+        {
+            _hexTexture = texture;
+        }
+        public Texture2D GetTexture(Direction dir)
+        {
+            return _hexTexture[(int)dir];
+        }
+    }
+
+    public abstract class KleinfeldAdorner
     {
         public KleinfeldAdorner()
         {
         }
+
+        public abstract AdornerTexture GetAdornerTexture();
 
         int[] _value = {0,0,0,0,0,0};
 
@@ -28,11 +53,24 @@ namespace PhoenixDX.Structures
             _value[ (int)Direction.W] = (int)W;
         }
 
-        int HasDirection(Direction direction)
+        public List<Texture2D> GetTextures()
+        {
+            List<Texture2D> textures = new List<Texture2D>();
+            foreach (Direction direction in Enum.GetValues(typeof(Direction)))
+            {
+                if (HasDirection(direction) > 0 )
+                {
+                    textures.Add(GetAdornerTexture().GetTexture(direction));
+                }
+            }
+            return textures;
+        }
+
+        public int HasDirection(Direction direction)
         {
             return _value[(int)direction];
         }
-        int SetDirection(Direction direction, int? value)
+        public int SetDirection(Direction direction, int? value)
         {
             return _value[(int)direction] = (int)value;
         }

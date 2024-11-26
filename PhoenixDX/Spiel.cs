@@ -23,7 +23,7 @@ namespace PhoenixDX
         private CancellationToken _cancellationToken;
         private IntPtr _windowHandle;
         private readonly ConcurrentQueue<Action> _actionQueue = new ConcurrentQueue<Action>();
-
+       
         public Welt Weltkarte { get; private set; }
 
         public void EnqueueAction(Action action)
@@ -34,8 +34,7 @@ namespace PhoenixDX
         public Spiel(IntPtr windowHandle, int width, int height, CancellationToken token)
         {
             _cancellationToken = token;
-            Content.RootDirectory = "Content";
-            IsMouseVisible = true;
+           IsMouseVisible = true;
 
             _windowHandle = windowHandle;
             _graphics = new GraphicsDeviceManager(this);
@@ -102,8 +101,9 @@ namespace PhoenixDX
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
+            Content.RootDirectory = "Content";
+            Welt.LoadContent(Content);
+            FontManager.LoadContent(Content);
         }
 
         protected override void Update(GameTime gameTime)

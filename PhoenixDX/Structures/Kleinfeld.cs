@@ -4,57 +4,104 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
+using System.Reflection;
+using static PhoenixModel.Karte.Terrain;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace PhoenixDX.Structures
 {
     public class Kleinfeld
     {
-        public class Fluss:KleinfeldAdorner
-        {
-            public Fluss(Gemark gem): base(gem.Fluss_NW,gem.Fluss_NO,gem.Fluss_O, gem.Fluss_SW,gem.Fluss_SO, gem.Fluss_W)
-            { }
-        }
-        public class Wall : KleinfeldAdorner
-        {
-            public Wall(Gemark gem) : base(gem.Wall_NW, gem.Wall_NO, gem.Wall_O, gem.Wall_SW, gem.Wall_SO, gem.Wall_W)
-            { }
-        }
-        public class Bruecke : KleinfeldAdorner
-        {
-            public  Bruecke(Gemark gem) : base(gem.Bruecke_NW, gem.Bruecke_NO, gem.Bruecke_O, gem.Bruecke_SW, gem.Bruecke_SO, gem.Bruecke_W)
-            { }
-        }
-        public class Strasse : KleinfeldAdorner
-        {
-            public Strasse(Gemark gem) : base(gem.Strasse_NW, gem.Strasse_NO, gem.Strasse_O, gem.Strasse_SW, gem.Strasse_SO, gem.Strasse_W)
-            { }
-        }
-        public class Kai : KleinfeldAdorner
-        {
-            public Kai(Gemark gem) : base(gem.Kai_NW, gem.Kai_NO, gem.Kai_O, gem.Kai_SW, gem.Kai_SO, gem.Kai_W)
-            { }
-        }
+        public int ReichKennzahl { get; set; }
+        public KartenKoordinaten Koordinaten { get; private set; }
+        
+        TerrainType _terrainType  = TerrainType.Default;
 
-        public int ReichKennzahl {  get; set; }
+        Dictionary<string, KleinfeldAdorner> _adorner = new Dictionary<string, KleinfeldAdorner>();
+        public Dictionary<string, KleinfeldAdorner> Adorner { get { return _adorner; } }
 
-        Fluss _fluss { get; set; }
-        Wall _wall {  get; set; }
-        Bruecke _bruecke { get; set; }
-        Strasse _strasse{ get; set; }
-        Kai _kai { get; set; }
-
-        public Kleinfeld(int kf) 
-        { 
+        public Kleinfeld(int gf, int kf)
+        {
+            Koordinaten = new KartenKoordinaten(gf, kf,0,0);
         }
 
         public void Initialize(Gemark gem)
         {
-            ReichKennzahl = (int) gem.Reich;
-            _fluss = new Fluss(gem);
-            _wall = new Wall(gem);
-            _bruecke = new Bruecke(gem);
-            _strasse = new Strasse(gem);
-            _kai = new Kai(gem);  
+            ReichKennzahl = (int)gem.Reich;
+            if (gem.Gelaendetyp <= (int) TerrainType.AuftauchpunktUnbekannt)
+                _terrainType = (TerrainType)gem.Gelaendetyp;
+
+            Koordinaten =  new KartenKoordinaten(Koordinaten.gf, Koordinaten.kf, (int)gem.x, (int)gem.y);
+            
+            Adorner.Add("Fluss", new Fluss(gem));
+            Adorner.Add("Wand", new Wall(gem));
+            Adorner.Add("Brücke", new Bruecke(gem));
+            Adorner.Add("Strasse", new Strasse(gem));
+            Adorner.Add("Kai", new Kai(gem));
         }
+
+        List<Texture2D> GetTextures()
+        {
+            List<Texture2D> textures = new List<Texture2D>();
+            Gelaende? gel = Terrain.Terrains[(int)_terrainType] as Gelaende;
+            if (gel != null)
+                textures.Add(gel.GetTexture());
+            foreach(var adorner in Adorner.Values)
+            {
+                textures.AddRange(adorner.GetTextures());
+            }
+            
+            return textures;
+        }
+
+        static bool _isLoaded = false;
+        public static bool IsLoaded { get { return _isLoaded; } }
+        
+        public static void LoadContent(ContentManager contentManager)
+        {
+            // Get all types in the current assembly that derive from the base type
+            var derivedTypes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(assembly => assembly.GetTypes())
+                .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(KleinfeldAdorner)))
+                .ToList();
+
+            var textureValues = new List<AdornerTexture>();
+            foreach (var type in derivedTypes)
+            {
+                var textureField = type.GetField("Texture", BindingFlags.Public | BindingFlags.Static);
+                if (textureField != null && textureField.FieldType == typeof(AdornerTexture))
+                {
+                    var fieldValue = textureField.GetValue(null) as AdornerTexture;
+                    if (fieldValue != null)
+                    {
+                        textureValues.Add(fieldValue);
+                    }
+                }
+            }
+            const string folder = "Images/";
+            List< Texture2D> textures = new List< Texture2D>();
+            foreach (var adornerTexture in textureValues)
+            {
+                foreach (string name in Enum.GetNames(typeof(Direction)))
+                {
+                    string fileName = folder + adornerTexture.ImageStartsWith + name;
+                    try
+                    {
+                        textures.Add(contentManager.Load<Texture2D>(fileName));
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+                adornerTexture.SetTextures(textures.ToArray());
+            }
+
+            _isLoaded = true;
+        }
+        
     }
+    
 }

@@ -47,7 +47,7 @@ namespace PhoenixModel.Karte
             return $"{Typ}: {Name}, Höhe: {Höhe}, Einwohner: {Einwohner}, Einnahmen: {Einnahmen}, Farbe: {Farbe}, Art: {Art}";
         }
 
-        public static List<Terrain> Terrains = new List<Terrain>
+        public static Terrain[] Terrains =
         {
             new Terrain(TerrainType.Default, "Default", 0, 0, 0, "#cf216c", "Meer"),
             new Terrain(TerrainType.Wasser, "Wasser", 0, 0, 0, "#7eb8ec", "Meer"),

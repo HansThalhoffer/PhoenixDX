@@ -6,19 +6,19 @@ namespace PhoenixDX.Structures
 {
     public class Provinz
     {
-        public int gf {  get; set; }
+        public int GF {  get; private set; }
         public Dictionary<int, Kleinfeld> Felder { get; set; } = new Dictionary<int, Kleinfeld>(); 
         
         public Provinz(int gf) 
-        { 
-            this.gf = gf;
+        {
+            GF = gf;
         }
 
         public Kleinfeld? GetPKleinfeld(int kf)
         {
             if (Felder.ContainsKey(kf))
                 return Felder[kf];
-            var p = new Kleinfeld(gf);
+            var p = new Kleinfeld(GF,kf);
             Felder.Add(kf, p);
             return p;
         }
