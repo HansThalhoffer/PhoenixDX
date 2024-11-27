@@ -28,7 +28,14 @@ namespace PhoenixDX.Structures
                     if (p != null)
                     {
                         var k = p.GetPKleinfeld((int) gem.kf);
-                        k.Initialize(gem);
+                        try
+                        {
+                            k.Initialize(gem);
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Windows.Forms.MessageBox.Show(ex.Message);
+                        }
                     }
                 }
             }
@@ -40,40 +47,28 @@ namespace PhoenixDX.Structures
             Kleinfeld.LoadContent(contentManager);
         }
 
-        private Vector2 ScreenToWorld(Vector2 screenPosition, Matrix transformMatrix)
-        {
-            return Vector2.Transform(screenPosition, Matrix.Invert(transformMatrix));
-        }
-
-        
-
-        public void Draw(GraphicsDevice graphics, Matrix transformMatrix, SpriteBatch spriteBatch)
+        public void Draw(GraphicsDevice graphics, SpriteBatch spriteBatch)
         {
            
-            spriteBatch.Begin(transformMatrix: transformMatrix, samplerState: SamplerState.PointClamp);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
-            // Calculate visible area
-            Viewport viewport = graphics.Viewport;
-            Vector2 topLeft = ScreenToWorld(Vector2.Zero, transformMatrix);
-            Vector2 bottomRight = ScreenToWorld(new Vector2(viewport.Width, viewport.Height), transformMatrix);
-
-            RectangleF visibleArea = new RectangleF(topLeft.X - Kleinfeld.Width, topLeft.Y - Kleinfeld.Height,
-                                                    bottomRight.X - topLeft.X + Kleinfeld.Width * 2,
-                                                    bottomRight.Y - topLeft.Y + Kleinfeld.Height * 2);
-
+            Vector2 pos = new Vector2(0, 0);
             // Draw the map with culling
             foreach (var province in Provinzen.Values)
             {
                 foreach (var gemark in province.Felder.Values)
                 {
-                    if (visibleArea.Contains(gemark.Position))
-                    {
-                        Color color = terrainColors[gemark.Terrain];
+                    pos.X += 10;
+                    pos.Y += 10;
 
-                        spriteBatch.Draw(hexTexture, gemark.Position, null, color, 0f, new Vector2(hexTexture.Width / 2, hexTexture.Height / 2), 1f, SpriteEffects.None, 0f);
+                    var listTexture = gemark.GetTextures();
+                    foreach (var hexTexture in listTexture)
+                    {
+                        spriteBatch.Draw(hexTexture, pos, null, Color.Transparent); 
                     }
                 }
             }
+            spriteBatch.End();
         }
 
 

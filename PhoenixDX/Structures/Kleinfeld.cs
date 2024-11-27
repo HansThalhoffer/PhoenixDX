@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Content;
 using System.Reflection;
 using static PhoenixModel.Karte.Terrain;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
+using System.Numerics;
 
 namespace PhoenixDX.Structures
 {
@@ -31,8 +32,20 @@ namespace PhoenixDX.Structures
             Koordinaten = new KartenKoordinaten(gf, kf,0,0);
         }
 
+        public Vector2 Position { get
+            {
+                Vector2 v = new Vector2 ( Koordinaten.dbx * Kleinfeld.Width, Koordinaten.dby * Kleinfeld.Height);
+                return v;
+            } 
+        }
+
+        bool _isInitalized = false;
+
         public void Initialize(Gemark gem)
         {
+            if (_isInitalized == true)
+                return;
+            _isInitalized = true;
             ReichKennzahl = (int)gem.Reich;
             if (gem.Gelaendetyp <= (int) TerrainType.AuftauchpunktUnbekannt)
                 _terrainType = (TerrainType)gem.Gelaendetyp;
@@ -46,7 +59,7 @@ namespace PhoenixDX.Structures
             Adorner.Add("Kai", new Kai(gem));
         }
 
-        List<Texture2D> GetTextures()
+        public List<Texture2D> GetTextures()
         {
             List<Texture2D> textures = new List<Texture2D>();
             Gelaende? gel = Terrain.Terrains[(int)_terrainType] as Gelaende;

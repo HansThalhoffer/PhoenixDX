@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Data.OleDb;
+using System.Windows;
 
 namespace PhoenixWPF.Database
 {
@@ -11,17 +13,49 @@ namespace PhoenixWPF.Database
     {
         private readonly OleDbConnection _connection;
 
+        public static string GetInstalledAceOleDbProvider()
+        {
+            // Registry path for OLEDB Providers
+            string registryPath32Bit = @"SOFTWARE\WOW6432Node\Classes\Microsoft.ACE.OLEDB.";
+            string registryPath64Bit = @"SOFTWARE\Classes\Microsoft.ACE.OLEDB.";
+
+            string result = null;
+
+            // Check for ACE.OLEDB providers by iterating over known versions
+            string[] versions = { "18.0", "17.0", "16.0", "15.0", "14.0", "12.0", "11.0", "10.0", "8.0", "4.0" }; // Known versions of ACE OLEDB provider
+            foreach (var version in versions)
+            {
+                using (var key = Registry.LocalMachine.OpenSubKey($"{registryPath64Bit}{version}"))
+                {
+                    if (key != null)
+                    {
+                        result = $"Microsoft.ACE.OLEDB.{version}";
+                        return result;
+                    }
+                }
+            }
+
+            return "No Microsoft.ACE.OLEDB provider installed.";
+        }
+
         public AccessDatabase(string databaseFilePath, string? pw)
         {
             if (string.IsNullOrWhiteSpace(databaseFilePath))
                 throw new ArgumentException("Database file path must be provided.", nameof(databaseFilePath));
 
-            string connectionString = $@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={databaseFilePath};Persist Security Info=False;";
+            string provider = GetInstalledAceOleDbProvider();
+            if (provider == null)
+            {
+                MessageBox.Show("Es ist kein Microsoft.ACE.OLEDB Treiber installiert. Bitte einen entsprechenden Treiber installieren");
+            }
+            string connectionString = $@"Provider={provider};Data Source={databaseFilePath};Persist Security Info=False;";
+            
             if (string.IsNullOrEmpty(pw) == false)
             {
                 connectionString += "Jet OLEDB:Database Password=" + pw + ";";
             }
             _connection = new OleDbConnection(connectionString);
+
         }
 
         public bool IsConnected()
@@ -42,7 +76,7 @@ namespace PhoenixWPF.Database
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Fehler beim Öffnen der PZE Datenbank: " + ex.Message);
+                    MessageBox.Show("Fehler beim Öffnen der PZE Datenbank: " + ex.Message);
                     return false;
                 }
             }
