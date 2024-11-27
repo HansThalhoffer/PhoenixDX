@@ -15,13 +15,15 @@ namespace PhoenixDX
     {
         private Spiel _game;
         IntPtr _hWnd;
-        int _width = 800;
-        int _height = 600;
+        int _width = 3840;
+        int _height = 2160;
         Thread _gameThread;
         CancellationTokenSource _cancellationTokenSource;
 
-        public MappaMundi(IntPtr hWWnd)
+        public MappaMundi(IntPtr hWWnd, int width, int height)
         {
+            _width = width;
+            _height = height;
             _hWnd = hWWnd;
         }
 
@@ -41,8 +43,9 @@ namespace PhoenixDX
 
         public void Resize(int width, int height)
         {
-            _width = width;
-            _height = height;
+            // ignore updates
+            // _width = width;
+            // _height = height;
             _game?.Resize(width, height);
         }
 

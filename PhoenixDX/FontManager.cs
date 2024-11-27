@@ -11,9 +11,11 @@ namespace PhoenixDX
 {
     internal class FontManager
     {
+        public static Dictionary<string, SpriteFont> Fonts = new Dictionary<string, SpriteFont>();
+        
         public static void LoadContent(ContentManager contentManager)
         {
-            contentManager.Load<SpriteFont>("DefaultFont");
+            Fonts.Add("Default",contentManager.Load<SpriteFont>("DefaultFont"));
         }
     }
 }

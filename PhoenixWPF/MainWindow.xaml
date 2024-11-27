@@ -27,15 +27,18 @@
                 <!-- Left main window -->
                 <ColumnDefinition Width="5" />
                 <!-- Splitter -->
-                <ColumnDefinition Width="400" />
+                <ColumnDefinition Width="320" />
                 <!-- Right split -->
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="16" />
+            </Grid.RowDefinitions>
 
             <!-- Left Main Window -->
-            <ContentControl Grid.Column="0">
-                <local:MonoGameHost Grid.Column="0" Grid.Row="0" />
-            </ContentControl>
-
+            <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" Name="sv1">
+                <Frame  Source="Erkenfara.xaml"/>
+            </ScrollViewer >
             <!-- Left-to-Right Splitter -->
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
 

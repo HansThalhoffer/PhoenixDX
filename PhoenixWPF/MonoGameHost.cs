@@ -8,6 +8,7 @@ using System.Windows.Interop;
 using System.Windows.Media.Media3D;
 using System.Windows;
 using System.ComponentModel;
+using System.IO;
 
 // <local:MonoGameHost Grid.Column="0" Grid.Row="0" Width="800" Height="600"/>
 
@@ -34,16 +35,6 @@ namespace PhoenixWPF
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool DestroyWindow(IntPtr hWnd);
 
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern bool SetWindowPos(
-            IntPtr hWnd,
-            IntPtr hWndInsertAfter,
-            int X,
-            int Y,
-            int cx,
-            int cy,
-            uint uFlags);
-
         private PhoenixDX.MappaMundi? _map;
         private IntPtr _hWnd;
         int hostHeight = 600, hostWidth= 800;
@@ -59,8 +50,19 @@ namespace PhoenixWPF
 
             if (_hWnd != IntPtr.Zero)
             {
-                int width = (int)sizeInfo.NewSize.Width;
-                int height = (int)sizeInfo.NewSize.Height;
+                int width = Convert.ToInt32(sizeInfo.NewSize.Width);
+                int height = Convert.ToInt32(sizeInfo.NewSize.Height);
+                _map?.Resize(width, height);
+            }
+        }
+
+        protected override void OnWindowPositionChanged(Rect rcBoundingBox)
+        {
+            base.OnWindowPositionChanged(rcBoundingBox);
+            if (_hWnd != IntPtr.Zero)
+            {
+                int width = Convert.ToInt32(rcBoundingBox.Width);
+                int height = Convert.ToInt32(rcBoundingBox.Height);
                 _map?.Resize(width, height);
             }
         }
@@ -80,14 +82,9 @@ namespace PhoenixWPF
              WS_CHILD = 0x40000000,
              WS_VISIBLE = 0x10000000,
              HOST_ID = 0x00000002;
-                // LISTBOX_ID = 0x00000001,
-                // WS_VSCROLL = 0x00200000,
-                // WS_BORDER = 0x00800000,
-                // SWP_NOZORDER = 0x0004,
-                // SWP_NOACTIVATE = 0x0010;
-
-        // Create a child window to host MonoGame
-        _hWnd = CreateWindowEx(0, "STATIC", "Host",
+            
+            // Create a child window to host MonoGame
+            _hWnd = CreateWindowEx(0, "STATIC", "Host",
                  WS_CHILD | WS_VISIBLE,
                  0, 0,
                  hostWidth, hostHeight,
@@ -107,7 +104,8 @@ namespace PhoenixWPF
             {
                 // Exit the function if in design mode
                 // Initialize MonoGame with the window handle
-                _map = new PhoenixDX.MappaMundi(_hWnd);
+                
+                _map = new PhoenixDX.MappaMundi(_hWnd,1600,1000);
                 _map.Run();
             }
             

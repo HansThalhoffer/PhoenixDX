@@ -47,10 +47,10 @@ namespace PhoenixDX.Structures
             Kleinfeld.LoadContent(contentManager);
         }
 
-        public void Draw(GraphicsDevice graphics, SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch)
         {
            
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            spriteBatch.Begin();
 
             Vector2 pos = new Vector2(0, 0);
             // Draw the map with culling
@@ -64,7 +64,8 @@ namespace PhoenixDX.Structures
                     var listTexture = gemark.GetTextures();
                     foreach (var hexTexture in listTexture)
                     {
-                        spriteBatch.Draw(hexTexture, pos, null, Color.Transparent); 
+                        // spriteBatch.Draw(hexTexture, pos, null, Color.Transparent);
+                        spriteBatch.Draw(hexTexture, pos, null, Color.White, 0f, new Vector2(hexTexture.Width / 5, hexTexture.Height / 5), 1f, SpriteEffects.None, 0f);
                     }
                 }
             }
