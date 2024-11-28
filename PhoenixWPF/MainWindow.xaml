@@ -36,9 +36,7 @@
             </Grid.RowDefinitions>
 
             <!-- Left Main Window -->
-            <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" Name="sv1">
-                <Frame  Source="Erkenfara.xaml"/>
-            </ScrollViewer >
+                <Frame Grid.Column="0" Grid.Row="0"  Source="Erkenfara.xaml"/>
             <!-- Left-to-Right Splitter -->
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
 

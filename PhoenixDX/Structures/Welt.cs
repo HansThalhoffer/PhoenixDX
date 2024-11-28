@@ -47,25 +47,25 @@ namespace PhoenixDX.Structures
             Kleinfeld.LoadContent(contentManager);
         }
 
-        public void Draw(SpriteBatch spriteBatch)
-        {
-           
+        public void Draw(SpriteBatch spriteBatch, float scaleX, float scaleY)
+        {           
             spriteBatch.Begin();
 
             Vector2 pos = new Vector2(0, 0);
+            Vector2 size = new Vector2((float) (138.0 / 5.0)* scaleX, (float)(160.0 / 5.0)* scaleY);
             // Draw the map with culling
             foreach (var province in Provinzen.Values)
             {
                 foreach (var gemark in province.Felder.Values)
                 {
-                    pos.X += 10;
-                    pos.Y += 10;
+                    pos.X += (float)10*scaleX;
+                    pos.Y += (float)10 * scaleY;
 
                     var listTexture = gemark.GetTextures();
                     foreach (var hexTexture in listTexture)
                     {
                         // spriteBatch.Draw(hexTexture, pos, null, Color.Transparent);
-                        spriteBatch.Draw(hexTexture, pos, null, Color.White, 0f, new Vector2(hexTexture.Width / 5, hexTexture.Height / 5), 1f, SpriteEffects.None, 0f);
+                        spriteBatch.Draw(hexTexture, pos, null, Color.White, 0f, size , 1f, SpriteEffects.None, 0f);
                     }
                 }
             }

@@ -26,8 +26,8 @@ namespace PhoenixDX
 
         Vector2 cameraPosition = Vector2.Zero;
         float zoom = 1f;
-        int _virtualWidth = 3840;
-        int _virtualHeight = 2160;
+        const int _virtualWidth = 3840;
+        const int _virtualHeight = 2160;
         int _clientWidth = 3840;
         int _clientHeight = 2160;
 
@@ -51,7 +51,8 @@ namespace PhoenixDX
 
             _graphics.PreparingDeviceSettings += Graphics_PreparingDeviceSettings;
             _graphics.PreferredBackBufferWidth = _virtualWidth; 
-            _graphics.PreferredBackBufferHeight = _virtualHeight; 
+            _graphics.PreferredBackBufferHeight = _virtualHeight;
+            _graphics.ApplyChanges();
 
             Activated += Spiel_Activated;
         }
@@ -104,9 +105,10 @@ namespace PhoenixDX
                 _clientHeight = height;
                 _clientWidth = width;
 
-                _graphics.PreferredBackBufferWidth = _virtualWidth;
+               /* _graphics.PreferredBackBufferWidth = _virtualWidth;
                 _graphics.PreferredBackBufferHeight = _virtualHeight;
                 _graphics.ApplyChanges();
+               */
                 HideGameWindow();
             });
         }
@@ -149,12 +151,15 @@ namespace PhoenixDX
 
         protected override void Draw(GameTime gameTime)
         {
-            float scaleX = _clientWidth / _virtualWidth;
-            float scaleY = _clientHeight / _virtualHeight;
-            
-            int offsetX = (int)((_clientWidth - _virtualWidth * scaleX) / 2);
-            int offsetY = (int)((_clientHeight - _virtualHeight * scaleY) / 2);
+            _graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
+            float scaleX = (float)_virtualWidth / (float)_clientWidth;
+            float scaleY = (float)_virtualHeight / (float)_clientHeight;
 
+            if (scaleX > 0)
+            {
+                int offsetX = (int)((_clientWidth - _virtualWidth * scaleX) / 2);
+                int offsetY = (int)((_clientHeight - _virtualHeight * scaleY) / 2);
+            }
             _graphics.GraphicsDevice.Viewport = new Viewport
             {
                 X = 0,
@@ -166,20 +171,19 @@ namespace PhoenixDX
             };
 
 
-            _graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
             // Font for status text
             SpriteFont font = FontManager.Fonts["Default"];
 
             
             if (Weltkarte != null)
             {
-                Weltkarte.Draw(_spriteBatch);
+                Weltkarte.Draw(_spriteBatch, scaleX,scaleY);
             }
 
             // Draw status text
             _spriteBatch.Begin();
 
-            string statusText = "Breite " + _clientWidth.ToString() + "  Hoehe " + _clientHeight.ToString();
+            string statusText = "Breite " + _virtualWidth.ToString() + "  Client " + _clientWidth.ToString() + " ScaleX " + scaleX.ToString();
 
             _spriteBatch.DrawString(font, statusText, new Vector2(10, 10), Color.White);
 

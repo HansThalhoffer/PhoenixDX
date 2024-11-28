@@ -58,13 +58,13 @@ namespace PhoenixWPF
 
         protected override void OnWindowPositionChanged(Rect rcBoundingBox)
         {
-            base.OnWindowPositionChanged(rcBoundingBox);
+           base.OnWindowPositionChanged(rcBoundingBox);
             if (_hWnd != IntPtr.Zero)
-            {
-                int width = Convert.ToInt32(rcBoundingBox.Width);
-                int height = Convert.ToInt32(rcBoundingBox.Height);
-                _map?.Resize(width, height);
-            }
+             {
+                 int width = Convert.ToInt32(rcBoundingBox.Width);
+                 int height = Convert.ToInt32(rcBoundingBox.Height);
+                 _map?.Resize(width, height);
+             }
         }
 
         protected override void Dispose(bool disposing)
@@ -93,7 +93,7 @@ namespace PhoenixWPF
                  IntPtr.Zero,
                  0);
 
-             if (_hWnd == IntPtr.Zero)
+            if (_hWnd == IntPtr.Zero)
              {
                  int error = Marshal.GetLastWin32Error();
                  throw new System.ComponentModel.Win32Exception(error, "Failed to create window.");
@@ -121,6 +121,8 @@ namespace PhoenixWPF
                 DestroyWindow(_hWnd);
             }
         }
+
+       
 
         // PInvoke declarations and constants go here
     }
