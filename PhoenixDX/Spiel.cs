@@ -42,7 +42,7 @@ namespace PhoenixDX
         {
             _clientWidth = width;
             _clientHeight = height;
-
+            Zoom = 0.4f;
             _cancellationToken = token;
            IsMouseVisible = true;
 
@@ -148,12 +148,12 @@ namespace PhoenixDX
        
 
         private SpriteBatch _spriteBatch;
-
+        public float Zoom {  get; set; }
         protected override void Draw(GameTime gameTime)
         {
             _graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
-            float scaleX = (float)_virtualWidth / (float)_clientWidth;
-            float scaleY = (float)_virtualHeight / (float)_clientHeight;
+            float scaleX = (float)_virtualWidth / (float)_clientWidth * Zoom;
+            float scaleY = (float)_virtualHeight / (float)_clientHeight * Zoom;
 
             if (scaleX > 0)
             {
@@ -181,13 +181,14 @@ namespace PhoenixDX
             }
 
             // Draw status text
+            /*
             _spriteBatch.Begin();
 
             string statusText = "Breite " + _virtualWidth.ToString() + "  Client " + _clientWidth.ToString() + " ScaleX " + scaleX.ToString();
 
             _spriteBatch.DrawString(font, statusText, new Vector2(10, 10), Color.Violet);
 
-            _spriteBatch.End();
+            _spriteBatch.End();*/
 
             // TODO: Add your drawing code here
             base.Draw(gameTime);
