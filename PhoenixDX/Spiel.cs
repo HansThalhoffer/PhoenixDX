@@ -185,7 +185,7 @@ namespace PhoenixDX
 
             string statusText = "Breite " + _virtualWidth.ToString() + "  Client " + _clientWidth.ToString() + " ScaleX " + scaleX.ToString();
 
-            _spriteBatch.DrawString(font, statusText, new Vector2(10, 10), Color.White);
+            _spriteBatch.DrawString(font, statusText, new Vector2(10, 10), Color.Violet);
 
             _spriteBatch.End();
 

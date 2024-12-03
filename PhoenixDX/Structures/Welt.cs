@@ -25,14 +25,11 @@ namespace PhoenixDX.Structures
             Provinzen = new Dictionary<int, Reihe>();
 
 
-            for (int x = 1; x <= 20; x++)
+            for (int y = 1; y <= 12; y++)
             {
-                for (int y = 1; y <= 12; y++)
+                for (int x = 1; x <= 12; x++)
                 {
-                    // string id = x.ToString() + y.ToString("00");
-                    int id = x * 100 + y;
-                    GetProvinz(id);
-                   
+                    GetProvinz(x,y);
                 }
             }
 
@@ -68,20 +65,22 @@ namespace PhoenixDX.Structures
         }
 
         public void Draw(SpriteBatch spriteBatch, float scaleX, float scaleY)
-        {           
+        {
+            SpriteFont font = FontManager.Fonts["Small"];
             spriteBatch.Begin();
 
-            Vector2 pos = new Vector2(0, 0);
-           
+
             // Draw the map with culling
             foreach (var reihe in Provinzen.Values)
             {
                 foreach (var province in reihe.Values)
                 {
-                    pos = province.GetPosition();
-                    Vector2 sizeProvinz = new Vector2((float)(province.Width) * scaleX, (float)(province.Height) * scaleY);
-                    Rectangle rScreen = new Rectangle(Convert.ToInt32(pos.X), Convert.ToInt32(pos.Y), Convert.ToInt32(sizeProvinz.X), Convert.ToInt32(sizeProvinz.Y));
-                     spriteBatch.Draw(Provinz.Texture, rScreen, null, Color.White);
+                    var pos = province.GetMapPosition(scaleX, scaleY);
+                    var size = province.GetMapSize(scaleX, scaleY);
+                    Rectangle rScreen = new Rectangle(Convert.ToInt32(pos.X), Convert.ToInt32(pos.Y), Convert.ToInt32(size.X), Convert.ToInt32(size.Y));
+                    spriteBatch.Draw(Provinz.Texture, rScreen, null, Color.White);
+                    pos.Move(Convert.ToInt32(160f * scaleX), 10);
+                    spriteBatch.DrawString(font, province.Bezeichner, pos, Color.Black);
 
                     /*foreach (var gemark in province.Felder.Values)
                     {
@@ -110,19 +109,22 @@ namespace PhoenixDX.Structures
             Provinzen.Add(reihe, p);
             return p;
         }
-
         public Provinz GetProvinz(int gf)
         {
-            int spalte = gf / 100;
-            int reihe = gf % 100;
-            var r = GetReihe(reihe);
-
-            if (r.ContainsKey(spalte)) 
-                return r[spalte];
-            var p = new Provinz(gf);
-            r.Add(spalte, p);
+            var v = Provinz.MapToXY(gf);
+            return GetProvinz(v.X,v.Y);
+        }
+        public Provinz GetProvinz(int x, int y)
+        {
+            var r = GetReihe(y);
+            if (r.ContainsKey(x))
+                return r[y];
+            var p = new Provinz(x,y);
+            r.Add(x, p);
             return p;
         }
+
+       
     
     }
 }

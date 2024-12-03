@@ -11,8 +11,8 @@ namespace PhoenixDX.Structures
     public class Provinz : Hex
     {
         private int _gf;
-        public int Spalte { get; private set; }
-        public int Reihe { get; private set; }
+        public int X { get; private set; }
+        public int Y { get; private set; }
 
         public int GF
         {
@@ -20,23 +20,44 @@ namespace PhoenixDX.Structures
             private set
             {
                 _gf = value;
-                Spalte = _gf / 100;
-                Reihe = _gf % 100;
             }
         }
-        public Dictionary<int, Kleinfeld> Felder { get; set; } = new Dictionary<int, Kleinfeld>();
 
-        public Provinz(int gf) : base(Hex.RadiusProvinz)
+        public static int MapToGF(int x, int y)
         {
-            GF = gf;
+            int gf = 0;
+
+            return gf;
         }
 
-        public Vector2 GetPosition()
+        public static Position MapToXY(int gf)
         {
-            double canvTop = (Reihe - 1) * RowHeight;
-            double canvLeft = (Spalte - 1) * ColumnWidth;
+            var pos = new Position(0,0);
+         
+            return pos;
+        }
 
-            if (Spalte <= 6)
+        public string Bezeichner
+        {
+            get { return _gf.ToString(); }           
+        }
+
+        public Dictionary<int, Kleinfeld> Felder { get; set; } = new Dictionary<int, Kleinfeld>();
+
+        public Provinz(int x, int y) : base(Hex.RadiusProvinz, false)
+        {
+            X = x;
+            Y = y;
+        }
+
+        public Vector2 GetMapPosition(float scaleX,float scaleY)
+        {
+            float x = (X - 1) * ColumnWidth  *scaleX;
+            float y = (Y - 1) * RowHeight * scaleY;
+            if (X % 2 > 0)
+                y += RowHeight * scaleY / 2;
+
+            /*if (Spalte <= 6)
                 canvTop += RowHeight / 2 * (6 - Spalte);
             else if (Spalte <= 10)
             {
@@ -45,9 +66,17 @@ namespace PhoenixDX.Structures
             }
             else
                 canvTop += RowHeight / 2 * (Spalte - 10);
-            return new Vector2((float)canvTop, (float)canvLeft);
+            */
+
+            return new Vector2(x, y);
         }
 
+        public Vector2 GetMapSize(float scaleX, float scaleY)
+        {
+            float sizeX = Height * scaleX;
+            float sizeY = Width * scaleY;
+            return new Vector2(sizeX, sizeY);
+        }
 
         public Kleinfeld? GetPKleinfeld(int kf)
         {
@@ -62,7 +91,7 @@ namespace PhoenixDX.Structures
 
         public static void LoadContent(ContentManager contentManager)
         {
-            Texture = contentManager.Load<Texture2D>("Images/reich_braun");
+            Texture = contentManager.Load<Texture2D>("Images/Hexagon");
         }
 
 

@@ -8,7 +8,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using System.Reflection;
 using static PhoenixModel.Karte.Terrain;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 using System.Numerics;
 
 namespace PhoenixDX.Structures
@@ -27,7 +26,7 @@ namespace PhoenixDX.Structures
         Dictionary<string, KleinfeldAdorner> _adorner = new Dictionary<string, KleinfeldAdorner>();
         public Dictionary<string, KleinfeldAdorner> Adorner { get { return _adorner; } }
 
-        public Kleinfeld(int gf, int kf): base(Hex.RadiusGemark)
+        public Kleinfeld(int gf, int kf): base(Hex.RadiusGemark, true)
         {
             Koordinaten = new KartenKoordinaten(gf, kf,0,0);
         }

@@ -15,7 +15,9 @@ namespace PhoenixDX
         
         public static void LoadContent(ContentManager contentManager)
         {
-            Fonts.Add("Default",contentManager.Load<SpriteFont>("DefaultFont"));
+            Fonts.Add("Default",contentManager.Load<SpriteFont>("Fonts/DefaultFont"));
+            Fonts.Add("Large", contentManager.Load<SpriteFont>("Fonts/LargeFont"));
+            Fonts.Add("Small", contentManager.Load<SpriteFont>("Fonts/SmallFont"));
         }
     }
 }
