@@ -13,7 +13,7 @@ using System.Numerics;
 
 namespace PhoenixDX.Structures
 {
-    public class Kleinfeld
+    public class Kleinfeld : Hex
     {
         public int ReichKennzahl { get; set; }
         public KartenKoordinaten Koordinaten { get; private set; }
@@ -27,7 +27,7 @@ namespace PhoenixDX.Structures
         Dictionary<string, KleinfeldAdorner> _adorner = new Dictionary<string, KleinfeldAdorner>();
         public Dictionary<string, KleinfeldAdorner> Adorner { get { return _adorner; } }
 
-        public Kleinfeld(int gf, int kf)
+        public Kleinfeld(int gf, int kf): base(Hex.RadiusGemark)
         {
             Koordinaten = new KartenKoordinaten(gf, kf,0,0);
         }
@@ -40,11 +40,10 @@ namespace PhoenixDX.Structures
         }
 
         bool _isInitalized = false;
-
-        public void Initialize(Gemark gem)
+        public bool Initialize(Gemark gem)
         {
             if (_isInitalized == true)
-                return;
+                return false;
             _isInitalized = true;
             ReichKennzahl = (int)gem.Reich;
             if (gem.Gelaendetyp <= (int) TerrainType.AuftauchpunktUnbekannt)
@@ -57,7 +56,10 @@ namespace PhoenixDX.Structures
             Adorner.Add("Brücke", new Bruecke(gem));
             Adorner.Add("Strasse", new Strasse(gem));
             Adorner.Add("Kai", new Kai(gem));
+            return true;
         }
+
+        #region Content
 
         public List<Texture2D> GetTextures()
         {
@@ -118,7 +120,8 @@ namespace PhoenixDX.Structures
 
             _isLoaded = true;
         }
-        
+        #endregion
+
     }
-    
+
 }

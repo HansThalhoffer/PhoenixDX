@@ -12,11 +12,29 @@ namespace PhoenixDX.Structures
 {
     public class Welt
     {
-        Dictionary<int, Provinz> Provinzen {  get; set; }
+        class Reihe : Dictionary<int, Provinz> 
+        {
+            public Reihe() { }
+        }
+        Dictionary<int, Reihe> Provinzen {  get; set; }
+
+        
 
         public Welt(Dictionary<string, Gemark> map) 
         {
-            Provinzen = new Dictionary<int, Provinz>();
+            Provinzen = new Dictionary<int, Reihe>();
+
+
+            for (int x = 1; x <= 20; x++)
+            {
+                for (int y = 1; y <= 12; y++)
+                {
+                    // string id = x.ToString() + y.ToString("00");
+                    int id = x * 100 + y;
+                    GetProvinz(id);
+                   
+                }
+            }
 
             foreach (Gemark gem in map.Values)
             {
@@ -30,7 +48,8 @@ namespace PhoenixDX.Structures
                         var k = p.GetPKleinfeld((int) gem.kf);
                         try
                         {
-                            k.Initialize(gem);
+                            if (k.Initialize(gem) ==false)
+                                continue; // TODO - doppelte Kleinfelder in der Datenbank
                         }
                         catch (Exception ex)
                         {
@@ -44,6 +63,7 @@ namespace PhoenixDX.Structures
         public static void LoadContent(ContentManager contentManager)
         {
             Gelaende.LoadContent(contentManager);
+            Provinz.LoadContent(contentManager);
             Kleinfeld.LoadContent(contentManager);
         }
 
@@ -52,35 +72,55 @@ namespace PhoenixDX.Structures
             spriteBatch.Begin();
 
             Vector2 pos = new Vector2(0, 0);
-            Vector2 size = new Vector2((float) (138.0 / 5.0)* scaleX, (float)(160.0 / 5.0)* scaleY);
+           
             // Draw the map with culling
-            foreach (var province in Provinzen.Values)
+            foreach (var reihe in Provinzen.Values)
             {
-                foreach (var gemark in province.Felder.Values)
+                foreach (var province in reihe.Values)
                 {
-                    pos.X += (float)10*scaleX;
-                    pos.Y += (float)10 * scaleY;
+                    pos = province.GetPosition();
+                    Vector2 sizeProvinz = new Vector2((float)(province.Width) * scaleX, (float)(province.Height) * scaleY);
+                    Rectangle rScreen = new Rectangle(Convert.ToInt32(pos.X), Convert.ToInt32(pos.Y), Convert.ToInt32(sizeProvinz.X), Convert.ToInt32(sizeProvinz.Y));
+                     spriteBatch.Draw(Provinz.Texture, rScreen, null, Color.White);
 
-                    var listTexture = gemark.GetTextures();
-                    foreach (var hexTexture in listTexture)
+                    /*foreach (var gemark in province.Felder.Values)
                     {
-                        // spriteBatch.Draw(hexTexture, pos, null, Color.Transparent);
-                        spriteBatch.Draw(hexTexture, pos, null, Color.White, 0f, size , 1f, SpriteEffects.None, 0f);
-                    }
+                        pos.X += (float)10 * scaleX;
+                        pos.Y += (float)10 * scaleY;
+                        pos = gemark.Position;
+
+                        var listTexture = gemark.GetTextures();
+                        foreach (var hexTexture in listTexture)
+                        {
+                            // spriteBatch.Draw(hexTexture, pos, null, Color.Transparent);
+                            spriteBatch.Draw(hexTexture, pos, null, Color.White, 0f, size, 1f, SpriteEffects.None, 0f);
+                        }
+                    }*/
                 }
             }
             spriteBatch.End();
         }
 
 
-
-
-        public Provinz? GetProvinz(int gf)
+        private Reihe GetReihe(int reihe)
         {
-            if (Provinzen.ContainsKey(gf)) 
-                return Provinzen[gf];
+            if (Provinzen.ContainsKey(reihe))
+                return Provinzen[reihe];
+            var p = new Reihe();
+            Provinzen.Add(reihe, p);
+            return p;
+        }
+
+        public Provinz GetProvinz(int gf)
+        {
+            int spalte = gf / 100;
+            int reihe = gf % 100;
+            var r = GetReihe(reihe);
+
+            if (r.ContainsKey(spalte)) 
+                return r[spalte];
             var p = new Provinz(gf);
-            Provinzen.Add(gf, p);
+            r.Add(spalte, p);
             return p;
         }
     
