@@ -22,7 +22,7 @@ namespace PhoenixDX.Structures
             ImageStartsWith = imageStartsWith;
         }
 
-        Texture2D[]? _hexTexture;
+        Texture2D[] _hexTexture;
         public void SetTextures(Texture2D[] texture)
         {
             _hexTexture = texture;

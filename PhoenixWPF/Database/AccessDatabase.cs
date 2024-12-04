@@ -16,10 +16,10 @@ namespace PhoenixWPF.Database
         public static string GetInstalledAceOleDbProvider()
         {
             // Registry path for OLEDB Providers
-            string registryPath32Bit = @"SOFTWARE\WOW6432Node\Classes\Microsoft.ACE.OLEDB.";
+            // string registryPath32Bit = @"SOFTWARE\WOW6432Node\Classes\Microsoft.ACE.OLEDB.";
             string registryPath64Bit = @"SOFTWARE\Classes\Microsoft.ACE.OLEDB.";
 
-            string result = null;
+            string? result = null;
 
             // Check for ACE.OLEDB providers by iterating over known versions
             string[] versions = { "18.0", "17.0", "16.0", "15.0", "14.0", "12.0", "11.0", "10.0", "8.0", "4.0" }; // Known versions of ACE OLEDB provider

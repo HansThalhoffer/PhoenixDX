@@ -17,8 +17,8 @@ namespace PhoenixDX.Structures
         public int ReichKennzahl { get; set; }
         public KartenKoordinaten Koordinaten { get; private set; }
 
-        public static readonly int Width = 138;
-        public static readonly int Height = 160;
+        public static readonly int TextureWidth = 138;
+        public static readonly int TextureHeight = 160;
 
 
         TerrainType _terrainType  = TerrainType.Default;
@@ -33,7 +33,7 @@ namespace PhoenixDX.Structures
 
         public Vector2 Position { get
             {
-                Vector2 v = new Vector2 ( Koordinaten.dbx * Kleinfeld.Width, Koordinaten.dby * Kleinfeld.Height);
+                Vector2 v = new Vector2 ( Koordinaten.dbx * Kleinfeld.TextureWidth, Koordinaten.dby * Kleinfeld.TextureHeight);
                 return v;
             } 
         }
@@ -63,7 +63,7 @@ namespace PhoenixDX.Structures
         public List<Texture2D> GetTextures()
         {
             List<Texture2D> textures = new List<Texture2D>();
-            Gelaende? gel = Terrain.Terrains[(int)_terrainType] as Gelaende;
+            Gelaende gel = Terrain.Terrains[(int)_terrainType] as Gelaende;
             if (gel != null)
                 textures.Add(gel.GetTexture());
             foreach(var adorner in Adorner.Values)

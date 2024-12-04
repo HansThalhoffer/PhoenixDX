@@ -81,11 +81,12 @@ namespace PhoenixWPF
             const int
              WS_CHILD = 0x40000000,
              WS_VISIBLE = 0x10000000,
-             HOST_ID = 0x00000002;
-            
+             HOST_ID = 0x00000002,
+            WS_CLIPSIBLINGS = 0x04000000, WS_CLIPCHILDREN = 0x02000000,
+             WS_EX_TRANSPARENT = 0x00000020;
             // Create a child window to host MonoGame
             _hWnd = CreateWindowEx(0, "STATIC", "Host",
-                 WS_CHILD | WS_VISIBLE,
+                 WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
                  0, 0,
                  hostWidth, hostHeight,
                  hwndParent.Handle,
@@ -122,7 +123,18 @@ namespace PhoenixWPF
             }
         }
 
-       
+        protected override nint WndProc(nint hwnd, int msg, nint wParam, nint lParam, ref bool handled)
+        {
+            const int WM_MOUSEMOVE = 0x0200;
+            if (msg == WM_MOUSEMOVE)
+            {
+               _map?.OnMouseMove(wParam, lParam);
+                
+            }
+
+
+            return base.WndProc(hwnd, msg, wParam, lParam, ref handled);
+        }               
 
         // PInvoke declarations and constants go here
     }

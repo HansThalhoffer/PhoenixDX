@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using PhoenixDX.Classes;
 using PhoenixDX.Structures;
 using PhoenixModel.Helper;
 using PhoenixModel.Karte;
@@ -86,7 +87,8 @@ namespace PhoenixDX
                 // SetWindowPos(windowHandle, IntPtr.Zero, -400, -400, 0, 0, SWP_NOZORDER | SWP_NOACTIVATE);
             }
         }
-        
+
+
         private void Spiel_Activated(object sender, EventArgs e)
         {
             HideGameWindow();
@@ -104,13 +106,20 @@ namespace PhoenixDX
             {
                 _clientHeight = height;
                 _clientWidth = width;
-
-               /* _graphics.PreferredBackBufferWidth = _virtualWidth;
-                _graphics.PreferredBackBufferHeight = _virtualHeight;
-                _graphics.ApplyChanges();
-               */
-                HideGameWindow();
+                 HideGameWindow();
             });
+        }
+
+        
+
+        public void OnMouseMove(nint wParam, nint lParam)
+        {
+        
+        }
+
+        private void HandleInput()
+        {
+
         }
 
         protected override void LoadContent()
@@ -123,6 +132,7 @@ namespace PhoenixDX
 
         protected override void Update(GameTime gameTime)
         {
+            
             if (_cancellationToken.IsCancellationRequested)
             {
                 Exit();
@@ -134,11 +144,13 @@ namespace PhoenixDX
                 action();
             }
 
-            if (SharedData.Map != null && SharedData.Map.IsAddingCompleted && Weltkarte == null)
+            if (Weltkarte == null && SharedData.Map != null && SharedData.Map.IsAddingCompleted && Weltkarte == null)
             {
                 Dictionary<string, Gemark> map = SharedData.Map.FirstOrDefault();
                 Weltkarte = new Welt(map);
             }
+
+            HandleInput();
 
             // TODO: Add your update logic here
             base.Update(gameTime);

@@ -43,10 +43,12 @@ namespace PhoenixDX
 
         public void Resize(int width, int height)
         {
-            // ignore updates
-            // _width = width;
-            // _height = height;
             _game?.Resize(width, height);
+        }
+
+        public void OnMouseMove(nint wParam, nint lParam)
+        {
+            _game?.OnMouseMove(wParam, lParam);
         }
 
         public void Run()

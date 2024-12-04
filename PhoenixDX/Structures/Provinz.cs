@@ -2,9 +2,10 @@
 using Microsoft.Xna.Framework.Content;
 using PhoenixModel.Karte;
 using System.Collections.Generic;
-using System.Numerics;
 using static PhoenixModel.Karte.Terrain;
 using Microsoft.Xna.Framework.Graphics;
+using PhoenixDX.Classes;
+using Microsoft.Xna.Framework;
 
 namespace PhoenixDX.Structures
 {
@@ -30,9 +31,9 @@ namespace PhoenixDX.Structures
             return gf;
         }
 
-        public static Position MapToXY(int gf)
+        public static Point MapToXY(int gf)
         {
-            var pos = new Position(0,0);
+            var pos = new Point(0,0);
          
             return pos;
         }
@@ -78,7 +79,7 @@ namespace PhoenixDX.Structures
             return new Vector2(sizeX, sizeY);
         }
 
-        public Kleinfeld? GetPKleinfeld(int kf)
+        public Kleinfeld GetPKleinfeld(int kf)
         {
             if (Felder.ContainsKey(kf))
                 return Felder[kf];
