@@ -26,7 +26,6 @@ namespace PhoenixDX
         private readonly ConcurrentQueue<Action> _actionQueue = new ConcurrentQueue<Action>();
 
         Vector2 cameraPosition = Vector2.Zero;
-        float zoom = 1f;
         const int _virtualWidth = 3840;
         const int _virtualHeight = 2160;
         int _clientWidth = 3840;
@@ -110,12 +109,16 @@ namespace PhoenixDX
             });
         }
 
-        
 
-        public void OnMouseMove(nint wParam, nint lParam)
+        MausEventArgs _maus;
+        public void OnMouseEvent(MausEventArgs args)
         {
-        
+            EnqueueAction(() =>
+            {
+                _maus= args;
+            });
         }
+        
 
         private void HandleInput()
         {
@@ -160,7 +163,7 @@ namespace PhoenixDX
        
 
         private SpriteBatch _spriteBatch;
-        public float Zoom {  get; set; }
+        public float Zoom { get; set; } = 1f;
         protected override void Draw(GameTime gameTime)
         {
             _graphics.GraphicsDevice.Clear(Color.CornflowerBlue);

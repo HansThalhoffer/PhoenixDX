@@ -8,103 +8,50 @@
 
 namespace PhoenixModel.Helper
 {
-   
+
     public class MausEventArgs : EventArgs
     {
-        //
-        // Zusammenfassung:
-        //     Specifies the possible states of a mouse button.
         public enum MouseButtonState
         {
-            //
-            // Zusammenfassung:
-            //     The button is released.
             Released = 0,
-            //
-            // Zusammenfassung:
-            //     The button is pressed.
             Pressed = 1
         }
 
-        //
-        // Zusammenfassung:
-        //     Defines values that specify the buttons on a mouse device.
-        public enum MouseButton
+        public enum MouseEventType
         {
-            //
-            // Zusammenfassung:
-            //     The left mouse button.
-            Left = 0,
-            //
-            // Zusammenfassung:
-            //     The middle mouse button.
-            Middle = 1,
-            //
-            // Zusammenfassung:
-            //     The right mouse button.
-            Right = 2,
-            //
-            // Zusammenfassung:
-            //     The first extended mouse button.
-            XButton1 = 3,
-            //
-            // Zusammenfassung:
-            //     The second extended mouse button.
-            XButton2 = 4
+            None, LeftButtonDown, LeftButtonUp, LeftButtonDoubleClick,
+            MiddleButtonDown, MiddleButtonUp, MiddleButtonDoubleClick,
+            RightButtonDown, RightButtonUp, RightButtonDoubleClick,
+            X1ButtonDown, X1ButtonUp, X1ButtonDoubleClick,
+            X2ButtonDown, X2ButtonUp, X2ButtonDoubleClick,
+            MouseMove, MouseEnter, MouseLeave, MouseWheel
         }
-        /// <summary>
-        /// Gets the state of the left mouse button.
-        /// </summary>
-        public MouseButtonState LeftButton { get; protected set; }
+        public MouseEventType EventType { get; set; } = MouseEventType.None;
+        public MouseButtonState LeftButton { get; set; } = MouseButtonState.Released;
+        public MouseButtonState RightButton { get; set; } = MouseButtonState.Released;
+        public MouseButtonState MiddleButton { get; set; } = MouseButtonState.Released;
+        public MouseButtonState X1Button { get; set; } = MouseButtonState.Released;
+        public MouseButtonState X2Button { get; set; } = MouseButtonState.Released;
+      
+        public int WheelDelta { get; set; } = 0;
+        public int HorizontalWheelDelta { get; set; } = 0;
+        public Position? ScreenPosition { get; set; } = null;
+        public bool Handled { get; set; } = false;
 
-        /// <summary>
-        /// Gets the state of the right mouse button.
-        /// </summary>
-        public MouseButtonState RightButton { get; protected set; }
+        public MausEventArgs()
+        { }
 
-        /// <summary>
-        /// Gets the state of the middle mouse button.
-        /// </summary>
-        public MouseButtonState MiddleButton { get; protected set; }
-
-        /// <summary>
-        /// Gets the state of the first extra mouse button.
-        /// </summary>
-        public MouseButtonState X1Button { get; protected set; }
-
-        /// <summary>
-        /// Gets the state of the second extra mouse button.
-        /// </summary>
-        public MouseButtonState X2Button { get; protected set; }
-
-        /// <summary>
-        /// Gets the button that was double clicked.
-        /// </summary>
-        public MouseButton? DoubleClickButton { get; protected set; }
-
-        /// <summary>
-        /// Gets the mouse wheel delta.
-        /// </summary>
-        public int WheelDelta { get; protected set; }
-
-        /// <summary>
-        /// Gets the horizontal mouse wheel delta.
-        /// </summary>
-        public int HorizontalWheelDelta { get; protected set; }
-
-        /// <summary>
-        /// Gets the position of the mouse in screen coordinates.
-        /// </summary>
-        public Position? ScreenPosition { get; protected set; }
-
-        /// <summary>
-        ///  Calculates the position of the mouse relative to a particular element. 
-        /// </summary>
-        /*public Position GetPosition(UIElement relativeTo)
+        public MausEventArgs(MausEventArgs state)
         {
-            return relativeTo.PointFromScreen(ScreenPosition);
-        }*/
-
-        
+            EventType = state.EventType;
+            LeftButton = state.LeftButton;
+            RightButton = state.RightButton;
+            MiddleButton = state.MiddleButton;
+            X1Button = state.X1Button;
+            X2Button = state.X2Button;
+            WheelDelta = state.WheelDelta;
+            HorizontalWheelDelta = state.HorizontalWheelDelta;
+            ScreenPosition = state.ScreenPosition;
+        }
     }
 }

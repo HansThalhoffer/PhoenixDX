@@ -125,12 +125,12 @@ namespace PhoenixWPF
 
         protected override nint WndProc(nint hwnd, int msg, nint wParam, nint lParam, ref bool handled)
         {
-            const int WM_MOUSEMOVE = 0x0200;
+            /*const int WM_MOUSEMOVE = 0x0200;
             if (msg == WM_MOUSEMOVE)
             {
                _map?.OnMouseMove(wParam, lParam);
                 
-            }
+            }*/
 
 
             return base.WndProc(hwnd, msg, wParam, lParam, ref handled);

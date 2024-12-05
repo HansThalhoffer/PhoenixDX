@@ -65,12 +65,23 @@ namespace PhoenixDX.Structures
             Kleinfeld.LoadContent(contentManager);
         }
 
+        float _previousScaleX = 0f;
+        float _previousScaleY = 0f;
+        int _trashCount = 0;
         public void Draw(SpriteBatch spriteBatch, float scaleX, float scaleY)
         {
+            if (_previousScaleX != 0 && _trashCount < 2 && Math.Abs(scaleX - _previousScaleX) > 0.2f)
+            {
+                ++_trashCount;
+            }
+            _previousScaleX = scaleX;
+            _previousScaleY = scaleY;
+
+
             SpriteFont font = FontManager.Fonts["Small"];
             spriteBatch.Begin();
 
-
+            
             // Draw the map with culling
             foreach (var reihe in Provinzen.Values)
             {

@@ -19,14 +19,8 @@ namespace PhoenixWPF.Host
         /// Initializes a new HwndMouseEventArgs.
         /// </summary>
         /// <param name="state">The state from which to initialize the properties.</param>
-        public HwndMouseEventArgs(HwndMausState state)
+        public HwndMouseEventArgs(MausEventArgs state) : base(state) 
         {
-            LeftButton = state.LeftButton;
-            RightButton = state.RightButton;
-            MiddleButton = state.MiddleButton;
-            X1Button = state.X1Button;
-            X2Button = state.X2Button;
-            ScreenPosition = state.ScreenPosition;
         }
 
         /// <summary>
@@ -35,22 +29,11 @@ namespace PhoenixWPF.Host
         /// <param name="state">The state from which to initialize the properties.</param>
         /// <param name="mouseWheelDelta">The mouse wheel rotation delta.</param>
         /// <param name="mouseHWheelDelta">The horizontal mouse wheel delta.</param>
-        public HwndMouseEventArgs(HwndMausState state, int mouseWheelDelta, int mouseHWheelDelta)
+        public HwndMouseEventArgs(MausEventArgs state, int mouseWheelDelta, int mouseHWheelDelta)
             : this(state)
         {
             WheelDelta = mouseWheelDelta;
             HorizontalWheelDelta = mouseHWheelDelta;
-        }
-
-        /// <summary>
-        /// Initializes a new HwndMouseEventArgs.
-        /// </summary>
-        /// <param name="state">The state from which to initialize the properties.</param>
-        /// <param name="doubleClickButton">The button that was double clicked.</param>
-        public HwndMouseEventArgs(HwndMausState state, MouseButton doubleClickButton)
-            : this(state)
-        {
-            DoubleClickButton = doubleClickButton;
-        }
+        }       
     }
 }

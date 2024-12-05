@@ -1,13 +1,10 @@
-﻿using Microsoft.Xna.Framework.Input;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using PhoenixModel.Helper;
 
 namespace PhoenixDX
 {
@@ -46,9 +43,9 @@ namespace PhoenixDX
             _game?.Resize(width, height);
         }
 
-        public void OnMouseMove(nint wParam, nint lParam)
+        public void OnMouseEvent(MausEventArgs args)
         {
-            _game?.OnMouseMove(wParam, lParam);
+            _game?.OnMouseEvent(args);
         }
 
         public void Run()

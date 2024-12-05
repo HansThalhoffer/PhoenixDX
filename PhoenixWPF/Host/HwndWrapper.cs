@@ -45,109 +45,10 @@ namespace PhoenixWPF.Host
         private Position? _previousPosition;
 
         // Track the mouse state
-        private readonly HwndMausState _mouseState = new HwndMausState();
+        private readonly MausEventArgs _mouseState = new MausEventArgs();
 
         // Tracking whether we've "capture" the mouse
         private bool _isMouseCaptured;
-
-        #endregion
-
-        #region Events
-
-        /// <summary>
-        /// Invoked when the control receives a left mouse down message.
-        /// </summary>
-        public event EventHandler<HwndMouseEventArgs>? HwndLButtonDown;
-
-        /// <summary>
-        /// Invoked when the control receives a left mouse up message.
-        /// </summary>
-        public event EventHandler<HwndMouseEventArgs>? HwndLButtonUp;
-
-        /// <summary>
-        /// Invoked when the control receives a left mouse double click message.
-        /// </summary>
-        public event EventHandler<HwndMouseEventArgs>? HwndLButtonDblClick;
-
-        /// <summary>
-        /// Invoked when the control receives a right mouse down message.
-        /// </summary>
-        public event EventHandler<HwndMouseEventArgs>? HwndRButtonDown;
-
-        /// <summary>
-        /// Invoked when the control receives a right mouse up message.
-        /// </summary>
-        public event EventHandler<HwndMouseEventArgs>? HwndRButtonUp;
-
-        /// <summary>
-        /// Invoked when the control receives a rigt mouse double click message.
-        /// </summary>
-        public event EventHandler<HwndMouseEventArgs>? HwndRButtonDblClick;
-
-        /// <summary>
-        /// Invoked when the control receives a middle mouse down message.
-        /// </summary>
-        public event EventHandler<HwndMouseEventArgs>? HwndMButtonDown;
-
-        /// <summary>
-        /// Invoked when the control receives a middle mouse up message.
-        /// </summary>
-        public event EventHandler<HwndMouseEventArgs>? HwndMButtonUp;
-
-        /// <summary>
-        /// Invoked when the control receives a middle mouse double click message.
-        /// </summary>
-        public event EventHandler<HwndMouseEventArgs>? HwndMButtonDblClick;
-
-        /// <summary>
-        /// Invoked when the control receives a mouse down message for the first extra button.
-        /// </summary>
-        public event EventHandler<HwndMouseEventArgs>? HwndX1ButtonDown;
-
-        /// <summary>
-        /// Invoked when the control receives a mouse up message for the first extra button.
-        /// </summary>
-        public event EventHandler<HwndMouseEventArgs>? HwndX1ButtonUp;
-
-        /// <summary>
-        /// Invoked when the control receives a double click message for the first extra mouse button.
-        /// </summary>
-        public event EventHandler<HwndMouseEventArgs>? HwndX1ButtonDblClick;
-
-        /// <summary>
-        /// Invoked when the control receives a mouse down message for the second extra button.
-        /// </summary>
-        public event EventHandler<HwndMouseEventArgs>? HwndX2ButtonDown;
-
-        /// <summary>
-        /// Invoked when the control receives a mouse up message for the second extra button.
-        /// </summary>
-        public event EventHandler<HwndMouseEventArgs>? HwndX2ButtonUp;
-
-        /// <summary>
-        /// Invoked when the control receives a double click message for the first extra mouse button.
-        /// </summary>
-        public event EventHandler<HwndMouseEventArgs>? HwndX2ButtonDblClick;
-
-        /// <summary>
-        /// Invoked when the control receives a mouse move message.
-        /// </summary>
-        public event EventHandler<HwndMouseEventArgs>? HwndMouseMove;
-
-        /// <summary>
-        /// Invoked when the control first gets a mouse move message.
-        /// </summary>
-        public event EventHandler<HwndMouseEventArgs>? HwndMouseEnter;
-
-        /// <summary>
-        /// Invoked when the control gets a mouse leave message.
-        /// </summary>
-        public event EventHandler<HwndMouseEventArgs>? HwndMouseLeave;
-
-        /// <summary>
-        /// Invoked when the control recieves a mouse wheel delta.
-        /// </summary>
-        public event EventHandler<HwndMouseEventArgs>? HwndMouseWheel;
 
         #endregion
 
@@ -273,46 +174,64 @@ namespace PhoenixWPF.Host
         private void OnApplicationDeactivated(object? sender, EventArgs e)
         {
             _applicationHasFocus = false;
-            ResetMouseState();
+            CancelMouseState();
 
             if (_mouseInWindow)
             {
                 _mouseInWindow = false;
-                RaiseHwndMouseLeave(new HwndMouseEventArgs(_mouseState));
+                _mouseState.EventType = MausEventArgs.MouseEventType.MouseLeave;
+                OnMouseEvent(new HwndMouseEventArgs(_mouseState));
             }
 
             ReleaseMouseCapture();
         }
 
-        private void ResetMouseState()
+        private void CancelMouseState()
         {
-            // We need to invoke events for any buttons that were pressed
-            bool fireL = _mouseState.LeftButton == MausEventArgs.MouseButtonState.Pressed;
-            bool fireM = _mouseState.MiddleButton == MausEventArgs.MouseButtonState.Pressed;
-            bool fireR = _mouseState.RightButton == MausEventArgs.MouseButtonState.Pressed;
-            bool fireX1 = _mouseState.X1Button == MausEventArgs.MouseButtonState.Pressed;
-            bool fireX2 = _mouseState.X2Button == MausEventArgs.MouseButtonState.Pressed;
-
-            // Update the state of all of the buttons
-            _mouseState.LeftButton = MausEventArgs.MouseButtonState.Released;
-            _mouseState.MiddleButton = MausEventArgs.MouseButtonState.Released;
-            _mouseState.RightButton = MausEventArgs.MouseButtonState.Released;
-            _mouseState.X1Button = MausEventArgs.MouseButtonState.Released;
-            _mouseState.X2Button = MausEventArgs.MouseButtonState.Released;
-
-            // Fire any events
-            var args = new HwndMouseEventArgs(_mouseState);
-            if (fireL)
-                RaiseHwndLButtonUp(args);
-            if (fireM)
-                RaiseHwndMButtonUp(args);
-            if (fireR)
-                RaiseHwndRButtonUp(args);
-            if (fireX1)
-                RaiseHwndX1ButtonUp(args);
-            if (fireX2)
-                RaiseHwndX2ButtonUp(args);
-
+            switch(_mouseState.EventType)
+            {
+                case MausEventArgs.MouseEventType.LeftButtonDown:
+                    {
+                        _mouseState.LeftButton = MausEventArgs.MouseButtonState.Released;
+                        _mouseState.EventType = MausEventArgs.MouseEventType.LeftButtonUp;
+                        OnMouseEvent(new HwndMouseEventArgs(_mouseState));
+                        break;
+                    }
+                case MausEventArgs.MouseEventType.MiddleButtonDown:
+                    {
+                        _mouseState.MiddleButton = MausEventArgs.MouseButtonState.Released;
+                        _mouseState.EventType = MausEventArgs.MouseEventType.MiddleButtonUp;
+                        OnMouseEvent(new HwndMouseEventArgs(_mouseState));
+                        break;
+                    }
+                case MausEventArgs.MouseEventType.RightButtonDown:
+                    {
+                        _mouseState.RightButton = MausEventArgs.MouseButtonState.Released;
+                        _mouseState.EventType = MausEventArgs.MouseEventType.RightButtonUp;
+                        OnMouseEvent(new HwndMouseEventArgs(_mouseState));
+                        break;
+                    }
+               
+                case MausEventArgs.MouseEventType.X1ButtonDown:
+                    {
+                        _mouseState.X1Button = MausEventArgs.MouseButtonState.Released;
+                        _mouseState.EventType = MausEventArgs.MouseEventType.X1ButtonUp;
+                        OnMouseEvent(new HwndMouseEventArgs(_mouseState));
+                        break;
+                    }
+                case MausEventArgs.MouseEventType.X2ButtonDown:
+                    {
+                        _mouseState.X2Button = MausEventArgs.MouseButtonState.Released;
+                        _mouseState.EventType = MausEventArgs.MouseEventType.X2ButtonUp;
+                        OnMouseEvent(new HwndMouseEventArgs(_mouseState));
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
+            }
+            
             // The mouse is no longer considered to be in our window
             _mouseInWindow = false;
         }
@@ -384,71 +303,91 @@ namespace PhoenixWPF.Host
                     if (_mouseInWindow)
                     {
                         int delta = NativeMethods.GetWheelDeltaWParam(wParam.ToInt32());
-                        RaiseHwndMouseWheel(new HwndMouseEventArgs(_mouseState, delta, 0));
+                        _mouseState.EventType = MausEventArgs.MouseEventType.MouseWheel;
+                        OnMouseEvent(new HwndMouseEventArgs(_mouseState, delta, 0));
                     }
                     break;
                 case NativeMethods.WM_LBUTTONDOWN:
                     _mouseState.LeftButton = MausEventArgs.MouseButtonState.Pressed;
-                    RaiseHwndLButtonDown(new HwndMouseEventArgs(_mouseState));
+                    _mouseState.EventType = MausEventArgs.MouseEventType.LeftButtonDown;
+                    OnMouseEvent(new HwndMouseEventArgs(_mouseState));
                     break;
                 case NativeMethods.WM_LBUTTONUP:
                     _mouseState.LeftButton = MausEventArgs.MouseButtonState.Released;
-                    RaiseHwndLButtonUp(new HwndMouseEventArgs(_mouseState));
+                    _mouseState.EventType = MausEventArgs.MouseEventType.LeftButtonUp;
+                    OnMouseEvent(new HwndMouseEventArgs(_mouseState));
                     break;
                 case NativeMethods.WM_LBUTTONDBLCLK:
-                    RaiseHwndLButtonDblClick(new HwndMouseEventArgs(_mouseState, MausEventArgs.MouseButton.Left));
+                    _mouseState.EventType = MausEventArgs.MouseEventType.LeftButtonDoubleClick;
+                    OnMouseEvent(new HwndMouseEventArgs(_mouseState));
                     break;
                 case NativeMethods.WM_RBUTTONDOWN:
                     _mouseState.RightButton = MausEventArgs.MouseButtonState.Pressed;
-                    RaiseHwndRButtonDown(new HwndMouseEventArgs(_mouseState));
+                    _mouseState.EventType = MausEventArgs.MouseEventType.RightButtonDown;
+                    OnMouseEvent(new HwndMouseEventArgs(_mouseState));
                     break;
                 case NativeMethods.WM_RBUTTONUP:
                     _mouseState.RightButton = MausEventArgs.MouseButtonState.Released;
-                    RaiseHwndRButtonUp(new HwndMouseEventArgs(_mouseState));
+                    _mouseState.EventType = MausEventArgs.MouseEventType.RightButtonUp;
+                    OnMouseEvent(new HwndMouseEventArgs(_mouseState));
                     break;
                 case NativeMethods.WM_RBUTTONDBLCLK:
-                    RaiseHwndRButtonDblClick(new HwndMouseEventArgs(_mouseState, MausEventArgs.MouseButton.Right));
+                    _mouseState.EventType = MausEventArgs.MouseEventType.RightButtonDoubleClick;
+                    OnMouseEvent(new HwndMouseEventArgs(_mouseState));
                     break;
                 case NativeMethods.WM_MBUTTONDOWN:
                     _mouseState.MiddleButton = MausEventArgs.MouseButtonState.Pressed;
-                    RaiseHwndMButtonDown(new HwndMouseEventArgs(_mouseState));
+                    _mouseState.EventType = MausEventArgs.MouseEventType.MiddleButtonDown;
+                    OnMouseEvent(new HwndMouseEventArgs(_mouseState));
                     break;
                 case NativeMethods.WM_MBUTTONUP:
                     _mouseState.MiddleButton = MausEventArgs.MouseButtonState.Released;
-                    RaiseHwndMButtonUp(new HwndMouseEventArgs(_mouseState));
+                    _mouseState.EventType = MausEventArgs.MouseEventType.MiddleButtonUp;
+                    OnMouseEvent(new HwndMouseEventArgs(_mouseState));
                     break;
                 case NativeMethods.WM_MBUTTONDBLCLK:
-                    RaiseHwndMButtonDblClick(new HwndMouseEventArgs(_mouseState, MausEventArgs.MouseButton.Middle));
+                    _mouseState.EventType = MausEventArgs.MouseEventType.MiddleButtonDoubleClick;
+                    OnMouseEvent(new HwndMouseEventArgs(_mouseState));
                     break;
                 case NativeMethods.WM_XBUTTONDOWN:
                     if (((int)wParam & NativeMethods.MK_XBUTTON1) != 0)
                     {
                         _mouseState.X1Button = MausEventArgs.MouseButtonState.Pressed;
-                        RaiseHwndX1ButtonDown(new HwndMouseEventArgs(_mouseState));
+                        _mouseState.EventType = MausEventArgs.MouseEventType.X1ButtonDown;
+                        OnMouseEvent(new HwndMouseEventArgs(_mouseState));
                     }
                     else if (((int)wParam & NativeMethods.MK_XBUTTON2) != 0)
                     {
                         _mouseState.X2Button = MausEventArgs.MouseButtonState.Pressed;
-                        RaiseHwndX2ButtonDown(new HwndMouseEventArgs(_mouseState));
+                        _mouseState.EventType = MausEventArgs.MouseEventType.X1ButtonUp;
+                        OnMouseEvent(new HwndMouseEventArgs(_mouseState));
                     }
                     break;
                 case NativeMethods.WM_XBUTTONUP:
                     if (((int)wParam & NativeMethods.MK_XBUTTON1) != 0)
                     {
                         _mouseState.X1Button = MausEventArgs.MouseButtonState.Released;
-                        RaiseHwndX1ButtonUp(new HwndMouseEventArgs(_mouseState));
+                        _mouseState.EventType = MausEventArgs.MouseEventType.X2ButtonDown;
+                        OnMouseEvent(new HwndMouseEventArgs(_mouseState));
                     }
                     else if (((int)wParam & NativeMethods.MK_XBUTTON2) != 0)
                     {
                         _mouseState.X2Button = MausEventArgs.MouseButtonState.Released;
-                        RaiseHwndX2ButtonUp(new HwndMouseEventArgs(_mouseState));
+                        _mouseState.EventType = MausEventArgs.MouseEventType.X2ButtonUp;
+                        OnMouseEvent(new HwndMouseEventArgs(_mouseState));
                     }
                     break;
                 case NativeMethods.WM_XBUTTONDBLCLK:
                     if (((int)wParam & NativeMethods.MK_XBUTTON1) != 0)
-                        RaiseHwndX1ButtonDblClick(new HwndMouseEventArgs(_mouseState, MausEventArgs.MouseButton.XButton1));
+                    {
+                        _mouseState.EventType = MausEventArgs.MouseEventType.X1ButtonDoubleClick;
+                        OnMouseEvent(new HwndMouseEventArgs(_mouseState));
+                    }
                     else if (((int)wParam & NativeMethods.MK_XBUTTON2) != 0)
-                        RaiseHwndX2ButtonDblClick(new HwndMouseEventArgs(_mouseState, MausEventArgs.MouseButton.XButton2));
+                    {
+                        _mouseState.EventType = MausEventArgs.MouseEventType.X2ButtonDoubleClick;
+                        OnMouseEvent(new HwndMouseEventArgs(_mouseState));
+                    }
                     break;
                 case NativeMethods.WM_MOUSEMOVE:
                     // If the application isn't in focus, we don't handle this message
@@ -460,12 +399,12 @@ namespace PhoenixWPF.Host
                         NativeMethods.GetXLParam((int)lParam),
                         NativeMethods.GetYLParam((int)lParam)));
                     _mouseState.ScreenPosition = new Position(Convert.ToInt32(p.X), Convert.ToInt32(p.Y));
-
+                   
                     if (!_mouseInWindow)
                     {
                         _mouseInWindow = true;
-
-                        RaiseHwndMouseEnter(new HwndMouseEventArgs(_mouseState));
+                        _mouseState.EventType = MausEventArgs.MouseEventType.MouseEnter;
+                        OnMouseEvent(new HwndMouseEventArgs(_mouseState));
 
                         // Track the previously focused window, and set focus to this window.
                         _hWndPrev = NativeMethods.GetFocus();
@@ -482,7 +421,10 @@ namespace PhoenixWPF.Host
                     }
 
                     if (_mouseState.ScreenPosition != _previousPosition)
-                        RaiseHwndMouseMove(new HwndMouseEventArgs(_mouseState));
+                    {
+                        _mouseState.EventType = MausEventArgs.MouseEventType.MouseMove;
+                        OnMouseEvent(new HwndMouseEventArgs(_mouseState));
+                    }
 
                     _previousPosition = _mouseState.ScreenPosition;
 
@@ -496,9 +438,9 @@ namespace PhoenixWPF.Host
 
                     // Reset the state which releases all buttons and 
                     // marks the mouse as not being in the window.
-                    ResetMouseState();
-
-                    RaiseHwndMouseLeave(new HwndMouseEventArgs(_mouseState));
+                    CancelMouseState();
+                    _mouseState.EventType = MausEventArgs.MouseEventType.MouseLeave;
+                    OnMouseEvent(new HwndMouseEventArgs(_mouseState));
 
                     NativeMethods.SetFocus(_hWndPrev);
 
@@ -508,138 +450,12 @@ namespace PhoenixWPF.Host
             return base.WndProc(hwnd, msg, wParam, lParam, ref handled);
         }
 
-        protected virtual void RaiseHwndLButtonDown(HwndMouseEventArgs args)
+        protected virtual void OnMouseEvent(HwndMouseEventArgs args)
         {
-            var handler = HwndLButtonDown;
-            if (handler != null)
-                handler(this, args);
+            _map?.OnMouseEvent(args);
         }
 
-        protected virtual void RaiseHwndLButtonUp(HwndMouseEventArgs args)
-        {
-            var handler = HwndLButtonUp;
-            if (handler != null)
-                handler(this, args);
-        }
-
-        protected virtual void RaiseHwndRButtonDown(HwndMouseEventArgs args)
-        {
-            var handler = HwndRButtonDown;
-            if (handler != null)
-                handler(this, args);
-        }
-
-        protected virtual void RaiseHwndRButtonUp(HwndMouseEventArgs args)
-        {
-            var handler = HwndRButtonUp;
-            if (handler != null)
-                handler(this, args);
-        }
-
-        protected virtual void RaiseHwndMButtonDown(HwndMouseEventArgs args)
-        {
-            var handler = HwndMButtonDown;
-            if (handler != null)
-                handler(this, args);
-        }
-
-        protected virtual void RaiseHwndMButtonUp(HwndMouseEventArgs args)
-        {
-            var handler = HwndMButtonUp;
-            if (handler != null)
-                handler(this, args);
-        }
-
-        protected virtual void RaiseHwndLButtonDblClick(HwndMouseEventArgs args)
-        {
-            var handler = HwndLButtonDblClick;
-            if (handler != null)
-                handler(this, args);
-        }
-
-        protected virtual void RaiseHwndRButtonDblClick(HwndMouseEventArgs args)
-        {
-            var handler = HwndRButtonDblClick;
-            if (handler != null)
-                handler(this, args);
-        }
-
-        protected virtual void RaiseHwndMButtonDblClick(HwndMouseEventArgs args)
-        {
-            var handler = HwndMButtonDblClick;
-            if (handler != null)
-                handler(this, args);
-        }
-
-        protected virtual void RaiseHwndMouseEnter(HwndMouseEventArgs args)
-        {
-            var handler = HwndMouseEnter;
-            if (handler != null)
-                handler(this, args);
-        }
-
-        protected virtual void RaiseHwndX1ButtonDown(HwndMouseEventArgs args)
-        {
-            var handler = HwndX1ButtonDown;
-            if (handler != null)
-                handler(this, args);
-        }
-
-        protected virtual void RaiseHwndX1ButtonUp(HwndMouseEventArgs args)
-        {
-            var handler = HwndX1ButtonUp;
-            if (handler != null)
-                handler(this, args);
-        }
-
-        protected virtual void RaiseHwndX2ButtonDown(HwndMouseEventArgs args)
-        {
-            var handler = HwndX2ButtonDown;
-            if (handler != null)
-                handler(this, args);
-        }
-
-        protected virtual void RaiseHwndX2ButtonUp(HwndMouseEventArgs args)
-        {
-            var handler = HwndX2ButtonUp;
-            if (handler != null)
-                handler(this, args);
-        }
-
-        protected virtual void RaiseHwndX1ButtonDblClick(HwndMouseEventArgs args)
-        {
-            var handler = HwndX1ButtonDblClick;
-            if (handler != null)
-                handler(this, args);
-        }
-
-        protected virtual void RaiseHwndX2ButtonDblClick(HwndMouseEventArgs args)
-        {
-            var handler = HwndX2ButtonDblClick;
-            if (handler != null)
-                handler(this, args);
-        }
-
-        protected virtual void RaiseHwndMouseLeave(HwndMouseEventArgs args)
-        {
-            var handler = HwndMouseLeave;
-            if (handler != null)
-                handler(this, args);
-        }
-
-        protected virtual void RaiseHwndMouseMove(HwndMouseEventArgs args)
-        {
-            var handler = HwndMouseMove;
-            if (handler != null)
-                handler(this, args);
-        }
-
-        protected virtual void RaiseHwndMouseWheel(HwndMouseEventArgs args)
-        {
-            var handler = HwndMouseWheel;
-            if (handler != null)
-                handler(this, args);
-        }
+       
 
         #endregion
     }
