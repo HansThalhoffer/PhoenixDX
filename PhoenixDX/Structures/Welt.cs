@@ -13,24 +13,21 @@ namespace PhoenixDX.Structures
 {
     public class Welt
     {
-        class Reihe : Dictionary<int, Provinz> 
-        {
-            public Reihe() { }
-        }
-        Dictionary<int, Reihe> Provinzen {  get; set; }
+       
+        Dictionary<int, Provinz> Provinzen {  get; set; }
 
         
 
         public Welt(Dictionary<string, Gemark> map) 
         {
-            Provinzen = new Dictionary<int, Reihe>();
-
-
             for (int y = 1; y <= 12; y++)
             {
                 for (int x = 1; x <= 16; x++)
                 {
-                    GetProvinz(x,y);
+                   int gf = Provinz.MapToGF(y, x);
+                    if (gf > 0)
+                    { }
+                   var p = new Provinz(x, y, gf);
                 }
             }
 
@@ -90,7 +87,7 @@ namespace PhoenixDX.Structures
                     var pos = province.GetMapPosition(scaleX, scaleY);
                     var size = province.GetMapSize(scaleX, scaleY);
                     Rectangle rScreen = new Rectangle(Convert.ToInt32(pos.X), Convert.ToInt32(pos.Y), Convert.ToInt32(size.X), Convert.ToInt32(size.Y));
-                    spriteBatch.Draw(Provinz.Texture, rScreen, null, Color.White);
+                    spriteBatch.Draw(province.Texture, rScreen, null, Color.White);
                     pos.Move(Convert.ToInt32(160f * scaleX), 10);
                     spriteBatch.DrawString(font, province.Bezeichner, pos, Color.Black);
 
@@ -126,15 +123,7 @@ namespace PhoenixDX.Structures
             var v = Provinz.MapToXY(gf);
             return GetProvinz(v.X,v.Y);
         }
-        public Provinz GetProvinz(int x, int y)
-        {
-            var r = GetReihe(y);
-            if (r.ContainsKey(x))
-                return r[y];
-            var p = new Provinz(x,y);
-            r.Add(x, p);
-            return p;
-        }
+      
 
        
     

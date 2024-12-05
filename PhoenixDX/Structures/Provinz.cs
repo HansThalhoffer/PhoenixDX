@@ -27,33 +27,42 @@ namespace PhoenixDX.Structures
         public static int MapToGF(int x, int y)
         {
             int gf = 0;
+            int xPos = x;
+            int yPos = y;
+
+            if (xPos <= 6)
+                yPos += (6 - xPos);
+            else if (xPos <= 10)
+            {
+                yPos = y;
+            }
+            else
+                yPos += (xPos - 10);
+
+            gf = xPos * 100 + yPos;
 
             return gf;
         }
 
-        public static Point MapToXY(int gf)
-        {
-            var pos = new Point(0,0);
-         
-            return pos;
-        }
+     
 
         public string Bezeichner
         {
-            get { return _gf.ToString(); }           
+            get { return _gf.ToString(); }
         }
 
         public Dictionary<int, Kleinfeld> Felder { get; set; } = new Dictionary<int, Kleinfeld>();
 
-        public Provinz(int x, int y) : base(Hex.RadiusProvinz, false)
+        public Provinz(int x, int y, int gf) : base(Hex.RadiusProvinz, false)
         {
             X = x;
             Y = y;
+            GF = gf;
         }
 
-        public Vector2 GetMapPosition(float scaleX,float scaleY)
+        public Vector2 GetMapPosition(float scaleX, float scaleY)
         {
-            float x = (X - 1) * ColumnWidth  *scaleX;
+            float x = (X - 1) * ColumnWidth * scaleX;
             float y = (Y - 1) * RowHeight * scaleY;
             if (X % 2 > 0)
                 y += RowHeight * scaleY / 2;
@@ -88,11 +97,31 @@ namespace PhoenixDX.Structures
             return p;
         }
 
-        static public Texture2D Texture{ get; private set; }
+        static public Texture2D TextureFull { get; private set; }
+        static public Texture2D TextureNone { get; private set; }
+        static public Texture2D TextureHalfTop { get; private set; }
+        static public Texture2D TextureHalfBottom { get; private set; }
+
+        public Texture2D Texture 
+        {
+            get
+            {
+                if (GF == 0)
+                    return TextureNone;
+                if (GF == 701 || GF == 901)
+                    return TextureHalfTop;
+                if (GF == 712 || GF == 912)
+                    return TextureHalfBottom;
+            return TextureFull;
+            }
+        }
 
         public static void LoadContent(ContentManager contentManager)
         {
-            Texture = contentManager.Load<Texture2D>("Images/Hexagon");
+            TextureFull = contentManager.Load<Texture2D>("Images/Hexagon");
+            TextureNone = contentManager.Load<Texture2D>("Images/HexagonNone");
+            TextureHalfBottom = contentManager.Load<Texture2D>("Images/HexagonHalfBottom");
+            TextureHalfTop = contentManager.Load<Texture2D>("Images/HexagonHalfTop");
         }
 
 
