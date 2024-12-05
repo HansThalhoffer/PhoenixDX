@@ -423,6 +423,7 @@ namespace PhoenixWPF.Host
                     if (_mouseState.ScreenPosition != _previousPosition)
                     {
                         _mouseState.EventType = MausEventArgs.MouseEventType.MouseMove;
+                        _mouseState.ScreenPositionDelta = _mouseState.ScreenPosition - _previousPosition;
                         OnMouseEvent(new HwndMouseEventArgs(_mouseState));
                     }
 

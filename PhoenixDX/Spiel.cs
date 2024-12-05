@@ -110,7 +110,7 @@ namespace PhoenixDX
         }
 
 
-        MausEventArgs _maus;
+        MausEventArgs? _maus;
         public void OnMouseEvent(MausEventArgs args)
         {
             EnqueueAction(() =>
@@ -119,10 +119,50 @@ namespace PhoenixDX
             });
         }
         
+        Position _cameraPosition = new Position(0,0);
 
         private void HandleInput()
         {
+            // Font for status text
+            SpriteFont font = FontManager.Fonts["Default"];
+            if (_maus?.Handled == false)
+            {
+                _maus.Handled = true;
+                switch (_maus.EventType)
+                {
+                    case MausEventArgs.MouseEventType.LeftButtonDown:
+                        {
+                            break;
+                        }
+                    case MausEventArgs.MouseEventType.MiddleButtonDown:
+                        {
+                            break;
+                        }
+                    case MausEventArgs.MouseEventType.RightButtonDown:
+                        {
+                            break;
+                        }
+                    case MausEventArgs.MouseEventType.MouseMove:
+                        {
+                            if (_maus.LeftButton == MausEventArgs.MouseButtonState.Pressed)
+                            {
+                                _cameraPosition = _maus.ScreenPosition;
+                            }
+                            break;
+                        }
+                    case MausEventArgs.MouseEventType.MouseWheel:
+                        {
+                            if (Zoom > 0.2f || _maus.WheelDelta>0)
+                                Zoom = Zoom + (float) _maus.WheelDelta / 1000f;
+                            break;
+                        }
 
+                    default:
+                        {
+                            break;
+                        }
+                }
+            }
         }
 
         protected override void LoadContent()
@@ -186,8 +226,7 @@ namespace PhoenixDX
             };
 
 
-            // Font for status text
-            SpriteFont font = FontManager.Fonts["Default"];
+           
 
             
             if (Weltkarte != null)

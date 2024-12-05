@@ -36,6 +36,8 @@ namespace PhoenixModel.Helper
         public int WheelDelta { get; set; } = 0;
         public int HorizontalWheelDelta { get; set; } = 0;
         public Position? ScreenPosition { get; set; } = null;
+        public Position? ScreenPositionDelta { get; set; } = null;
+
         public bool Handled { get; set; } = false;
 
         public MausEventArgs()
@@ -52,6 +54,7 @@ namespace PhoenixModel.Helper
             WheelDelta = state.WheelDelta;
             HorizontalWheelDelta = state.HorizontalWheelDelta;
             ScreenPosition = state.ScreenPosition;
+            ScreenPositionDelta = state.ScreenPositionDelta;
         }
     }
 }
