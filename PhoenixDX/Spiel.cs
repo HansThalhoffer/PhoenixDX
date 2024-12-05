@@ -110,7 +110,7 @@ namespace PhoenixDX
         }
 
 
-        MausEventArgs? _maus;
+        MausEventArgs _maus = new MausEventArgs();
         public void OnMouseEvent(MausEventArgs args)
         {
             EnqueueAction(() =>
@@ -120,6 +120,12 @@ namespace PhoenixDX
         }
         
         Position _cameraPosition = new Position(0,0);
+        void MoveCamera(Position delta)
+        {
+            _cameraPosition += delta; 
+          
+
+        }
 
         private void HandleInput()
         {
@@ -146,7 +152,8 @@ namespace PhoenixDX
                         {
                             if (_maus.LeftButton == MausEventArgs.MouseButtonState.Pressed)
                             {
-                                _cameraPosition = _maus.ScreenPosition;
+                                Position delta = _maus.ScreenPositionDelta * 16;
+                                MoveCamera(delta);
                             }
                             break;
                         }
@@ -198,29 +205,30 @@ namespace PhoenixDX
             // TODO: Add your update logic here
             base.Update(gameTime);
         }
-       
-        
-       
+
+        float _scaleX = 0f;
+        float _scaleY = 0f;
+
 
         private SpriteBatch _spriteBatch;
         public float Zoom { get; set; } = 1f;
         protected override void Draw(GameTime gameTime)
         {
             _graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
-            float scaleX = (float)_virtualWidth / (float)_clientWidth * Zoom;
-            float scaleY = (float)_virtualHeight / (float)_clientHeight * Zoom;
+            _scaleX = (float)_virtualWidth / (float)_clientWidth * Zoom;
+            _scaleY = (float)_virtualHeight / (float)_clientHeight * Zoom;
 
-            if (scaleX > 0)
+            if (_scaleX > 0)
             {
-                int offsetX = (int)((_clientWidth - _virtualWidth * scaleX) / 2);
-                int offsetY = (int)((_clientHeight - _virtualHeight * scaleY) / 2);
+                int offsetX = (int)((_clientWidth - _virtualWidth * _scaleX) / 2);
+                int offsetY = (int)((_clientHeight - _virtualHeight * _scaleY) / 2);
             }
-            _graphics.GraphicsDevice.Viewport = new Viewport
+             _graphics.GraphicsDevice.Viewport = new Viewport
             {
-                X = 0,
-                Y = 0,
-                Width = _virtualWidth,
-                Height = _virtualHeight,
+                X = _cameraPosition.X,
+                Y = _cameraPosition.Y,
+                Width = _virtualWidth- _cameraPosition.X,
+                Height = _virtualHeight - _cameraPosition.Y,
                 MinDepth = 0,
                 MaxDepth = 1
             };
@@ -231,7 +239,7 @@ namespace PhoenixDX
             
             if (Weltkarte != null)
             {
-                Weltkarte.Draw(_spriteBatch, scaleX,scaleY);
+                Weltkarte.Draw(_spriteBatch, _scaleX,_scaleY);
             }
 
             // Draw status text

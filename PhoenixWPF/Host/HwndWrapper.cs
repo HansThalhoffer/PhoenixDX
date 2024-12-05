@@ -188,52 +188,39 @@ namespace PhoenixWPF.Host
 
         private void CancelMouseState()
         {
-            switch(_mouseState.EventType)
-            {
-                case MausEventArgs.MouseEventType.LeftButtonDown:
-                    {
-                        _mouseState.LeftButton = MausEventArgs.MouseButtonState.Released;
-                        _mouseState.EventType = MausEventArgs.MouseEventType.LeftButtonUp;
-                        OnMouseEvent(new HwndMouseEventArgs(_mouseState));
-                        break;
-                    }
-                case MausEventArgs.MouseEventType.MiddleButtonDown:
-                    {
-                        _mouseState.MiddleButton = MausEventArgs.MouseButtonState.Released;
-                        _mouseState.EventType = MausEventArgs.MouseEventType.MiddleButtonUp;
-                        OnMouseEvent(new HwndMouseEventArgs(_mouseState));
-                        break;
-                    }
-                case MausEventArgs.MouseEventType.RightButtonDown:
-                    {
-                        _mouseState.RightButton = MausEventArgs.MouseButtonState.Released;
-                        _mouseState.EventType = MausEventArgs.MouseEventType.RightButtonUp;
-                        OnMouseEvent(new HwndMouseEventArgs(_mouseState));
-                        break;
-                    }
-               
-                case MausEventArgs.MouseEventType.X1ButtonDown:
-                    {
-                        _mouseState.X1Button = MausEventArgs.MouseButtonState.Released;
-                        _mouseState.EventType = MausEventArgs.MouseEventType.X1ButtonUp;
-                        OnMouseEvent(new HwndMouseEventArgs(_mouseState));
-                        break;
-                    }
-                case MausEventArgs.MouseEventType.X2ButtonDown:
-                    {
-                        _mouseState.X2Button = MausEventArgs.MouseButtonState.Released;
-                        _mouseState.EventType = MausEventArgs.MouseEventType.X2ButtonUp;
-                        OnMouseEvent(new HwndMouseEventArgs(_mouseState));
-                        break;
-                    }
-                default:
-                    {
-                        break;
-                    }
-            }
-            
             // The mouse is no longer considered to be in our window
             _mouseInWindow = false;
+
+            if (_mouseState.LeftButton == MausEventArgs.MouseButtonState.Pressed)
+            {
+                _mouseState.LeftButton = MausEventArgs.MouseButtonState.Released;
+                _mouseState.EventType = MausEventArgs.MouseEventType.LeftButtonUp;
+                OnMouseEvent(new HwndMouseEventArgs(_mouseState));
+            }
+            else if (_mouseState.MiddleButton == MausEventArgs.MouseButtonState.Pressed)
+            {
+                _mouseState.MiddleButton = MausEventArgs.MouseButtonState.Released;
+                _mouseState.EventType = MausEventArgs.MouseEventType.MiddleButtonUp;
+                OnMouseEvent(new HwndMouseEventArgs(_mouseState));
+            }
+            else if (_mouseState.RightButton == MausEventArgs.MouseButtonState.Pressed)
+            {
+                _mouseState.RightButton = MausEventArgs.MouseButtonState.Released;
+                _mouseState.EventType = MausEventArgs.MouseEventType.RightButtonUp;
+                OnMouseEvent(new HwndMouseEventArgs(_mouseState));
+            }
+            else if (_mouseState.X1Button == MausEventArgs.MouseButtonState.Pressed)
+            {
+                _mouseState.X1Button = MausEventArgs.MouseButtonState.Released;
+                _mouseState.EventType = MausEventArgs.MouseEventType.X1ButtonUp;
+                OnMouseEvent(new HwndMouseEventArgs(_mouseState));
+            }
+            else if (_mouseState.X2Button == MausEventArgs.MouseButtonState.Pressed)
+            {
+                _mouseState.X2Button = MausEventArgs.MouseButtonState.Released;
+                _mouseState.EventType = MausEventArgs.MouseEventType.X2ButtonUp;
+                OnMouseEvent(new HwndMouseEventArgs(_mouseState));
+            }
         }
 
         #endregion
