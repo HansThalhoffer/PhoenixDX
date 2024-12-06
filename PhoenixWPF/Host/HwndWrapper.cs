@@ -9,6 +9,7 @@
 using PhoenixModel.Helper;
 using System;
 using System.ComponentModel;
+
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -152,6 +153,8 @@ namespace PhoenixWPF.Host
             {
                 int width = Convert.ToInt32(sizeInfo.NewSize.Width);
                 int height = Convert.ToInt32(sizeInfo.NewSize.Height);
+               // SetWindowRegion(_hWnd, width, height);
+
                 _map?.Resize(width, height);
             }
         }
@@ -232,10 +235,10 @@ namespace PhoenixWPF.Host
             // Create the host window as a child of the parent
             // Check if the application is running in design mode
             
-                _hWnd = CreateHostWindow(hwndParent.Handle);
+            _hWnd = CreateHostWindow(hwndParent.Handle);
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject()) == false)
             {
-                _map = new PhoenixDX.MappaMundi(_hWnd, 1600, 1000);
+                _map = new PhoenixDX.MappaMundi(_hWnd);
                 _map.Run();
             }
             return new HandleRef(this, _hWnd);
@@ -278,10 +281,23 @@ namespace PhoenixWPF.Host
             NativeMethods.RegisterClassEx(ref wndClass);
         }
 
+        private void SetWindowRegion(IntPtr hwnd, int width, int height)
+        {
+            IntPtr rgn = NativeMethods.CreateRectRgn(0, 0, width, height);
+            /*int r = NativeMethods.GetWindowRgn(hwnd, rgn);
+            if (r == NativeMethods.ERROR)
+                return ;
+            var region = System.Drawing.Region.FromHrgn(rgn);
+            Region region1 = new Region(new Rectangle(10, 10, 100, 100));*/
+            NativeMethods.SetWindowRgn(hwnd, rgn, false);
+
+
+        }
+
         #endregion
 
         #region WndProc Implementation
-
+        
         protected override IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             switch (msg)
@@ -382,7 +398,7 @@ namespace PhoenixWPF.Host
                         break;
 
                     // record the prevous and new position of the mouse
-                    Point p = PointToScreen(new Point(
+                    System.Windows.Point p = PointToScreen(new System.Windows.Point(
                         NativeMethods.GetXLParam((int)lParam),
                         NativeMethods.GetYLParam((int)lParam)));
                     _mouseState.ScreenPosition = new Position(Convert.ToInt32(p.X), Convert.ToInt32(p.Y));

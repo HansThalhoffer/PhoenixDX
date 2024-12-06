@@ -42,6 +42,7 @@ namespace PhoenixWPF.Host
         public const int WM_XBUTTONUP = 0x020C;
         public const int WM_XBUTTONDBLCLK = 0x020D;
         public const int WM_MOUSELEAVE = 0x02A3;
+        public const int WM_NCCALCSIZE = 0x0083;
 
         // Define the values that let us differentiate between the two extra mouse buttons
         public const int MK_XBUTTON1 = 0x020;
@@ -168,6 +169,33 @@ namespace PhoenixWPF.Host
 
         [DllImport("user32.dll")]
         public static extern int ShowCursor(bool bShow);
+
+        [DllImport("user32.dll")]
+        public static extern int SetWindowRgn(IntPtr hWnd, IntPtr hRgn, bool bRedraw);
+
+        [DllImport("user32.dll")]
+        public static extern int GetWindowRgn(IntPtr hWnd, IntPtr hRgn);
+
+        [DllImport("user32.dll", EntryPoint = "GetDC")]
+        public static extern IntPtr GetDC(IntPtr hWnd);
+
+        [DllImport("gdi32.dll")]
+        public static extern bool FillRgn(IntPtr hdc, IntPtr hrgn, IntPtr hbr);
+
+        [DllImport("gdi32.dll")]
+        public static extern IntPtr CreateRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
+
+        [DllImport("gdi32.dll")]
+        public static extern IntPtr CreateSolidBrush(uint crColor);
+
+        [DllImport("gdi32.dll")]
+        public static extern bool DeleteObject(IntPtr hObject);
+
+        //Region Flags - The return value specifies the type of the region that the function obtains. It can be one of the following values.
+        public const int ERROR = 0;
+        public const int NULLREGION = 1;
+        public const int SIMPLEREGION = 2;
+        public const int COMPLEXREGION = 3;
 
         #endregion
 

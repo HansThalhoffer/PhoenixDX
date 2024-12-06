@@ -16,12 +16,17 @@ namespace PhoenixDX.Structures
     public class Welt
     {
        
-        Dictionary<int, Provinz> Provinzen {  get; set; }
+        Dictionary<int, Provinz> Provinzen {  get; set; } = new Dictionary<int, Provinz>();
 
         
 
         public Welt(Dictionary<string, Gemark> map) 
         {
+            Provinzen.Add(701, new Provinz(7, 0, 701));
+            Provinzen.Add(901, new Provinz(9, 0, 901));
+            Provinzen.Add(712, new Provinz(7, 11, 712));
+            Provinzen.Add(912, new Provinz(9, 11, 912));
+
             for (int x = 1; x <= 15; x++)
             {
                 for (int y = 1; y <= 11; y++)
@@ -38,20 +43,21 @@ namespace PhoenixDX.Structures
                         continue;
                     int gf = x * 100 + y;
                     int yPos = y ;
+                    int xPos = x; 
                     if (x < 6 )
                     {
                         yPos += 3 - x / 2 - x%2;
                     }
                     if (x > 6 && x <10)
                     {
-                        yPos += 3 - x / 2 - x % 2;
+                        yPos -= x %2;
                     }
-
-                    int xPos = x;
-                    
-
-                   
-
+                    if (x > 10)
+                    {
+                        yPos +=  x / 2 -5;
+                    }
+                    if (Provinzen.ContainsKey(gf) == false)
+                        Provinzen.Add(gf, new Provinz(xPos,yPos, gf));
                 }
             }
 

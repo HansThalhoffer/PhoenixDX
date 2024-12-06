@@ -13,6 +13,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -28,8 +29,8 @@ namespace PhoenixDX
         Vector2 cameraPosition = Vector2.Zero;
         const int _virtualWidth = 3840;
         const int _virtualHeight = 2160;
-        int _clientWidth = 3840;
-        int _clientHeight = 2160;
+        int _clientWidth = _virtualWidth;
+        int _clientHeight = _virtualHeight;
 
         public Welt Weltkarte { get; private set; }
 
@@ -38,10 +39,10 @@ namespace PhoenixDX
             _actionQueue.Enqueue(action);
         }
 
-        public Spiel(IntPtr windowHandle, int width, int height, CancellationToken token)
+        public Spiel(IntPtr windowHandle, CancellationToken token)
         {
-            _clientWidth = width;
-            _clientHeight = height;
+            _clientWidth = _virtualWidth;
+            _clientHeight = _virtualWidth;
             Zoom = 0.4f;
             _cancellationToken = token;
            IsMouseVisible = true;
@@ -105,10 +106,16 @@ namespace PhoenixDX
             {
                 _clientHeight = height;
                 _clientWidth = width;
-                 HideGameWindow();
+                _RecalcScale();
+                HideGameWindow();
             });
         }
 
+        void _RecalcScale()
+        {
+            _scaleX = (float) _virtualWidth / (float) _clientWidth * Zoom* 1.1f;
+             _scaleY = (float) _virtualHeight / (float) _clientHeight * Zoom;
+        }
 
         MausEventArgs _maus = new MausEventArgs();
         public void OnMouseEvent(MausEventArgs args)
@@ -123,8 +130,6 @@ namespace PhoenixDX
         void MoveCamera(Position delta)
         {
             _cameraPosition += delta; 
-          
-
         }
 
         private void HandleInput()
@@ -211,13 +216,13 @@ namespace PhoenixDX
 
 
         private SpriteBatch _spriteBatch;
-        public float Zoom { get; set; } = 1f;
+        float _zoom = 0f;
+        public float Zoom { get => _zoom; set {  _zoom = value; _RecalcScale(); } }
+
         protected override void Draw(GameTime gameTime)
         {
             _graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
-            _scaleX = (float)_virtualWidth / (float)_clientWidth * Zoom;
-            _scaleY = (float)_virtualHeight / (float)_clientHeight * Zoom;
-
+            
             if (_scaleX > 0)
             {
                 int offsetX = (int)((_clientWidth - _virtualWidth * _scaleX) / 2);
@@ -233,10 +238,6 @@ namespace PhoenixDX
                 MaxDepth = 1
             };
 
-
-           
-
-            
             if (Weltkarte != null)
             {
                 Weltkarte.Draw(_spriteBatch, _scaleX,_scaleY);

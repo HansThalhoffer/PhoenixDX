@@ -12,15 +12,13 @@ namespace PhoenixDX
     {
         private Spiel _game;
         IntPtr _hWnd;
-        int _width = 3840;
-        int _height = 2160;
+     
         Thread _gameThread;
         CancellationTokenSource _cancellationTokenSource;
 
-        public MappaMundi(IntPtr hWWnd, int width, int height)
+        public MappaMundi(IntPtr hWWnd)
         {
-            _width = width;
-            _height = height;
+          
             _hWnd = hWWnd;
         }
 
@@ -29,7 +27,7 @@ namespace PhoenixDX
             try
             {
                 _cancellationTokenSource = new CancellationTokenSource();
-                _game = new Spiel(_hWnd, _width, _height, _cancellationTokenSource.Token);
+                _game = new Spiel(_hWnd, _cancellationTokenSource.Token);
                 _game?.Run();
             }
             catch (Exception ex)
