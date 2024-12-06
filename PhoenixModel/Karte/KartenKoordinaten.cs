@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PhoenixModel.Helper;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -23,24 +24,27 @@ namespace PhoenixModel.Karte
         }
 
         // gibt Spalte und Reihe in der Provinz zurück
-        public static Point GetPositionInProvinz(int i)
+        public Position GetPositionInProvinz()
         {
-            if (i <= 4)
-                return new Point(i, 1);
-            if (i <= 9)
-                return new Point(i - 5, 2);
-            if (i <= 15)
-                return new Point(i - 10, 3);
-            if (i <= 22)
-                return new Point(i - 17, 4);
-            if (i <= 30)
-                return new Point(i - 24, 5);
-            if (i <= 37)
-                return new Point(i - 32, 6);
-            if (i <= 43)
-                return new Point(i - 38, 7);
+            if (kf > 48)
+                return new Position(0, 0);
 
-            return new Point(i - 44, 8);
+            if (kf <= 4)
+                return new Position(kf + 4, 1);
+            if (kf <= 9)
+                return new Position(kf - 1, 2);
+            if (kf <= 15)
+                return new Position(kf - 7, 3);
+            if (kf <= 22)
+                return new Position(kf - 15, 4);
+            if (kf <= 30)
+                return new Position(kf - 22, 5);
+            if (kf <= 37)
+                return new Position(kf - 30, 6);
+            if (kf <= 43)
+                return new Position(kf - 35, 7);
+
+            return new Position(kf - 39, 8);
         }
     }
 }

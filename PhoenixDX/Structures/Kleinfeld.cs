@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using System.Reflection;
 using static PhoenixModel.Karte.Terrain;
-using System.Numerics;
+using SharpDX.Direct2D1.Effects;
 
 namespace PhoenixDX.Structures
 {
@@ -19,7 +19,9 @@ namespace PhoenixDX.Structures
 
         public static readonly int TextureWidth = 138;
         public static readonly int TextureHeight = 160;
-
+        public int X { get; private set; }
+        public int Y { get; private set; }
+        public string Bezeichner { get; private set; }
 
         TerrainType _terrainType  = TerrainType.Default;
 
@@ -29,13 +31,41 @@ namespace PhoenixDX.Structures
         public Kleinfeld(int gf, int kf): base(Hex.RadiusGemark, true)
         {
             Koordinaten = new KartenKoordinaten(gf, kf,0,0);
+            _terrainType = TerrainType.Default;
+            var pos = Koordinaten.GetPositionInProvinz();
+            X = pos.X;
+            Y = pos.Y;
+            Bezeichner = kf.ToString();
         }
 
-        public Vector2 Position { get
+        Microsoft.Xna.Framework.Vector2 _mapCoords = new Microsoft.Xna.Framework.Vector2();
+        Microsoft.Xna.Framework.Vector2 _mapSize = new Microsoft.Xna.Framework.Vector2();
+        float _scaleX = 0;
+        float _scaleY = 0;
+
+        public Microsoft.Xna.Framework.Vector2 GetMapSize()
+        {
+            return _mapSize;
+        }
+
+        public Microsoft.Xna.Framework.Vector2 GetMapPosition(Microsoft.Xna.Framework.Vector2 provinzCoords, float scaleX, float scaleY)
+        {
+            if (scaleX != _scaleX || scaleX != _scaleY)
             {
-                Vector2 v = new Vector2 ( Koordinaten.dbx * Kleinfeld.TextureWidth, Koordinaten.dby * Kleinfeld.TextureHeight);
-                return v;
-            } 
+                _mapSize = new Microsoft.Xna.Framework.Vector2(Height * scaleX, Width * scaleY);
+                _scaleX = scaleX;
+                _scaleY = scaleY;
+                float x = (X - 1) * ColumnWidth * scaleX;
+                if (Y < 5)
+                    x-=(5 - Y) * ColumnWidth / 2;
+                if (Y > 5)
+                    x -= (Y-5) * ColumnWidth / 2;
+                float y = (Y - 1) * RowHeight * scaleY;
+                
+                _mapCoords = new Microsoft.Xna.Framework.Vector2(provinzCoords.X+x, provinzCoords.Y+y);
+               
+            }
+            return _mapCoords;
         }
 
         bool _isInitalized = false;

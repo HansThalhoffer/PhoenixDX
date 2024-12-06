@@ -26,6 +26,9 @@ namespace PhoenixDX.Structures
             Provinzen.Add(901, new Provinz(9, 0, 901));
             Provinzen.Add(712, new Provinz(7, 11, 712));
             Provinzen.Add(912, new Provinz(9, 11, 912));
+            Provinzen.Add(6666, new Provinz(1, 1, 6666));
+            Provinzen.Add(2001, new Provinz(15, 1, 2001));
+            Provinzen.Add(4001, new Provinz(1, 11, 4001));
 
             for (int x = 1; x <= 15; x++)
             {
@@ -61,11 +64,11 @@ namespace PhoenixDX.Structures
                 }
             }
 
-            /*foreach (Gemark gem in map.Values)
+            foreach (Gemark gem in map.Values)
             {
                 if (gem != null && gem.gf > 0 && gem.kf > 0)
                 {
-                    if (Provinzen.ContainsKey(gem.gf))
+                    if (Provinzen.ContainsKey(gem.gf) == false)
                     {
                         MessageBox.Show("Großfeld " + gem.gf + " fehlt");
                         continue;
@@ -86,7 +89,7 @@ namespace PhoenixDX.Structures
                         }
                     }
                 }
-            }*/
+            }
         }
 
         public static void LoadContent(ContentManager contentManager)
@@ -117,27 +120,28 @@ namespace PhoenixDX.Structures
             foreach (var province in Provinzen.Values)
             {
                 
-                var pos = province.GetMapPosition(scaleX, scaleY);
-                var size = province.GetMapSize(scaleX, scaleY);
-                Rectangle rScreen = new Rectangle(Convert.ToInt32(pos.X), Convert.ToInt32(pos.Y), Convert.ToInt32(size.X), Convert.ToInt32(size.Y));
+                var posP = province.GetMapPosition(scaleX, scaleY); // aktualisiert die MapSize - Reihenfolge wichtig
+                var sizeP = province.GetMapSize();
+                Rectangle rScreen = new Rectangle(Convert.ToInt32(posP.X), Convert.ToInt32(posP.Y), Convert.ToInt32(sizeP.X), Convert.ToInt32(sizeP.Y));
                 spriteBatch.Draw(province.Texture, rScreen, null, Color.White);
-                pos.Move(Convert.ToInt32(160f * scaleX), 10);
-                spriteBatch.DrawString(font, province.Bezeichner, pos, Color.Black);
-
-                /*foreach (var gemark in province.Felder.Values)
+                foreach (var gemark in province.Felder.Values)
                 {
-                    pos.X += (float)10 * scaleX;
-                    pos.Y += (float)10 * scaleY;
-                    pos = gemark.Position;
+                    var posG = gemark.GetMapPosition(posP,scaleX, scaleY); // aktualisiert die MapSize - Reihenfolge wichtig
+                    var sizeG= gemark.GetMapSize();
+                    rScreen = new Rectangle(Convert.ToInt32(posG.X), Convert.ToInt32(posG.Y), Convert.ToInt32(sizeG.X), Convert.ToInt32(sizeG.Y));
 
                     var listTexture = gemark.GetTextures();
                     foreach (var hexTexture in listTexture)
                     {
-                        // spriteBatch.Draw(hexTexture, pos, null, Color.Transparent);
-                        spriteBatch.Draw(hexTexture, pos, null, Color.White, 0f, size, 1f, SpriteEffects.None, 0f);
+                        // spriteBatch.Draw(hexTexture, posP, null, Color.Transparent);
+                        spriteBatch.Draw(hexTexture, rScreen, null, Color.White);
                     }
-                }*/
-               
+                    posG.Move(Convert.ToInt32(20f * scaleX), 4);
+                    spriteBatch.DrawString(font, gemark.Bezeichner, posG, Color.Black);
+                }
+                posP.Move(Convert.ToInt32(160f * scaleX), 10);
+                spriteBatch.DrawString(font, province.Bezeichner, posP, Color.Black);
+
             }
             spriteBatch.End();
         }    

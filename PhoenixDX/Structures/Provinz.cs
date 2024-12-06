@@ -1,12 +1,7 @@
 ﻿// Province.cs
 using Microsoft.Xna.Framework.Content;
-using PhoenixModel.Karte;
 using System.Collections.Generic;
-using static PhoenixModel.Karte.Terrain;
 using Microsoft.Xna.Framework.Graphics;
-using PhoenixDX.Classes;
-using Microsoft.Xna.Framework;
-using PhoenixModel.Helper;
 
 namespace PhoenixDX.Structures
 {
@@ -39,21 +34,30 @@ namespace PhoenixDX.Structures
             GF = gf;
         }
 
-        public Vector2 GetMapPosition(float scaleX, float scaleY)
-        {
-            float x = (X - 1) * ColumnWidth * scaleX;
-            float y = (Y - 1) * RowHeight * scaleY;
-            if (X % 2 > 0)
-                y += RowHeight * scaleY / 2;
+        Microsoft.Xna.Framework.Vector2 _mapCoords = new Microsoft.Xna.Framework.Vector2();
+        Microsoft.Xna.Framework.Vector2 _mapSize = new Microsoft.Xna.Framework.Vector2();
+        float _scaleX = 0;
+        float _scaleY = 0;
 
-            return new Vector2(x, y);
+        public Microsoft.Xna.Framework.Vector2 GetMapPosition(float scaleX, float scaleY)
+        {
+            if (scaleX != _scaleX || scaleX != _scaleY)
+            {
+                _scaleX = scaleX;
+                _scaleY = scaleY;
+                float x = (X - 1) * ColumnWidth * scaleX;
+                float y = (Y - 1) * RowHeight * scaleY;
+                if (X % 2 > 0)
+                    y += RowHeight * scaleY / 2;
+                _mapCoords = new Microsoft.Xna.Framework.Vector2(x, y);
+                _mapSize = new Microsoft.Xna.Framework.Vector2(Height * scaleX, Width * scaleY);
+            }
+            return _mapCoords;
         }
 
-        public Vector2 GetMapSize(float scaleX, float scaleY)
+        public Microsoft.Xna.Framework.Vector2 GetMapSize()
         {
-            float sizeX = Height * scaleX;
-            float sizeY = Width * scaleY;
-            return new Vector2(sizeX, sizeY);
+            return _mapSize;
         }
 
         public Kleinfeld GetPKleinfeld(int kf)
