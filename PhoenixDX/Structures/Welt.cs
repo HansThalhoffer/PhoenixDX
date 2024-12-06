@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Xml;
 
 namespace PhoenixDX.Structures
 {
@@ -20,24 +22,50 @@ namespace PhoenixDX.Structures
 
         public Welt(Dictionary<string, Gemark> map) 
         {
-            for (int y = 1; y <= 12; y++)
+            for (int x = 1; x <= 15; x++)
             {
-                for (int x = 1; x <= 16; x++)
+                for (int y = 1; y <= 11; y++)
                 {
-                   int gf = Provinz.MapToGF(y, x);
-                    if (gf > 0)
-                    { }
-                   var p = new Provinz(x, y, gf);
+                    if ((x == 1 || x== 15) && y > 6)
+                        continue;
+                    if ((x == 2 || x == 14) && y > 7)
+                        continue;
+                    if ((x == 3 || x == 13) && y > 8)
+                        continue;
+                    if ((x == 4 || x == 12) && y > 9)
+                        continue;
+                    if ((x == 5 || x == 11) && y > 10)
+                        continue;
+                    int gf = x * 100 + y;
+                    int yPos = y ;
+                    if (x < 6 )
+                    {
+                        yPos += 3 - x / 2 - x%2;
+                    }
+                    if (x > 6 && x <10)
+                    {
+                        yPos += 3 - x / 2 - x % 2;
+                    }
+
+                    int xPos = x;
+                    
+
+                   
+
                 }
             }
 
-            foreach (Gemark gem in map.Values)
+            /*foreach (Gemark gem in map.Values)
             {
                 if (gem != null && gem.gf > 0 && gem.kf > 0)
                 {
-                    if (gem.gf == null)
+                    if (Provinzen.ContainsKey(gem.gf))
+                    {
+                        MessageBox.Show("Großfeld " + gem.gf + " fehlt");
                         continue;
-                    var p = GetProvinz((int) gem.gf);
+                    }
+                    var p = Provinzen[gem.gf];
+
                     if (p != null)
                     {
                         var k = p.GetPKleinfeld((int) gem.kf);
@@ -52,7 +80,7 @@ namespace PhoenixDX.Structures
                         }
                     }
                 }
-            }
+            }*/
         }
 
         public static void LoadContent(ContentManager contentManager)
@@ -80,52 +108,32 @@ namespace PhoenixDX.Structures
 
             
             // Draw the map with culling
-            foreach (var reihe in Provinzen.Values)
+            foreach (var province in Provinzen.Values)
             {
-                foreach (var province in reihe.Values)
+                
+                var pos = province.GetMapPosition(scaleX, scaleY);
+                var size = province.GetMapSize(scaleX, scaleY);
+                Rectangle rScreen = new Rectangle(Convert.ToInt32(pos.X), Convert.ToInt32(pos.Y), Convert.ToInt32(size.X), Convert.ToInt32(size.Y));
+                spriteBatch.Draw(province.Texture, rScreen, null, Color.White);
+                pos.Move(Convert.ToInt32(160f * scaleX), 10);
+                spriteBatch.DrawString(font, province.Bezeichner, pos, Color.Black);
+
+                /*foreach (var gemark in province.Felder.Values)
                 {
-                    var pos = province.GetMapPosition(scaleX, scaleY);
-                    var size = province.GetMapSize(scaleX, scaleY);
-                    Rectangle rScreen = new Rectangle(Convert.ToInt32(pos.X), Convert.ToInt32(pos.Y), Convert.ToInt32(size.X), Convert.ToInt32(size.Y));
-                    spriteBatch.Draw(province.Texture, rScreen, null, Color.White);
-                    pos.Move(Convert.ToInt32(160f * scaleX), 10);
-                    spriteBatch.DrawString(font, province.Bezeichner, pos, Color.Black);
+                    pos.X += (float)10 * scaleX;
+                    pos.Y += (float)10 * scaleY;
+                    pos = gemark.Position;
 
-                    /*foreach (var gemark in province.Felder.Values)
+                    var listTexture = gemark.GetTextures();
+                    foreach (var hexTexture in listTexture)
                     {
-                        pos.X += (float)10 * scaleX;
-                        pos.Y += (float)10 * scaleY;
-                        pos = gemark.Position;
-
-                        var listTexture = gemark.GetTextures();
-                        foreach (var hexTexture in listTexture)
-                        {
-                            // spriteBatch.Draw(hexTexture, pos, null, Color.Transparent);
-                            spriteBatch.Draw(hexTexture, pos, null, Color.White, 0f, size, 1f, SpriteEffects.None, 0f);
-                        }
-                    }*/
-                }
+                        // spriteBatch.Draw(hexTexture, pos, null, Color.Transparent);
+                        spriteBatch.Draw(hexTexture, pos, null, Color.White, 0f, size, 1f, SpriteEffects.None, 0f);
+                    }
+                }*/
+               
             }
             spriteBatch.End();
-        }
-
-
-        private Reihe GetReihe(int reihe)
-        {
-            if (Provinzen.ContainsKey(reihe))
-                return Provinzen[reihe];
-            var p = new Reihe();
-            Provinzen.Add(reihe, p);
-            return p;
-        }
-        public Provinz GetProvinz(int gf)
-        {
-            var v = Provinz.MapToXY(gf);
-            return GetProvinz(v.X,v.Y);
-        }
-      
-
-       
-    
+        }    
     }
 }

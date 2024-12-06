@@ -6,6 +6,7 @@ using static PhoenixModel.Karte.Terrain;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Classes;
 using Microsoft.Xna.Framework;
+using PhoenixModel.Helper;
 
 namespace PhoenixDX.Structures
 {
@@ -23,28 +24,6 @@ namespace PhoenixDX.Structures
                 _gf = value;
             }
         }
-
-        public static int MapToGF(int x, int y)
-        {
-            int gf = 0;
-            int xPos = x;
-            int yPos = y;
-
-            if (xPos <= 6)
-                yPos += (6 - xPos);
-            else if (xPos <= 10)
-            {
-                yPos = y;
-            }
-            else
-                yPos += (xPos - 10);
-
-            gf = xPos * 100 + yPos;
-
-            return gf;
-        }
-
-     
 
         public string Bezeichner
         {
@@ -66,17 +45,6 @@ namespace PhoenixDX.Structures
             float y = (Y - 1) * RowHeight * scaleY;
             if (X % 2 > 0)
                 y += RowHeight * scaleY / 2;
-
-            /*if (Spalte <= 6)
-                canvTop += RowHeight / 2 * (6 - Spalte);
-            else if (Spalte <= 10)
-            {
-                if (Spalte % 2 == 1)
-                    canvTop -= RowHeight / 2;
-            }
-            else
-                canvTop += RowHeight / 2 * (Spalte - 10);
-            */
 
             return new Vector2(x, y);
         }

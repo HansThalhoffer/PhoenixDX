@@ -9,10 +9,10 @@ namespace PhoenixModel.Karte
         public const string TableName = "Karte";
         string IDatabaseTable.TableName => TableName;
 
-        public int? gf { get; set; }
+        public int gf { get; set; } = 0;
         public int? kf { get; set; }
         public string? ph_xy { get; set; }
-        public int? x { get; set; }
+        public int x { get; set; } = 0;
         public int? y { get; set; }
         public string? db_xy { get; set; }
         public int? Rand { get; set; }
