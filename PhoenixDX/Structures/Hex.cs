@@ -1,10 +1,5 @@
-﻿using SharpDX.Direct3D9;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Numerics;
+﻿using System.Numerics;
+
 
 namespace PhoenixDX.Structures
 {
@@ -37,6 +32,18 @@ namespace PhoenixDX.Structures
                 };
             }
         }
+
+        /*public bool PositionInHex()
+        {
+            PointF[] hexVertices = {
+                new PointF(cx,              cy - Height/2f), // top
+                new PointF(cx + Width/2f,   cy - Height/4f), // top-right
+                new PointF(cx + Width/2f,   cy + Height/4f), // bottom-right
+                new PointF(cx,              cy + Height/2f), // bottom
+                new PointF(cx - Width/2f,   cy + Height/4f), // bottom-left
+                new PointF(cx - Width/2f,   cy - heiHeightght/4f)  // top-left
+            };
+        }*/
 
         private void setDimensions(float radius, bool pointUp)
         {

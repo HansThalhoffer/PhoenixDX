@@ -13,7 +13,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -117,6 +116,11 @@ namespace PhoenixDX
              _scaleY = (float) _virtualHeight / (float) _clientHeight * Zoom;
         }
 
+        public Vector2 ScreeToMap(Position pos)
+        {
+            return new Vector2(pos.X / _scaleX, pos.Y / _scaleY);
+        }
+
         MausEventArgs _maus = new MausEventArgs();
         public void OnMouseEvent(MausEventArgs args)
         {
@@ -143,6 +147,8 @@ namespace PhoenixDX
                 {
                     case MausEventArgs.MouseEventType.LeftButtonDown:
                         {
+                            Vector2 mousePos = ScreeToMap(_maus.ScreenPosition);
+                            Gemark gem = Weltkarte.FindGemarkByPosition(mousePos);
                             break;
                         }
                     case MausEventArgs.MouseEventType.MiddleButtonDown:

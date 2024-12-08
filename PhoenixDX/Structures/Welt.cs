@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Classes;
 using PhoenixModel.Karte;
+using SharpDX.Direct2D1;
 using SharpDX.MediaFoundation;
 using System;
 using System.Collections.Generic;
@@ -91,6 +92,11 @@ namespace PhoenixDX.Structures
                     }
                 }
             }
+        }
+
+        public Gemark? FindGemarkByPosition(Vector2 position)
+        {
+            return null;
         }
 
         public static void LoadContent(ContentManager contentManager)
