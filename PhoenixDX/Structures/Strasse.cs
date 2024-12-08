@@ -12,7 +12,7 @@ namespace PhoenixDX.Structures
         public static AdornerTexture Texture = new AdornerTexture("strasse_");
         public override AdornerTexture GetAdornerTexture() { return Texture; }
 
-        public Strasse(Gemark gem) : base(gem.Strasse_NW, gem.Strasse_NO, gem.Strasse_O, gem.Strasse_SW, gem.Strasse_SO, gem.Strasse_W)
+        public Strasse(Gemark gem) : base(gem.Strasse_NW, gem.Strasse_NO, gem.Strasse_O, gem.Strasse_SO, gem.Strasse_SW, gem.Strasse_W)
         { }
     }
 }

@@ -41,18 +41,21 @@ namespace PhoenixDX.Structures
         private void setDimensions(float radius, bool pointUp)
         {
             OuterRadius = radius;
-            Width = OuterRadius * 2f;
-            Height = OuterRadius * 2f;
-            
+            const float factor = 1.18f;
             if (pointUp == false)
             {
+                Width = 1.5f * OuterRadius *1.05f;
+                Height = InnerRadius * 2f * 1.05f;
                 ColumnWidth = 1.5f * OuterRadius;
-                RowHeight =  Height;
+                RowHeight = InnerRadius * 2f;
             }
             else
             {
-                ColumnWidth = Width;
+                Width = InnerRadius * 2f * factor;
+                Height = OuterRadius * 1.5f * factor;
+                ColumnWidth = InnerRadius * 2f;
                 RowHeight = 1.5f * OuterRadius;
+              
             }
         }
     }

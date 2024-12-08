@@ -16,6 +16,7 @@ namespace PhoenixDX.Structures
     public class AdornerTexture
     {
         public string ImageStartsWith = string.Empty;
+        public int IndexStartsWith = 0;
 
         public AdornerTexture(string imageStartsWith)
         {
@@ -48,7 +49,7 @@ namespace PhoenixDX.Structures
             _value[ (int)Direction.NW] = (int)NW;  
             _value[ (int)Direction.NO] = (int)NO;
             _value[ (int)Direction.O] = (int)O;
-            _value[ (int)Direction.SO] = (int)SO;
+            _value[(int)Direction.SO] = (int)SO;
             _value[ (int)Direction.SW] = (int)SW;
             _value[ (int)Direction.W] = (int)W;
         }
@@ -60,7 +61,8 @@ namespace PhoenixDX.Structures
             {
                 if (HasDirection(direction) > 0 )
                 {
-                    textures.Add(GetAdornerTexture().GetTexture(direction));
+                    var t = GetAdornerTexture();
+                    textures.Add(t.GetTexture(direction));
                 }
             }
             return textures;

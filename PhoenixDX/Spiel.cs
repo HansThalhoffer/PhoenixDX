@@ -113,7 +113,7 @@ namespace PhoenixDX
 
         void _RecalcScale()
         {
-            _scaleX = (float) _virtualWidth / (float) _clientWidth * Zoom* 1.1f;
+            _scaleX = (float) _virtualWidth / (float) _clientWidth * Zoom;
              _scaleY = (float) _virtualHeight / (float) _clientHeight * Zoom;
         }
 
@@ -221,7 +221,7 @@ namespace PhoenixDX
 
         protected override void Draw(GameTime gameTime)
         {
-            _graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
+            _graphics.GraphicsDevice.Clear(Color.Black);
             
             if (_scaleX > 0)
             {

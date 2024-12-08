@@ -12,7 +12,7 @@ namespace PhoenixDX.Structures
         public static AdornerTexture Texture = new AdornerTexture("wand_");
         public override AdornerTexture GetAdornerTexture() { return Texture; }
 
-        public Wall(Gemark gem) : base(gem.Wall_NW, gem.Wall_NO, gem.Wall_O, gem.Wall_SW, gem.Wall_SO, gem.Wall_W)
+        public Wall(Gemark gem) : base(gem.Wall_NW, gem.Wall_NO, gem.Wall_O, gem.Wall_SO, gem.Wall_SW, gem.Wall_W)
         { }
 
         public static string GetimageStartsWith()

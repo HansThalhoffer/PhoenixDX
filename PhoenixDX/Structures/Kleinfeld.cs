@@ -55,15 +55,22 @@ namespace PhoenixDX.Structures
                 _mapSize = new Microsoft.Xna.Framework.Vector2(Height * scaleX, Width * scaleY);
                 _scaleX = scaleX;
                 _scaleY = scaleY;
-                float x = (X - 1) * ColumnWidth * scaleX;
-                if (Y < 5)
-                    x-=(5 - Y) * ColumnWidth / 2;
-                if (Y > 5)
-                    x -= (Y-5) * ColumnWidth / 2;
+                float x = 0;
+                if (Y < 4)
+                    x = ((X - 1) * ColumnWidth - (6-Y-x)*ColumnWidth/2 )* scaleX;
+                if (Y == 4)
+                    x = (X - 1) * ColumnWidth * scaleX;
+                if (Y == 5)
+                    x = ((X - 1) * ColumnWidth - ColumnWidth/2) * scaleX;
+                if (Y == 6)
+                    x = (X - 1) * ColumnWidth * scaleX;
+                if (Y == 7)
+                    x = ((X - 2) * ColumnWidth - ColumnWidth / 2) * scaleX;
+                if (Y == 8)
+                    x = ((X - 4) * ColumnWidth) * scaleX;
+
                 float y = (Y - 1) * RowHeight * scaleY;
-                
                 _mapCoords = new Microsoft.Xna.Framework.Vector2(provinzCoords.X+x, provinzCoords.Y+y);
-               
             }
             return _mapCoords;
         }
@@ -81,10 +88,11 @@ namespace PhoenixDX.Structures
             Koordinaten =  new KartenKoordinaten(Koordinaten.gf, Koordinaten.kf, (int)gem.x, (int)gem.y);
             
             Adorner.Add("Fluss", new Fluss(gem));
-            Adorner.Add("Wand", new Wall(gem));
+            Adorner.Add("Kai", new Kai(gem));
             Adorner.Add("Brücke", new Bruecke(gem));
             Adorner.Add("Strasse", new Strasse(gem));
-            Adorner.Add("Kai", new Kai(gem));
+            Adorner.Add("Wand", new Wall(gem));
+
             return true;
         }
 
@@ -129,9 +137,9 @@ namespace PhoenixDX.Structures
                 }
             }
             const string folder = "Images/";
-            List< Texture2D> textures = new List< Texture2D>();
             foreach (var adornerTexture in textureValues)
             {
+                List<Texture2D> textures = new List<Texture2D>();
                 foreach (string name in Enum.GetNames(typeof(Direction)))
                 {
                     string fileName = folder + adornerTexture.ImageStartsWith + name;

@@ -12,7 +12,7 @@ namespace PhoenixDX.Structures
         public static AdornerTexture Texture = new AdornerTexture("kai_");
         public override AdornerTexture GetAdornerTexture() { return Texture; }
 
-        public Kai(Gemark gem) : base(gem.Kai_NW, gem.Kai_NO, gem.Kai_O, gem.Kai_SW, gem.Kai_SO, gem.Kai_W)
+        public Kai(Gemark gem) : base(gem.Kai_NW, gem.Kai_NO, gem.Kai_O, gem.Kai_SO, gem.Kai_SW, gem.Kai_W)
         { }
     }
 }

@@ -71,10 +71,11 @@ namespace PhoenixDX.Structures
 
         static public Texture2D TextureFull { get; private set; }
         static public Texture2D TextureNone { get; private set; }
+        static public Texture2D TextureYellow { get; private set; }
         static public Texture2D TextureHalfTop { get; private set; }
         static public Texture2D TextureHalfBottom { get; private set; }
 
-        public Texture2D Texture 
+        /*public Texture2D Texture 
         {
             get
             {
@@ -90,12 +91,13 @@ namespace PhoenixDX.Structures
 
         public static void LoadContent(ContentManager contentManager)
         {
+            TextureYellow = contentManager.Load<Texture2D>("Images/Hexagon_gelb");
             TextureFull = contentManager.Load<Texture2D>("Images/Hexagon");
             TextureNone = contentManager.Load<Texture2D>("Images/HexagonNone");
             TextureHalfBottom = contentManager.Load<Texture2D>("Images/HexagonHalfBottom");
             TextureHalfTop = contentManager.Load<Texture2D>("Images/HexagonHalfTop");
         }
-
+        */
 
     }
 }

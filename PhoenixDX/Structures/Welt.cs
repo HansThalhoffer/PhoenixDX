@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Classes;
 using PhoenixModel.Karte;
+using SharpDX.MediaFoundation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,9 +27,9 @@ namespace PhoenixDX.Structures
             Provinzen.Add(901, new Provinz(9, 0, 901));
             Provinzen.Add(712, new Provinz(7, 11, 712));
             Provinzen.Add(912, new Provinz(9, 11, 912));
-            Provinzen.Add(6666, new Provinz(1, 1, 6666));
-            Provinzen.Add(2001, new Provinz(15, 1, 2001));
-            Provinzen.Add(4001, new Provinz(1, 11, 4001));
+            Provinzen.Add(6666, new Provinz(15, 11, 6666));
+            Provinzen.Add(2001, new Provinz(1, 1, 2001));
+            Provinzen.Add(4001, new Provinz(15, 1, 4001));
 
             for (int x = 1; x <= 15; x++)
             {
@@ -66,7 +67,7 @@ namespace PhoenixDX.Structures
 
             foreach (Gemark gem in map.Values)
             {
-                if (gem != null && gem.gf > 0 && gem.kf > 0)
+                if (gem != null && gem.gf > 0 && gem.kf > 0 && gem.kf < 50)
                 {
                     if (Provinzen.ContainsKey(gem.gf) == false)
                     {
@@ -95,7 +96,7 @@ namespace PhoenixDX.Structures
         public static void LoadContent(ContentManager contentManager)
         {
             Gelaende.LoadContent(contentManager);
-            Provinz.LoadContent(contentManager);
+            // Provinz.LoadContent(contentManager);
             Kleinfeld.LoadContent(contentManager);
         }
 
@@ -115,33 +116,29 @@ namespace PhoenixDX.Structures
             SpriteFont font = FontManager.Fonts["Small"];
             spriteBatch.Begin();
 
-            
+            Vector2 offset = new Vector2(30f*scaleX, 10f*scaleY);
+
             // Draw the map with culling
             foreach (var province in Provinzen.Values)
             {
                 
                 var posP = province.GetMapPosition(scaleX, scaleY); // aktualisiert die MapSize - Reihenfolge wichtig
+                posP.X += offset.X;
+                posP.Y += offset.Y; 
                 var sizeP = province.GetMapSize();
-                Rectangle rScreen = new Rectangle(Convert.ToInt32(posP.X), Convert.ToInt32(posP.Y), Convert.ToInt32(sizeP.X), Convert.ToInt32(sizeP.Y));
-                spriteBatch.Draw(province.Texture, rScreen, null, Color.White);
                 foreach (var gemark in province.Felder.Values)
                 {
                     var posG = gemark.GetMapPosition(posP,scaleX, scaleY); // aktualisiert die MapSize - Reihenfolge wichtig
                     var sizeG= gemark.GetMapSize();
-                    rScreen = new Rectangle(Convert.ToInt32(posG.X), Convert.ToInt32(posG.Y), Convert.ToInt32(sizeG.X), Convert.ToInt32(sizeG.Y));
+                    Rectangle rScreenG = new Rectangle(Convert.ToInt32(posG.X), Convert.ToInt32(posG.Y), Convert.ToInt32(sizeG.X), Convert.ToInt32(sizeG.Y));
 
                     var listTexture = gemark.GetTextures();
                     foreach (var hexTexture in listTexture)
                     {
                         // spriteBatch.Draw(hexTexture, posP, null, Color.Transparent);
-                        spriteBatch.Draw(hexTexture, rScreen, null, Color.White);
+                        spriteBatch.Draw(hexTexture, rScreenG, null, Color.White);
                     }
-                    posG.Move(Convert.ToInt32(20f * scaleX), 4);
-                    spriteBatch.DrawString(font, gemark.Bezeichner, posG, Color.Black);
                 }
-                posP.Move(Convert.ToInt32(160f * scaleX), 10);
-                spriteBatch.DrawString(font, province.Bezeichner, posP, Color.Black);
-
             }
             spriteBatch.End();
         }    
