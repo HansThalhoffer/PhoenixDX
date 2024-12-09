@@ -38,12 +38,12 @@ namespace PhoenixDX.Structures
             Bezeichner = kf.ToString();
         }
 
-        Microsoft.Xna.Framework.Vector2 _mapCoords = new Microsoft.Xna.Framework.Vector2();
-        Microsoft.Xna.Framework.Vector2 _mapSize = new Microsoft.Xna.Framework.Vector2();
-        float _scaleX = 0;
-        float _scaleY = 0;
+        static Microsoft.Xna.Framework.Vector2 _mapCoords = new Microsoft.Xna.Framework.Vector2();
+        static Microsoft.Xna.Framework.Vector2 _mapSize = new Microsoft.Xna.Framework.Vector2();
+        static float _scaleX = 0;
+        static float _scaleY = 0;
 
-        public Microsoft.Xna.Framework.Vector2 GetMapSize()
+        public static Microsoft.Xna.Framework.Vector2 GetMapSize()
         {
             return _mapSize;
         }
@@ -136,7 +136,7 @@ namespace PhoenixDX.Structures
                     }
                 }
             }
-            const string folder = "Images/";
+            const string folder = "Images/TilesetV/";
             foreach (var adornerTexture in textureValues)
             {
                 List<Texture2D> textures = new List<Texture2D>();

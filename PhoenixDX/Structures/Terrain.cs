@@ -16,14 +16,23 @@ namespace PhoenixDX.Structures
     public class Gelaende : PhoenixModel.Karte.Terrain
     {
         Texture2D hexTexture;
-       
+        List<Texture2D>hexTextures = new List<Texture2D>();
+
         public Gelaende(Terrain source, string image, ContentManager contentManager):
             base(source.Typ, source.Name, source.Höhe, source.Einwohner, source.Einnahmen, source.Farbe, source.Art)
         {
             try
             {
-                const string folder = "Images/";
-                hexTexture = contentManager.Load<Texture2D>(folder + image);
+                string folder = "Images/TilesetV/";
+                if (image == "mountain")
+                {
+                    hexTexture = contentManager.Load<Texture2D>("Images/TilesetN/" + image);
+                    hexTextures.Add( contentManager.Load<Texture2D>("Images/TilesetN/mountain"));
+                    hexTextures.Add(contentManager.Load<Texture2D>("Images/TilesetN/mountain1" ));
+                    hexTextures.Add(contentManager.Load<Texture2D>("Images/TilesetN/mountain2"));
+                }
+                else
+                    hexTexture = contentManager.Load<Texture2D>(folder + image);
             }
             catch (Exception ex)
             {
@@ -31,7 +40,16 @@ namespace PhoenixDX.Structures
             }
         }
 
-        public Texture2D GetTexture() { return hexTexture; }
+        public Texture2D GetTexture() { 
+        
+            //if (hexTextures.Count == 0)
+                return hexTexture;
+            /*Random rnd = new Random();
+            int index = rnd.Next(0,hexTextures.Count);
+            if (index >= hexTextures.Count)
+                index = hexTextures.Count;
+            return hexTextures[index];*/
+        }
 
         static bool _isLoaded = false;
         public static bool IsLoaded { get { return _isLoaded; }}

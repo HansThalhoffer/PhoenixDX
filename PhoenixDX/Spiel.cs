@@ -5,7 +5,6 @@ using PhoenixDX.Classes;
 using PhoenixDX.Structures;
 using PhoenixModel.Helper;
 using PhoenixModel.Karte;
-using SharpDX.Direct2D1.Effects;
 
 
 // using SharpDX;
@@ -25,13 +24,16 @@ namespace PhoenixDX
         private IntPtr _windowHandle;
         private readonly ConcurrentQueue<Action> _actionQueue = new ConcurrentQueue<Action>();
 
-        Vector2 cameraPosition = Vector2.Zero;
+        Position _cameraPosition = new Position(0, 0);
         const int _virtualWidth = 3840;
         const int _virtualHeight = 2160;
         int _clientWidth = _virtualWidth;
         int _clientHeight = _virtualHeight;
 
         public Welt Weltkarte { get; private set; }
+        private Selection _selected = new Selection();
+
+
 
         public void EnqueueAction(Action action)
         {
@@ -113,12 +115,15 @@ namespace PhoenixDX
         void _RecalcScale()
         {
             _scaleX = (float) _virtualWidth / (float) _clientWidth * Zoom;
-             _scaleY = (float) _virtualHeight / (float) _clientHeight * Zoom;
+            _scaleY = (float) _virtualHeight / (float) _clientHeight * Zoom;
         }
-
-        public Vector2 ScreeToMap(Position pos)
+        void MoveCamera(Position delta)
         {
-            return new Vector2(pos.X / _scaleX, pos.Y / _scaleY);
+            _cameraPosition += delta;
+        }
+        public Vector2 ScreenToMap(Position pos)
+        {
+            return new Vector2(pos.X * _scaleX + _cameraPosition.X, pos.Y * _scaleY + _cameraPosition.Y);
         }
 
         MausEventArgs _maus = new MausEventArgs();
@@ -130,11 +135,7 @@ namespace PhoenixDX
             });
         }
         
-        Position _cameraPosition = new Position(0,0);
-        void MoveCamera(Position delta)
-        {
-            _cameraPosition += delta; 
-        }
+       
 
         private void HandleInput()
         {
@@ -147,7 +148,7 @@ namespace PhoenixDX
                 {
                     case MausEventArgs.MouseEventType.LeftButtonDown:
                         {
-                            Vector2 mousePos = ScreeToMap(_maus.ScreenPosition);
+                            Vector2 mousePos = ScreenToMap(_maus.ScreenPosition);
                             Gemark gem = Weltkarte.FindGemarkByPosition(mousePos);
                             break;
                         }
@@ -185,10 +186,11 @@ namespace PhoenixDX
 
         protected override void LoadContent()
         {
-            _spriteBatch = new SpriteBatch(_graphics.GraphicsDevice);
+            _spriteBatch = new Microsoft.Xna.Framework.Graphics.SpriteBatch(_graphics.GraphicsDevice);
             Content.RootDirectory = "Content";
             Welt.LoadContent(Content);
             FontManager.LoadContent(Content);
+            _selected.LoadContent(Content);
         }
 
         protected override void Update(GameTime gameTime)
@@ -221,20 +223,16 @@ namespace PhoenixDX
         float _scaleY = 0f;
 
 
-        private SpriteBatch _spriteBatch;
+        private Microsoft.Xna.Framework.Graphics.SpriteBatch _spriteBatch;
         float _zoom = 0f;
         public float Zoom { get => _zoom; set {  _zoom = value; _RecalcScale(); } }
 
         protected override void Draw(GameTime gameTime)
         {
             _graphics.GraphicsDevice.Clear(Color.Black);
-            
-            if (_scaleX > 0)
-            {
-                int offsetX = (int)((_clientWidth - _virtualWidth * _scaleX) / 2);
-                int offsetY = (int)((_clientHeight - _virtualHeight * _scaleY) / 2);
-            }
-             _graphics.GraphicsDevice.Viewport = new Viewport
+
+            Vector2 offset = new Vector2(30f * _scaleX, 10f * _scaleY);
+            _graphics.GraphicsDevice.Viewport = new Viewport
             {
                 X = _cameraPosition.X,
                 Y = _cameraPosition.Y,
@@ -247,6 +245,18 @@ namespace PhoenixDX
             if (Weltkarte != null)
             {
                 Weltkarte.Draw(_spriteBatch, _scaleX,_scaleY);
+            }
+            
+            if (_maus.ScreenPosition != null)
+            {
+                _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+                Vector2 mousePos = ScreenToMap(_maus.ScreenPosition);
+                _selected.Draw(_spriteBatch, mousePos, gameTime);
+
+                string statusText = "Maus " + _maus.ScreenPosition.ToString();
+                SpriteFont font = FontManager.Fonts["Large"];
+                _spriteBatch.DrawString(font, statusText, new Vector2(10, 10), Color.Azure);
+                _spriteBatch.End();
             }
 
             // Draw status text

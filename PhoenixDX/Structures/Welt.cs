@@ -3,8 +3,6 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Classes;
 using PhoenixModel.Karte;
-using SharpDX.Direct2D1;
-using SharpDX.MediaFoundation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -94,7 +92,7 @@ namespace PhoenixDX.Structures
             }
         }
 
-        public Gemark? FindGemarkByPosition(Vector2 position)
+        public Gemark FindGemarkByPosition(Vector2 position)
         {
             return null;
         }
@@ -106,10 +104,12 @@ namespace PhoenixDX.Structures
             Kleinfeld.LoadContent(contentManager);
         }
 
+        public float TileTransparancy { get; set; } = 1f;
+
         float _previousScaleX = 0f;
         float _previousScaleY = 0f;
         int _trashCount = 0;
-        public void Draw(SpriteBatch spriteBatch, float scaleX, float scaleY)
+        public void Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch, float scaleX, float scaleY)
         {
             if (_previousScaleX != 0 && _trashCount < 2 && Math.Abs(scaleX - _previousScaleX) > 0.2f)
             {
@@ -117,10 +117,10 @@ namespace PhoenixDX.Structures
             }
             _previousScaleX = scaleX;
             _previousScaleY = scaleY;
-
+            Color colorTiles = Color.White* TileTransparancy;
 
             SpriteFont font = FontManager.Fonts["Small"];
-            spriteBatch.Begin();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
             Vector2 offset = new Vector2(30f*scaleX, 10f*scaleY);
 
@@ -131,18 +131,18 @@ namespace PhoenixDX.Structures
                 var posP = province.GetMapPosition(scaleX, scaleY); // aktualisiert die MapSize - Reihenfolge wichtig
                 posP.X += offset.X;
                 posP.Y += offset.Y; 
-                var sizeP = province.GetMapSize();
+                // var sizeP = province.GetMapSize();
                 foreach (var gemark in province.Felder.Values)
                 {
                     var posG = gemark.GetMapPosition(posP,scaleX, scaleY); // aktualisiert die MapSize - Reihenfolge wichtig
-                    var sizeG= gemark.GetMapSize();
+                    var sizeG= Kleinfeld.GetMapSize();
                     Rectangle rScreenG = new Rectangle(Convert.ToInt32(posG.X), Convert.ToInt32(posG.Y), Convert.ToInt32(sizeG.X), Convert.ToInt32(sizeG.Y));
 
                     var listTexture = gemark.GetTextures();
                     foreach (var hexTexture in listTexture)
                     {
                         // spriteBatch.Draw(hexTexture, posP, null, Color.Transparent);
-                        spriteBatch.Draw(hexTexture, rScreenG, null, Color.White);
+                        spriteBatch.Draw(hexTexture, rScreenG, null, colorTiles);
                     }
                 }
             }

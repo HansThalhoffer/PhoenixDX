@@ -398,11 +398,12 @@ namespace PhoenixWPF.Host
                         break;
 
                     // record the prevous and new position of the mouse
-                    System.Windows.Point p = PointToScreen(new System.Windows.Point(
+                    /*System.Windows.Point p = PointToScreen(new System.Windows.Point(
                         NativeMethods.GetXLParam((int)lParam),
                         NativeMethods.GetYLParam((int)lParam)));
-                    _mouseState.ScreenPosition = new Position(Convert.ToInt32(p.X), Convert.ToInt32(p.Y));
-                   
+                    _mouseState.ScreenPosition = new Position(Convert.ToInt32(p.X), Convert.ToInt32(p.Y));*/
+                    _mouseState.ScreenPosition = new Position(NativeMethods.GetXLParam((int)lParam), NativeMethods.GetYLParam((int)lParam));
+
                     if (!_mouseInWindow)
                     {
                         _mouseInWindow = true;

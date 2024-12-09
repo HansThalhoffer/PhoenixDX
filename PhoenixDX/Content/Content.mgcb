@@ -34,7 +34,7 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/SmallFont.spritefont
 
-#begin Images/auftauchpunkt_ocean.png
+#begin Images/maus1.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -44,9 +44,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/auftauchpunkt_ocean.png
+/build:Images/maus1.png
 
-#begin Images/auftauchpunkt_unbekannt.png
+#begin Images/maus2.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -56,9 +56,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/auftauchpunkt_unbekannt.png
+/build:Images/maus2.png
 
-#begin Images/auftauchpunkt.png
+#begin Images/TilesetN/mountain.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -68,9 +68,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/auftauchpunkt.png
+/build:Images/TilesetN/mountain.png
 
-#begin Images/bergland.png
+#begin Images/TilesetN/mountain1.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -80,9 +80,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/bergland.png
+/build:Images/TilesetN/mountain1.png
 
-#begin Images/bruecke_no.png
+#begin Images/TilesetN/mountain2.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -92,9 +92,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/bruecke_no.png
+/build:Images/TilesetN/mountain2.png
 
-#begin Images/bruecke_nw.png
+#begin Images/TilesetV/auftauchpunkt_ocean.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -104,9 +104,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/bruecke_nw.png
+/build:Images/TilesetV/auftauchpunkt_ocean.png
 
-#begin Images/bruecke_o.png
+#begin Images/TilesetV/auftauchpunkt_unbekannt.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -116,9 +116,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/bruecke_o.png
+/build:Images/TilesetV/auftauchpunkt_unbekannt.png
 
-#begin Images/bruecke_so.png
+#begin Images/TilesetV/auftauchpunkt.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -128,9 +128,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/bruecke_so.png
+/build:Images/TilesetV/auftauchpunkt.png
 
-#begin Images/bruecke_sw.png
+#begin Images/TilesetV/bergland.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -140,9 +140,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/bruecke_sw.png
+/build:Images/TilesetV/bergland.png
 
-#begin Images/bruecke_w.png
+#begin Images/TilesetV/bruecke_no.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -152,9 +152,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/bruecke_w.png
+/build:Images/TilesetV/bruecke_no.png
 
-#begin Images/deepsea.png
+#begin Images/TilesetV/bruecke_nw.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -164,9 +164,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/deepsea.png
+/build:Images/TilesetV/bruecke_nw.png
 
-#begin Images/deepseapoint.png
+#begin Images/TilesetV/bruecke_o.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -176,9 +176,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/deepseapoint.png
+/build:Images/TilesetV/bruecke_o.png
 
-#begin Images/defaultTerrain.png
+#begin Images/TilesetV/bruecke_so.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -188,9 +188,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/defaultTerrain.png
+/build:Images/TilesetV/bruecke_so.png
 
-#begin Images/desert.png
+#begin Images/TilesetV/bruecke_sw.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -200,9 +200,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/desert.png
+/build:Images/TilesetV/bruecke_sw.png
 
-#begin Images/fluss_no.png
+#begin Images/TilesetV/bruecke_w.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -212,9 +212,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/fluss_no.png
+/build:Images/TilesetV/bruecke_w.png
 
-#begin Images/fluss_nw.png
+#begin Images/TilesetV/deepsea.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -224,9 +224,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/fluss_nw.png
+/build:Images/TilesetV/deepsea.png
 
-#begin Images/fluss_o.png
+#begin Images/TilesetV/deepseapoint.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -236,9 +236,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/fluss_o.png
+/build:Images/TilesetV/deepseapoint.png
 
-#begin Images/fluss_so.png
+#begin Images/TilesetV/defaultTerrain.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -248,9 +248,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/fluss_so.png
+/build:Images/TilesetV/defaultTerrain.png
 
-#begin Images/fluss_sw.png
+#begin Images/TilesetV/desert.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -260,9 +260,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/fluss_sw.png
+/build:Images/TilesetV/desert.png
 
-#begin Images/fluss_w.png
+#begin Images/TilesetV/fluss_no.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -272,9 +272,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/fluss_w.png
+/build:Images/TilesetV/fluss_no.png
 
-#begin Images/forest.png
+#begin Images/TilesetV/fluss_nw.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -284,9 +284,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/forest.png
+/build:Images/TilesetV/fluss_nw.png
 
-#begin Images/Hexagon_gelb.png
+#begin Images/TilesetV/fluss_o.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -296,9 +296,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/Hexagon_gelb.png
+/build:Images/TilesetV/fluss_o.png
 
-#begin Images/Hexagon.png
+#begin Images/TilesetV/fluss_so.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -308,9 +308,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/Hexagon.png
+/build:Images/TilesetV/fluss_so.png
 
-#begin Images/HexagonHalfBottom.png
+#begin Images/TilesetV/fluss_sw.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -320,9 +320,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/HexagonHalfBottom.png
+/build:Images/TilesetV/fluss_sw.png
 
-#begin Images/HexagonHalfTop.png
+#begin Images/TilesetV/fluss_w.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -332,9 +332,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/HexagonHalfTop.png
+/build:Images/TilesetV/fluss_w.png
 
-#begin Images/HexagonNone.png
+#begin Images/TilesetV/forest.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -344,9 +344,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/HexagonNone.png
+/build:Images/TilesetV/forest.png
 
-#begin Images/highland.png
+#begin Images/TilesetV/Hexagon_gelb.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -356,9 +356,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/highland.png
+/build:Images/TilesetV/Hexagon_gelb.png
 
-#begin Images/kai_no.png
+#begin Images/TilesetV/Hexagon.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -368,9 +368,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/kai_no.png
+/build:Images/TilesetV/Hexagon.png
 
-#begin Images/kai_nw.png
+#begin Images/TilesetV/HexagonHalfBottom.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -380,9 +380,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/kai_nw.png
+/build:Images/TilesetV/HexagonHalfBottom.png
 
-#begin Images/kai_o.png
+#begin Images/TilesetV/HexagonHalfTop.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -392,9 +392,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/kai_o.png
+/build:Images/TilesetV/HexagonHalfTop.png
 
-#begin Images/kai_so.png
+#begin Images/TilesetV/HexagonNone.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -404,9 +404,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/kai_so.png
+/build:Images/TilesetV/HexagonNone.png
 
-#begin Images/kai_sw.png
+#begin Images/TilesetV/highland.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -416,9 +416,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/kai_sw.png
+/build:Images/TilesetV/highland.png
 
-#begin Images/kai_w.png
+#begin Images/TilesetV/kai_no.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -428,9 +428,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/kai_w.png
+/build:Images/TilesetV/kai_no.png
 
-#begin Images/Karte.png
+#begin Images/TilesetV/kai_nw.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -440,9 +440,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/Karte.png
+/build:Images/TilesetV/kai_nw.png
 
-#begin Images/mountain.png
+#begin Images/TilesetV/kai_o.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -452,9 +452,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/mountain.png
+/build:Images/TilesetV/kai_o.png
 
-#begin Images/ocean.png
+#begin Images/TilesetV/kai_so.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -464,9 +464,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/ocean.png
+/build:Images/TilesetV/kai_so.png
 
-#begin Images/reich_blau.png
+#begin Images/TilesetV/kai_sw.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -476,9 +476,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/reich_blau.png
+/build:Images/TilesetV/kai_sw.png
 
-#begin Images/reich_braun.png
+#begin Images/TilesetV/kai_w.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -488,9 +488,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/reich_braun.png
+/build:Images/TilesetV/kai_w.png
 
-#begin Images/reich_gelb.png
+#begin Images/TilesetV/Karte.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -500,9 +500,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/reich_gelb.png
+/build:Images/TilesetV/Karte.png
 
-#begin Images/reich_grau.png
+#begin Images/TilesetV/mountain.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -512,9 +512,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/reich_grau.png
+/build:Images/TilesetV/mountain.png
 
-#begin Images/reich_gruen.png
+#begin Images/TilesetV/ocean.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -524,9 +524,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/reich_gruen.png
+/build:Images/TilesetV/ocean.png
 
-#begin Images/reich_hellblau.png
+#begin Images/TilesetV/reich_blau.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -536,9 +536,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/reich_hellblau.png
+/build:Images/TilesetV/reich_blau.png
 
-#begin Images/reich_hellgruen.png
+#begin Images/TilesetV/reich_braun.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -548,9 +548,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/reich_hellgruen.png
+/build:Images/TilesetV/reich_braun.png
 
-#begin Images/reich_lila.png
+#begin Images/TilesetV/reich_gelb.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -560,9 +560,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/reich_lila.png
+/build:Images/TilesetV/reich_gelb.png
 
-#begin Images/reich_orange.png
+#begin Images/TilesetV/reich_grau.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -572,9 +572,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/reich_orange.png
+/build:Images/TilesetV/reich_grau.png
 
-#begin Images/reich_rot.png
+#begin Images/TilesetV/reich_gruen.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -584,9 +584,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/reich_rot.png
+/build:Images/TilesetV/reich_gruen.png
 
-#begin Images/reich_schwarz.png
+#begin Images/TilesetV/reich_hellblau.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -596,9 +596,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/reich_schwarz.png
+/build:Images/TilesetV/reich_hellblau.png
 
-#begin Images/reich_spielleitung.png
+#begin Images/TilesetV/reich_hellgruen.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -608,9 +608,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/reich_spielleitung.png
+/build:Images/TilesetV/reich_hellgruen.png
 
-#begin Images/reich_tuerkis.png
+#begin Images/TilesetV/reich_lila.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -620,9 +620,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/reich_tuerkis.png
+/build:Images/TilesetV/reich_lila.png
 
-#begin Images/reich_weiss.png
+#begin Images/TilesetV/reich_orange.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -632,9 +632,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/reich_weiss.png
+/build:Images/TilesetV/reich_orange.png
 
-#begin Images/strasse_no.gif
+#begin Images/TilesetV/reich_rot.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -644,9 +644,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/strasse_no.gif
+/build:Images/TilesetV/reich_rot.png
 
-#begin Images/strasse_nw.gif
+#begin Images/TilesetV/reich_schwarz.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -656,9 +656,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/strasse_nw.gif
+/build:Images/TilesetV/reich_schwarz.png
 
-#begin Images/strasse_o.gif
+#begin Images/TilesetV/reich_spielleitung.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -668,9 +668,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/strasse_o.gif
+/build:Images/TilesetV/reich_spielleitung.png
 
-#begin Images/strasse_so.gif
+#begin Images/TilesetV/reich_tuerkis.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -680,9 +680,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/strasse_so.gif
+/build:Images/TilesetV/reich_tuerkis.png
 
-#begin Images/strasse_sw.gif
+#begin Images/TilesetV/reich_weiss.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -692,9 +692,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/strasse_sw.gif
+/build:Images/TilesetV/reich_weiss.png
 
-#begin Images/strasse_w.gif
+#begin Images/TilesetV/strasse_no.gif
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -704,9 +704,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/strasse_w.gif
+/build:Images/TilesetV/strasse_no.gif
 
-#begin Images/swamp.png
+#begin Images/TilesetV/strasse_nw.gif
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -716,9 +716,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/swamp.png
+/build:Images/TilesetV/strasse_nw.gif
 
-#begin Images/tiefland.png
+#begin Images/TilesetV/strasse_o.gif
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -728,9 +728,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/tiefland.png
+/build:Images/TilesetV/strasse_o.gif
 
-#begin Images/undefined.png
+#begin Images/TilesetV/strasse_so.gif
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -740,9 +740,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/undefined.png
+/build:Images/TilesetV/strasse_so.gif
 
-#begin Images/wand_no.png
+#begin Images/TilesetV/strasse_sw.gif
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -752,9 +752,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/wand_no.png
+/build:Images/TilesetV/strasse_sw.gif
 
-#begin Images/wand_nw.png
+#begin Images/TilesetV/strasse_w.gif
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -764,9 +764,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/wand_nw.png
+/build:Images/TilesetV/strasse_w.gif
 
-#begin Images/wand_o.png
+#begin Images/TilesetV/swamp.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -776,9 +776,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/wand_o.png
+/build:Images/TilesetV/swamp.png
 
-#begin Images/wand_so.png
+#begin Images/TilesetV/tiefland.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -788,9 +788,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/wand_so.png
+/build:Images/TilesetV/tiefland.png
 
-#begin Images/wand_sw.png
+#begin Images/TilesetV/undefined.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -800,9 +800,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/wand_sw.png
+/build:Images/TilesetV/undefined.png
 
-#begin Images/wand_w.png
+#begin Images/TilesetV/wand_no.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -812,5 +812,65 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/wand_w.png
+/build:Images/TilesetV/wand_no.png
+
+#begin Images/TilesetV/wand_nw.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Images/TilesetV/wand_nw.png
+
+#begin Images/TilesetV/wand_o.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Images/TilesetV/wand_o.png
+
+#begin Images/TilesetV/wand_so.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Images/TilesetV/wand_so.png
+
+#begin Images/TilesetV/wand_sw.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Images/TilesetV/wand_sw.png
+
+#begin Images/TilesetV/wand_w.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Images/TilesetV/wand_w.png
 

@@ -52,5 +52,10 @@
             Y = Convert.ToInt32((float)Y * scaleY);
         }
 
+        public override string ToString()
+        {
+            return "X: " + X.ToString() + "  Y: " + Y.ToString();
+        }
+
     }
 }
