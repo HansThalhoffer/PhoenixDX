@@ -24,7 +24,7 @@ namespace PhoenixDX.Structures
             try
             {
                 string folder = "Images/TilesetV/";
-                if (image == "mountain")
+                /*if (image == "mountain")
                 {
                     hexTexture = contentManager.Load<Texture2D>("Images/TilesetN/" + image);
                     hexTextures.Add( contentManager.Load<Texture2D>("Images/TilesetN/mountain"));
@@ -32,6 +32,7 @@ namespace PhoenixDX.Structures
                     hexTextures.Add(contentManager.Load<Texture2D>("Images/TilesetN/mountain2"));
                 }
                 else
+                */
                     hexTexture = contentManager.Load<Texture2D>(folder + image);
             }
             catch (Exception ex)

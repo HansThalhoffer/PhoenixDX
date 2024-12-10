@@ -109,7 +109,7 @@ namespace PhoenixDX.Structures
         float _previousScaleX = 0f;
         float _previousScaleY = 0f;
         int _trashCount = 0;
-        public Kleinfeld? Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch, float scaleX, float scaleY, Vector2? mousePos)
+        public Kleinfeld? Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch, float scaleX, float scaleY, Vector2? mousePos, bool isMoving)
         {
             if (_previousScaleX != 0 && _trashCount < 2 && Math.Abs(scaleX - _previousScaleX) > 0.2f)
             {
@@ -143,7 +143,7 @@ namespace PhoenixDX.Structures
                     var posG = gemark.GetMapPosition(posP,scaleX, scaleY); // aktualisiert die MapSize - Reihenfolge wichtig
                     var sizeG= Kleinfeld.GetMapSize();
                     Rectangle rScreenG = new Rectangle(Convert.ToInt32(posG.X), Convert.ToInt32(posG.Y), Convert.ToInt32(sizeG.X), Convert.ToInt32(sizeG.Y));
-                    bool inKleinfeld = selected == null && gemark.InKleinfeld(mausPos);
+                    bool inKleinfeld = isMoving == false && selected == null && gemark.InKleinfeld(mausPos);
                     if (inKleinfeld)
                         selected = gemark;
 

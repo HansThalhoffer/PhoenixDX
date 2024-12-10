@@ -120,9 +120,12 @@ namespace PhoenixDX
             _scaleX =  (float) _virtualWidth / (float) _clientWidth * Zoom;
             _scaleY = (float) _virtualHeight / (float) _clientHeight * Zoom;
         }
+
+        bool _isMoving = false;
         void MoveCamera(Position delta)
         {
             _cameraPosition += delta;
+            _isMoving = true;
         }
         public Vector2 ClientToVirtualScreen(Position pos)
         {
@@ -134,7 +137,7 @@ namespace PhoenixDX
         {
             EnqueueAction(() =>
             {
-                _maus= args;
+                 _maus= args;
             });
         }
         
@@ -147,6 +150,7 @@ namespace PhoenixDX
             if (_maus?.Handled == false)
             {
                 _maus.Handled = true;
+                _isMoving = false;
                 switch (_maus.EventType)
                 {
                     case MausEventArgs.MouseEventType.LeftButtonDown:
@@ -165,7 +169,7 @@ namespace PhoenixDX
                         {
                             if (_maus.LeftButton == MausEventArgs.MouseButtonState.Pressed)
                             {
-                                Position delta = _maus.ScreenPositionDelta * 16;
+                                Position delta = _maus.ScreenPositionDelta*18;
                                 MoveCamera(delta);
                             }
                             break;
@@ -246,7 +250,7 @@ namespace PhoenixDX
             if (Weltkarte != null)
             {
                 Vector2? mousePos = _maus.ScreenPosition == null ? null : ClientToVirtualScreen(_maus.ScreenPosition);
-                Kleinfeld? gem = Weltkarte.Draw(_spriteBatch, _scaleX, _scaleY, mousePos);
+                Kleinfeld? gem = Weltkarte.Draw(_spriteBatch, _scaleX, _scaleY, mousePos, _isMoving);
             }
             
             /*if (_maus.ScreenPosition != null)
