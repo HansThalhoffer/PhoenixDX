@@ -107,6 +107,9 @@ namespace PhoenixDX
             {
                 _clientHeight = height;
                 _clientWidth = width;
+                _graphics.PreferredBackBufferWidth = width;
+                _graphics.PreferredBackBufferHeight = height;
+                _graphics.ApplyChanges();
                 _RecalcScale();
                 HideGameWindow();
             });
@@ -114,7 +117,7 @@ namespace PhoenixDX
 
         void _RecalcScale()
         {
-            _scaleX = (float) _virtualWidth / (float) _clientWidth * Zoom;
+            _scaleX =  (float) _virtualWidth / (float) _clientWidth * Zoom;
             _scaleY = (float) _virtualHeight / (float) _clientHeight * Zoom;
         }
         void MoveCamera(Position delta)
@@ -123,7 +126,7 @@ namespace PhoenixDX
         }
         public Vector2 ScreenToMap(Position pos)
         {
-            return new Vector2(pos.X * _scaleX + _cameraPosition.X, pos.Y * _scaleY + _cameraPosition.Y);
+            return new Vector2(pos.X - _cameraPosition.X , pos.Y - _cameraPosition.Y);
         }
 
         MausEventArgs _maus = new MausEventArgs();
@@ -253,7 +256,7 @@ namespace PhoenixDX
                 Vector2 mousePos = ScreenToMap(_maus.ScreenPosition);
                 _selected.Draw(_spriteBatch, mousePos, gameTime);
 
-                string statusText = "Maus " + _maus.ScreenPosition.ToString();
+                string statusText = "Maus " + mousePos.ToString();
                 SpriteFont font = FontManager.Fonts["Large"];
                 _spriteBatch.DrawString(font, statusText, new Vector2(10, 10), Color.Azure);
                 _spriteBatch.End();
