@@ -9,6 +9,8 @@ using Microsoft.Xna.Framework.Content;
 using System.Reflection;
 using static PhoenixModel.Karte.Terrain;
 using SharpDX.Direct2D1.Effects;
+using System.Drawing;
+using Microsoft.Xna.Framework;
 
 namespace PhoenixDX.Structures
 {
@@ -95,6 +97,33 @@ namespace PhoenixDX.Structures
 
             return true;
         }
+
+        #region Selection
+
+        public bool InKleinfeld(Microsoft.Xna.Framework.Vector2 mousePos)
+        {
+            if (mousePos == Vector2.Zero) 
+                return false;
+            if (_mapCoords.X > mousePos.X ||  _mapCoords.Y > mousePos.Y)
+                return false;
+            
+            if (mousePos.X > _mapCoords.X + Width *_scaleX * 0.85f || mousePos.Y > _mapCoords.Y + Height *_scaleY * 0.85f)
+               return false;
+            
+           /* PointF[] hexVertices = {
+                new PointF(_mapCoords.X, _mapCoords.Y - Height / 2f), // top
+                new PointF(_mapCoords.X + Width / 2f, _mapCoords.Y - Height / 4f), // top-right
+                new PointF(_mapCoords.X + Width / 2f, _mapCoords.Y + Height / 4f), // bottom-right
+                new PointF(_mapCoords.X, _mapCoords.Y + Height / 2f), // bottom
+                new PointF(_mapCoords.X - Width / 2f, _mapCoords.Y + Height / 4f), // bottom-left
+                new PointF(_mapCoords.X - Width / 2f, _mapCoords.Y - Height / 4f)  // top-left
+            };*/
+
+            return true;
+
+        }
+
+        #endregion
 
         #region Content
 

@@ -124,7 +124,7 @@ namespace PhoenixDX
         {
             _cameraPosition += delta;
         }
-        public Vector2 ScreenToMap(Position pos)
+        public Vector2 ClientToVirtualScreen(Position pos)
         {
             return new Vector2(pos.X - _cameraPosition.X , pos.Y - _cameraPosition.Y);
         }
@@ -151,9 +151,7 @@ namespace PhoenixDX
                 {
                     case MausEventArgs.MouseEventType.LeftButtonDown:
                         {
-                            Vector2 mousePos = ScreenToMap(_maus.ScreenPosition);
-                            Gemark gem = Weltkarte.FindGemarkByPosition(mousePos);
-                            break;
+                             break;
                         }
                     case MausEventArgs.MouseEventType.MiddleButtonDown:
                         {
@@ -247,20 +245,22 @@ namespace PhoenixDX
 
             if (Weltkarte != null)
             {
-                Weltkarte.Draw(_spriteBatch, _scaleX,_scaleY);
+                Vector2? mousePos = _maus.ScreenPosition == null ? null : ClientToVirtualScreen(_maus.ScreenPosition);
+                Kleinfeld? gem = Weltkarte.Draw(_spriteBatch, _scaleX, _scaleY, mousePos);
             }
             
-            if (_maus.ScreenPosition != null)
+            /*if (_maus.ScreenPosition != null)
             {
+                Vector2 mousePos = ClientToVirtualScreen(_maus.ScreenPosition);
                 _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-                Vector2 mousePos = ScreenToMap(_maus.ScreenPosition);
+              
                 _selected.Draw(_spriteBatch, mousePos, gameTime);
 
                 string statusText = "Maus " + mousePos.ToString();
                 SpriteFont font = FontManager.Fonts["Large"];
                 _spriteBatch.DrawString(font, statusText, new Vector2(10, 10), Color.Azure);
                 _spriteBatch.End();
-            }
+            }*/
 
             // Draw status text
             /*
