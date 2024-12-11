@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Classes;
 using PhoenixDX.Structures;
@@ -13,8 +14,15 @@ namespace PhoenixDX.Drawing
     internal static class WeltDrawer
     {
         static float _previousScaleX = 0f;
-        static float _previousScaleY = 0f;
         static int _trashCount = 0;
+        static Texture2D _weiss = null;
+
+        public static void LoadContent(ContentManager contentManager)
+        {
+            _weiss = contentManager.Load<Texture2D>("Images/hexweiss");
+        }
+
+
         public static Kleinfeld Draw(SpriteBatch spriteBatch, float scaleX, float scaleY, Vector2? mousePos, bool isMoving, float tileTransparancy, ref Dictionary<int, Provinz> provinzen)
         {
             if (_previousScaleX != 0 && _trashCount < 2 && Math.Abs(scaleX - _previousScaleX) > 0.2f)
@@ -22,8 +30,7 @@ namespace PhoenixDX.Drawing
                 ++_trashCount;
             }
             _previousScaleX = scaleX;
-            _previousScaleY = scaleY;
-            Color colorTiles = Color.White * tileTransparancy;
+             Color colorTiles = Color.White * tileTransparancy;
 
             SpriteFont font = FontManager.Fonts["Small"];
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
@@ -51,12 +58,18 @@ namespace PhoenixDX.Drawing
                     bool inKleinfeld = isMoving == false && selected == null && gemark.InKleinfeld(mausPos);
                     if (inKleinfeld)
                         selected = gemark;
+                  
 
                     var listTexture = gemark.GetTextures();
                     foreach (var hexTexture in listTexture)
                     {
                         // spriteBatch.Draw(hexTexture, posP, null, Color.Transparent);
                         spriteBatch.Draw(hexTexture, rScreenG, null, inKleinfeld ? Color.Plum : colorTiles);
+                    }
+                    if (gemark.Reich != null && inKleinfeld == false)
+                    {
+                        if (gemark.ReichID >0)
+                            spriteBatch.Draw(_weiss, rScreenG, null, inKleinfeld ? Color.Plum : gemark.Reich.color * 0.5f);
                     }
                 }
             }

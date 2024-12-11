@@ -16,7 +16,7 @@ namespace PhoenixDX
     public class MappaMundi
     {
         private Spiel _game;
-        IntPtr _hWnd;
+        private readonly IntPtr _hWnd;
      
         Thread _gameThread;
         CancellationTokenSource _cancellationTokenSource;
@@ -53,7 +53,7 @@ namespace PhoenixDX
 
         public void Run()
         {
-            _gameThread = new Thread(() => Start());
+            _gameThread = new Thread(() => this.Start());
             _gameThread.SetApartmentState(ApartmentState.STA);
             _gameThread.IsBackground = true;
             _gameThread.Start();

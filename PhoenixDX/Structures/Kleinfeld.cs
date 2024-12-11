@@ -18,8 +18,8 @@ namespace PhoenixDX.Structures
     public class Kleinfeld : Hex
     {
         
-        static Microsoft.Xna.Framework.Vector2 _mapCoords = new Microsoft.Xna.Framework.Vector2();
-        static Microsoft.Xna.Framework.Vector2 _mapSize = new Microsoft.Xna.Framework.Vector2();
+        static Microsoft.Xna.Framework.Vector2 _mapCoords = new();
+        static Microsoft.Xna.Framework.Vector2 _mapSize = new();
         static float _scaleX = 0;
         static float _scaleY = 0;
         public static readonly int TextureWidth = 138;
@@ -27,6 +27,14 @@ namespace PhoenixDX.Structures
         
         public int X { get; private set; } = 0;
         public int Y { get; private set; } = 0;
+        public int ReichID { get; private set; }
+
+        private Reich _reich = null;
+        public Reich Reich { get => _reich; 
+            set {  _reich = value;
+             Adorner.Add("Reich", value);
+            }
+        }
         public bool IsSelected { get; set; } = false;
         public string Bezeichner { get; private set; }
         public int ReichKennzahl { get; set; }
@@ -34,7 +42,7 @@ namespace PhoenixDX.Structures
 
         TerrainType _terrainType  = TerrainType.Default;
 
-        Dictionary<string, KleinfeldAdorner> _adorner = new Dictionary<string, KleinfeldAdorner>();
+        Dictionary<string, KleinfeldAdorner> _adorner = [];
         public Dictionary<string, KleinfeldAdorner> Adorner { get { return _adorner; } }
 
         public Kleinfeld(int gf, int kf): base(Hex.RadiusGemark, true)
@@ -92,6 +100,7 @@ namespace PhoenixDX.Structures
                 _terrainType = (TerrainType)gem.Gelaendetyp;
 
             Koordinaten =  new KartenKoordinaten(Koordinaten.gf, Koordinaten.kf, (int)gem.x, (int)gem.y);
+            ReichID = gem.Reich ?? -1;
             
             Adorner.Add("Fluss", new Fluss(gem));
             Adorner.Add("Kai", new Kai(gem));
@@ -172,6 +181,7 @@ namespace PhoenixDX.Structures
                     }
                 }
             }
+
             const string folder = "Images/TilesetV/";
             foreach (var adornerTexture in textureValues)
             {

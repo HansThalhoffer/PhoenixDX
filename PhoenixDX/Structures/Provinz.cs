@@ -25,7 +25,7 @@ namespace PhoenixDX.Structures
             get { return _gf.ToString(); }
         }
 
-        public Dictionary<int, Kleinfeld> Felder { get; set; } = new Dictionary<int, Kleinfeld>();
+        public Dictionary<int, Kleinfeld> Felder { get; set; } = [];
 
         public Provinz(int x, int y, int gf) : base(Hex.RadiusProvinz, false)
         {
@@ -60,7 +60,7 @@ namespace PhoenixDX.Structures
             return _mapSize;
         }
 
-        public Kleinfeld GetPKleinfeld(int kf)
+        public Kleinfeld GetKleinfeld(int kf)
         {
             if (Felder.ContainsKey(kf))
                 return Felder[kf];

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using PhoenixDX.Classes;
+using PhoenixDX.Drawing;
 using PhoenixDX.Structures;
 using PhoenixModel.Helper;
 using PhoenixModel.Karte;
@@ -206,6 +207,7 @@ namespace PhoenixDX
         {
             _spriteBatch = new Microsoft.Xna.Framework.Graphics.SpriteBatch(_graphics.GraphicsDevice);
             Content.RootDirectory = "Content";
+            WeltDrawer.LoadContent(Content);
             Welt.LoadContent(Content);
             FontManager.LoadContent(Content);
        }

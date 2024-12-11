@@ -5,6 +5,8 @@ using PhoenixDX.Classes;
 using PhoenixDX.Drawing;
 using PhoenixModel.Helper;
 using PhoenixModel.Karte;
+using SharpDX.Direct2D1.Effects;
+using SharpDX.MediaFoundation;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -13,14 +15,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace PhoenixDX.Structures
 {
     public class Welt
     {
-       
-        Dictionary<int, Provinz> Provinzen = new Dictionary<int, Provinz>();
-        Dictionary<int, Reich> Reiche = new Dictionary<int, Reich>();
+
+        Dictionary<int, Provinz> Provinzen = [] ;
+        Dictionary<int, Reich> Reiche = [];
 
 
 
@@ -81,7 +84,7 @@ namespace PhoenixDX.Structures
 
                     if (p != null)
                     {
-                        var k = p.GetPKleinfeld((int) gem.kf);
+                        var k = p.GetKleinfeld((int) gem.kf);
                         try
                         {
                             if (k.Initialize(gem) ==false)
@@ -107,10 +110,20 @@ namespace PhoenixDX.Structures
             IsInitalized = true;
             foreach (var nation in nations)
             {
-                if (Reiche.ContainsKey ( nation.Nummer.Value) == false)
+                if (Reiche.ContainsKey(nation.Nummer.Value) == false)
                     Reiche.Add(nation.Nummer ?? -1, new Reich(nation));
                 else
                     break;
+            }
+
+            foreach (var province in Provinzen.Values)
+            {
+                foreach (var kleinfeld in province.Felder.Values)
+                {
+                    if (Reiche.ContainsKey(kleinfeld.ReichID) == true)
+                        kleinfeld.Reich = Reiche[kleinfeld.ReichID];
+
+                }
             }
         }
 
