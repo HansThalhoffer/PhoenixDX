@@ -1,4 +1,5 @@
-﻿using PhoenixModel.Database;
+﻿using PhoenixDX.Structures;
+using PhoenixModel.Database;
 using PhoenixModel.Helper;
 using PhoenixModel.Karte;
 using PhoenixWPF.Database;
@@ -6,9 +7,11 @@ using PhoenixWPF.Dialogs;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Data.OleDb;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using static PhoenixModel.Database.PasswordHolder;
@@ -19,9 +22,9 @@ namespace PhoenixWPF.Program
     {
         EncryptedString _encryptedpassword;
         string _databaseFileName;
-        Dictionary<string, Gemark> map = new Dictionary<string, Gemark>();
-
-        public Dictionary<string, Gemark> Map { get => map; set => map = value; }
+        Dictionary<string, Gemark> _map = new Dictionary<string, Gemark>();
+     
+        public Dictionary<string, Gemark> Map { get => _map; set => _map = value; }
 
         public Karte(string databaseFileName, EncryptedString encryptedpassword)
         {
@@ -56,23 +59,61 @@ namespace PhoenixWPF.Program
                         var gemark = LoadGemark(reader);
                         if (gemark.db_xy != null)
                         {
-                            if (map.ContainsKey(gemark.Bezeichner) == false)
-                                map.Add(gemark.Bezeichner, gemark);
+                            if (_map.ContainsKey(gemark.Bezeichner) == false)
+                                _map.Add(gemark.Bezeichner, gemark);
                             else
-                                map[gemark.Bezeichner] = gemark;
+                                _map[gemark.Bezeichner] = gemark;
                         }
 
                     }
                 }
-                int total = map.Count();
-                connector?.Close();
+                int total = _map.Count();
                 SharedData.Map = new BlockingCollection<Dictionary<string, Gemark>>(1);
-                SharedData.Map.Add(map);
+                SharedData.Map.Add(_map);
                 SharedData.Map.CompleteAdding();
+
+                SharedData.Nationen = new BlockingCollection<Nation>();
+                using (var reader = connector?.OpenReader("SELECT * FROM " + Nation.TableName))
+                {
+                    while (reader != null && reader.Read())
+                    {
+                        var reich = LoadNation(reader);
+                        SharedData.Nationen.Add(reich);
+                    }
+                }
+                SharedData.Nationen.CompleteAdding();
+                
+                connector?.Close();
                 return total;
             }
-        }       
+        }
+        Nation LoadNation(DbDataReader reader)
+        {
+            var reich = new Nation
+            {
+                Nummer = AccessDatabase.ToInt(reader["Nummer"]),
+                Reich = AccessDatabase.ToString(reader["Reich"]),
+                DBname = AccessDatabase.ToString(reader["DBname"]),
+                DBpass = AccessDatabase.ToString(reader["DBpass"])
+            };
+            foreach (var defData in ReichDefaultData.Vorbelegung)
+            {
+                foreach(var name in defData.Alias)
+                {
+                    if (name.ToUpper() == reich.Reich.ToUpper())
+                    {
+                        reich.Alias = defData.Alias;
+                        reich.Farbname = defData.Farbname;
+                        reich.Farbe = System.Drawing.ColorTranslator.FromHtml(defData.FarbeHex);
+                        break;
+                    }
+                }
+                if (reich.Farbname != null)
+                    break;
+            }
 
+            return reich;
+        }
         Gemark LoadGemark(DbDataReader reader)
         {
             return new Gemark
@@ -143,6 +184,8 @@ namespace PhoenixWPF.Program
             };
         }
 
+        
+        
         public void Dispose()
         {
         }

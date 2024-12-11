@@ -8,6 +8,11 @@ using System.Threading.Tasks;
 
 namespace PhoenixWPF.Database
 {
+    /// <summary>
+    /// die Settings werden automatisch gespeichert, wenn Änderungen stattfinden.
+    /// wenn alles neu gemacht werden soll, dann müssen die Settings gelöscht werden im
+    /// Roaming App Data des Benutzers
+    /// </summary>
     public class AppSettings :IDisposable
     {
         public UserSettings UserSettings { get; private set; }

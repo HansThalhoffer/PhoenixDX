@@ -13,5 +13,10 @@ namespace PhoenixModel
         {
             get;
         }
+
+        public abstract string Bezeichner
+        {
+            get;
+        }
     }
 }

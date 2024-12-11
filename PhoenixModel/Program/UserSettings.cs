@@ -8,15 +8,34 @@ namespace PhoenixModel.Program
 {
     using System.ComponentModel;
 
+    /// <summary>
+    /// die Settings werden automatisch gespeichert, wenn Änderungen stattfinden.
+    /// wenn alles neu gemacht werden soll, dann müssen die Settings gelöscht werden im
+    /// Roaming App Data des Benutzers
+    /// </summary>
     public class UserSettings : INotifyPropertyChanged
     {
         private string _databaseLocationKarte;
+        private string _defaultValuesReiche;
         private bool _showWindowNavigator;
         private bool _showWindowProperties;
         private bool _showWindowDiplomacy;
         private string _passworPZE;
 
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        public string DefaultValuesReiche
+        {
+            get => _defaultValuesReiche;
+            set
+            {
+                if (_defaultValuesReiche != value)
+                {
+                    _defaultValuesReiche = value;
+                    OnPropertyChanged(nameof(DatabaseLocationKarte));
+                }
+            }
+        }
 
         public string DatabaseLocationKarte
         {
@@ -85,6 +104,7 @@ namespace PhoenixModel.Program
         public UserSettings()
         {
             _databaseLocationKarte = "_Data\\Kartendaten\\Erkenfarakarte.mdb";
+            _defaultValuesReiche = "_Data\\EinstellungenReiche.txt";
             _showWindowNavigator = true;
             _showWindowProperties = true;
             _showWindowDiplomacy = true;

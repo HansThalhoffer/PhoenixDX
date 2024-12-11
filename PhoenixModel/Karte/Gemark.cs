@@ -81,7 +81,6 @@ namespace PhoenixModel.Karte
             int i = gf * 100 + kf;
             return i.ToString();
         }
-
         public string Bezeichner { get => CreateBezeichner(gf, kf);  }
 
         private static readonly string[] PropertiestoIgnore = { "x", "y","Rand","db_xy","ph_xy"};

@@ -25,7 +25,6 @@ namespace PhoenixWPF.Program
             Settings.InitializeSettings();
             LoadKarte();
         }
-
         public bool LoadKarte()
         {
             if (Settings ==null)

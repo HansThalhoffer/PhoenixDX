@@ -7,5 +7,6 @@ namespace PhoenixModel.Helper
     public static class SharedData
     {
         public static BlockingCollection<Dictionary<string, Gemark>>? Map { get; set; }
+        public static BlockingCollection<Nation>? Nationen { get; set; }
     }
 }
