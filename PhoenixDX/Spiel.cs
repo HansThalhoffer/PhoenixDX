@@ -212,21 +212,19 @@ namespace PhoenixDX
 
         protected override void Update(GameTime gameTime)
         {
-            
             if (_cancellationToken.IsCancellationRequested)
-            {
                 Exit();
-            }
 
             // Process queued actions
             while (_actionQueue.TryDequeue(out var action))
-            {
                 action();
-            }
 
             if (Weltkarte == null && SharedData.Map != null && SharedData.Map.IsAddingCompleted)
-            {
                 Weltkarte = new Welt(SharedData.Map);
+            else if (Weltkarte != null && Weltkarte.IsInitalized == false && SharedData.Nationen != null && SharedData.Nationen.IsAddingCompleted)
+            {
+                Weltkarte.AddNationen(SharedData.Nationen);
+
             }
 
             HandleInput();

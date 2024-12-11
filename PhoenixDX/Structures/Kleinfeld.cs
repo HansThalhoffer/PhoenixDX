@@ -139,7 +139,10 @@ namespace PhoenixDX.Structures
                 textures.Add(gel.GetTexture());
             foreach(var adorner in Adorner.Values)
             {
-                textures.AddRange(adorner.GetTextures());
+                if (adorner.HasDirections)
+                    textures.AddRange(adorner.GetTextures());
+                else
+                    textures.Add(adorner.GetTexture());
             }
             
             return textures;

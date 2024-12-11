@@ -54,7 +54,14 @@ namespace PhoenixDX.Structures
             _value[ (int)Direction.W] = (int)W;
         }
 
-        public List<Texture2D> GetTextures()
+        public bool HasDirections = true;
+
+        virtual public Texture2D GetTexture()
+        {
+            return null;
+        }
+
+        virtual public List<Texture2D> GetTextures()
         {
             List<Texture2D> textures = new List<Texture2D>();
             foreach (Direction direction in Enum.GetValues(typeof(Direction)))

@@ -11,20 +11,22 @@ using static PhoenixModel.Karte.Terrain;
 
 namespace PhoenixDX.Structures
 {
-    public class Reich
+    public class Reich : KleinfeldAdorner
     {
         public Color color;
         public string name;
         static Dictionary<string, Texture2D> reichsFarben = new Dictionary<string, Texture2D>();
         Texture2D hexTexture = null;
 
-        public Texture2D GetTexture()
+        public override Texture2D GetTexture()
         {
             return hexTexture;
         }
 
         public Reich(Nation nation)
         {
+            HasDirections = false;
+
             color = new Color(nation.Farbe.Value.R, nation.Farbe.Value.G, nation.Farbe.Value.B);
             name = nation.Reich;
             if (reichsFarben.ContainsKey(nation.Farbname))
@@ -33,7 +35,7 @@ namespace PhoenixDX.Structures
             }
         }
 
-        public static void LoadContent(ContentManager contentManager)
+        public static void LoadContent(ContentManager contentManager) 
         {
             reichsFarben.Add("blau",contentManager.Load<Texture2D>("Images/Reichsfarben/reich_blau"));
             reichsFarben.Add("braun", contentManager.Load<Texture2D>("Images/Reichsfarben/reich_braun"));
@@ -48,5 +50,17 @@ namespace PhoenixDX.Structures
             reichsFarben.Add("tuerkis", contentManager.Load<Texture2D>("Images/Reichsfarben/reich_tuerkis"));
             reichsFarben.Add("weiss", contentManager.Load<Texture2D>("Images/Reichsfarben/reich_weiss"));
         }
+
+        public override AdornerTexture GetAdornerTexture()
+        {
+            return null;
+        }
+
+        public override List<Texture2D> GetTextures()
+        {
+            return new List<Texture2D>() { hexTexture };
+        }
+
+       
     }
 }
