@@ -1,10 +1,15 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using PhoenixModel.Helper;
+using SharpDX.Direct3D9;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace PhoenixDX
 {
@@ -27,7 +32,7 @@ namespace PhoenixDX
             try
             {
                 _cancellationTokenSource = new CancellationTokenSource();
-                _game = new Spiel(_hWnd, _cancellationTokenSource.Token);
+                _game = new Spiel(_hWnd, _cancellationTokenSource.Token, this);
                 _game?.Run();
             }
             catch (Exception ex)
@@ -54,9 +59,24 @@ namespace PhoenixDX
             _gameThread.Start();
         }
 
-        public void ShowKarte(Dictionary<string, PhoenixModel.Karte.Gemark> map)
+        public void Update()
         {
             
+        }
+
+        public delegate void MapEventHandler(object sender, MapEventArgs e);
+        public event MapEventHandler OnMapEvent;
+
+        private void _OnMapEvent(MapEventArgs args)
+        {
+            if (OnMapEvent == null)
+                return;
+            OnMapEvent(this, args);
+        }
+
+        public void SelectKleinfeld(int gf, int kf, MausEventArgs.MouseEventType eventType)
+        {
+            _OnMapEvent(new MapEventArgs(gf, kf, MapEventArgs.MapEventType.SelectGemark));
         }
 
         public void Exit()

@@ -19,8 +19,10 @@ namespace PhoenixWPF.Program
     {
         EncryptedString _encryptedpassword;
         string _databaseFileName;
+        Dictionary<string, Gemark> map = new Dictionary<string, Gemark>();
 
-        
+        public Dictionary<string, Gemark> Map { get => map; set => map = value; }
+
         public Karte(string databaseFileName, EncryptedString encryptedpassword)
         {
            _databaseFileName = databaseFileName;
@@ -47,9 +49,6 @@ namespace PhoenixWPF.Program
             {
                 if (connector?.Open() == false)
                     return 0;
-
-                Dictionary<string, Gemark> map = new Dictionary<string, Gemark>();
-
                 using (var reader = connector?.OpenReader("SELECT * FROM " + Gemark.TableName))
                 {
                     while (reader != null && reader.Read())
@@ -57,10 +56,10 @@ namespace PhoenixWPF.Program
                         var gemark = LoadGemark(reader);
                         if (gemark.db_xy != null)
                         {
-                            if (map.ContainsKey(gemark.db_xy) == false)
-                                map.Add(gemark.db_xy, gemark);
+                            if (map.ContainsKey(gemark.Bezeichner) == false)
+                                map.Add(gemark.Bezeichner, gemark);
                             else
-                                map[gemark.db_xy] = gemark;
+                                map[gemark.Bezeichner] = gemark;
                         }
 
                     }

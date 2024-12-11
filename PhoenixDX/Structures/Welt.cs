@@ -109,7 +109,7 @@ namespace PhoenixDX.Structures
         float _previousScaleX = 0f;
         float _previousScaleY = 0f;
         int _trashCount = 0;
-        public Kleinfeld? Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch, float scaleX, float scaleY, Vector2? mousePos, bool isMoving)
+        public Kleinfeld Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch, float scaleX, float scaleY, Vector2? mousePos, bool isMoving)
         {
             if (_previousScaleX != 0 && _trashCount < 2 && Math.Abs(scaleX - _previousScaleX) > 0.2f)
             {
@@ -128,8 +128,7 @@ namespace PhoenixDX.Structures
             {
                 mausPos = new Vector2(mousePos.Value.X, mousePos.Value.Y);
             }
-            Kleinfeld? selected = null;
-
+            Kleinfeld selected = null;
             // Draw the map with culling
             foreach (var province in Provinzen.Values)
             {

@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace HexMapGenerator
 {
-    public struct RectangleF
+    /*public struct RectangleF
     {
         public float X, Y, Width, Height;
 
@@ -20,5 +20,5 @@ namespace HexMapGenerator
             return point.X >= X && point.X <= X + Width &&
                    point.Y >= Y && point.Y <= Y + Height;
         }
-    }
+    }*/
 }

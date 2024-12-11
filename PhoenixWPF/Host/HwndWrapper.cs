@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------------
 #endregion
 
+using PhoenixDX;
 using PhoenixModel.Helper;
 using System;
 using System.ComponentModel;
@@ -230,6 +231,7 @@ namespace PhoenixWPF.Host
 
         #region HWND Management
         private PhoenixDX.MappaMundi? _map;
+        private PhoenixWPF.Spiel _spiel = new PhoenixWPF.Spiel();
         protected override HandleRef BuildWindowCore(HandleRef hwndParent)
         {
             // Create the host window as a child of the parent
@@ -239,9 +241,19 @@ namespace PhoenixWPF.Host
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject()) == false)
             {
                 _map = new PhoenixDX.MappaMundi(_hWnd);
+                _map.OnMapEvent += new MappaMundi.MapEventHandler(MapEventHandler);
                 _map.Run();
             }
             return new HandleRef(this, _hWnd);
+        }
+
+        // dispatch events from the game engine thread back to UI
+        public void MapEventHandler(object sender, MapEventArgs e)
+        {
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                _spiel.MapEventHandler(e);
+            }));
         }
 
         protected override void DestroyWindowCore(HandleRef hwnd)

@@ -31,17 +31,18 @@ namespace PhoenixDX
         int _clientHeight = _virtualHeight;
 
         public Welt Weltkarte { get; private set; }
-        private Selection _selected = new Selection();
-
-
+        private Kleinfeld _selected = null;
+        private Kleinfeld _mouseOver = null;
+        private MappaMundi _wpfBridge;
 
         public void EnqueueAction(Action action)
         {
             _actionQueue.Enqueue(action);
         }
 
-        public Spiel(IntPtr windowHandle, CancellationToken token)
+        public Spiel(IntPtr windowHandle, CancellationToken token, MappaMundi bridge)
         {
+            _wpfBridge = bridge;
             _clientWidth = _virtualWidth;
             _clientHeight = _virtualWidth;
             Zoom = 0.4f;
@@ -154,8 +155,18 @@ namespace PhoenixDX
                 switch (_maus.EventType)
                 {
                     case MausEventArgs.MouseEventType.LeftButtonDown:
-                        {
-                             break;
+                        { // single click
+
+                            if (_selected != null)
+                                _selected.IsSelected = false;
+
+                            _selected = _mouseOver;
+                            if (_selected != null)
+                            {
+                                _selected.IsSelected = true;
+                                _wpfBridge.SelectKleinfeld(_selected.Koordinaten.gf, _selected.Koordinaten.kf, _maus.EventType);
+                            }
+                            break;
                         }
                     case MausEventArgs.MouseEventType.MiddleButtonDown:
                         {
@@ -186,6 +197,8 @@ namespace PhoenixDX
                             break;
                         }
                 }
+               
+
             }
         }
 
@@ -195,8 +208,7 @@ namespace PhoenixDX
             Content.RootDirectory = "Content";
             Welt.LoadContent(Content);
             FontManager.LoadContent(Content);
-            _selected.LoadContent(Content);
-        }
+       }
 
         protected override void Update(GameTime gameTime)
         {
@@ -212,7 +224,7 @@ namespace PhoenixDX
                 action();
             }
 
-            if (Weltkarte == null && SharedData.Map != null && SharedData.Map.IsAddingCompleted && Weltkarte == null)
+            if (Weltkarte == null && SharedData.Map != null && SharedData.Map.IsAddingCompleted)
             {
                 Dictionary<string, Gemark> map = SharedData.Map.FirstOrDefault();
                 Weltkarte = new Welt(map);
@@ -250,7 +262,7 @@ namespace PhoenixDX
             if (Weltkarte != null)
             {
                 Vector2? mousePos = _maus.ScreenPosition == null ? null : ClientToVirtualScreen(_maus.ScreenPosition);
-                Kleinfeld? gem = Weltkarte.Draw(_spriteBatch, _scaleX, _scaleY, mousePos, _isMoving);
+                _mouseOver = Weltkarte.Draw(_spriteBatch, _scaleX, _scaleY, mousePos, _isMoving);
             }
             
             /*if (_maus.ScreenPosition != null)

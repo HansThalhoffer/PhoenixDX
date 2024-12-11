@@ -66,8 +66,8 @@
 
                 <!-- Bottom TabControl -->
                 <TabControl Grid.Row="2" Margin="5" Name="BottomTabControl">
-                    <TabItem Header="Bottom Tab A" Name="BottomTabA">
-                        <TextBlock Text="Content of Bottom Tab A" Margin="10" />
+                    <TabItem Header="Eigenschaften" Name="BottomTabA">
+                        <Frame Source="Pages/PropertyListPage.xaml" />
                     </TabItem>
                     <TabItem Header="Bottom Tab B" Name="BottomTabB">
                         <TextBlock Text="Content of Bottom Tab B" Margin="10" />

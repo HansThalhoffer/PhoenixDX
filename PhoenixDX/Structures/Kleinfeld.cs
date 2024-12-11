@@ -11,19 +11,26 @@ using static PhoenixModel.Karte.Terrain;
 using SharpDX.Direct2D1.Effects;
 using System.Drawing;
 using Microsoft.Xna.Framework;
+using System.Collections.Concurrent;
 
 namespace PhoenixDX.Structures
 {
     public class Kleinfeld : Hex
     {
-        public int ReichKennzahl { get; set; }
-        public KartenKoordinaten Koordinaten { get; private set; }
-
+        
+        static Microsoft.Xna.Framework.Vector2 _mapCoords = new Microsoft.Xna.Framework.Vector2();
+        static Microsoft.Xna.Framework.Vector2 _mapSize = new Microsoft.Xna.Framework.Vector2();
+        static float _scaleX = 0;
+        static float _scaleY = 0;
         public static readonly int TextureWidth = 138;
         public static readonly int TextureHeight = 160;
-        public int X { get; private set; }
-        public int Y { get; private set; }
+        
+        public int X { get; private set; } = 0;
+        public int Y { get; private set; } = 0;
+        public bool IsSelected { get; set; } = false;
         public string Bezeichner { get; private set; }
+        public int ReichKennzahl { get; set; }
+        public KartenKoordinaten Koordinaten { get; private set; }
 
         TerrainType _terrainType  = TerrainType.Default;
 
@@ -40,10 +47,7 @@ namespace PhoenixDX.Structures
             Bezeichner = kf.ToString();
         }
 
-        static Microsoft.Xna.Framework.Vector2 _mapCoords = new Microsoft.Xna.Framework.Vector2();
-        static Microsoft.Xna.Framework.Vector2 _mapSize = new Microsoft.Xna.Framework.Vector2();
-        static float _scaleX = 0;
-        static float _scaleY = 0;
+    
 
         public static Microsoft.Xna.Framework.Vector2 GetMapSize()
         {

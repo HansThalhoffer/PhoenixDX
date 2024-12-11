@@ -1,16 +1,18 @@
 ﻿// Gemark.cs
 
 using PhoenixModel.Database;
+using PhoenixModel.Helper;
+using System.Reflection.Metadata.Ecma335;
 
 namespace PhoenixModel.Karte
 {
-    public class Gemark : IDatabaseTable
+    public class Gemark : IPropertyHolder, IDatabaseTable
     {
         public const string TableName = "Karte";
         string IDatabaseTable.TableName => TableName;
 
         public int gf { get; set; } = 0;
-        public int? kf { get; set; }
+        public int kf { get; set; } = 0;
         public string? ph_xy { get; set; }
         public int x { get; set; } = 0;
         public int? y { get; set; }
@@ -72,5 +74,24 @@ namespace PhoenixModel.Karte
         public int? Baupunkte { get; set; }
         public string? Bauwerknamen { get; set; }
         public int? lehensid { get; set; }
+
+
+        public static string CreateBezeichner(int gf, int kf)
+        {
+            int i = gf * 100 + kf;
+            return i.ToString();
+        }
+
+        public string Bezeichner { get => CreateBezeichner(gf, kf);  }
+
+        private static readonly string[] PropertiestoIgnore = { "x", "y","Rand","db_xy","ph_xy"};
+        public Dictionary<string, string> Properties
+        {
+            get
+            {
+                return PropertiesProcessor.CreateProperties(this, PropertiestoIgnore);
+            }
+
+        }
     }
 }
