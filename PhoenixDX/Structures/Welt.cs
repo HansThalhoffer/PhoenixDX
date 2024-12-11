@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Classes;
+using PhoenixModel.Helper;
 using PhoenixModel.Karte;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace PhoenixDX.Structures
 
         
 
-        public Welt(Dictionary<string, Gemark> map) 
+        public Welt(SharedData.BlockingDictionary<Gemark> map) 
         {
             Provinzen.Add(701, new Provinz(7, 0, 701));
             Provinzen.Add(901, new Provinz(9, 0, 901));

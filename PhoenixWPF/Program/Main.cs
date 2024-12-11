@@ -8,7 +8,7 @@ using PhoenixModel.Database;
 using PhoenixModel.Program;
 using PhoenixWPF.Database;
 using PhoenixWPF.Helper;
-using static PhoenixWPF.Program.Karte;
+using static PhoenixWPF.Program.ErkenfaraKarte;
 
 namespace PhoenixWPF.Program
 {
@@ -31,11 +31,25 @@ namespace PhoenixWPF.Program
                 return false;
 
             Settings.UserSettings.DatabaseLocationKarte = FileSystem.LocateFile(Settings.UserSettings.DatabaseLocationKarte);
-            PasswordHolder pwdHolder = new PasswordHolder(Settings.UserSettings.PassworPZE, new PasswortProvider());
-            Settings.UserSettings.PassworPZE = pwdHolder.EncryptedPasswordBase64;
-            using (Karte karte = new Karte(Settings.UserSettings.DatabaseLocationKarte, Settings.UserSettings.PassworPZE))
+            PasswordHolder pwdHolder = new PasswordHolder(Settings.UserSettings.PasswordKarte, new PasswortProvider());
+            Settings.UserSettings.PasswordKarte = pwdHolder.EncryptedPasswordBase64;
+            using (ErkenfaraKarte karte = new ErkenfaraKarte(Settings.UserSettings.DatabaseLocationKarte, Settings.UserSettings.PasswordKarte))
             {
                 return karte.Load() >0;
+            }
+        }
+
+        public bool LoadPZE()
+        {
+            if (Settings == null)
+                return false;
+
+            Settings.UserSettings.DatabaseLocationPZE = FileSystem.LocateFile(Settings.UserSettings.DatabaseLocationPZE);
+            PasswordHolder pwdHolder = new PasswordHolder(Settings.UserSettings.PasswordPZE, new PasswortProvider());
+            Settings.UserSettings.PasswordPZE = pwdHolder.EncryptedPasswordBase64;
+            using (PZE pze = new PZE(Settings.UserSettings.DatabaseLocationPZE, Settings.UserSettings.PasswordPZE))
+            {
+                return pze.Load() > 0;
             }
         }
 

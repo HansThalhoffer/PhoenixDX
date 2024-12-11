@@ -67,13 +67,13 @@ namespace Tests
             settings.UserSettings.DatabaseLocationKarte = FileSystem.LocateFile(settings.UserSettings.DatabaseLocationKarte);
 
             // Arrange
-            PasswordHolder pwdHolder = new PasswordHolder(settings.UserSettings.PassworPZE, new PasswortProvider());
-            settings.UserSettings.PassworPZE = pwdHolder.EncryptedPasswordBase64;
+            PasswordHolder pwdHolder = new PasswordHolder(settings.UserSettings.PasswordKarte, new PasswortProvider());
+            settings.UserSettings.PasswordKarte = pwdHolder.EncryptedPasswordBase64;
             string? databasePassword = pwdHolder.DecryptPassword();
             Assert.NotNull(databasePassword);
             Assert.NotEmpty(databasePassword);
 
-            using (Karte karte = new Karte(settings.UserSettings.DatabaseLocationKarte, settings.UserSettings.PassworPZE))
+            using (ErkenfaraKarte karte = new ErkenfaraKarte(settings.UserSettings.DatabaseLocationKarte, settings.UserSettings.PasswordKarte))
             {
                 int count = karte.Load();
                 Assert.Equal(9306, count);

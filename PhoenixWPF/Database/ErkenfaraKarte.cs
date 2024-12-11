@@ -18,15 +18,11 @@ using static PhoenixModel.Database.PasswordHolder;
 
 namespace PhoenixWPF.Program
 {
-    public class Karte: IDisposable
+    public class ErkenfaraKarte: IDisposable
     {
         EncryptedString _encryptedpassword;
-        string _databaseFileName;
-        Dictionary<string, Gemark> _map = new Dictionary<string, Gemark>();
-     
-        public Dictionary<string, Gemark> Map { get => _map; set => _map = value; }
-
-        public Karte(string databaseFileName, EncryptedString encryptedpassword)
+        string _databaseFileName;     
+        public ErkenfaraKarte(string databaseFileName, EncryptedString encryptedpassword)
         {
            _databaseFileName = databaseFileName;
             _encryptedpassword = encryptedpassword;
@@ -38,7 +34,7 @@ namespace PhoenixWPF.Program
             {
                 get 
                 {
-                    PasswordDialog dialog = new PasswordDialog("Das Passwort für die PZE.mdb Datenbank bitte eingeben");
+                    PasswordDialog dialog = new PasswordDialog("Das Passwort für die Erkenfarakarte.mdb Datenbank bitte eingeben");
                     dialog.ShowDialog();
                     return dialog.ProvidePassword();
                 }
@@ -52,6 +48,7 @@ namespace PhoenixWPF.Program
             {
                 if (connector?.Open() == false)
                     return 0;
+                SharedData.Map = new SharedData.BlockingDictionary<Gemark>(2, 6530);
                 using (var reader = connector?.OpenReader("SELECT * FROM " + Gemark.TableName))
                 {
                     while (reader != null && reader.Read())
@@ -59,61 +56,23 @@ namespace PhoenixWPF.Program
                         var gemark = LoadGemark(reader);
                         if (gemark.db_xy != null)
                         {
-                            if (_map.ContainsKey(gemark.Bezeichner) == false)
-                                _map.Add(gemark.Bezeichner, gemark);
+                            if (SharedData.Map.ContainsKey(gemark.Bezeichner) == false)
+                                SharedData.Map.TryAdd(gemark.Bezeichner, gemark);
                             else
-                                _map[gemark.Bezeichner] = gemark;
+                                SharedData.Map[gemark.Bezeichner] = gemark;
                         }
 
                     }
                 }
-                int total = _map.Count();
-                SharedData.Map = new BlockingCollection<Dictionary<string, Gemark>>(1);
-                SharedData.Map.Add(_map);
-                SharedData.Map.CompleteAdding();
-
-                SharedData.Nationen = new BlockingCollection<Nation>();
-                using (var reader = connector?.OpenReader("SELECT * FROM " + Nation.TableName))
-                {
-                    while (reader != null && reader.Read())
-                    {
-                        var reich = LoadNation(reader);
-                        SharedData.Nationen.Add(reich);
-                    }
-                }
-                SharedData.Nationen.CompleteAdding();
-                
+                int total = SharedData.Map.Count();
+              
+                SharedData.Map.IsAddingCompleted = true;
                 connector?.Close();
                 return total;
             }
         }
-        Nation LoadNation(DbDataReader reader)
-        {
-            var reich = new Nation
-            {
-                Nummer = AccessDatabase.ToInt(reader["Nummer"]),
-                Reich = AccessDatabase.ToString(reader["Reich"]),
-                DBname = AccessDatabase.ToString(reader["DBname"]),
-                DBpass = AccessDatabase.ToString(reader["DBpass"])
-            };
-            foreach (var defData in ReichDefaultData.Vorbelegung)
-            {
-                foreach(var name in defData.Alias)
-                {
-                    if (name.ToUpper() == reich.Reich.ToUpper())
-                    {
-                        reich.Alias = defData.Alias;
-                        reich.Farbname = defData.Farbname;
-                        reich.Farbe = System.Drawing.ColorTranslator.FromHtml(defData.FarbeHex);
-                        break;
-                    }
-                }
-                if (reich.Farbname != null)
-                    break;
-            }
 
-            return reich;
-        }
+
         Gemark LoadGemark(DbDataReader reader)
         {
             return new Gemark

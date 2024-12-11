@@ -18,18 +18,18 @@ namespace PhoenixModel.Karte
         public static ReichDefaultData[] Vorbelegung =
         {
                 new ReichDefaultData( new string[] { "Kein Reich", "keinreich",  "kein reich" }, "grau", "#808080"),
-                new ReichDefaultData( new string[] { "Theostelos", "theostelos" }, "hellblau", Color.LightBlue) ,
-                new ReichDefaultData( new string[] { "Yaromo", "yaromo" }, "gelb", Color.Yellow) ,
-                new ReichDefaultData( new string[] { "USA.", "variedat", "uk d.v.k", "u.s.a.", "unabhängige stämme asimilans" }, "orange", Color.Orange) ,
-                new ReichDefaultData( new string[] { "Vir Vachal", "virvachal", "vir vachal", "Union von Vir'Vachal und Asimilan", "UVA", "U.V.A." }, "hellgrün", Color.LightGreen) ,
-                new ReichDefaultData( new string[] { "Avallon", "avallon" }, "dunkelgrün", Color.DarkGreen) ,
-                new ReichDefaultData( new string[] { "Northeim" , "northeim" }, "weiß", Color.White) ,
-                new ReichDefaultData( new string[] { "Helborn" , "helborn" },"schwarz", Color.Black) ,
-                new ReichDefaultData( new string[] { "Eoganachta", "eoganachta", "eoganochta" }, "lila", Color.Magenta) ,
-                new ReichDefaultData( new string[] { "Piraten", "choson", "piraten", "purple puppy pirates", "ppp"}, "blau", Color.Blue ),
-                new ReichDefaultData( new string[] { "O'Har" , "o'har", "ohar" }, "rot", Color.Red) ,
-                new ReichDefaultData( new string[] { "Consortium Commertialis", "consortium commertialis", "consortium", "Konsortium", "gilde" },"gold", Color.Gold) ,
-                new ReichDefaultData( new string[] { "Spielleitung" , "spielleitung", "sl" },"spielleitung", Color.DeepPink)
+                new ReichDefaultData( new string[] { "Theostelos", "theostelos" }, "hellblau", "#04D9FF") ,
+                new ReichDefaultData( new string[] { "Yaromo", "yaromo" }, "gelb", "#FFFF00") ,
+                new ReichDefaultData( new string[] { "USA.", "variedat", "uk d.v.k", "u.s.a.", "unabhängige stämme asimilans" }, "orange","#FFA500") ,
+                new ReichDefaultData( new string[] { "Vir Vachal", "virvachal", "vir vachal", "Union von Vir'Vachal und Asimilan", "UVA", "U.V.A." }, "hellgrün", "#90EE90") ,
+                new ReichDefaultData( new string[] { "Avallon", "avallon" }, "dunkelgrün","#4a6741") ,
+                new ReichDefaultData( new string[] { "Northeim" , "northeim" }, "weiß","FFFFFF" ) ,
+                new ReichDefaultData( new string[] { "Helborn" , "helborn" },"schwarz", "000000") ,
+                new ReichDefaultData( new string[] { "Eoganachta", "eoganachta", "eoganochta" }, "lila", "#A020F0") ,
+                new ReichDefaultData( new string[] { "Piraten", "choson", "piraten", "purple puppy pirates", "ppp"},"blau", "0000FF"),
+                new ReichDefaultData( new string[] { "O'Har" , "o'har", "ohar" }, "rot", "FF0000") ,
+                new ReichDefaultData( new string[] { "Consortium Commertialis", "consortium commertialis", "consortium", "Konsortium", "gilde" },"gold", "#D4AF37") ,
+                new ReichDefaultData( new string[] { "Spielleitung" , "spielleitung", "sl" },"spielleitung", "#FF1493")
             };
 
     }

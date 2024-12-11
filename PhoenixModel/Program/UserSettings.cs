@@ -15,12 +15,15 @@ namespace PhoenixModel.Program
     /// </summary>
     public class UserSettings : INotifyPropertyChanged
     {
-        private string _databaseLocationKarte;
-        private string _defaultValuesReiche;
-        private bool _showWindowNavigator;
-        private bool _showWindowProperties;
-        private bool _showWindowDiplomacy;
-        private string _passworPZE;
+        private string _databaseLocationKarte = "_Data\\Kartendaten\\Erkenfarakarte.mdb";
+        private string _passwordKarte = string.Empty; 
+        private string _databaseLocationPZE = "_Data\\Database\\PZE.mdb";
+        private string _passwordPZE = string.Empty;
+        private string _defaultValuesReiche = "_Data\\EinstellungenReiche.txt";
+        private bool _showWindowNavigator = true;
+        private bool _showWindowProperties = true;
+        private bool _showWindowDiplomacy = true;
+        
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -46,6 +49,19 @@ namespace PhoenixModel.Program
                 {
                     _databaseLocationKarte = value;
                     OnPropertyChanged(nameof(DatabaseLocationKarte));
+                }
+            }
+        }
+
+        public string DatabaseLocationPZE
+        {
+            get => _databaseLocationPZE;
+            set
+            {
+                if (_databaseLocationPZE != value)
+                {
+                    _databaseLocationPZE = value;
+                    OnPropertyChanged(nameof(DatabaseLocationPZE));
                 }
             }
         }
@@ -89,27 +105,33 @@ namespace PhoenixModel.Program
             }
         }
 
-        public string PassworPZE { 
-            get => _passworPZE; 
+        public string PasswordPZE { 
+            get => _passwordPZE; 
             set
             {
-                if (_passworPZE != value)
+                if (_passwordPZE != value)
                 {
-                    _passworPZE = value;
-                    OnPropertyChanged(nameof(PassworPZE));
+                    _passwordPZE = value;
+                    OnPropertyChanged(nameof(PasswordPZE));
+                }
+            }
+        }
+
+        public string PasswordKarte
+        {
+            get => _passwordKarte;
+            set
+            {
+                if (_passwordKarte != value)
+                {
+                    _passwordKarte = value;
+                    OnPropertyChanged(nameof(PasswordKarte));
                 }
             }
         }
 
         public UserSettings()
-        {
-            _databaseLocationKarte = "_Data\\Kartendaten\\Erkenfarakarte.mdb";
-            _defaultValuesReiche = "_Data\\EinstellungenReiche.txt";
-            _showWindowNavigator = true;
-            _showWindowProperties = true;
-            _showWindowDiplomacy = true;
-            _passworPZE = string.Empty;
-        }
+        { }
 
         protected virtual void OnPropertyChanged(string propertyName)
         {

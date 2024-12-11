@@ -24,18 +24,16 @@ namespace PhoenixWPF
         {
             if (SharedData.Map != null && SharedData.Map.IsAddingCompleted)
             {
-                Dictionary<string, Gemark>? map = SharedData.Map.FirstOrDefault();
-                if (map != null)
+                
+                var bezeichner = Gemark.CreateBezeichner(e.GF, e.KF);
+                var gem = SharedData.Map[bezeichner];
+                var main = Application.Current.MainWindow;
+                ListBox? lb = VisualTreeHelperExtensions.FindControlByName(main, "PropertyListBox") as ListBox;
+                if (lb != null)
                 {
-                    var bezeichner = Gemark.CreateBezeichner(e.GF, e.KF);
-                    var gem = map[bezeichner];
-                    var main = Application.Current.MainWindow;
-                    ListBox? lb = VisualTreeHelperExtensions.FindControlByName(main, "PropertyListBox") as ListBox;
-                    if (lb != null)
-                    {
-                        lb.ItemsSource = gem.Properties;
-                    }
+                    lb.ItemsSource = gem.Properties;
                 }
+                
             }
             
         }

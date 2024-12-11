@@ -226,8 +226,7 @@ namespace PhoenixDX
 
             if (Weltkarte == null && SharedData.Map != null && SharedData.Map.IsAddingCompleted)
             {
-                Dictionary<string, Gemark> map = SharedData.Map.FirstOrDefault();
-                Weltkarte = new Welt(map);
+                Weltkarte = new Welt(SharedData.Map);
             }
 
             HandleInput();
