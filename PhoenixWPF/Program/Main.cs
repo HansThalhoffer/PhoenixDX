@@ -24,6 +24,7 @@ namespace PhoenixWPF.Program
             Settings = new AppSettings("Settings.jpk");
             Settings.InitializeSettings();
             LoadKarte();
+            LoadPZE();
         }
         public bool LoadKarte()
         {
