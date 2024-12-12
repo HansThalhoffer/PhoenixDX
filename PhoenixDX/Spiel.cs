@@ -265,7 +265,7 @@ namespace PhoenixDX
             {
                 Vector2? mousePos = _maus.ScreenPosition == null ? null : ClientToVirtualScreen(_maus.ScreenPosition);
                 Rectangle visibleScreen = new Rectangle(_cameraPosition.X * -1, _cameraPosition.Y *-1, _clientWidth, _clientHeight);
-                _mouseOver = Weltkarte.Draw(_spriteBatch, _scale, mousePos, _isMoving, gameTime.ElapsedGameTime, _selected, visibleScreen);
+                _mouseOver = Weltkarte.Draw(_spriteBatch, _scale, mousePos, _isMoving, gameTime.TotalGameTime, _selected, visibleScreen);
             }
             
             /*if (_maus.ScreenPosition != null)

@@ -128,10 +128,10 @@ namespace PhoenixDX.Structures
         public float TileTransparancy { get; set; } = 1f;
 
       
-        public Kleinfeld Draw(SpriteBatch spriteBatch, Vector2 scale, Vector2? mousePos, bool isMoving, TimeSpan lastUpdate, Kleinfeld selected, Rectangle visibleScreen)
+        public Kleinfeld Draw(SpriteBatch spriteBatch, Vector2 scale, Vector2? mousePos, bool isMoving, TimeSpan gameTime, Kleinfeld selected, Rectangle visibleScreen)
         {
            
-            return WeltDrawer.Draw(spriteBatch, scale, mousePos, isMoving, TileTransparancy, ref Provinzen, lastUpdate, selected, visibleScreen );
+            return WeltDrawer.Draw(spriteBatch, scale, mousePos, isMoving, TileTransparancy, ref Provinzen, gameTime, selected, visibleScreen );
         }    
     }
 }

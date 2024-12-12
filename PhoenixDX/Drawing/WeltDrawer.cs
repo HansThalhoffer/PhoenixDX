@@ -18,6 +18,7 @@ namespace PhoenixDX.Drawing
         static Texture2D _selection2 = null;
         static public bool ShowReichOverlay = false;
 
+        // für optimierungen siehe http://rbwhitaker.wikidot.com/render-to-texture
 
         public static void LoadContent(ContentManager contentManager)
         {
@@ -26,13 +27,21 @@ namespace PhoenixDX.Drawing
             _selection2 = contentManager.Load<Texture2D>("Images/maus2");
         }
 
+        static double _tick = 0;
+        static double _animated = 0;
         static bool _toggle = false;
         public static Kleinfeld Draw(SpriteBatch spriteBatch, Vector2 scale, Vector2? mousePos, bool isMoving, float tileTransparancy, 
-            ref Dictionary<int, Provinz> provinzen, TimeSpan lastUpdate, Kleinfeld selected, Rectangle visibleScreen)
+            ref Dictionary<int, Provinz> provinzen, TimeSpan gameTime, Kleinfeld selected, Rectangle visibleScreen)
         {         
             Color colorTiles = Color.White * tileTransparancy;
-            _toggle = _toggle ? false : true;
-
+            _animated += gameTime.TotalMilliseconds - _tick;
+            _tick = gameTime.TotalMilliseconds;
+            if (_animated > 100d)
+            {
+                _toggle = !_toggle;
+                _animated = 0;
+            }
+            
             SpriteFont font = FontManager.Fonts["Small"];
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
@@ -46,11 +55,13 @@ namespace PhoenixDX.Drawing
             // Draw the map with culling
             foreach (var province in provinzen.Values)
             {
-                
                 var posP = province.GetMapPosition(scale.X, scale.Y); // aktualisiert die MapSize - Reihenfolge wichtig
                 posP.X += offset.X;
                 posP.Y += offset.Y;
                 if (posP.X > visibleScreen.Right || posP.Y > visibleScreen.Bottom)
+                    continue;
+                var sizeP = province.GetMapSize();
+                if (posP.X + sizeP.X < visibleScreen.Left|| posP.Y + sizeP.Y + 50 < visibleScreen.Top)
                     continue;
                 // var sizeP = province.GetMapSize();
                 foreach (var gemark in province.Felder.Values)
