@@ -15,8 +15,10 @@
             <MenuItem Header="View">
                 <MenuItem Header="Top Tab 1" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="TopTab1" />
                 <MenuItem Header="Top Tab 2" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="TopTab2" />
+                <Separator/>
                 <MenuItem Header="Eigenschaften" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="Eigenschaften" />
                 <MenuItem Header="Informationen" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="Informationen" />
+                <MenuItem Header="Optionen" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="Optionen" />
             </MenuItem>
         </Menu>
 
@@ -71,6 +73,9 @@
                     </TabItem>
                     <TabItem Header="Informationen" Name="Informationen">
                         <Frame Source="Pages/LogPage.xaml" />
+                    </TabItem>
+                    <TabItem Header="Optionen" Name="Optionen">
+                        <Frame Source="Pages/OptionsPage.xaml" />
                     </TabItem>
                 </TabControl>
             </Grid>

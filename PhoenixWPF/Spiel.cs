@@ -10,11 +10,19 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using PhoenixWPF.Pages;
+using PhoenixDX;
+using PhoenixWPF.Host;
 
 namespace PhoenixWPF
 {
-    public class Spiel
+    public class Spiel :IDisposable
     {
+        private PhoenixDX.MappaMundi? _map;
+        public Spiel (MappaMundi map)
+        {
+            _map = map;
+        }
+        
         public void MapEventHandler(MapEventArgs e)
         {
            if (e.EventType == MapEventArgs.MapEventType.SelectGemark)
@@ -27,6 +35,7 @@ namespace PhoenixWPF
             Warning,
             Error
         }
+
 
         public static void Log(LogType logType, string message)
         {
@@ -51,5 +60,11 @@ namespace PhoenixWPF
             
         }
 
+       
+
+        public void Dispose()
+        {
+            _map = null;
+        }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Threading;
 using PhoenixModel.Database;
 using PhoenixModel.Program;
@@ -16,8 +17,11 @@ namespace PhoenixWPF.Program
     {
         private static Main _instance = new Main();
         public AppSettings? Settings { get; private set; }
-        
+        public PhoenixDX.MappaMundi? Map { get; set; }
+        public PhoenixWPF.Spiel? Spiel { get; set; }
+
         static public Main Instance { get { return _instance; } }
+
 
         public void InitInstance() 
         {
@@ -26,6 +30,19 @@ namespace PhoenixWPF.Program
             LoadKarte();
             LoadPZE();
         }
+
+        public void SetReichOverlay(Visibility visibility)
+        {
+            if (Map != null)
+            {
+                if (visibility == Visibility.Visible)
+                    Map.ReichOverlay = true;
+                else
+                    Map.ReichOverlay = false;
+            }
+        }
+
+
         public void LoadKarte()
         {
             if (Settings ==null)

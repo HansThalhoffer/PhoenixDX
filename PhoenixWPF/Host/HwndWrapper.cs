@@ -8,6 +8,7 @@
 
 using PhoenixDX;
 using PhoenixModel.Helper;
+using PhoenixWPF.Program;
 using System;
 using System.ComponentModel;
 
@@ -154,9 +155,9 @@ namespace PhoenixWPF.Host
             {
                 int width = Convert.ToInt32(sizeInfo.NewSize.Width);
                 int height = Convert.ToInt32(sizeInfo.NewSize.Height);
-               // SetWindowRegion(_hWnd, width, height);
+                // SetWindowRegion(_hWnd, width, height);
 
-                _map?.Resize(width, height);
+                Main.Instance.Map?.Resize(width, height);
             }
         }
 
@@ -167,7 +168,7 @@ namespace PhoenixWPF.Host
             {
                 int width = Convert.ToInt32(rcBoundingBox.Width);
                 int height = Convert.ToInt32(rcBoundingBox.Height);
-                _map?.Resize(width, height);
+                Main.Instance.Map?.Resize(width, height);
             }
         }
         private void OnApplicationActivated(object? sender, EventArgs e)
@@ -230,8 +231,6 @@ namespace PhoenixWPF.Host
         #endregion
 
         #region HWND Management
-        private PhoenixDX.MappaMundi? _map;
-        private PhoenixWPF.Spiel _spiel = new PhoenixWPF.Spiel();
         protected override HandleRef BuildWindowCore(HandleRef hwndParent)
         {
             // Create the host window as a child of the parent
@@ -240,9 +239,10 @@ namespace PhoenixWPF.Host
             _hWnd = CreateHostWindow(hwndParent.Handle);
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject()) == false)
             {
-                _map = new PhoenixDX.MappaMundi(_hWnd);
-                _map.OnMapEvent += new MappaMundi.MapEventHandler(MapEventHandler);
-                _map.Run();
+                Main.Instance.Map = new PhoenixDX.MappaMundi(_hWnd);
+                Main.Instance.Spiel = new PhoenixWPF.Spiel(Main.Instance.Map);
+                Main.Instance.Map.OnMapEvent += new MappaMundi.MapEventHandler(MapEventHandler);
+                Main.Instance.Map.Run();
             }
             return new HandleRef(this, _hWnd);
         }
@@ -252,13 +252,14 @@ namespace PhoenixWPF.Host
         {
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
-                _spiel.MapEventHandler(e);
+                Main.Instance.Spiel?.MapEventHandler(e);
             }));
         }
 
         protected override void DestroyWindowCore(HandleRef hwnd)
         {
-            _map?.Exit();
+            Main.Instance.Map?.Exit();
+            Main.Instance.Spiel?.Dispose();
             // Destroy the window and reset our hWnd value
             NativeMethods.DestroyWindow(hwnd.Handle);
             _hWnd = IntPtr.Zero;
@@ -469,7 +470,7 @@ namespace PhoenixWPF.Host
 
         protected virtual void OnMouseEvent(HwndMouseEventArgs args)
         {
-            _map?.OnMouseEvent(args);
+            Main.Instance.Map?.OnMouseEvent(args);
         }
 
        
