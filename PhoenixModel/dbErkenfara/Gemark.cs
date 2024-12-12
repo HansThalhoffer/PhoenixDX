@@ -6,13 +6,21 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace PhoenixModel.dbErkenfara
 {
-    public class Gemark : IPropertyHolder, IDatabaseTable
+    public class GemarkPosition
     {
-        public const string TableName = "Karte";
-        string IDatabaseTable.TableName => TableName;
-
         public int gf { get; set; } = 0;
         public int kf { get; set; } = 0;
+
+        public static string CreateBezeichner(int gf, int kf)
+        {
+            int i = gf * 100 + kf;
+            return i.ToString();
+        }
+    }
+    public class Gemark : GemarkPosition, IPropertyHolder, IDatabaseTable
+    {
+        public const string TableName = "Karte";
+        string IDatabaseTable.TableName => TableName;     
         public string? ph_xy { get; set; }
         public int x { get; set; } = 0;
         public int? y { get; set; }
@@ -76,12 +84,16 @@ namespace PhoenixModel.dbErkenfara
         public int? lehensid { get; set; }
 
 
-        public static string CreateBezeichner(int gf, int kf)
-        {
-            int i = gf * 100 + kf;
-            return i.ToString();
-        }
         public string Bezeichner { get => CreateBezeichner(gf, kf);  }
+        public string ReichZugehörigkeit {
+            get
+            {
+                if (SharedData.Nationen == null || Reich == null)
+                    return string.Empty;
+                return SharedData.Nationen.ElementAt(Reich.Value).Reich ?? string.Empty; 
+            }
+        }
+  
 
         private static readonly string[] PropertiestoIgnore = { "x", "y","Rand","db_xy","ph_xy"};
         public Dictionary<string, string> Properties

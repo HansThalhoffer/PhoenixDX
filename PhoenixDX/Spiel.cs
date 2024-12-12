@@ -213,8 +213,10 @@ namespace PhoenixDX
             WeltDrawer.LoadContent(Content);
             Welt.LoadContent(Content);
             FontManager.LoadContent(Content);
-            
-       }
+            Ruestort.LoadContent(Content);
+            Figur.LoadContent(Content);
+
+        }
 
         protected override void Update(GameTime gameTime)
         {

@@ -9,8 +9,8 @@ namespace PhoenixModel.dbPZE.Defaults
 {
     public class Einnahmen
     {
-        public static List<Einnahmen> Einnahmens = new List<Einnahmen>
-        {
+        public static List<Einnahmen> Einnahmens =
+        [
             new Einnahmen("Wasser", "w", 0, 0),
             new Einnahmen("Tiefland", "t", 50000, 1000),
             new Einnahmen("Tieflandwald", "twa", 40000, 800),
@@ -24,7 +24,7 @@ namespace PhoenixModel.dbPZE.Defaults
             new Einnahmen("Festung", "FST", 70000, 3000),
             new Einnahmen("Hauptstadt", "HPST", 100000, 5000),
             new Einnahmen("Festungshauptstadt", "FHPST", 100000, 6000)
-        };
+        ];
 
 
         public string Name { get; set; }

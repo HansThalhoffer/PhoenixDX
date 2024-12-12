@@ -20,6 +20,9 @@ namespace PhoenixModel.Program
         private string _databaseLocationPZE = "_Data\\Database\\PZE.mdb";
         private string _passwordPZE = string.Empty;
         private string _defaultValuesReiche = "_Data\\EinstellungenReiche.txt";
+        private string _databaseLocationCrossRef = "_Data\\Crossreferenzen\\crossref.mdb";
+        private string _passwordCrossRef = string.Empty ;
+
         private bool _showWindowNavigator = true;
         private bool _showWindowProperties = true;
         private bool _showWindowDiplomacy = true;
@@ -62,6 +65,19 @@ namespace PhoenixModel.Program
                 {
                     _databaseLocationPZE = value;
                     OnPropertyChanged(nameof(DatabaseLocationPZE));
+                }
+            }
+        }
+
+        public string DatabaseLocationCrossRef
+        {
+            get => _databaseLocationCrossRef;
+            set
+            {
+                if (_databaseLocationCrossRef != value)
+                {
+                    _databaseLocationCrossRef = value;
+                    OnPropertyChanged(nameof(DatabaseLocationCrossRef));
                 }
             }
         }
@@ -126,6 +142,19 @@ namespace PhoenixModel.Program
                 {
                     _passwordKarte = value;
                     OnPropertyChanged(nameof(PasswordKarte));
+                }
+            }
+        }
+
+        public string PasswordCrossRef
+        {
+            get => _passwordCrossRef;
+            set
+            {
+                if (_passwordCrossRef != value)
+                {
+                    _passwordCrossRef = value;
+                    OnPropertyChanged(nameof(PasswordCrossRef));
                 }
             }
         }

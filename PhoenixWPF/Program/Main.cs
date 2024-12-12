@@ -41,7 +41,19 @@ namespace PhoenixWPF.Program
                     Map.ReichOverlay = false;
             }
         }
+        public void LoadCrossRef()
+        {
+            if (Settings == null)
+                return;
 
+            Settings.UserSettings.DatabaseLocationPZE = FileSystem.LocateFile(Settings.UserSettings.DatabaseLocationCrossRef);
+            PasswordHolder pwdHolder = new PasswordHolder(Settings.UserSettings.DatabaseLocationCrossRef, new PasswortProvider());
+            Settings.UserSettings.DatabaseLocationCrossRef = pwdHolder.EncryptedPasswordBase64;
+            using (CrossRef crossref = new CrossRef(Settings.UserSettings.DatabaseLocationPZE, Settings.UserSettings.DatabaseLocationCrossRef))
+            {
+                crossref.Load();
+            }
+        }
 
         public void LoadKarte()
         {
@@ -67,7 +79,7 @@ namespace PhoenixWPF.Program
             Settings.UserSettings.PasswordPZE = pwdHolder.EncryptedPasswordBase64;
             using (PZE pze = new PZE(Settings.UserSettings.DatabaseLocationPZE, Settings.UserSettings.PasswordPZE))
             {
-                pze._Load();
+                pze.Load();
             }
         }
 

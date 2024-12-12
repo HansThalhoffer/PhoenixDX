@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhoenixModel.dbErkenfara
+namespace PhoenixModel.dbPZE
 {
     internal class EinfuegeFehler : IDatabaseTable
     {

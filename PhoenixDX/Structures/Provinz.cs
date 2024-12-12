@@ -68,11 +68,5 @@ namespace PhoenixDX.Structures
             Felder.Add(kf, p);
             return p;
         }
-
-        static public Texture2D TextureFull { get; private set; }
-        static public Texture2D TextureNone { get; private set; }
-        static public Texture2D TextureYellow { get; private set; }
-        static public Texture2D TextureHalfTop { get; private set; }
-        static public Texture2D TextureHalfBottom { get; private set; }
     }
 }

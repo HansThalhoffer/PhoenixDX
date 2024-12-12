@@ -1,7 +1,6 @@
 ﻿using PhoenixModel.Database;
-using PhoenixModel.Helper;
-using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbPZE;
+using PhoenixModel.Helper;
 using PhoenixWPF.Dialogs;
 using System;
 using System.Collections.Concurrent;
@@ -11,17 +10,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static PhoenixModel.Database.PasswordHolder;
-using static PhoenixWPF.Program.ErkenfaraKarte;
-using System.IO;
 
 namespace PhoenixWPF.Database
 {
-    public class PZE : IDisposable
+    public class CrossRef : IDisposable
     {
         EncryptedString _encryptedpassword;
         string _databaseFileName;
 
-        public PZE(string databaseFileName, EncryptedString encryptedpassword)
+        public CrossRef(string databaseFileName, EncryptedString encryptedpassword)
         {
             _databaseFileName = databaseFileName;
             _encryptedpassword = encryptedpassword;
@@ -33,14 +30,12 @@ namespace PhoenixWPF.Database
             {
                 get
                 {
-                    PasswordDialog dialog = new PasswordDialog("Das Passwort für die PZE.mdb Datenbank bitte eingeben");
+                    PasswordDialog dialog = new PasswordDialog("Das Passwort für die CrossRef.mdb Datenbank bitte eingeben");
                     dialog.ShowDialog();
                     return dialog.ProvidePassword();
                 }
             }
         }
-
- 
 
         public void UpdateKarte()
         {
@@ -55,13 +50,6 @@ namespace PhoenixWPF.Database
             }
             using (SharedData.BlockGuard guard = new(SharedData.Map))
             {
-                
-
-                foreach (var gem in SharedData.Map)
-                {
-                    
-                }
-
 
             }
         }

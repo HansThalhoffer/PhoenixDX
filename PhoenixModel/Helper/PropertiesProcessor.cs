@@ -63,8 +63,9 @@ namespace PhoenixModel.Helper
             {
                 if (!result.ContainsKey(property.Name))
                 {
-                    var value = property.GetValue(data)?.ToString() ?? "null";
-                    result[property.Name] = value;
+                    var value = property.GetValue(data)?.ToString() ?? string.Empty;
+                    if (value != string.Empty)
+                        result[property.Name] = value;
                 }
             }
         }
