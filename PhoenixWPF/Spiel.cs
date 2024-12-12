@@ -12,6 +12,8 @@ using System.Windows.Controls;
 using PhoenixWPF.Pages;
 using PhoenixDX;
 using PhoenixWPF.Host;
+using static PhoenixModel.Program.LogEntry;
+using PhoenixModel.Program;
 
 namespace PhoenixWPF
 {
@@ -29,17 +31,9 @@ namespace PhoenixWPF
                 SelectGemark(e);
         }
 
-        public enum LogType 
+        public static void Log(LogEntry logentry)
         {
-            Info,
-            Warning,
-            Error
-        }
-
-
-        public static void Log(LogType logType, string message)
-        {
-            LogPage.AddToLog(logType, message);
+            LogPage.AddToLog(logentry);
         }
 
         public void SelectGemark(MapEventArgs e)

@@ -9,6 +9,7 @@ using PhoenixModel.dbPZE;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using static PhoenixModel.Helper.SharedData;
 
 namespace PhoenixDX.Structures
 {
@@ -95,10 +96,10 @@ namespace PhoenixDX.Structures
             return null;
         }
 
-        public bool IsInitalized = false;
+        public bool ReicheInitalized = false;
         public void AddNationen(BlockingCollection<Nation> nations)
         {
-            IsInitalized = true;
+            ReicheInitalized = true;
             foreach (var nation in nations)
             {
                 if (Reiche.ContainsKey(nation.Nummer.Value) == false)
@@ -116,6 +117,28 @@ namespace PhoenixDX.Structures
 
                 }
             }
+        }
+
+        public bool RüstorteInitalized = false;
+        public void AddBauwerke(BlockingDictionary<Gebäude>? gebäude)
+        {
+            RüstorteInitalized = true;
+            foreach (var g in gebäude.Values)
+            {
+                if (Provinzen.ContainsKey(g.gf) == false)
+                    continue;
+
+                var provinz = Provinzen[g.gf];
+                var kleinfeld = provinz.GetKleinfeld(g.kf);
+                if (kleinfeld == null)
+                    continue;
+                string typ =  g.Bauwerknamem.Split(' ')[0];
+                if (RuestortSymbol.Ruestorte.ContainsKey(typ) == true)
+                    kleinfeld.Adorner.Add("Rüstort",RuestortSymbol.Ruestorte[typ]);
+                else
+
+            }
+            
         }
 
         public static void LoadContent(ContentManager contentManager)

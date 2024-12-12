@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PhoenixModel.Program;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -13,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static PhoenixModel.Program.LogEntry;
 
 namespace PhoenixWPF.Pages
 {
@@ -39,16 +41,16 @@ namespace PhoenixWPF.Pages
         /// Static method to add a message to the log from any thread.
         /// </summary>
         /// <param name="message">The message to be added to the log.</param>
-        public static void AddToLog(Spiel.LogType logtype, string message)
+        public static void AddToLog(LogEntry logentry)
         {
-            if (string.IsNullOrWhiteSpace(message)) return;
+            if (string.IsNullOrWhiteSpace(logentry.Message)) return;
 
             // Ensure the log entries are updated on the UI thread
             Application.Current.Dispatcher.Invoke(() =>
             {
                 lock (_logLock)
                 {
-                    _logEntries.Add($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {logtype.ToString()} {message}");
+                    _logEntries.Add($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {logentry.Type.ToString()} {logentry.Message}");
 
                     // Optionally limit log size to avoid memory overuse
                     if (_logEntries.Count > 1000) // Keep last 1000 entries

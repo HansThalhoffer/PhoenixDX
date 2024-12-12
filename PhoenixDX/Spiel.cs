@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using PhoenixDX.Classes;
 using PhoenixDX.Drawing;
 using PhoenixDX.Structures;
+using PhoenixModel.CrossRef;
 using PhoenixModel.Helper;
 
 
@@ -213,7 +214,7 @@ namespace PhoenixDX
             WeltDrawer.LoadContent(Content);
             Welt.LoadContent(Content);
             FontManager.LoadContent(Content);
-            Ruestort.LoadContent(Content);
+            RuestortSymbol.LoadContent(Content);
             Figur.LoadContent(Content);
 
         }
@@ -229,10 +230,12 @@ namespace PhoenixDX
 
             if (Weltkarte == null && SharedData.Map != null && SharedData.Map.IsAddingCompleted)
                 Weltkarte = new Welt(SharedData.Map);
-            else if (Weltkarte != null && Weltkarte.IsInitalized == false && SharedData.Nationen != null && SharedData.Nationen.IsAddingCompleted)
+            else if (Weltkarte != null)
             {
-                Weltkarte.AddNationen(SharedData.Nationen);
-
+                if ( Weltkarte.ReicheInitalized == false && SharedData.Nationen != null && SharedData.Nationen.IsAddingCompleted)
+                    Weltkarte.AddNationen(SharedData.Nationen);
+                if (Weltkarte.RüstorteInitalized == false && SharedData.Rüstorte != null && SharedData.Rüstorte.IsAddingCompleted)
+                    Weltkarte.AddBauwerke(SharedData.Gebäude);
             }
 
             HandleInput();

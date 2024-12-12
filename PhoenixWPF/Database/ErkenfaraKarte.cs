@@ -118,7 +118,7 @@ namespace PhoenixWPF.Program
                 Rand = AccessDatabase.ToInt(reader["Rand"]),
                 Index = AccessDatabase.ToInt(reader["Index"]),
                 Gelaendetyp = AccessDatabase.ToInt(reader["Gelaendetyp"]),
-                Ruestort = AccessDatabase.ToInt(reader["Ruestort"]),
+                Ruestort = AccessDatabase.ToInt(reader["RuestortSymbol"]),
                 Fluss_NW = AccessDatabase.ToInt(reader["Fluss_NW"]),
                 Fluss_NO = AccessDatabase.ToInt(reader["Fluss_NO"]),
                 Fluss_O = AccessDatabase.ToInt(reader["Fluss_O"]),

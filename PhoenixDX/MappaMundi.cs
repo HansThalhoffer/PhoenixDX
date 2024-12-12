@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using PhoenixDX.Drawing;
 using PhoenixModel.Helper;
+using PhoenixModel.Program;
 using SharpDX.Direct3D9;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
@@ -56,6 +57,11 @@ namespace PhoenixDX
         public void OnMouseEvent(MausEventArgs args)
         {
             _game?.OnMouseEvent(args);
+        }
+
+        public void Log(LogEntry logentry)
+        {
+
         }
 
         public void Run()
