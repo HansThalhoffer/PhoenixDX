@@ -118,8 +118,8 @@ namespace PhoenixDX
 
         void _RecalcScale()
         {
-            _scaleX =  (float) _virtualWidth / (float) _clientWidth * Zoom;
-            _scaleY = (float) _virtualHeight / (float) _clientHeight * Zoom;
+            _scale.X =  (float) _virtualWidth / (float) _clientWidth * Zoom;
+            _scale.Y = (float) _virtualHeight / (float) _clientHeight * Zoom;
         }
 
         bool _isMoving = false;
@@ -213,6 +213,7 @@ namespace PhoenixDX
             WeltDrawer.LoadContent(Content);
             Welt.LoadContent(Content);
             FontManager.LoadContent(Content);
+            
        }
 
         protected override void Update(GameTime gameTime)
@@ -233,24 +234,23 @@ namespace PhoenixDX
             }
 
             HandleInput();
-
+            if (_lastDrawTime == null)
             // TODO: Add your update logic here
             base.Update(gameTime);
         }
 
-        float _scaleX = 0f;
-        float _scaleY = 0f;
+        Vector2 _scale = Vector2.Zero;
 
 
         private Microsoft.Xna.Framework.Graphics.SpriteBatch _spriteBatch;
         float _zoom = 0f;
         public float Zoom { get => _zoom; set {  _zoom = value; _RecalcScale(); } }
-
+        GameTime _lastDrawTime = null;
         protected override void Draw(GameTime gameTime)
         {
             _graphics.GraphicsDevice.Clear(Color.Black);
 
-            Vector2 offset = new Vector2(30f * _scaleX, 10f * _scaleY);
+            Vector2 offset = new Vector2(30f * _scale.X, 10f * _scale.Y);
             _graphics.GraphicsDevice.Viewport = new Viewport
             {
                 X = _cameraPosition.X,
@@ -264,7 +264,8 @@ namespace PhoenixDX
             if (Weltkarte != null)
             {
                 Vector2? mousePos = _maus.ScreenPosition == null ? null : ClientToVirtualScreen(_maus.ScreenPosition);
-                _mouseOver = Weltkarte.Draw(_spriteBatch, _scaleX, _scaleY, mousePos, _isMoving);
+                Rectangle visibleScreen = new Rectangle(_cameraPosition.X * -1, _cameraPosition.Y *-1, _clientWidth, _clientHeight);
+                _mouseOver = Weltkarte.Draw(_spriteBatch, _scale, mousePos, _isMoving, gameTime.ElapsedGameTime, _selected, visibleScreen);
             }
             
             /*if (_maus.ScreenPosition != null)

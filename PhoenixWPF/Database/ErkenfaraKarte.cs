@@ -42,7 +42,7 @@ namespace PhoenixWPF.Program
         }
         public void Load()
         {
-            Task.Run(() => _Load());
+           _Load();
         }
 
         public void _Load()
@@ -53,6 +53,7 @@ namespace PhoenixWPF.Program
                 if (connector?.Open() == false)
                     return;
                 SharedData.Map = new SharedData.BlockingDictionary<Gemark>(2, 6530);
+                SharedData.Map.IsBlocked = true;
                 using (var reader = connector?.OpenReader("SELECT * FROM " + Gemark.TableName))
                 {
                     while (reader != null && reader.Read())
@@ -68,6 +69,7 @@ namespace PhoenixWPF.Program
 
                     }
                 }
+                SharedData.Map.IsBlocked = false;
                 int total = SharedData.Map.Count();
                 Spiel.Log(Spiel.LogType.Info, $"{total} Gemarken geladen");
                 SharedData.Map.IsAddingCompleted = true;

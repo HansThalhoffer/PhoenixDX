@@ -36,7 +36,7 @@ namespace PhoenixDX.Structures
         private void setDimensions(float radius, bool pointUp)
         {
             OuterRadius = radius;
-            const float factor = 1.18f;
+            const float factor = 1.14f;
             if (pointUp == false)
             {
                 Width = 1.5f * OuterRadius *1.05f;

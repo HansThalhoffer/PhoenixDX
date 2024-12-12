@@ -41,8 +41,9 @@ namespace PhoenixWPF.Database
         }
         public void Load()
         {
-            Task.Run(() => _Load());
+            _Load();
         }
+
         public int _Load()
         {
             PasswordHolder holder = new PasswordHolder(_encryptedpassword, new PasswortProvider());

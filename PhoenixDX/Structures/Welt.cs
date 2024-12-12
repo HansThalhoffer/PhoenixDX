@@ -18,8 +18,6 @@ namespace PhoenixDX.Structures
         Dictionary<int, Provinz> Provinzen = [] ;
         Dictionary<int, Reich> Reiche = [];
 
-
-
         public Welt(SharedData.BlockingDictionary<Gemark> map) 
         {
             Provinzen.Add(701, new Provinz(7, 0, 701));
@@ -130,10 +128,10 @@ namespace PhoenixDX.Structures
         public float TileTransparancy { get; set; } = 1f;
 
       
-        public Kleinfeld Draw(SpriteBatch spriteBatch, float scaleX, float scaleY, Vector2? mousePos, bool isMoving)
+        public Kleinfeld Draw(SpriteBatch spriteBatch, Vector2 scale, Vector2? mousePos, bool isMoving, TimeSpan lastUpdate, Kleinfeld selected, Rectangle visibleScreen)
         {
            
-            return WeltDrawer.Draw(spriteBatch, scaleX, scaleY, mousePos, isMoving, TileTransparancy, ref Provinzen );
+            return WeltDrawer.Draw(spriteBatch, scale, mousePos, isMoving, TileTransparancy, ref Provinzen, lastUpdate, selected, visibleScreen );
         }    
     }
 }

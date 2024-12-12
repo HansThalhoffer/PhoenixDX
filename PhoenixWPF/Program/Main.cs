@@ -36,7 +36,7 @@ namespace PhoenixWPF.Program
             Settings.UserSettings.PasswordKarte = pwdHolder.EncryptedPasswordBase64;
             using (ErkenfaraKarte karte = new ErkenfaraKarte(Settings.UserSettings.DatabaseLocationKarte, Settings.UserSettings.PasswordKarte))
             {
-                karte._Load();
+                karte.Load();
             }
         }
 
