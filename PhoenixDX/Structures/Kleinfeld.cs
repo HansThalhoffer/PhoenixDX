@@ -1,4 +1,4 @@
-﻿using PhoenixModel.Karte;
+﻿using PhoenixModel.dbErkenfara;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using System.Reflection;
-using static PhoenixModel.Karte.Terrain;
+using static PhoenixModel.dbErkenfara.Defaults.Terrain;
 using SharpDX.Direct2D1.Effects;
 using System.Drawing;
 using Microsoft.Xna.Framework;
 using System.Collections.Concurrent;
+using PhoenixModel.dbErkenfara.Defaults;
 
 namespace PhoenixDX.Structures
 {

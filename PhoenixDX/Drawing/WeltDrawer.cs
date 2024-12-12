@@ -16,6 +16,8 @@ namespace PhoenixDX.Drawing
         static float _previousScaleX = 0f;
         static int _trashCount = 0;
         static Texture2D _weiss = null;
+        static public bool ShowReichOverlay = false;
+
 
         public static void LoadContent(ContentManager contentManager)
         {
@@ -66,10 +68,9 @@ namespace PhoenixDX.Drawing
                         // spriteBatch.Draw(hexTexture, posP, null, Color.Transparent);
                         spriteBatch.Draw(hexTexture, rScreenG, null, inKleinfeld ? Color.Plum : colorTiles);
                     }
-                    if (gemark.Reich != null && inKleinfeld == false)
+                    if (ShowReichOverlay == true && gemark.ReichID > 0 && gemark.Reich != null && inKleinfeld == false)
                     {
-                        if (gemark.ReichID >0)
-                            spriteBatch.Draw(_weiss, rScreenG, null, inKleinfeld ? Color.Plum : gemark.Reich.color * 0.5f);
+                        spriteBatch.Draw(_weiss, rScreenG, null, inKleinfeld ? Color.Plum : gemark.Reich.color * 0.5f);
                     }
                 }
             }

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using static PhoenixModel.Karte.Terrain;
+using static PhoenixModel.dbErkenfara.Defaults.Terrain;
 
-namespace PhoenixModel.Karte
+namespace PhoenixModel.dbErkenfara.Defaults
 {
     public class Terrain
     {

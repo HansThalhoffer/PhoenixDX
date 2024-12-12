@@ -1,6 +1,6 @@
 ﻿using PhoenixDX.Structures;
 using PhoenixModel.Helper;
-using PhoenixModel.Karte;
+using PhoenixModel.dbErkenfara;
 using PhoenixWPF.Helper;
 using System;
 using System.Collections.Generic;
@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using PhoenixWPF.Pages;
 
 namespace PhoenixWPF
 {
@@ -18,6 +19,18 @@ namespace PhoenixWPF
         {
            if (e.EventType == MapEventArgs.MapEventType.SelectGemark)
                 SelectGemark(e);
+        }
+
+        public enum LogType 
+        {
+            Info,
+            Warning,
+            Error
+        }
+
+        public static void Log(LogType logType, string message)
+        {
+            LogPage.AddToLog(logType, message);
         }
 
         public void SelectGemark(MapEventArgs e)

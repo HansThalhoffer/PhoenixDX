@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
+using PhoenixDX.Drawing;
 using PhoenixModel.Helper;
 using SharpDX.Direct3D9;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
@@ -44,6 +45,12 @@ namespace PhoenixDX
         public void Resize(int width, int height)
         {
             _game?.Resize(width, height);
+        }
+
+        public bool ReichOverlay
+        {
+            get { return WeltDrawer.ShowReichOverlay; }
+            set { WeltDrawer.ShowReichOverlay = value; }
         }
 
         public void OnMouseEvent(MausEventArgs args)

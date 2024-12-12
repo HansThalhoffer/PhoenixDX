@@ -26,31 +26,31 @@ namespace PhoenixWPF.Program
             LoadKarte();
             LoadPZE();
         }
-        public bool LoadKarte()
+        public void LoadKarte()
         {
             if (Settings ==null)
-                return false;
+                return;
 
             Settings.UserSettings.DatabaseLocationKarte = FileSystem.LocateFile(Settings.UserSettings.DatabaseLocationKarte);
             PasswordHolder pwdHolder = new PasswordHolder(Settings.UserSettings.PasswordKarte, new PasswortProvider());
             Settings.UserSettings.PasswordKarte = pwdHolder.EncryptedPasswordBase64;
             using (ErkenfaraKarte karte = new ErkenfaraKarte(Settings.UserSettings.DatabaseLocationKarte, Settings.UserSettings.PasswordKarte))
             {
-                return karte.Load() >0;
+                karte._Load();
             }
         }
 
-        public bool LoadPZE()
+        public void LoadPZE()
         {
             if (Settings == null)
-                return false;
+                return ;
 
             Settings.UserSettings.DatabaseLocationPZE = FileSystem.LocateFile(Settings.UserSettings.DatabaseLocationPZE);
             PasswordHolder pwdHolder = new PasswordHolder(Settings.UserSettings.PasswordPZE, new PasswortProvider());
             Settings.UserSettings.PasswordPZE = pwdHolder.EncryptedPasswordBase64;
             using (PZE pze = new PZE(Settings.UserSettings.DatabaseLocationPZE, Settings.UserSettings.PasswordPZE))
             {
-                return pze.Load() > 0;
+                pze._Load();
             }
         }
 

@@ -4,16 +4,16 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-using PhoenixModel.Karte;
 using SharpDX.Direct3D9;
-using static PhoenixModel.Karte.Terrain;
+using static PhoenixModel.dbErkenfara.Defaults.Terrain;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using System.Net;
+using PhoenixModel.dbErkenfara.Defaults;
 
 namespace PhoenixDX.Structures
 {
-    public class Gelaende : PhoenixModel.Karte.Terrain
+    public class Gelaende : Terrain
     {
         Texture2D hexTexture;
         List<Texture2D>hexTextures = new List<Texture2D>();

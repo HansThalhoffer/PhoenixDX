@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhoenixModel.Karte
+namespace PhoenixModel.dbPZE
 {
-    internal class Feindaufklaerung: IDatabaseTable
+    internal class Feindaufklaerung : IDatabaseTable
     {
         public const string TableName = "Feindaufklaerung";
         string IDatabaseTable.TableName => TableName;

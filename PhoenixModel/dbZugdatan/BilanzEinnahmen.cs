@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhoenixModel.Karte
+namespace PhoenixModel.dbZugdatan
 {
     internal class BilanzEinnahmen : IDatabaseTable
     {

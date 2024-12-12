@@ -1,6 +1,7 @@
 ﻿using PhoenixModel.Database;
 using PhoenixModel.Helper;
-using PhoenixModel.Karte;
+using PhoenixModel.dbErkenfara;
+using PhoenixModel.dbPZE;
 using PhoenixWPF.Dialogs;
 using System;
 using System.Collections.Concurrent;
@@ -38,8 +39,11 @@ namespace PhoenixWPF.Database
                 }
             }
         }
-
-        public int Load()
+        public void Load()
+        {
+            Task.Run(() => _Load());
+        }
+        public int _Load()
         {
             PasswordHolder holder = new PasswordHolder(_encryptedpassword, new PasswortProvider());
             using (AccessDatabase connector = new AccessDatabase(_databaseFileName, holder.DecryptPassword()))
@@ -57,7 +61,8 @@ namespace PhoenixWPF.Database
                     }
                 }
                 SharedData.Nationen.CompleteAdding();
-
+                total = SharedData.Nationen.Count();
+                Spiel.Log(Spiel.LogType.Info, $"{total} Reiche geladen");
                 connector?.Close();
                 return total;
             }
@@ -72,7 +77,7 @@ namespace PhoenixWPF.Database
                 DBname = AccessDatabase.ToString(reader["DBname"]),
                 DBpass = AccessDatabase.ToString(reader["DBpass"])
             };
-            foreach (var defData in ReichDefaultData.Vorbelegung)
+            foreach (var defData in PhoenixModel.dbPZE.Defaults.ReichDefaultData.Vorbelegung)
             {
                 foreach (var name in defData.Alias)
                 {

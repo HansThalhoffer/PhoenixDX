@@ -4,7 +4,7 @@ using PhoenixModel.Database;
 using PhoenixModel.Helper;
 using System.Reflection.Metadata.Ecma335;
 
-namespace PhoenixModel.Karte
+namespace PhoenixModel.dbErkenfara
 {
     public class Gemark : IPropertyHolder, IDatabaseTable
     {

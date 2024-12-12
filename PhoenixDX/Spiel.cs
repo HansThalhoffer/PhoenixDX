@@ -5,7 +5,6 @@ using PhoenixDX.Classes;
 using PhoenixDX.Drawing;
 using PhoenixDX.Structures;
 using PhoenixModel.Helper;
-using PhoenixModel.Karte;
 
 
 // using SharpDX;
@@ -142,8 +141,12 @@ namespace PhoenixDX
                  _maus= args;
             });
         }
-        
-       
+
+        public bool ReichOverlay
+        {
+            get { return WeltDrawer.ShowReichOverlay; }
+            set { WeltDrawer.ShowReichOverlay = value; }
+        }
 
         private void HandleInput()
         {

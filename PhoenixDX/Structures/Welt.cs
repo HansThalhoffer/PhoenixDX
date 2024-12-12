@@ -4,18 +4,11 @@ using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Classes;
 using PhoenixDX.Drawing;
 using PhoenixModel.Helper;
-using PhoenixModel.Karte;
-using SharpDX.Direct2D1.Effects;
-using SharpDX.MediaFoundation;
+using PhoenixModel.dbErkenfara;
+using PhoenixModel.dbPZE;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Xml;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace PhoenixDX.Structures
 {
@@ -77,7 +70,7 @@ namespace PhoenixDX.Structures
                 {
                     if (Provinzen.ContainsKey(gem.gf) == false)
                     {
-                        MessageBox.Show("Großfeld " + gem.gf + " fehlt");
+                        Microsoft.Xna.Framework.Input.MessageBox.Show("Fehler", "Großfeld " + gem.gf + " fehlt",["OK"]);
                         continue;
                     }
                     var p = Provinzen[gem.gf];

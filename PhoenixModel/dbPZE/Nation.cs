@@ -8,9 +8,9 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhoenixModel.Karte
+namespace PhoenixModel.dbPZE
 {
-    public class Nation: IDatabaseTable, IPropertyHolder
+    public class Nation : IDatabaseTable, IPropertyHolder
     {
         public const string TableName = "DBhandle";
         string IDatabaseTable.TableName => TableName;
@@ -23,7 +23,7 @@ namespace PhoenixModel.Karte
         public string? DBname { get; set; }
         public string? DBpass { get; set; }
 
-        private static readonly string[] PropertiestoIgnore = { "Alias"};
+        private static readonly string[] PropertiestoIgnore = { "Alias" };
         public Dictionary<string, string> Properties
         {
             get
@@ -32,7 +32,7 @@ namespace PhoenixModel.Karte
             }
 
         }
-        public string Bezeichner { get => Reich?? "Null"; }
+        public string Bezeichner { get => Reich ?? "Null"; }
 
     }
 

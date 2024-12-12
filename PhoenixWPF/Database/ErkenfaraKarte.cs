@@ -1,7 +1,7 @@
 ﻿using PhoenixDX.Structures;
 using PhoenixModel.Database;
 using PhoenixModel.Helper;
-using PhoenixModel.Karte;
+using PhoenixModel.dbErkenfara;
 using PhoenixWPF.Database;
 using PhoenixWPF.Dialogs;
 using System;
@@ -40,14 +40,18 @@ namespace PhoenixWPF.Program
                 }
             }
         }
+        public void Load()
+        {
+            Task.Run(() => _Load());
+        }
 
-        public int Load()
+        public void _Load()
         {
             PasswordHolder holder = new PasswordHolder(_encryptedpassword, new PasswortProvider());
             using (AccessDatabase connector = new AccessDatabase(_databaseFileName, holder.DecryptPassword()))
             {
                 if (connector?.Open() == false)
-                    return 0;
+                    return;
                 SharedData.Map = new SharedData.BlockingDictionary<Gemark>(2, 6530);
                 using (var reader = connector?.OpenReader("SELECT * FROM " + Gemark.TableName))
                 {
@@ -65,10 +69,10 @@ namespace PhoenixWPF.Program
                     }
                 }
                 int total = SharedData.Map.Count();
-              
+                Spiel.Log(Spiel.LogType.Info, $"{total} Gemarken geladen");
                 SharedData.Map.IsAddingCompleted = true;
                 connector?.Close();
-                return total;
+                return;
             }
         }
 

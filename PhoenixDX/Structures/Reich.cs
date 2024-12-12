@@ -2,14 +2,14 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using PhoenixModel.Karte;
+using PhoenixModel.dbPZE;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static PhoenixModel.Karte.Terrain;
+using static PhoenixModel.dbErkenfara.Defaults.Terrain;
 
 namespace PhoenixDX.Structures
 {
