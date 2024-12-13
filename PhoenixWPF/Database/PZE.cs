@@ -13,10 +13,11 @@ using System.Threading.Tasks;
 using static PhoenixModel.Database.PasswordHolder;
 using static PhoenixWPF.Program.ErkenfaraKarte;
 using System.IO;
+using PhoenixModel.CrossRef;
 
 namespace PhoenixWPF.Database
 {
-    public class PZE : ILoadableDatabase
+    public class PZE : DatabaseLoader, ILoadableDatabase
     {
         EncryptedString _encryptedpassword;
         string _databaseFileName;
@@ -29,21 +30,6 @@ namespace PhoenixWPF.Database
             _databaseFileName = databaseFileName;
             _encryptedpassword = encryptedpassword;
         }
-
-        public class PasswortProvider : PasswordHolder.IPasswordProvider
-        {
-            public EncryptedString Password
-            {
-                get
-                {
-                    PasswordDialog dialog = new PasswordDialog("Das Passwort für die PZE.mdb Datenbank bitte eingeben");
-                    dialog.ShowDialog();
-                    return dialog.ProvidePassword();
-                }
-            }
-        }
-
- 
 
         public void UpdateKarte()
         {
@@ -71,54 +57,21 @@ namespace PhoenixWPF.Database
 
         public void Load()
         {
-            PasswordHolder holder = new PasswordHolder(_encryptedpassword, new PasswortProvider());
+            PasswordHolder holder = new PasswordHolder(_encryptedpassword, new PasswortProvider("PZE"));
             using (AccessDatabase connector = new AccessDatabase(_databaseFileName, holder.DecryptPassword()))
             {
                 if (connector?.Open() == false)
                     return;
-                int total = 0;
-                SharedData.Nationen = new BlockingCollection<Nation>();
-                using (var reader = connector?.OpenReader("SELECT * FROM " + Nation.TableName + " ORDER BY Nummer"))
+                try
                 {
-                    while (reader != null && reader.Read())
-                    {
-                        var reich = LoadNation(reader);
-                        SharedData.Nationen.Add(reich);
-                    }
+                    Load<Nation>(Nation.Load, connector, SharedData.Nationen, Enum.GetNames(typeof(Nation.Felder)));
                 }
-                SharedData.Nationen.CompleteAdding();
-                total = SharedData.Nationen.Count();
-                Spiel.Log(new PhoenixModel.Program.LogEntry($"{total} Reiche geladen"));
+                catch (Exception ex)
+                {
+                    Spiel.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, ("Fehler beim Öffnen der PZE Datenbank: " + ex.Message)));
+                }
                 connector?.Close();
             }
-        }
-
-        Nation LoadNation(DbDataReader reader)
-        {
-            var reich = new Nation
-            {
-                Nummer = AccessDatabase.ToInt(reader["Nummer"]),
-                Reich = AccessDatabase.ToString(reader["Reich"]),
-                DBname = AccessDatabase.ToString(reader["DBname"]),
-                DBpass = AccessDatabase.ToString(reader["DBpass"])
-            };
-            foreach (var defData in PhoenixModel.dbPZE.Defaults.ReichDefaultData.Vorbelegung)
-            {
-                foreach (var name in defData.Alias)
-                {
-                    if (name.ToUpper() == reich.Reich.ToUpper())
-                    {
-                        reich.Alias = defData.Alias;
-                        reich.Farbname = defData.Farbname;
-                        reich.Farbe = System.Drawing.ColorTranslator.FromHtml(defData.FarbeHex);
-                        break;
-                    }
-                }
-                if (reich.Farbname != null)
-                    break;
-            }
-
-            return reich;
         }
 
         public void Dispose()

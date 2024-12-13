@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.dbPZE
 {
-    internal class EinfuegeFehler : IDatabaseTable
+    /*internal class EinfuegeFehler : IDatabaseTable
     {
         public const string TableName = "Einfuegefehler";
         string IDatabaseTable.TableName => TableName;
@@ -20,5 +20,7 @@ namespace PhoenixModel.dbPZE
         public int? Kuestenrecht { get; set; }
         public int? Kuestenrecht_von { get; set; }
         public int? Flottenkey { get; set; }
-    }
+
+        public string Bezeichner => throw new NotImplementedException();
+    }*/
 }

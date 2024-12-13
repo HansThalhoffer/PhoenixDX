@@ -59,6 +59,8 @@ namespace PhoenixModel.Helper
 
             public BlockingDictionary() { }
             // dann kommwen keine weiteren Elemente dazu
+            public void CompleteAdding() { IsAddingCompleted = true; }
+            public bool Add(string key, Tvalue obj) { return TryAdd(key, obj); }
             public bool IsAddingCompleted { get => _isAddingCompleted; set => _isAddingCompleted = value; }
             public bool IsBlocked { get => _isBlocked; set => _isBlocked = value; }
             // Elemente haben sich geändert

@@ -11,6 +11,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="CrossRef\**" />
+    <EmbeddedResource Remove="CrossRef\**" />
+    <None Remove="CrossRef\**" />
+    <Page Remove="CrossRef\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DynamicAero2" Version="1.2.1" />
     <PackageReference Include="System.Data.OleDb" Version="9.0.0" />
   </ItemGroup>
@@ -18,10 +25,6 @@
   <ItemGroup>
     <ProjectReference Include="..\PhoenixDX\PhoenixDX.csproj" />
     <ProjectReference Include="..\PhoenixModel\PhoenixModel.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="CrossRef\" />
   </ItemGroup>
 
 </Project>

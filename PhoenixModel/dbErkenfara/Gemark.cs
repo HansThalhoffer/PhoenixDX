@@ -2,6 +2,7 @@
 
 using PhoenixModel.Database;
 using PhoenixModel.Helper;
+using System.Data.Common;
 using System.Reflection.Metadata.Ecma335;
 
 namespace PhoenixModel.dbErkenfara
@@ -20,7 +21,9 @@ namespace PhoenixModel.dbErkenfara
     public class Gemark : GemarkPosition, IPropertyHolder, IDatabaseTable
     {
         public const string TableName = "Karte";
-        string IDatabaseTable.TableName => TableName;     
+        string IDatabaseTable.TableName => TableName;
+        public string Bezeichner { get => CreateBezeichner(gf, kf); }
+
         public string? ph_xy { get; set; }
         public int x { get; set; } = 0;
         public int? y { get; set; }
@@ -84,8 +87,73 @@ namespace PhoenixModel.dbErkenfara
         public int? lehensid { get; set; }
 
 
-        public string Bezeichner { get => CreateBezeichner(gf, kf);  }
-        public string ReichZugehörigkeit {
+        public enum Felder
+        {
+            gf, kf,
+            ph_xy ,
+            x , 
+            y ,
+            db_xy ,
+            Rand ,
+            Index ,
+            Gelaendetyp ,
+            Ruestort ,
+            Fluss_NW ,
+            Fluss_NO ,
+            Fluss_O ,
+            Fluss_SO ,
+            Fluss_SW ,
+            Fluss_W ,
+            Wall_NW ,
+            Wall_NO ,
+            Wall_O ,
+            Wall_SO ,
+            Wall_SW ,
+            Wall_W ,
+            Kai_NW ,
+            Kai_NO ,
+            Kai_O ,
+            Kai_SO ,
+            Kai_SW ,
+            Kai_W ,
+            Strasse_NW ,
+            Strasse_NO ,
+            Strasse_O ,
+            Strasse_SO ,
+            Strasse_SW ,
+            Strasse_W ,
+            Bruecke_NW ,
+            Bruecke_NO ,
+            Bruecke_O ,
+            Bruecke_SO ,
+            Bruecke_SW ,
+            Bruecke_W ,
+            Reich ,
+            Krieger_eigen ,
+            Krieger_feind ,
+            Krieger_freund ,
+            Reiter_eigene ,
+            Reiter_feind ,
+            Reiter_freund ,
+            Schiffe_eigene ,
+            schiffe_feind ,
+            Schiffe_freund ,
+            Zauberer_eigene ,
+            Zauberer_feind ,
+            Zauberer_freund ,
+            Char_eigene ,
+            Char_feind ,
+            Char_freund ,
+            krieger_text ,
+            kreatur_eigen ,
+            kreatur_feind ,
+            kreatur_freund ,
+            Baupunkte ,
+            Bauwerknamen ,
+            lehensid ,
+        }
+
+         public string ReichZugehörigkeit {
             get
             {
                 if (SharedData.Nationen == null || Reich == null)
@@ -103,6 +171,73 @@ namespace PhoenixModel.dbErkenfara
                 return PropertiesProcessor.CreateProperties(this, PropertiestoIgnore);
             }
 
+        }
+
+        public void Load(DbDataReader reader)
+        {
+            gf = reader.GetInt32((int)Felder.gf);
+            kf = reader.GetInt32((int)Felder.kf);
+            ph_xy = reader.GetString((int)Felder.ph_xy);
+            x = reader.GetInt32((int)Felder.x);
+            y = reader.GetInt32((int)Felder.y);
+            db_xy = reader.GetString((int)Felder.db_xy);
+            Rand = reader.GetInt32((int)Felder.Rand);
+            Index = reader.GetInt32((int)Felder.Index);
+            Gelaendetyp = reader.GetInt32((int)Felder.Gelaendetyp);
+            Ruestort = reader.GetInt32((int)Felder.Ruestort);
+            Fluss_NW = reader.GetInt32((int)Felder.Fluss_NW);
+            Fluss_NO = reader.GetInt32((int)Felder.Fluss_NO);
+            Fluss_O = reader.GetInt32((int)Felder.Fluss_O);
+            Fluss_SO = reader.GetInt32((int)Felder.Fluss_SO);
+            Fluss_SW = reader.GetInt32((int)Felder.Fluss_SW);
+            Fluss_W = reader.GetInt32((int)Felder.Fluss_W);
+            Wall_NW = reader.GetInt32((int)Felder.Wall_NW);
+            Wall_NO = reader.GetInt32((int)Felder.Wall_NO);
+            Wall_O = reader.GetInt32((int)Felder.Wall_O);
+            Wall_SO = reader.GetInt32((int)Felder.Wall_SO);
+            Wall_SW = reader.GetInt32((int)Felder.Wall_SW);
+            Wall_W = reader.GetInt32((int)Felder.Wall_W);
+            Kai_NW = reader.GetInt32((int)Felder.Kai_NW);
+            Kai_NO = reader.GetInt32((int)Felder.Kai_NO);
+            Kai_O = reader.GetInt32((int)Felder.Kai_O);
+            Kai_SO = reader.GetInt32((int)Felder.Kai_SO);
+            Kai_SW = reader.GetInt32((int)Felder.Kai_SW);
+            Kai_W = reader.GetInt32((int)Felder.Kai_W);
+            Strasse_NW = reader.GetInt32((int)Felder.Strasse_NW);
+            Strasse_NO = reader.GetInt32((int)Felder.Strasse_NO);
+            Strasse_O = reader.GetInt32((int)Felder.Strasse_O);
+            Strasse_SO = reader.GetInt32((int)Felder.Strasse_SO);
+            Strasse_SW = reader.GetInt32((int)Felder.Strasse_SW);
+            Strasse_W = reader.GetInt32((int)Felder.Strasse_W);
+            Bruecke_NW = reader.GetInt32((int)Felder.Bruecke_NW);
+            Bruecke_NO = reader.GetInt32((int)Felder.Bruecke_NO);
+            Bruecke_O = reader.GetInt32((int)Felder.Bruecke_O);
+            Bruecke_SO = reader.GetInt32((int)Felder.Bruecke_SO);
+            Bruecke_SW = reader.GetInt32((int)Felder.Bruecke_SW);
+            Bruecke_W = reader.GetInt32((int)Felder.Bruecke_W);
+            Reich = reader.GetInt32((int)Felder.Reich);
+            Krieger_eigen = reader.GetInt32((int)Felder.Krieger_eigen);
+            Krieger_feind = reader.GetInt32((int)Felder.Krieger_feind);
+            Krieger_freund = reader.GetInt32((int)Felder.Krieger_freund);
+            Reiter_eigene = reader.GetInt32((int)Felder.Reiter_eigene);
+            Reiter_feind = reader.GetInt32((int)Felder.Reiter_feind);
+            Reiter_freund = reader.GetInt32((int)Felder.Reiter_freund);
+            Schiffe_eigene = reader.GetInt32((int)Felder.Schiffe_eigene);
+            schiffe_feind = reader.GetInt32((int)Felder.schiffe_feind);
+            Schiffe_freund = reader.GetInt32((int)Felder.Schiffe_freund);
+            Zauberer_eigene = reader.GetInt32((int)Felder.Zauberer_eigene);
+            Zauberer_feind = reader.GetInt32((int)Felder.Zauberer_feind);
+            Zauberer_freund = reader.GetInt32((int)Felder.Zauberer_freund);
+            Char_eigene = reader.GetInt32((int)Felder.Char_eigene);
+            Char_feind = reader.GetInt32((int)Felder.Char_feind);
+            Char_freund = reader.GetInt32((int)Felder.Char_freund);
+            krieger_text = reader.GetString((int)Felder.krieger_text);
+            kreatur_eigen = reader.GetInt32((int)Felder.kreatur_eigen);
+            kreatur_feind = reader.GetInt32((int)Felder.kreatur_feind);
+            kreatur_freund = reader.GetInt32((int)Felder.kreatur_freund);
+            Baupunkte = reader.GetInt32((int)Felder.Baupunkte);
+            Bauwerknamen = reader.GetString((int)Felder.Bauwerknamen);
+            lehensid = reader.GetInt32((int)Felder.lehensid);
         }
     }
 }

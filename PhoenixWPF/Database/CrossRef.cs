@@ -16,7 +16,7 @@ using static PhoenixWPF.Database.CrossRef;
 
 namespace PhoenixWPF.Database
 {
-    public class CrossRef : ILoadableDatabase
+    public class CrossRef : DatabaseLoader, ILoadableDatabase
     {
         EncryptedString _encryptedpassword;
         string _databaseFileName;
@@ -28,19 +28,6 @@ namespace PhoenixWPF.Database
         {
             _databaseFileName = databaseFileName;
             _encryptedpassword = encryptedpassword;
-        }
-
-        public class PasswortProvider : PasswordHolder.IPasswordProvider
-        {
-            public EncryptedString Password
-            {
-                get
-                {
-                    PasswordDialog dialog = new PasswordDialog("Das Passwort für die CrossRef.mdb Datenbank bitte eingeben");
-                    dialog.ShowDialog();
-                    return dialog.ProvidePassword();
-                }
-            }
         }
 
         public void UpdateKarte()
@@ -60,34 +47,9 @@ namespace PhoenixWPF.Database
             }
         }
 
-        enum RüstOrtFelder
-        { nummer, ruestort, Baupunkte, Kapazitaet_truppen, Kapazitaet_HF, Kapazitaet_Z, canSieged };
-
-        public delegate T LoadObject<T>(DbDataReader reader);
-
-        void Load<T>(LoadObject<T> objReader, AccessDatabase? connector, BlockingCollection<T>? collection, string[] felder )
-        {
-            if (connector == null || collection == null)
-                return;
-            int total = 0;
-            SharedData.Nationen = new BlockingCollection<Nation>();
-            string felderListe = string.Join(", ", felder);
-            using (DbDataReader? reader = connector?.OpenReader($"SELECT {felderListe} FROM ORDER BY {felder[0]}"))
-            {
-                while (reader != null && reader.Read())
-                {
-                    T obj = objReader(reader);
-                    collection.Add(obj);
-                }
-            }
-            collection.CompleteAdding();
-            total = collection.Count();
-            Spiel.Log(new PhoenixModel.Program.LogEntry($"{total} {typeof(T)} geladen"));
-        }
-
         public void Load()
         {
-            PasswordHolder holder = new PasswordHolder(_encryptedpassword, new PasswortProvider());
+            PasswordHolder holder = new PasswordHolder(_encryptedpassword, new PasswortProvider("CROSSREF"));
             using (AccessDatabase connector = new AccessDatabase(_databaseFileName, holder.DecryptPassword()))
             {
                 if (connector?.Open() == false)
@@ -104,6 +66,8 @@ namespace PhoenixWPF.Database
             }
         }
 
+        enum RüstOrtFelder
+        { nummer, ruestort, Baupunkte, Kapazitaet_truppen, Kapazitaet_HF, Kapazitaet_Z, canSieged };
         Rüstort LoadRuestort(DbDataReader reader)
         {
             var obj = new Rüstort(AccessDatabase.ToInt(reader[(int)RüstOrtFelder.nummer]),

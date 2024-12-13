@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,5 +18,7 @@ namespace PhoenixModel.Database
     public interface IDatabaseTable
     {
         public abstract string TableName { get; }
+        public string Bezeichner { get;}
+        public abstract void Load(DbDataReader reader);
     }
 }

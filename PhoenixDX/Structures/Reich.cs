@@ -20,8 +20,6 @@ namespace PhoenixDX.Structures
         static Dictionary<string, Texture2D> reichsFarben = [];
         Texture2D hexTexture = null;
     
-       
-
         public Reich(Nation nation)
         {
             HasDirections = false;

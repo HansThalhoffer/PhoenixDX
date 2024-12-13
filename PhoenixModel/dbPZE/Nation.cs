@@ -2,6 +2,7 @@
 using PhoenixModel.Helper;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Drawing;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
@@ -12,8 +13,19 @@ namespace PhoenixModel.dbPZE
 {
     public class Nation : IDatabaseTable, IPropertyHolder
     {
+        // IDatabaseTable
         public const string TableName = "DBhandle";
         string IDatabaseTable.TableName => TableName;
+        public string Bezeichner { get => Reich ?? "Null"; }
+
+        // IPropertyHolder
+        private static readonly string[] PropertiestoIgnore = { "Alias" };
+        public Dictionary<string, string> Properties { get => PropertiesProcessor.CreateProperties(this, PropertiestoIgnore); }
+
+        // Datenbankfelder
+        public enum Felder
+        { Nummer, Reich, DBname, DBpass };
+
         public string[]? Alias { get; set; }
         public string? Farbname { get; set; }
         public Color? Farbe { get; set; }
@@ -23,16 +35,30 @@ namespace PhoenixModel.dbPZE
         public string? DBname { get; set; }
         public string? DBpass { get; set; }
 
-        private static readonly string[] PropertiestoIgnore = { "Alias" };
-        public Dictionary<string, string> Properties
+
+        public void Load(DbDataReader reader)
         {
-            get
+            Nummer = reader.GetInt32((int)Nation.Felder.Nummer);
+            Reich = reader.GetString((int)Nation.Felder.Reich);
+            DBname = reader.GetString((int)Nation.Felder.DBname);
+            DBpass = reader.GetString((int)Nation.Felder.DBpass);
+            foreach (var defData in PhoenixModel.dbPZE.Defaults.ReichDefaultData.Vorbelegung)
             {
-                return PropertiesProcessor.CreateProperties(this, PropertiestoIgnore);
+                foreach (var name in defData.Alias)
+                {
+                    if (name.ToUpper() == Reich.ToUpper())
+                    {
+                        Alias = defData.Alias;
+                        Farbname = defData.Farbname;
+                        Farbe = System.Drawing.ColorTranslator.FromHtml(defData.FarbeHex);
+                        break;
+                    }
+                }
+                if (Farbname != null)
+                    break;
             }
 
         }
-        public string Bezeichner { get => Reich ?? "Null"; }
 
     }
 
