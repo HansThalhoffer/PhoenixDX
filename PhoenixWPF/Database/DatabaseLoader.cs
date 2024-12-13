@@ -43,16 +43,23 @@ namespace PhoenixWPF.Database
             int total = 0;
             collection = new BlockingCollection<T>();
             string felderListe = string.Join(", ", felder);
-            var propertyInfo = typeof(T).GetProperty("TableName", BindingFlags.Public | BindingFlags.Static);
-            string tabeName = propertyInfo?.GetValue(null,null)?.ToString() ?? string.Empty;
-using (DbDataReader? reader = connector?.OpenReader($"SELECT {felderListe} FROM {tabeName} ORDER BY {felder[0]}"))
+            string tableName = PropertyProcessor.GetConstValue<T>("TableName");
+            string query = $"SELECT {felderListe} FROM {tableName} ORDER BY {felder[0]}";
+            try
             {
-                while (reader != null && reader.Read())
+                using (DbDataReader? reader = connector?.OpenReader(query))
                 {
-                    T obj = new T();
-                    typeof(T).GetMethod("Load")?.Invoke(obj,[reader]);
-                    collection.Add(obj);
+                    while (reader != null && reader.Read())
+                    {
+                        T obj = new T();
+                        typeof(T).GetMethod("Load")?.Invoke(obj,[reader]);
+                        collection.Add(obj);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Spiel.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, ("Fehler beim Öffnen der PZE Datenbank: " + ex.Message +"\n\r"+query)));
             }
             collection.CompleteAdding();
             total = collection.Count();

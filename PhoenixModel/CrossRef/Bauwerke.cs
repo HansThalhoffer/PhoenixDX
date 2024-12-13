@@ -61,7 +61,7 @@ namespace PhoenixModel.CrossRef
 
     public class Rüstort : BauwerkBasis, IDatabaseTable, IPropertyHolder
     {
-        public const string TableName = "Rüstort_crossref";
+        public const string TableName = "ruestort_crossref";
         string IDatabaseTable.TableName => TableName;
 
         public string? Ruestort { get; set; }
@@ -72,15 +72,15 @@ namespace PhoenixModel.CrossRef
 
         public new enum Felder
         {
-            Nummer, Baupunkte, Bauwerk, Ruestort, KapazitätTruppen, KapazitätHF, KapazitätZ, canSieged
+            nummer, ruestort, Baupunkte, Kapazitaet_truppen, Kapazitaet_HF, Kapazitaet_Z, canSieged
         }
         public new void Load(DbDataReader reader)
         {
             base.Load(reader);
-            Ruestort = DatabaseConverter.ToString(reader[(int)Felder.Ruestort]);
-            KapazitätTruppen = DatabaseConverter.ToInt32(reader[(int)Felder.KapazitätTruppen]);
-            KapazitätHF = DatabaseConverter.ToInt32(reader[(int)Felder.KapazitätHF]);
-            KapazitätZ = DatabaseConverter.ToInt32(reader[(int)Felder.KapazitätZ]);
+            Ruestort = DatabaseConverter.ToString(reader[(int)Felder.ruestort]);
+            KapazitätTruppen = DatabaseConverter.ToInt32(reader[(int)Felder.Kapazitaet_truppen]);
+            KapazitätHF = DatabaseConverter.ToInt32(reader[(int)Felder.Kapazitaet_HF]);
+            KapazitätZ = DatabaseConverter.ToInt32(reader[(int)Felder.Kapazitaet_Z]);
             canSieged = DatabaseConverter.ToBool(reader[(int)Felder.canSieged]);
         }
     }
