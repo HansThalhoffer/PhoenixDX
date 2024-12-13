@@ -5,9 +5,8 @@ using PhoenixDX.Classes;
 using PhoenixDX.Structures;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Vektor = Microsoft.Xna.Framework.Vector2;
 
 namespace PhoenixDX.Drawing
 {
@@ -30,7 +29,7 @@ namespace PhoenixDX.Drawing
         static double _tick = 0;
         static double _animated = 0;
         static bool _toggle = false;
-        public static Kleinfeld Draw(SpriteBatch spriteBatch, Vector2 scale, Vector2? mousePos, bool isMoving, float tileTransparancy, 
+        public static Kleinfeld Draw(SpriteBatch spriteBatch, Vektor scale, Vektor? mousePos, bool isMoving, float tileTransparancy, 
             ref Dictionary<int, Provinz> provinzen, TimeSpan gameTime, Kleinfeld selected, Rectangle visibleScreen)
         {         
             Color colorTiles = Color.White * tileTransparancy;
@@ -45,17 +44,17 @@ namespace PhoenixDX.Drawing
             SpriteFont font = FontManager.Fonts["Small"];
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
-            Vector2 offset = new Vector2(30f * scale.X, 10f * scale.Y);
-            Vector2 mausPos = Vector2.Zero;
+            Vektor offset = new Vektor(30f * scale.X, 10f * scale.Y);
+            Vektor mausPos = Vektor.Zero;
             if (mousePos.HasValue)
             {
-                mausPos = new Vector2(mousePos.Value.X, mousePos.Value.Y);
+                mausPos = new Vektor(mousePos.Value.X, mousePos.Value.Y);
             }
             Kleinfeld mouseover = null;
             // Draw the map with culling
             foreach (var province in provinzen.Values)
             {
-                var posP = province.GetMapPosition(scale.X, scale.Y); // aktualisiert die MapSize - Reihenfolge wichtig
+                var posP = province.GetMapPosition(scale); // aktualisiert die MapSize - Reihenfolge wichtig
                 posP.X += offset.X;
                 posP.Y += offset.Y;
                 if (posP.X > visibleScreen.Right || posP.Y > visibleScreen.Bottom)

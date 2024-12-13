@@ -6,6 +6,8 @@ using PhoenixDX.Drawing;
 using PhoenixDX.Structures;
 using PhoenixModel.CrossRef;
 using PhoenixModel.Helper;
+using SharpDX.Direct2D1.Effects;
+
 
 
 // using SharpDX;
@@ -15,6 +17,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+
+using Vektor = Microsoft.Xna.Framework.Vector2;
 
 namespace PhoenixDX
 {
@@ -73,24 +77,17 @@ namespace PhoenixDX
 
         [DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-        [DllImport("user32.dll")]
-        private static extern bool SetWindowPos( IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y,int cx,int cy,uint uFlags);
-
-
-        // Hide the MonoGame window as we use the 
+        
+        // Hide the MonoGame window 
         private void HideGameWindow()
         {
             var windowHandle = this.Window.Handle;
             if (windowHandle != IntPtr.Zero)
             {
                 const int SW_HIDE = 0;
-                ShowWindow(windowHandle, SW_HIDE);
-                //const int SWP_NOZORDER = 0x0004;
-                //const int SWP_NOACTIVATE = 0x0010;
-                // SetWindowPos(windowHandle, IntPtr.Zero, -400, -400, 0, 0, SWP_NOZORDER | SWP_NOACTIVATE);
+                ShowWindow(windowHandle, SW_HIDE); 
             }
         }
-
 
         private void Spiel_Activated(object sender, EventArgs e)
         {
@@ -103,7 +100,14 @@ namespace PhoenixDX
             e.GraphicsDeviceInformation.PresentationParameters.DeviceWindowHandle = _windowHandle;
         }
 
-       public void Resize(int width, int height)
+        void _RecalcScale()
+        {
+            _scale.X = (float)_virtualWidth / (float)_clientWidth * Zoom;
+            _scale.Y = (float)_virtualHeight / (float)_clientHeight * Zoom;
+        }
+
+
+        public void Resize(int width, int height)
         {
             EnqueueAction(() =>
             {
@@ -117,21 +121,16 @@ namespace PhoenixDX
             });
         }
 
-        void _RecalcScale()
-        {
-            _scale.X =  (float) _virtualWidth / (float) _clientWidth * Zoom;
-            _scale.Y = (float) _virtualHeight / (float) _clientHeight * Zoom;
-        }
-
+    
         bool _isMoving = false;
         void MoveCamera(Position delta)
         {
             _cameraPosition += delta;
             _isMoving = true;
         }
-        public Vector2 ClientToVirtualScreen(Position pos)
+        public Vektor ClientToVirtualScreen(Position pos)
         {
-            return new Vector2(pos.X - _cameraPosition.X , pos.Y - _cameraPosition.Y);
+            return new Vektor(pos.X - _cameraPosition.X , pos.Y - _cameraPosition.Y);
         }
 
         MausEventArgs _maus = new MausEventArgs();
@@ -140,6 +139,28 @@ namespace PhoenixDX
             EnqueueAction(() =>
             {
                  _maus= args;
+            });
+        }
+
+        void _goto(int gf, int kf)
+        {
+            Kleinfeld kleinfeld = Weltkarte.GetKleinfeld(gf, kf);
+            if (kleinfeld == null)
+                return;
+            Vektor ? v = Weltkarte.GetPosition(gf, kf, _scale);
+            Vektor offset = new Vektor(800f * _scale.X, 600f * _scale.Y);
+            v -= offset;
+            v *= -1;
+            _cameraPosition.SetFromVector2( v.Value);
+            _selected = kleinfeld;
+            _wpfBridge.SelectKleinfeld(_selected.Koordinaten.gf, _selected.Koordinaten.kf, MausEventArgs.MouseEventType.None);
+        }
+
+        public void Goto(int gf, int kf)
+        {
+            EnqueueAction(() =>
+            {
+                _goto(gf, kf); 
             });
         }
 
@@ -202,8 +223,6 @@ namespace PhoenixDX
                             break;
                         }
                 }
-               
-
             }
         }
 
@@ -244,7 +263,7 @@ namespace PhoenixDX
             base.Update(gameTime);
         }
 
-        Vector2 _scale = Vector2.Zero;
+        Vektor _scale = Vektor.Zero;
 
 
         private Microsoft.Xna.Framework.Graphics.SpriteBatch _spriteBatch;
@@ -255,7 +274,7 @@ namespace PhoenixDX
         {
             _graphics.GraphicsDevice.Clear(Color.Black);
 
-            Vector2 offset = new Vector2(30f * _scale.X, 10f * _scale.Y);
+            Vektor offset = new Vektor(30f * _scale.X, 10f * _scale.Y);
             _graphics.GraphicsDevice.Viewport = new Viewport
             {
                 X = _cameraPosition.X,
@@ -268,21 +287,21 @@ namespace PhoenixDX
 
             if (Weltkarte != null)
             {
-                Vector2? mousePos = _maus.ScreenPosition == null ? null : ClientToVirtualScreen(_maus.ScreenPosition);
+                Vektor? mousePos = _maus.ScreenPosition == null ? null : ClientToVirtualScreen(_maus.ScreenPosition);
                 Rectangle visibleScreen = new Rectangle(_cameraPosition.X * -1, _cameraPosition.Y *-1, _clientWidth, _clientHeight);
                 _mouseOver = Weltkarte.Draw(_spriteBatch, _scale, mousePos, _isMoving, gameTime.TotalGameTime, _selected, visibleScreen);
             }
             
             /*if (_maus.ScreenPosition != null)
             {
-                Vector2 mousePos = ClientToVirtualScreen(_maus.ScreenPosition);
+                Vektor mousePos = ClientToVirtualScreen(_maus.ScreenPosition);
                 _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
               
                 _selected.Draw(_spriteBatch, mousePos, gameTime);
 
                 string statusText = "Maus " + mousePos.ToString();
                 SpriteFont font = FontManager.Fonts["Large"];
-                _spriteBatch.DrawString(font, statusText, new Vector2(10, 10), Color.Azure);
+                _spriteBatch.DrawString(font, statusText, new Vektor(10, 10), Color.Azure);
                 _spriteBatch.End();
             }*/
 
@@ -292,7 +311,7 @@ namespace PhoenixDX
 
             string statusText = "Breite " + _virtualWidth.ToString() + "  Client " + _clientWidth.ToString() + " ScaleX " + scaleX.ToString();
 
-            _spriteBatch.DrawString(font, statusText, new Vector2(10, 10), Color.Violet);
+            _spriteBatch.DrawString(font, statusText, new Vektor(10, 10), Color.Violet);
 
             _spriteBatch.End();*/
 

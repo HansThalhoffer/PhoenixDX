@@ -76,7 +76,7 @@ namespace PhoenixDX.Structures
 
                     if (p != null)
                     {
-                        var k = p.GetKleinfeld((int) gem.kf);
+                        var k = p.GetOrCreateKleinfeld((int) gem.kf);
                         try
                         {
                             if (k.Initialize(gem) ==false)
@@ -153,10 +153,28 @@ namespace PhoenixDX.Structures
 
         public float TileTransparancy { get; set; } = 1f;
 
+        public Kleinfeld GetKleinfeld(int gf, int kf)
+        {
+            Provinz provinz;
+            if (Provinzen.TryGetValue(gf, out provinz))
+            {
+                return provinz.GetKleinfeld(kf);
+            }
+            return null;
+        }
+
+        public Vector2? GetPosition(int gf, int kf, Vector2 scale)
+        {
+            Provinz provinz;
+            if (Provinzen.TryGetValue(gf, out provinz))
+            {
+               return provinz.GetMapPosition(scale);
+            }
+            return null;
+        }
       
         public Kleinfeld Draw(SpriteBatch spriteBatch, Vector2 scale, Vector2? mousePos, bool isMoving, TimeSpan gameTime, Kleinfeld selected, Rectangle visibleScreen)
         {
-           
             return WeltDrawer.Draw(spriteBatch, scale, mousePos, isMoving, TileTransparancy, ref Provinzen, gameTime, selected, visibleScreen );
         }    
     }

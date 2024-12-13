@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
+using Vektor = Microsoft.Xna.Framework.Vector2;
 
 namespace PhoenixDX.Structures
 {
@@ -34,23 +35,21 @@ namespace PhoenixDX.Structures
             GF = gf;
         }
 
-        Microsoft.Xna.Framework.Vector2 _mapCoords = new Microsoft.Xna.Framework.Vector2();
-        Microsoft.Xna.Framework.Vector2 _mapSize = new Microsoft.Xna.Framework.Vector2();
-        float _scaleX = 0;
-        float _scaleY = 0;
-
-        public Microsoft.Xna.Framework.Vector2 GetMapPosition(float scaleX, float scaleY)
+        Vektor _mapCoords = new();
+        Vektor _mapSize = new();
+        Vektor _scale = new(0,0);
+        public Vektor GetMapPosition(Vektor scale)
         {
-            if (scaleX != _scaleX || scaleX != _scaleY)
+            if (scale.X != _scale.X || scale.X != _scale.Y)
             {
-                _scaleX = scaleX;
-                _scaleY = scaleY;
-                float x = (X - 1) * ColumnWidth * scaleX;
-                float y = (Y - 1) * RowHeight * scaleY;
+                _scale.X = scale.X;
+                _scale.Y = scale.Y;
+                float x = (X - 1) * ColumnWidth * scale.X;
+                float y = (Y - 1) * RowHeight * scale.Y;
                 if (X % 2 > 0)
-                    y += RowHeight * scaleY / 2;
+                    y += RowHeight * scale.Y / 2;
                 _mapCoords = new Microsoft.Xna.Framework.Vector2(x, y);
-                _mapSize = new Microsoft.Xna.Framework.Vector2(Height * scaleX, Width * scaleY);
+                _mapSize = new Microsoft.Xna.Framework.Vector2(Height * scale.X, Width * scale.Y);
             }
             return _mapCoords;
         }
@@ -61,6 +60,13 @@ namespace PhoenixDX.Structures
         }
 
         public Kleinfeld GetKleinfeld(int kf)
+        {
+            if (Felder.ContainsKey(kf))
+                return Felder[kf];
+            return null;
+        }
+
+        public Kleinfeld GetOrCreateKleinfeld(int kf)
         {
             if (Felder.ContainsKey(kf))
                 return Felder[kf];

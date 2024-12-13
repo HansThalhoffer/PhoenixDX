@@ -87,7 +87,7 @@ namespace PhoenixDX
 
         public void Goto(int gf, int kf)
         {
-
+            _game?.Goto(gf, kf);
         }
 
         #endregion

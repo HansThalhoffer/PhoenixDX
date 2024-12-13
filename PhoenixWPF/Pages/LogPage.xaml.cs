@@ -42,15 +42,19 @@ namespace PhoenixWPF.Pages
         {
             if (LogListBox.SelectedItem != null)
             {
-                string selectedText = LogListBox.SelectedItem.ToString();
+                string? selectedText = LogListBox.SelectedItem.ToString();
                 ExtractAndGoTo(selectedText);
             }
         }
 
-        private void ExtractAndGoTo(string input)
+        [GeneratedRegex(@"\[(\d+)/(\d+)\]")]
+        public static partial Regex KoordinatenRegex();
+        private void ExtractAndGoTo(string? input)
         {
+            if (input == null)
+                return;
             // Regex to match the pattern [number1/number2] 
-            Regex regex = new Regex(@"\[(\d+)/(\d+)\]");
+            Regex regex = KoordinatenRegex();
             Match match = regex.Match(input);
 
             if (match.Success)
@@ -86,5 +90,7 @@ namespace PhoenixWPF.Pages
                 }
             });
         }
+
+       
     }
 }

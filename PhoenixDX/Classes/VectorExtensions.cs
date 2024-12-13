@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using PhoenixModel.Helper;
 
 namespace PhoenixDX.Classes
 {
@@ -21,6 +22,20 @@ namespace PhoenixDX.Classes
         {
             v.X += moveX;
             v.Y += moveY;
+        }
+    }
+
+    public static class PositionExtensions
+    {
+        /// <summary>
+        /// Sets the X and Y values of the Position from a Vector2.
+        /// </summary>
+        /// <param name="position">The Position object to update.</param>
+        /// <param name="vector">The Vector2 containing the new X and Y values.</param>
+        public static void SetFromVector2(this Position position, Microsoft.Xna.Framework.Vector2 vector)
+        {
+            position.X = Convert.ToInt32(vector.X);
+            position.Y = Convert.ToInt32(vector.Y);
         }
     }
 }
