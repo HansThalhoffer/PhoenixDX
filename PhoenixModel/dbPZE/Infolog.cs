@@ -27,11 +27,11 @@ namespace PhoenixModel.dbPZE
         }
         public void Load(DbDataReader reader)
         {
-            ID = reader.GetInt32((int)Felder.ID);
-            InfoType = reader.GetString((int)Felder.InfoType);
-            Infotext = reader.GetString((int)Felder.Infotext);
-            ReichID = reader.GetInt32((int) Felder.ReichID);
-            Monat = reader.GetString((int)Felder.Monat);
+            ID = DatabaseConverter.ToInt32(reader[(int)Felder.ID]);
+            InfoType = DatabaseConverter.ToString(reader[(int)Felder.InfoType]);
+            Infotext = DatabaseConverter.ToString(reader[(int)Felder.Infotext]);
+            ReichID = DatabaseConverter.ToInt32(reader[(int)Felder.ReichID]);
+            Monat = DatabaseConverter.ToString(reader[(int)Felder.Monat]);
         }
     }
 }

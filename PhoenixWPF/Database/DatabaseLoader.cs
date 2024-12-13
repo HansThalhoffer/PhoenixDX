@@ -2,6 +2,7 @@
 using PhoenixModel.dbPZE;
 using PhoenixModel.Helper;
 using PhoenixWPF.Dialogs;
+using SharpDX.DirectWrite;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ using static PhoenixModel.Helper.SharedData;
 
 namespace PhoenixWPF.Database
 {
-    public class DatabaseLoader
+    public abstract class DatabaseLoader
     {
         public class PasswortProvider : PasswordHolder.IPasswordProvider
         {
@@ -35,14 +36,16 @@ namespace PhoenixWPF.Database
 
         protected delegate T LoadObject<T>(DbDataReader reader);
 
-        protected void Load<T> (AccessDatabase? connector, BlockingCollection<T>? collection, string[] felder) where T : IDatabaseTable, new()
+        protected void Load<T> (AccessDatabase? connector, ref BlockingCollection<T>? collection, string[] felder) where T : IDatabaseTable, new()
         {
-            if (connector == null || collection == null)
+            if (connector == null)
                 return;
             int total = 0;
-            SharedData.Nationen = new BlockingCollection<Nation>();
+            collection = new BlockingCollection<T>();
             string felderListe = string.Join(", ", felder);
-            using (DbDataReader? reader = connector?.OpenReader($"SELECT {felderListe} FROM ORDER BY {felder[0]}"))
+            var propertyInfo = typeof(T).GetProperty("TableName", BindingFlags.Public | BindingFlags.Static);
+            string tabeName = propertyInfo?.GetValue(null,null)?.ToString() ?? string.Empty;
+using (DbDataReader? reader = connector?.OpenReader($"SELECT {felderListe} FROM {tabeName} ORDER BY {felder[0]}"))
             {
                 while (reader != null && reader.Read())
                 {
@@ -56,33 +59,23 @@ namespace PhoenixWPF.Database
             Spiel.Log(new PhoenixModel.Program.LogEntry($"{total} {typeof(T)} geladen"));
         }
 
-        /// <summary>
-        /// Finds the value of the "Bezeichner" property in the given object.
-        /// </summary>
-        /// <param name="obj">The object to search for the property.</param>
-        /// <returns>The value of the "Bezeichner" property if found; otherwise, null.</returns>
-        public static string FindBezeichnerPropertyValue(object? obj)
-        {
-            // Get the PropertyInfo for the "Bezeichner" property
-            var propertyInfo = obj?.GetType().GetProperty("Bezeichner", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
-            // Get the value of the "Bezeichner" property
-            return propertyInfo?.GetValue(obj)?.ToString() ?? string.Empty;
-        }
-
-        protected void Load<T>(LoadObject<T> objReader, AccessDatabase? connector, BlockingDictionary<T>? collection, string[] felder)
+        protected void Load<T>(AccessDatabase? connector, ref BlockingDictionary<T>? collection, string[] felder) where T : IDatabaseTable, new()
         {
-            if (connector == null || collection == null)
+            if (connector == null)
                 return;
             int total = 0;
-            SharedData.Nationen = new BlockingCollection<Nation>();
+            collection = new BlockingDictionary<T>();
             string felderListe = string.Join(", ", felder);
-            using (DbDataReader? reader = connector?.OpenReader($"SELECT {felderListe} FROM ORDER BY {felder[0]}"))
+            T obj = new T();
+            string tableName = PropertyProcessor.GetConstValue<T>("TableName");
+            using (DbDataReader? reader = connector?.OpenReader($"SELECT {felderListe} FROM {tableName} ORDER BY {felder[0]}"))
             {
                 while (reader != null && reader.Read())
                 {
-                    T obj = objReader(reader);
-                    string key = FindBezeichnerPropertyValue(obj);
+                    obj = new T();
+                    typeof(T).GetMethod("Load")?.Invoke(obj, [reader]);
+                    string key = PropertyProcessor.GetPropertyValue(obj, "Bezeichner");
                     collection.Add(key, obj);
                 }
             }
@@ -90,5 +83,7 @@ namespace PhoenixWPF.Database
             total = collection.Count();
             Spiel.Log(new PhoenixModel.Program.LogEntry($"{total} {typeof(T)} geladen"));
         }
+
+        
     }
 }

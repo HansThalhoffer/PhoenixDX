@@ -25,9 +25,9 @@ namespace PhoenixModel.dbPZE
         }
         public void Load(DbDataReader reader)
         {
-            id = reader.GetInt32((int)Felder.id);
-            tablename = reader.GetString((int)Felder.tablename);
-            usedbflag = reader.GetString((int)Felder.usedbflag);
+            id = DatabaseConverter.ToInt32(reader[(int)Felder.id]);
+            tablename = DatabaseConverter.ToString(reader[(int)Felder.tablename]);
+            usedbflag = DatabaseConverter.ToString(reader[(int)Felder.usedbflag]);
         }
     }
 }

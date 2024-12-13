@@ -57,14 +57,14 @@ namespace PhoenixWPF.Database
 
         public void Load()
         {
-            PasswordHolder holder = new PasswordHolder(_encryptedpassword, new PasswortProvider("PZE"));
-            using (AccessDatabase connector = new AccessDatabase(_databaseFileName, holder.DecryptPassword()))
+            PasswordHolder holder = new (_encryptedpassword);
+            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptPassword()))
             {
                 if (connector?.Open() == false)
                     return;
                 try
                 {
-                    Load<Nation>(Nation.Load, connector, SharedData.Nationen, Enum.GetNames(typeof(Nation.Felder)));
+                    Load<Nation>(connector, ref SharedData.Nationen, Enum.GetNames(typeof(Nation.Felder)));
                 }
                 catch (Exception ex)
                 {

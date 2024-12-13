@@ -23,7 +23,7 @@ namespace PhoenixModel.dbPZE
         }
         public void Load(DbDataReader reader)
         {
-            zug = reader.GetString((int)Felder.zug);          
+            zug = DatabaseConverter.ToString(reader[(int)(int)Felder.zug]);          
         }
     }
 }

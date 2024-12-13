@@ -68,14 +68,14 @@ namespace PhoenixModel.Helper
         }
 
         // Karte
-        public static BlockingDictionary<Gemark>? Map { get; set; }
-        public static BlockingDictionary<Gebäude>? Gebäude { get; set; }
+        public static BlockingDictionary<Gemark>? Map = null;
+        public static BlockingDictionary<Gebäude>? Gebäude = null;
 
         // PZE
-        public static BlockingCollection<Nation>? Nationen { get; set; }
+        public static BlockingCollection<Nation>? Nationen = null;
 
         // crossref
-        public static BlockingCollection<Bauwerk>? Bauwerke { get; set; }
-        public static BlockingCollection<Rüstort>? Rüstorte { get; set; }
+        public static BlockingCollection<Bauwerk>? Bauwerke = null;
+        public static BlockingCollection<Rüstort>? Rüstorte = null;
     }
 }

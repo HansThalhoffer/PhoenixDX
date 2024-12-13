@@ -17,22 +17,22 @@ namespace PhoenixModel.dbErkenfara
         public string Bezeichner { get => CreateBezeichner(gf, kf); }
         // IPropertyHolder
         private static readonly string[] PropertiestoIgnore = [];
-        public Dictionary<string, string> Properties { get => PropertiesProcessor.CreateProperties(this, PropertiestoIgnore); }
+        public Dictionary<string, string> Properties { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
         // Felder der Tabellen
         public string? Reich { get; set; }
-        public string? Bauwerknamem { get; set; }
+        public string? Bauwerknamen { get; set; }
 
         public enum Felder
         {
-            gf, kf, Reich, Bauwerknamem
+            gf, kf, Reich, Bauwerknamen
         }
         public void Load(DbDataReader reader)
         {
-            gf = reader.GetInt32((int)Felder.gf);
-            kf = reader.GetInt32((int)Felder.kf);
-            Reich = reader.GetString((int)Felder.Reich);
-            Bauwerknamem = reader.GetString((int)Felder.Bauwerknamem);
+            gf = DatabaseConverter.ToInt32(reader[(int)Felder.gf]);
+            kf = DatabaseConverter.ToInt32(reader[(int)Felder.kf]);
+            Reich = DatabaseConverter.ToString(reader[(int)Felder.Reich]);
+            Bauwerknamen = DatabaseConverter.ToString(reader[(int)Felder.Bauwerknamen]);
         }
     }
 }

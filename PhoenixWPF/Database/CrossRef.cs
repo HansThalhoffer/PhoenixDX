@@ -49,14 +49,14 @@ namespace PhoenixWPF.Database
 
         public void Load()
         {
-            PasswordHolder holder = new PasswordHolder(_encryptedpassword, new PasswortProvider("CROSSREF"));
-            using (AccessDatabase connector = new AccessDatabase(_databaseFileName, holder.DecryptPassword()))
+            PasswordHolder holder = new(_encryptedpassword);
+            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptPassword()))
             {
                 if (connector?.Open() == false)
                     return;
                 try
                 {
-                    Load<Rüstort>(this.LoadRuestort, connector, SharedData.Rüstorte, Enum.GetNames(typeof(RüstOrtFelder)));
+                    Load<Rüstort>(connector, ref SharedData.Rüstorte, Enum.GetNames(typeof(Rüstort.Felder)));
                 }
                 catch (Exception ex)
                 {
@@ -66,22 +66,7 @@ namespace PhoenixWPF.Database
             }
         }
 
-        enum RüstOrtFelder
-        { nummer, ruestort, Baupunkte, Kapazitaet_truppen, Kapazitaet_HF, Kapazitaet_Z, canSieged };
-        Rüstort LoadRuestort(DbDataReader reader)
-        {
-            var obj = new Rüstort(AccessDatabase.ToInt(reader[(int)RüstOrtFelder.nummer]),
-                AccessDatabase.ToInt(reader[(int)RüstOrtFelder.Baupunkte]),
-                AccessDatabase.ToString(reader[(int)RüstOrtFelder.ruestort]))
-            {
-                KapazitätTruppen = AccessDatabase.ToInt(reader[(int)RüstOrtFelder.Kapazitaet_truppen]),
-                KapazitätHF = AccessDatabase.ToInt(reader[(int)RüstOrtFelder.Kapazitaet_truppen]),
-                KapazitätZ = AccessDatabase.ToInt(reader[(int)RüstOrtFelder.Kapazitaet_truppen]),
-                canSieged = AccessDatabase.ToBool(reader[(int)RüstOrtFelder.Kapazitaet_truppen])
-            };
-            return obj;
-        }
-
+  
         public void Dispose()
         {
         }

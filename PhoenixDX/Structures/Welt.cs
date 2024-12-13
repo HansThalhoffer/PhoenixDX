@@ -132,7 +132,7 @@ namespace PhoenixDX.Structures
                 var kleinfeld = provinz.GetKleinfeld(g.kf);
                 if (kleinfeld == null)
                     continue;
-                string typ =  g.Bauwerknamem.Split(' ')[0];
+                string typ =  g.Bauwerknamen.Split(' ')[0];
                 if (RuestortSymbol.Ruestorte.ContainsKey(typ) == true)
                     kleinfeld.Adorner.Add("Rüstort",RuestortSymbol.Ruestorte[typ]);
                 else

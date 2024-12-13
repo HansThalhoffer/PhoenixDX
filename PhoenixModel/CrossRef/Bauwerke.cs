@@ -28,7 +28,7 @@ namespace PhoenixModel.CrossRef
         {
             get
             {
-                return PropertiesProcessor.CreateProperties(this, PropertiestoIgnore);
+                return PropertyProcessor.CreateProperties(this, PropertiestoIgnore);
             }
 
         }
@@ -40,9 +40,9 @@ namespace PhoenixModel.CrossRef
         }
         public void Load(DbDataReader reader)
         {
-            Nummer = reader.GetInt32((int)Felder.Nummer);
-            Baupunkte = reader.GetInt32((int)Felder.Baupunkte);
-            Bauwerk = reader.GetString((int)Felder.Bauwerk);
+            Nummer = DatabaseConverter.ToInt32(reader[(int)Felder.Nummer]);
+            Baupunkte = DatabaseConverter.ToInt32(reader[(int)Felder.Baupunkte]);
+            Bauwerk = DatabaseConverter.ToString(reader[(int)Felder.Bauwerk]);
         }
 
     }
@@ -52,7 +52,7 @@ namespace PhoenixModel.CrossRef
         public const string TableName = "Bauwerke_crossref";
         string IDatabaseTable.TableName => TableName;
        
-        public void Load(DbDataReader reader)
+        public new void Load(DbDataReader reader)
         {
             base.Load(reader);
         }
@@ -74,14 +74,14 @@ namespace PhoenixModel.CrossRef
         {
             Nummer, Baupunkte, Bauwerk, Ruestort, KapazitätTruppen, KapazitätHF, KapazitätZ, canSieged
         }
-        public void Load(DbDataReader reader)
+        public new void Load(DbDataReader reader)
         {
             base.Load(reader);
-            Ruestort = reader.GetString((int)Felder.Ruestort);
-            KapazitätTruppen = reader.GetInt32((int)Felder.KapazitätTruppen);
-            KapazitätHF = reader.GetInt32((int)Felder.KapazitätHF);
-            KapazitätZ = reader.GetInt32((int)Felder.KapazitätZ);
-            canSieged = reader.GetBoolean((int)Felder.canSieged);
+            Ruestort = DatabaseConverter.ToString(reader[(int)Felder.Ruestort]);
+            KapazitätTruppen = DatabaseConverter.ToInt32(reader[(int)Felder.KapazitätTruppen]);
+            KapazitätHF = DatabaseConverter.ToInt32(reader[(int)Felder.KapazitätHF]);
+            KapazitätZ = DatabaseConverter.ToInt32(reader[(int)Felder.KapazitätZ]);
+            canSieged = DatabaseConverter.ToBool(reader[(int)Felder.canSieged]);
         }
     }
 }

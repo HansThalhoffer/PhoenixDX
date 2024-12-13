@@ -20,11 +20,9 @@ namespace PhoenixModel.dbPZE
 
         // IPropertyHolder
         private static readonly string[] PropertiestoIgnore = { "Alias" };
-        public Dictionary<string, string> Properties { get => PropertiesProcessor.CreateProperties(this, PropertiestoIgnore); }
+        public Dictionary<string, string> Properties { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
-        // Datenbankfelder
-        public enum Felder
-        { Nummer, Reich, DBname, DBpass };
+       
 
         public string[]? Alias { get; set; }
         public string? Farbname { get; set; }
@@ -35,13 +33,15 @@ namespace PhoenixModel.dbPZE
         public string? DBname { get; set; }
         public string? DBpass { get; set; }
 
-
+        // Datenbankfelder
+        public enum Felder
+        { Nummer, Reich, DBname, DBpass };
         public void Load(DbDataReader reader)
         {
-            Nummer = reader.GetInt32((int)Nation.Felder.Nummer);
-            Reich = reader.GetString((int)Nation.Felder.Reich);
-            DBname = reader.GetString((int)Nation.Felder.DBname);
-            DBpass = reader.GetString((int)Nation.Felder.DBpass);
+            Nummer = DatabaseConverter.ToInt32(reader[(int)Nation.Felder.Nummer]);
+            Reich = DatabaseConverter.ToString(reader[(int)Nation.Felder.Reich]);
+            DBname = DatabaseConverter.ToString(reader[(int)Nation.Felder.DBname]);
+            DBpass = DatabaseConverter.ToString(reader[(int)Nation.Felder.DBpass]);
             foreach (var defData in PhoenixModel.dbPZE.Defaults.ReichDefaultData.Vorbelegung)
             {
                 foreach (var name in defData.Alias)

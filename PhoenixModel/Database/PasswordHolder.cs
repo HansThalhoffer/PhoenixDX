@@ -43,6 +43,11 @@ namespace PhoenixModel.Database
         public PasswordHolder(string plainPassword)
         { encryptedPasswordBase64 = EncryptPassword(plainPassword); }
 
+        public PasswordHolder(EncryptedString password)
+        {
+            encryptedPasswordBase64 = password;
+        }
+
         // Constructor that accepts a password
         public PasswordHolder(EncryptedString? password, IPasswordProvider provider)
         {

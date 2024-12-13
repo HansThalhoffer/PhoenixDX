@@ -32,53 +32,19 @@ namespace PhoenixWPF.Program
            _databaseFileName = databaseFileName;
             _encryptedpassword = encryptedpassword;
         }
+       
         public void Load()
         {
-           _Load();
-        }
-
-        public void _Load()
-        {
-            PasswordHolder holder = new PasswordHolder(_encryptedpassword, new PasswortProvider("ERKENFARA"));
-            using (AccessDatabase connector = new AccessDatabase(_databaseFileName, holder.DecryptPassword()))
+            PasswordHolder holder = new (_encryptedpassword);
+            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptPassword()))
             {
                 if (connector?.Open() == false)
                     return;
-                SharedData.Map = new SharedData.BlockingDictionary<Gemark>(2, 6530);
-                SharedData.Map.IsBlocked = true;
-                using (var reader = connector?.OpenReader("SELECT * FROM " + Gemark.TableName))
-                {
-                    while (reader != null && reader.Read())
-                    {
-                        var gemark = LoadGemark(reader);
-                        if (gemark.db_xy != null)
-                        {
-                            if (SharedData.Map.ContainsKey(gemark.Bezeichner) == false)
-                                SharedData.Map.TryAdd(gemark.Bezeichner, gemark);
-                            else
-                                SharedData.Map[gemark.Bezeichner] = gemark;
-                        }
-                    }
-                }
-                SharedData.Map.IsBlocked = false;
-                SharedData.Map.IsAddingCompleted = true;
-                int total = SharedData.Map.Count();
-                Spiel.Log(new PhoenixModel.Program.LogEntry($"{total} Gemarken geladen"));
+                Load<Gemark>(connector, ref SharedData.Map, Enum.GetNames(typeof(Gemark.Felder)));
 
-                SharedData.Gebäude = new BlockingDictionary<Gebäude>();
-                using (var reader = connector?.OpenReader("SELECT gf,kf,Reich,Bauwerknamen FROM " + PhoenixModel.dbErkenfara.Gebäude.TableName ))
-                {
-                    while (reader != null && reader.Read())
-                    {
-                        var obj = LoadGebäude(reader);
-                        SharedData.Gebäude.TryAdd(obj.Bezeichner,obj);
-                    }
-                }
-                SharedData.Gebäude.IsAddingCompleted = true;
-                total = SharedData.Gebäude.Count();
-                Spiel.Log(new PhoenixModel.Program.LogEntry( $"{total} Gebäude geladen"));
+                Load<Gebäude>(connector, ref SharedData.Gebäude, Enum.GetNames(typeof(Gebäude.Felder)));
 
-                SharedData.Map.IsAddingCompleted = true;
+             
                 connector?.Close();
                 return;
             }
@@ -88,17 +54,10 @@ namespace PhoenixWPF.Program
         {
             return new Gebäude
             {
-                gf = AccessDatabase.ToInt(reader[0]),
-                kf = AccessDatabase.ToInt(reader[1]),
-                Reich = AccessDatabase.ToString(reader[2]),
-                Bauwerknamem = AccessDatabase.ToString(reader[3])
+                
             };
         }
-
        
-
-        
-        
         public void Dispose()
         {
         }

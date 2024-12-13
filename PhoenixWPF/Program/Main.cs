@@ -49,13 +49,13 @@ namespace PhoenixWPF.Program
         public delegate ILoadableDatabase LoadableDatabase(string databaseLocation, string encryptedPassword);
 
 
-        public void Load(ref string databaseLocation, ref string encryptedPassword, LoadableDatabase dbCreator) 
+        public void Load(ref string databaseLocation, ref string encryptedPassword, LoadableDatabase dbCreator,string databaseName) 
         {
             if (Settings == null)
                 return;
 
             databaseLocation = FileSystem.LocateFile(databaseLocation);
-            PasswordHolder pwdHolder = new PasswordHolder(encryptedPassword, new PasswortProvider());
+            PasswordHolder pwdHolder = new PasswordHolder(encryptedPassword, new DatabaseLoader.PasswortProvider(databaseName));
             encryptedPassword = pwdHolder.EncryptedPasswordBase64;
             using (ILoadableDatabase db = dbCreator(databaseLocation, encryptedPassword))
             {
@@ -75,7 +75,7 @@ namespace PhoenixWPF.Program
                 return;
             string databaseLocation = Settings.UserSettings.DatabaseLocationCrossRef;
             string encryptedPassword = Settings.UserSettings.PasswordCrossRef;
-            Load(ref databaseLocation,ref encryptedPassword, CreateCrossRef);
+            Load(ref databaseLocation,ref encryptedPassword, CreateCrossRef, "CrossRef");
             Settings.UserSettings.DatabaseLocationCrossRef = databaseLocation;
             Settings.UserSettings.PasswordCrossRef =encryptedPassword;
         }
@@ -91,7 +91,7 @@ namespace PhoenixWPF.Program
                 return;
             string databaseLocation = Settings.UserSettings.DatabaseLocationKarte;
             string encryptedPassword = Settings.UserSettings.PasswordKarte;
-            Load(ref databaseLocation, ref encryptedPassword, CreateKarte);
+            Load(ref databaseLocation, ref encryptedPassword, CreateKarte,"ErkenfaraKarte");
             Settings.UserSettings.DatabaseLocationKarte = databaseLocation;
             Settings.UserSettings.PasswordKarte = encryptedPassword;
         }
@@ -108,7 +108,7 @@ namespace PhoenixWPF.Program
                 return;
             string databaseLocation = Settings.UserSettings.DatabaseLocationPZE;
             string encryptedPassword = Settings.UserSettings.PasswordPZE;
-            Load(ref databaseLocation, ref encryptedPassword, CreatePZE);
+            Load(ref databaseLocation, ref encryptedPassword, CreatePZE,"PZ");
             Settings.UserSettings.DatabaseLocationPZE = databaseLocation;
             Settings.UserSettings.PasswordPZE = encryptedPassword;
         }

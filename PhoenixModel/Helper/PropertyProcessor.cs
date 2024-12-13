@@ -8,10 +8,22 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.Helper
 {
-    public class PropertiesProcessor
+    public class PropertyProcessor
     {
         private static readonly string[] Directions = { "NW", "NO", "O", "SO", "SW", "W","eigen","eigene","feind","freund" };
 
+
+        public static string GetPropertyValue(object? obj, string property)
+        {
+            var propertyInfo = obj?.GetType().GetProperty(property, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+            return propertyInfo?.GetValue(obj)?.ToString() ?? string.Empty;
+        }
+
+        public static string GetConstValue<T>(string name)
+        {
+            var info = typeof(T).GetField(name, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+            return info?.GetValue(null)?.ToString() ?? string.Empty;
+        }
 
         public static Dictionary<string, string> CreateProperties<T>(T data, string[] toIgnore)
         {

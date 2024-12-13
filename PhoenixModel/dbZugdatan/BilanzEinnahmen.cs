@@ -80,35 +80,35 @@ namespace PhoenixModel.dbZugdatan
 
         public void Load(DbDataReader reader)
         {
-            monat = reader.GetInt32((int)Felder.monat);
-            Tiefland = reader.GetInt32((int)Felder.Tiefland);
-            Tieflandwald = reader.GetInt32((int)Felder.Tieflandwald);
-            Tieflandwüste = reader.GetInt32((int)Felder.Tieflandwüste);
-            Tieflandsumpf = reader.GetInt32((int)Felder.Tieflandsumpf);
-            Hochland = reader.GetInt32((int)Felder.Hochland);
-            Bergland = reader.GetInt32((int)Felder.Bergland);
-            Gebirge = reader.GetInt32((int)Felder.Gebirge);
-            Burgen = reader.GetInt32((int)Felder.Burgen);
-            Städte = reader.GetInt32((int)Felder.Städte);
-            Festungen = reader.GetInt32((int)Felder.Festungen);
-            Hauptstadt = reader.GetInt32((int)Felder.Hauptstadt);
-            Festungshauptstadt = reader.GetInt32((int)Felder.Festungshauptstadt);
-            Kampfeinnahmen = reader.GetInt32((int)Felder.Kampfeinnahmen);
-            Pluenderungen = reader.GetInt32((int)Felder.Pluenderungen);
-            eroberte_burgen = reader.GetInt32((int)Felder.eroberte_burgen);
-            eroberte_staedte = reader.GetInt32((int)Felder.eroberte_staedte);
-            eroberte_festungen = reader.GetInt32((int)Felder.eroberte_festungen);
-            eroberte_hauptstadt = reader.GetInt32((int)Felder.eroberte_hauptstadt);
-            eroberte_festungshauptstadt = reader.GetInt32((int)Felder.eroberte_festungshauptstadt);
-            Reichsschatzalt = reader.GetInt32((int)Felder.Reichsschatzalt);
-            gew_einnahmen = reader.GetInt32((int)Felder.gew_einnahmen);
-            bes_einnahmen = reader.GetInt32((int)Felder.bes_einnahmen);
-            gew_ausgaben = reader.GetInt32((int)Felder.gew_ausgaben);
-            bes_ausgaben = reader.GetInt32((int)Felder.bes_ausgaben);
-            Geldverleih = reader.GetInt32((int)Felder.Geldverleih);
-            Geldschenkung = reader.GetInt32((int)Felder.Geldschenkung);
-            Sonstiges = reader.GetInt32((int)Felder.Sonstiges);
-            Reichsschatzneu = reader.GetInt32((int)Felder.Reichsschatzneu);
+            monat = DatabaseConverter.ToInt32(reader[(int)Felder.monat]);
+            Tiefland = DatabaseConverter.ToInt32(reader[(int)Felder.Tiefland]);
+            Tieflandwald = DatabaseConverter.ToInt32(reader[(int)Felder.Tieflandwald]);
+            Tieflandwüste = DatabaseConverter.ToInt32(reader[(int)Felder.Tieflandwüste]);
+            Tieflandsumpf = DatabaseConverter.ToInt32(reader[(int)Felder.Tieflandsumpf]);
+            Hochland = DatabaseConverter.ToInt32(reader[(int)Felder.Hochland]);
+            Bergland = DatabaseConverter.ToInt32(reader[(int)Felder.Bergland]);
+            Gebirge = DatabaseConverter.ToInt32(reader[(int)Felder.Gebirge]);
+            Burgen = DatabaseConverter.ToInt32(reader[(int)Felder.Burgen]);
+            Städte = DatabaseConverter.ToInt32(reader[(int)Felder.Städte]);
+            Festungen = DatabaseConverter.ToInt32(reader[(int)Felder.Festungen]);
+            Hauptstadt = DatabaseConverter.ToInt32(reader[(int)Felder.Hauptstadt]);
+            Festungshauptstadt = DatabaseConverter.ToInt32(reader[(int)Felder.Festungshauptstadt]);
+            Kampfeinnahmen = DatabaseConverter.ToInt32(reader[(int)Felder.Kampfeinnahmen]);
+            Pluenderungen = DatabaseConverter.ToInt32(reader[(int)Felder.Pluenderungen]);
+            eroberte_burgen = DatabaseConverter.ToInt32(reader[(int)Felder.eroberte_burgen]);
+            eroberte_staedte = DatabaseConverter.ToInt32(reader[(int)Felder.eroberte_staedte]);
+            eroberte_festungen = DatabaseConverter.ToInt32(reader[(int)Felder.eroberte_festungen]);
+            eroberte_hauptstadt = DatabaseConverter.ToInt32(reader[(int)Felder.eroberte_hauptstadt]);
+            eroberte_festungshauptstadt = DatabaseConverter.ToInt32(reader[(int)Felder.eroberte_festungshauptstadt]);
+            Reichsschatzalt = DatabaseConverter.ToInt32(reader[(int)Felder.Reichsschatzalt]);
+            gew_einnahmen = DatabaseConverter.ToInt32(reader[(int)Felder.gew_einnahmen]);
+            bes_einnahmen = DatabaseConverter.ToInt32(reader[(int)Felder.bes_einnahmen]);
+            gew_ausgaben = DatabaseConverter.ToInt32(reader[(int)Felder.gew_ausgaben]);
+            bes_ausgaben = DatabaseConverter.ToInt32(reader[(int)Felder.bes_ausgaben]);
+            Geldverleih = DatabaseConverter.ToInt32(reader[(int)Felder.Geldverleih]);
+            Geldschenkung = DatabaseConverter.ToInt32(reader[(int)Felder.Geldschenkung]);
+            Sonstiges = DatabaseConverter.ToInt32(reader[(int)Felder.Sonstiges]);
+            Reichsschatzneu = DatabaseConverter.ToInt32(reader[(int)Felder.Reichsschatzneu]);
         }
 
     }
