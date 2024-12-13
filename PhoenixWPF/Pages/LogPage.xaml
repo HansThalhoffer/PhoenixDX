@@ -5,6 +5,6 @@
 
     <Grid>
         <ListBox Name="LogListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                 FontFamily="Consolas" FontSize="12" />
+                 FontFamily="Consolas" FontSize="10" MouseDoubleClick="LogListBox_MouseDoubleClick"/>
     </Grid>
 </Page>

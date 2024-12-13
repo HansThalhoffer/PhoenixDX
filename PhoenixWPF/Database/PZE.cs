@@ -44,14 +44,10 @@ namespace PhoenixWPF.Database
             }
             using (SharedData.BlockGuard guard = new(SharedData.Map))
             {
-                
-
                 foreach (var gem in SharedData.Map)
                 {
                     
                 }
-
-
             }
         }
 

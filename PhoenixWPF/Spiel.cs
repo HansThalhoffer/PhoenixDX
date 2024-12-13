@@ -19,16 +19,19 @@ namespace PhoenixWPF
 {
     public class Spiel :IDisposable
     {
-        private PhoenixDX.MappaMundi? _map;
-        public Spiel (MappaMundi map)
+        public Spiel ()
         {
-            _map = map;
         }
         
         public void MapEventHandler(MapEventArgs e)
         {
            if (e.EventType == MapEventArgs.MapEventType.SelectGemark)
                 SelectGemark(e);
+            if (e.EventType == MapEventArgs.MapEventType.Log && e.LogEntry != null)
+            {
+                Log(e.LogEntry);
+            }
+                
         }
 
         public static void Log(LogEntry logentry)
@@ -54,11 +57,9 @@ namespace PhoenixWPF
             
         }
 
-       
-
         public void Dispose()
         {
-            _map = null;
+           
         }
     }
 }

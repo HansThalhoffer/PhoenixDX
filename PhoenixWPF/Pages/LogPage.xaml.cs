@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -37,6 +38,31 @@ namespace PhoenixWPF.Pages
             LogListBox.ItemsSource = _logEntries;
         }
 
+        private void LogListBox_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (LogListBox.SelectedItem != null)
+            {
+                string selectedText = LogListBox.SelectedItem.ToString();
+                ExtractAndGoTo(selectedText);
+            }
+        }
+
+        private void ExtractAndGoTo(string input)
+        {
+            // Regex to match the pattern [number1/number2] 
+            Regex regex = new Regex(@"\[(\d+)/(\d+)\]");
+            Match match = regex.Match(input);
+
+            if (match.Success)
+            {
+                if (int.TryParse(match.Groups[1].Value, out int gf) && int.TryParse(match.Groups[2].Value, out int kf))
+                {
+                    Program.Main.Instance.Map?.Goto(gf, kf);
+                }                
+            }          
+        }
+    
+
         /// <summary>
         /// Static method to add a message to the log from any thread.
         /// </summary>
@@ -50,7 +76,7 @@ namespace PhoenixWPF.Pages
             {
                 lock (_logLock)
                 {
-                    _logEntries.Add($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {logentry.Type.ToString()} {logentry.Message}");
+                    _logEntries.Add($"{logentry.Type.ToString()} {logentry.Message}");
 
                     // Optionally limit log size to avoid memory overuse
                     if (_logEntries.Count > 1000) // Keep last 1000 entries
