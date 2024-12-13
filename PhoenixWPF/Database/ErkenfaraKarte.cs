@@ -20,10 +20,13 @@ using static PhoenixModel.Helper.SharedData;
 
 namespace PhoenixWPF.Program
 {
-    public class ErkenfaraKarte: IDisposable
+    public class ErkenfaraKarte: ILoadableDatabase
     {
         EncryptedString _encryptedpassword;
-        string _databaseFileName;     
+        string _databaseFileName;
+        public EncryptedString Encryptedpassword { get => _encryptedpassword; set => _encryptedpassword = value; }
+        public string DatabaseFileName { get => _databaseFileName; set => _databaseFileName = value; }
+
         public ErkenfaraKarte(string databaseFileName, EncryptedString encryptedpassword)
         {
            _databaseFileName = databaseFileName;
@@ -73,7 +76,7 @@ namespace PhoenixWPF.Program
                 SharedData.Map.IsBlocked = false;
                 SharedData.Map.IsAddingCompleted = true;
                 int total = SharedData.Map.Count();
-                Spiel.Log(Spiel.LogType.Info, $"{total} Gemarken geladen");
+                Spiel.Log(new PhoenixModel.Program.LogEntry($"{total} Gemarken geladen"));
 
                 SharedData.Gebäude = new BlockingDictionary<Gebäude>();
                 using (var reader = connector?.OpenReader("SELECT gf,kf,Reich,Bauwerknamen FROM " + PhoenixModel.dbErkenfara.Gebäude.TableName ))
@@ -86,7 +89,7 @@ namespace PhoenixWPF.Program
                 }
                 SharedData.Gebäude.IsAddingCompleted = true;
                 total = SharedData.Gebäude.Count();
-                Spiel.Log(Spiel.LogType.Info, $"{total} Gebäude geladen");
+                Spiel.Log(new PhoenixModel.Program.LogEntry( $"{total} Gebäude geladen"));
 
                 SharedData.Map.IsAddingCompleted = true;
                 connector?.Close();
@@ -118,7 +121,7 @@ namespace PhoenixWPF.Program
                 Rand = AccessDatabase.ToInt(reader["Rand"]),
                 Index = AccessDatabase.ToInt(reader["Index"]),
                 Gelaendetyp = AccessDatabase.ToInt(reader["Gelaendetyp"]),
-                Ruestort = AccessDatabase.ToInt(reader["RuestortSymbol"]),
+                Ruestort = AccessDatabase.ToInt(reader["Ruestort"]),
                 Fluss_NW = AccessDatabase.ToInt(reader["Fluss_NW"]),
                 Fluss_NO = AccessDatabase.ToInt(reader["Fluss_NO"]),
                 Fluss_O = AccessDatabase.ToInt(reader["Fluss_O"]),

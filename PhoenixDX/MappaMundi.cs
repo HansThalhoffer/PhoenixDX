@@ -59,10 +59,20 @@ namespace PhoenixDX
             _game?.OnMouseEvent(args);
         }
 
-        public void Log(LogEntry logentry)
+        public static void Log(LogEntry logentry)
         {
-
+            _OnMapEvent(new MapEventArgs(logentry));
         }
+        public static void Log(int gf, int kf, LogEntry logentry)
+        {
+            _OnMapEvent(new MapEventArgs(gf,kf,logentry));
+        }
+        public static void Log(int gf, int kf, Exception ex)
+        {
+            MappaMundi.Log(gf, kf, new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, ex.Message));
+        }
+
+
 
         public void Run()
         {
@@ -78,13 +88,13 @@ namespace PhoenixDX
         }
 
         public delegate void MapEventHandler(object sender, MapEventArgs e);
-        public event MapEventHandler OnMapEvent;
+        public static event MapEventHandler OnMapEvent;
 
-        private void _OnMapEvent(MapEventArgs args)
+        private static void _OnMapEvent(MapEventArgs args)
         {
             if (OnMapEvent == null)
                 return;
-            OnMapEvent(this, args);
+            OnMapEvent(null, args);
         }
 
         public void SelectKleinfeld(int gf, int kf, MausEventArgs.MouseEventType eventType)

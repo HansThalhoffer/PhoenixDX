@@ -38,7 +38,32 @@ namespace PhoenixModel.Program
                 if (_defaultValuesReiche != value)
                 {
                     _defaultValuesReiche = value;
-                    OnPropertyChanged(nameof(DatabaseLocationKarte));
+                    OnPropertyChanged(nameof(DefaultValuesReiche));
+                }
+            }
+        }
+        #region AccessDatabase
+        public string DatabaseLocationCrossRef
+        {
+            get => _databaseLocationCrossRef;
+            set
+            {
+                if (_databaseLocationCrossRef != value)
+                {
+                    _databaseLocationCrossRef = value;
+                    OnPropertyChanged(nameof(DatabaseLocationCrossRef));
+                }
+            }
+        }
+        public string PasswordCrossRef
+        {
+            get => _passwordCrossRef;
+            set
+            {
+                if (_passwordCrossRef != value)
+                {
+                    _passwordCrossRef = value;
+                    OnPropertyChanged(nameof(PasswordCrossRef));
                 }
             }
         }
@@ -55,7 +80,18 @@ namespace PhoenixModel.Program
                 }
             }
         }
-
+        public string PasswordKarte
+        {
+            get => _passwordKarte;
+            set
+            {
+                if (_passwordKarte != value)
+                {
+                    _passwordKarte = value;
+                    OnPropertyChanged(nameof(PasswordKarte));
+                }
+            }
+        }
         public string DatabaseLocationPZE
         {
             get => _databaseLocationPZE;
@@ -68,20 +104,23 @@ namespace PhoenixModel.Program
                 }
             }
         }
-
-        public string DatabaseLocationCrossRef
+        public string PasswordPZE
         {
-            get => _databaseLocationCrossRef;
+            get => _passwordPZE;
             set
             {
-                if (_databaseLocationCrossRef != value)
+                if (_passwordPZE != value)
                 {
-                    _databaseLocationCrossRef = value;
-                    OnPropertyChanged(nameof(DatabaseLocationCrossRef));
+                    _passwordPZE = value;
+                    OnPropertyChanged(nameof(PasswordPZE));
                 }
             }
         }
 
+   
+        #endregion
+
+        #region Windows
         public bool ShowWindowNavigator
         {
             get => _showWindowNavigator;
@@ -120,44 +159,8 @@ namespace PhoenixModel.Program
                 }
             }
         }
+        #endregion
 
-        public string PasswordPZE { 
-            get => _passwordPZE; 
-            set
-            {
-                if (_passwordPZE != value)
-                {
-                    _passwordPZE = value;
-                    OnPropertyChanged(nameof(PasswordPZE));
-                }
-            }
-        }
-
-        public string PasswordKarte
-        {
-            get => _passwordKarte;
-            set
-            {
-                if (_passwordKarte != value)
-                {
-                    _passwordKarte = value;
-                    OnPropertyChanged(nameof(PasswordKarte));
-                }
-            }
-        }
-
-        public string PasswordCrossRef
-        {
-            get => _passwordCrossRef;
-            set
-            {
-                if (_passwordCrossRef != value)
-                {
-                    _passwordCrossRef = value;
-                    OnPropertyChanged(nameof(PasswordCrossRef));
-                }
-            }
-        }
 
         public UserSettings()
         { }

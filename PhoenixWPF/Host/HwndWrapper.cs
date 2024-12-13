@@ -241,7 +241,7 @@ namespace PhoenixWPF.Host
             {
                 Main.Instance.Map = new PhoenixDX.MappaMundi(_hWnd);
                 Main.Instance.Spiel = new PhoenixWPF.Spiel(Main.Instance.Map);
-                Main.Instance.Map.OnMapEvent += new MappaMundi.MapEventHandler(MapEventHandler);
+                MappaMundi.OnMapEvent += new MappaMundi.MapEventHandler(MapEventHandler);
                 Main.Instance.Map.Run();
             }
             return new HandleRef(this, _hWnd);

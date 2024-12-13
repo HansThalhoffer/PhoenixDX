@@ -69,7 +69,7 @@ namespace PhoenixDX.Structures
                 {
                     if (Provinzen.ContainsKey(gem.gf) == false)
                     {
-                        Microsoft.Xna.Framework.Input.MessageBox.Show("Fehler", "Großfeld " + gem.gf + " fehlt",["OK"]);
+                        MappaMundi.Log(gem.gf, gem.kf, new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Großfeld {gem.gf} fehlt"));
                         continue;
                     }
                     var p = Provinzen[gem.gf];
@@ -84,7 +84,7 @@ namespace PhoenixDX.Structures
                         }
                         catch (Exception ex)
                         {
-                            System.Windows.Forms.MessageBox.Show(ex.Message);
+                            MappaMundi.Log(gem.gf, gem.kf, ex);
                         }
                     }
                 }
@@ -120,7 +120,7 @@ namespace PhoenixDX.Structures
         }
 
         public bool RüstorteInitalized = false;
-        public void AddBauwerke(BlockingDictionary<Gebäude>? gebäude)
+        public void AddBauwerke(BlockingDictionary<Gebäude> gebäude)
         {
             RüstorteInitalized = true;
             foreach (var g in gebäude.Values)
@@ -136,6 +136,9 @@ namespace PhoenixDX.Structures
                 if (RuestortSymbol.Ruestorte.ContainsKey(typ) == true)
                     kleinfeld.Adorner.Add("Rüstort",RuestortSymbol.Ruestorte[typ]);
                 else
+                {
+                    MappaMundi.Log(g.gf,g.kf, new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error,$"Unbekanntes Gebäude {typ}"));
+                }
 
             }
             

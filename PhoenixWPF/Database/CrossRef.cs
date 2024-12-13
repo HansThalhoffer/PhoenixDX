@@ -1,4 +1,5 @@
-﻿using PhoenixModel.Database;
+﻿using PhoenixModel.CrossRef;
+using PhoenixModel.Database;
 using PhoenixModel.dbPZE;
 using PhoenixModel.Helper;
 using PhoenixWPF.Dialogs;
@@ -9,14 +10,19 @@ using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using static PhoenixModel.Database.PasswordHolder;
+using static PhoenixWPF.Database.CrossRef;
 
 namespace PhoenixWPF.Database
 {
-    public class CrossRef : IDisposable
+    public class CrossRef : ILoadableDatabase
     {
         EncryptedString _encryptedpassword;
         string _databaseFileName;
+
+        public EncryptedString Encryptedpassword { get => _encryptedpassword; set => _encryptedpassword = value; }
+        public string DatabaseFileName { get => _databaseFileName; set => _databaseFileName = value; }
 
         public CrossRef(string databaseFileName, EncryptedString encryptedpassword)
         {
@@ -54,57 +60,62 @@ namespace PhoenixWPF.Database
             }
         }
 
-        public int Load()
+        enum RüstOrtFelder
+        { nummer, ruestort, Baupunkte, Kapazitaet_truppen, Kapazitaet_HF, Kapazitaet_Z, canSieged };
+
+        public delegate T LoadObject<T>(DbDataReader reader);
+
+        void Load<T>(LoadObject<T> objReader, AccessDatabase? connector, BlockingCollection<T>? collection, string[] felder )
+        {
+            if (connector == null || collection == null)
+                return;
+            int total = 0;
+            SharedData.Nationen = new BlockingCollection<Nation>();
+            string felderListe = string.Join(", ", felder);
+            using (DbDataReader? reader = connector?.OpenReader($"SELECT {felderListe} FROM ORDER BY {felder[0]}"))
+            {
+                while (reader != null && reader.Read())
+                {
+                    T obj = objReader(reader);
+                    collection.Add(obj);
+                }
+            }
+            collection.CompleteAdding();
+            total = collection.Count();
+            Spiel.Log(new PhoenixModel.Program.LogEntry($"{total} {typeof(T)} geladen"));
+        }
+
+        public void Load()
         {
             PasswordHolder holder = new PasswordHolder(_encryptedpassword, new PasswortProvider());
             using (AccessDatabase connector = new AccessDatabase(_databaseFileName, holder.DecryptPassword()))
             {
                 if (connector?.Open() == false)
-                    return 0;
-                int total = 0;
-                SharedData.Nationen = new BlockingCollection<Nation>();
-                using (var reader = connector?.OpenReader("SELECT * FROM " + Nation.TableName + " ORDER BY Nummer"))
+                    return;
+                try
                 {
-                    while (reader != null && reader.Read())
-                    {
-                        var reich = LoadNation(reader);
-                        SharedData.Nationen.Add(reich);
-                    }
+                    Load<Rüstort>(this.LoadRuestort, connector, SharedData.Rüstorte, Enum.GetNames(typeof(RüstOrtFelder)));
                 }
-                SharedData.Nationen.CompleteAdding();
-                total = SharedData.Nationen.Count();
-                Spiel.Log(Spiel.LogType.Info, $"{total} Reiche geladen");
+                catch (Exception ex)
+                {
+                    Spiel.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, ("Fehler beim Öffnen der PZE Datenbank: " + ex.Message)));
+                }
                 connector?.Close();
-                return total;
             }
         }
 
-        Nation LoadNation(DbDataReader reader)
+        Rüstort LoadRuestort(DbDataReader reader)
         {
-            var reich = new Nation
+            var obj = new Rüstort(AccessDatabase.ToInt(reader[(int)RüstOrtFelder.nummer]),
+                AccessDatabase.ToInt(reader[(int)RüstOrtFelder.Baupunkte]),
+                AccessDatabase.ToString(reader[(int)RüstOrtFelder.ruestort]))
             {
-                Nummer = AccessDatabase.ToInt(reader["Nummer"]),
-                Reich = AccessDatabase.ToString(reader["Reich"]),
-                DBname = AccessDatabase.ToString(reader["DBname"]),
-                DBpass = AccessDatabase.ToString(reader["DBpass"])
+                KapazitätTruppen = AccessDatabase.ToInt(reader[(int)RüstOrtFelder.Kapazitaet_truppen]),
+                KapazitätHF = AccessDatabase.ToInt(reader[(int)RüstOrtFelder.Kapazitaet_truppen]),
+                KapazitätZ = AccessDatabase.ToInt(reader[(int)RüstOrtFelder.Kapazitaet_truppen]),
+                canSieged = AccessDatabase.ToBool(reader[(int)RüstOrtFelder.Kapazitaet_truppen])
             };
-            foreach (var defData in PhoenixModel.dbPZE.Defaults.ReichDefaultData.Vorbelegung)
-            {
-                foreach (var name in defData.Alias)
-                {
-                    if (name.ToUpper() == reich.Reich.ToUpper())
-                    {
-                        reich.Alias = defData.Alias;
-                        reich.Farbname = defData.Farbname;
-                        reich.Farbe = System.Drawing.ColorTranslator.FromHtml(defData.FarbeHex);
-                        break;
-                    }
-                }
-                if (reich.Farbname != null)
-                    break;
-            }
-
-            return reich;
+            return obj;
         }
 
         public void Dispose()

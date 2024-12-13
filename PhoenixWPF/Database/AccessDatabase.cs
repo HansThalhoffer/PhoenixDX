@@ -46,7 +46,7 @@ namespace PhoenixWPF.Database
             string provider = GetInstalledAceOleDbProvider();
             if (provider == null)
             {
-                MessageBox.Show("Es ist kein Microsoft.ACE.OLEDB Treiber installiert. Bitte einen entsprechenden Treiber installieren");
+                Spiel.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, "Es ist kein Microsoft.ACE.OLEDB Treiber installiert. Bitte einen entsprechenden Treiber installieren"));
             }
             string connectionString = $@"Provider={provider};Data Source={databaseFilePath};Persist Security Info=False;";
             
@@ -76,7 +76,7 @@ namespace PhoenixWPF.Database
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Fehler beim Öffnen der PZE Datenbank: " + ex.Message);
+                    Spiel.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, ("Fehler beim Öffnen der PZE Datenbank: " + ex.Message)));
                     return false;
                 }
             }
@@ -185,6 +185,28 @@ namespace PhoenixWPF.Database
             }
             catch { }
             return -1;
+        }
+
+        /// </summary>
+        static public bool ToBool(object o)
+        {
+            try
+            {
+                if (o == null)
+                    throw new ArgumentNullException("Unbekanntes Feld in der Tabelle");
+                if (o is DBNull)
+                    return false;
+                if (o.GetType() == typeof(int))
+                    return Convert.ToInt32(o) > 0;
+                if (o.GetType() == typeof(double))
+                    return Convert.ToInt32(o) > 0;
+                if (o.GetType() == typeof(float))
+                    return Convert.ToInt32(o) > 0;
+                if (o.GetType() == typeof(bool))
+                    return Convert.ToBoolean(o);
+            }
+            catch { }
+            return false;
         }
 
         /// <summary>

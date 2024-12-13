@@ -12,7 +12,7 @@ namespace PhoenixModel.Helper
     {
         public enum MapEventType
         {
-            None, SelectGemark
+            None, SelectGemark, Log
         }
 
         public int GF = 0, KF = 0;
@@ -26,11 +26,20 @@ namespace PhoenixModel.Helper
             EventType = mapevent;
         }
 
-        public MapEventArgs(int gf, int kf, MapEventType mapevent, LogEntry logEntry)
+        public MapEventArgs(LogEntry logEntry)
+        {
+            GF = 0;
+            KF = 0;
+            EventType = MapEventType.Log;
+            LogEntry = logEntry;
+        }
+
+        public MapEventArgs(int gf, int kf, LogEntry logEntry)
         {
             GF = gf;
             KF = kf;
-            EventType = mapevent;
+            EventType = MapEventType.Log;
+            LogEntry = logEntry;
         }
     }
 }

@@ -16,10 +16,13 @@ using System.IO;
 
 namespace PhoenixWPF.Database
 {
-    public class PZE : IDisposable
+    public class PZE : ILoadableDatabase
     {
         EncryptedString _encryptedpassword;
         string _databaseFileName;
+        public EncryptedString Encryptedpassword { get => _encryptedpassword; set => _encryptedpassword = value; }
+        public string DatabaseFileName { get => _databaseFileName; set => _databaseFileName = value; }
+
 
         public PZE(string databaseFileName, EncryptedString encryptedpassword)
         {
@@ -66,13 +69,13 @@ namespace PhoenixWPF.Database
             }
         }
 
-        public int Load()
+        public void Load()
         {
             PasswordHolder holder = new PasswordHolder(_encryptedpassword, new PasswortProvider());
             using (AccessDatabase connector = new AccessDatabase(_databaseFileName, holder.DecryptPassword()))
             {
                 if (connector?.Open() == false)
-                    return 0;
+                    return;
                 int total = 0;
                 SharedData.Nationen = new BlockingCollection<Nation>();
                 using (var reader = connector?.OpenReader("SELECT * FROM " + Nation.TableName + " ORDER BY Nummer"))
@@ -85,9 +88,8 @@ namespace PhoenixWPF.Database
                 }
                 SharedData.Nationen.CompleteAdding();
                 total = SharedData.Nationen.Count();
-                Spiel.Log(Spiel.LogType.Info, $"{total} Reiche geladen");
+                Spiel.Log(new PhoenixModel.Program.LogEntry($"{total} Reiche geladen"));
                 connector?.Close();
-                return total;
             }
         }
 

@@ -60,10 +60,10 @@ namespace PhoenixModel.CrossRef
 
     public class Rüstort : BauwerkBasis, IDatabaseTable, IPropertyHolder
     {
-        Rüstort(int? nummer, int? baupunkte, string? bauwerk) : base(nummer, baupunkte, bauwerk)
+        public Rüstort(int? nummer, int? baupunkte, string? bauwerk) : base(nummer, baupunkte, bauwerk)
         {
         }
-        public const string TableName = "Bauwerke_crossref";
+        public const string TableName = "Rüstort_crossref";
         string IDatabaseTable.TableName => TableName;
         public string? Ruestort { get; set; }
         public int? KapazitätTruppen { get; set; }

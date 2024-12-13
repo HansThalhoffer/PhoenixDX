@@ -9,6 +9,7 @@ using PhoenixModel.Database;
 using PhoenixModel.Program;
 using PhoenixWPF.Database;
 using PhoenixWPF.Helper;
+using static PhoenixModel.Database.PasswordHolder;
 using static PhoenixWPF.Program.ErkenfaraKarte;
 
 namespace PhoenixWPF.Program
@@ -28,6 +29,7 @@ namespace PhoenixWPF.Program
             Settings = new AppSettings("Settings.jpk");
             Settings.InitializeSettings();
             LoadKarte();
+            LoadCrossRef();
             LoadPZE();
         }
 
@@ -41,48 +43,76 @@ namespace PhoenixWPF.Program
                     Map.ReichOverlay = false;
             }
         }
-        public void LoadCrossRef()
+
+      
+        
+        public delegate ILoadableDatabase LoadableDatabase(string databaseLocation, string encryptedPassword);
+
+
+        public void Load(ref string databaseLocation, ref string encryptedPassword, LoadableDatabase dbCreator) 
         {
             if (Settings == null)
                 return;
 
-            Settings.UserSettings.DatabaseLocationPZE = FileSystem.LocateFile(Settings.UserSettings.DatabaseLocationCrossRef);
-            PasswordHolder pwdHolder = new PasswordHolder(Settings.UserSettings.DatabaseLocationCrossRef, new PasswortProvider());
-            Settings.UserSettings.DatabaseLocationCrossRef = pwdHolder.EncryptedPasswordBase64;
-            using (CrossRef crossref = new CrossRef(Settings.UserSettings.DatabaseLocationPZE, Settings.UserSettings.DatabaseLocationCrossRef))
+            databaseLocation = FileSystem.LocateFile(databaseLocation);
+            PasswordHolder pwdHolder = new PasswordHolder(encryptedPassword, new PasswortProvider());
+            encryptedPassword = pwdHolder.EncryptedPasswordBase64;
+            using (ILoadableDatabase db = dbCreator(databaseLocation, encryptedPassword))
             {
-                crossref.Load();
+                db.Load();
             }
+        }
+
+    
+        private ILoadableDatabase CreateCrossRef(string databaseLocation, string encryptedPassword)
+        {
+            return new CrossRef(databaseLocation, encryptedPassword);
+        }
+
+        public void LoadCrossRef()
+        {
+            if (Settings == null)
+                return;
+            string databaseLocation = Settings.UserSettings.DatabaseLocationCrossRef;
+            string encryptedPassword = Settings.UserSettings.PasswordCrossRef;
+            Load(ref databaseLocation,ref encryptedPassword, CreateCrossRef);
+            Settings.UserSettings.DatabaseLocationCrossRef = databaseLocation;
+            Settings.UserSettings.PasswordCrossRef =encryptedPassword;
+        }
+
+        private ILoadableDatabase CreateKarte(string databaseLocation, string encryptedPassword)
+        {
+            return new ErkenfaraKarte(databaseLocation, encryptedPassword);
         }
 
         public void LoadKarte()
         {
-            if (Settings ==null)
+            if (Settings == null)
                 return;
+            string databaseLocation = Settings.UserSettings.DatabaseLocationKarte;
+            string encryptedPassword = Settings.UserSettings.PasswordKarte;
+            Load(ref databaseLocation, ref encryptedPassword, CreateKarte);
+            Settings.UserSettings.DatabaseLocationKarte = databaseLocation;
+            Settings.UserSettings.PasswordKarte = encryptedPassword;
+        }
 
-            Settings.UserSettings.DatabaseLocationKarte = FileSystem.LocateFile(Settings.UserSettings.DatabaseLocationKarte);
-            PasswordHolder pwdHolder = new PasswordHolder(Settings.UserSettings.PasswordKarte, new PasswortProvider());
-            Settings.UserSettings.PasswordKarte = pwdHolder.EncryptedPasswordBase64;
-            using (ErkenfaraKarte karte = new ErkenfaraKarte(Settings.UserSettings.DatabaseLocationKarte, Settings.UserSettings.PasswordKarte))
-            {
-                karte.Load();
-            }
+
+        private ILoadableDatabase CreatePZE(string databaseLocation, string encryptedPassword)
+        {
+            return new PZE(databaseLocation, encryptedPassword);
         }
 
         public void LoadPZE()
         {
             if (Settings == null)
-                return ;
-
-            Settings.UserSettings.DatabaseLocationPZE = FileSystem.LocateFile(Settings.UserSettings.DatabaseLocationPZE);
-            PasswordHolder pwdHolder = new PasswordHolder(Settings.UserSettings.PasswordPZE, new PasswortProvider());
-            Settings.UserSettings.PasswordPZE = pwdHolder.EncryptedPasswordBase64;
-            using (PZE pze = new PZE(Settings.UserSettings.DatabaseLocationPZE, Settings.UserSettings.PasswordPZE))
-            {
-                pze.Load();
-            }
+                return;
+            string databaseLocation = Settings.UserSettings.DatabaseLocationPZE;
+            string encryptedPassword = Settings.UserSettings.PasswordPZE;
+            Load(ref databaseLocation, ref encryptedPassword, CreatePZE);
+            Settings.UserSettings.DatabaseLocationPZE = databaseLocation;
+            Settings.UserSettings.PasswordPZE = encryptedPassword;
         }
-
+        
         public void Dispose()
         {
             if (Settings != null) 

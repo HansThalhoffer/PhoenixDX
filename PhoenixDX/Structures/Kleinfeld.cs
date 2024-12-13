@@ -147,7 +147,7 @@ namespace PhoenixDX.Structures
             Gelaende gel = Terrain.Terrains[(int)_terrainType] as Gelaende;
             if (gel != null)
                 textures.Add(gel.GetTexture());
-            foreach(var adorner in Adorner.Values)
+            foreach(KleinfeldAdorner adorner in Adorner.Values)
             {
                 if (adorner.HasDirections)
                     textures.AddRange(adorner.GetTextures());
