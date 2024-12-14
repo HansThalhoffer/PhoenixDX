@@ -19,6 +19,7 @@ namespace PhoenixModel.dbErkenfara
         private static readonly string[] PropertiestoIgnore = [];
         public Dictionary<string, string> Properties { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
+      
         // Felder der Tabellen
         public string? Reich { get; set; }
         public string? Bauwerknamen { get; set; }

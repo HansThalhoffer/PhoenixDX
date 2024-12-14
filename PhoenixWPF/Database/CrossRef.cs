@@ -56,7 +56,7 @@ namespace PhoenixWPF.Database
                     return;
                 try
                 {
-                    Load<Rüstort>(connector, ref SharedData.Rüstorte, Enum.GetNames(typeof(Rüstort.Felder)));
+                    Load<Rüstort>(connector, ref SharedData.RüstortReferenz, Enum.GetNames(typeof(Rüstort.Felder)));
                 }
                 catch (Exception ex)
                 {

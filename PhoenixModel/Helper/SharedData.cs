@@ -69,13 +69,13 @@ namespace PhoenixModel.Helper
 
         // Karte
         public static BlockingDictionary<Gemark>? Map = null;
-        public static BlockingDictionary<Gebäude>? Gebäude = null;
+        public static BlockingDictionary<Gebäude>? Gebäude = null; // bauwerkliste
 
         // PZE
         public static BlockingCollection<Nation>? Nationen = null;
 
         // crossref
-        public static BlockingCollection<Bauwerk>? Bauwerke = null;
-        public static BlockingCollection<Rüstort>? Rüstorte = null;
+        // public static BlockingDictionary<Bauwerk>? BauwerkeRef= null; // kosten für wälle etc - steht aber auch in der Kosten Tabelle
+        public static BlockingDictionary<Rüstort>? RüstortReferenz = null;
     }
 }

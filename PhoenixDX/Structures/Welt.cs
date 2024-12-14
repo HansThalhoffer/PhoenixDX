@@ -133,12 +133,15 @@ namespace PhoenixDX.Structures
                 if (kleinfeld == null)
                     continue;
                 string typ =  g.Bauwerknamen.Split(' ')[0];
+                RuestortSymbol? symbol = null;
                 if (RuestortSymbol.Ruestorte.ContainsKey(typ) == true)
-                    kleinfeld.Adorner.Add("Rüstort",RuestortSymbol.Ruestorte[typ]);
+                    symbol  = RuestortSymbol.Ruestorte[typ];
                 else
                 {
-                    MappaMundi.Log(g.gf,g.kf, new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error,$"Gebäude {typ} von {g.Reich} auf [{kleinfeld.Koordinaten.gf}/{kleinfeld.Koordinaten.kf}]"));
+                    MappaMundi.Log(g.gf, g.kf, new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Gebäude {typ} von {g.Reich} auf [{kleinfeld.Koordinaten.gf}/{kleinfeld.Koordinaten.kf}]"));
                 }
+                // check with Baupunkte
+
 
             }
             

@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.Database;
+using PhoenixModel.dbErkenfara;
 using PhoenixModel.Helper;
 using System;
 using System.Collections.Generic;
@@ -63,6 +64,7 @@ namespace PhoenixModel.CrossRef
     {
         public const string TableName = "ruestort_crossref";
         string IDatabaseTable.TableName => TableName;
+        public static Dictionary<int, Rüstort> NachBaupunkten = [];
 
         public string? Ruestort { get; set; }
         public int? KapazitätTruppen { get; set; }
@@ -74,6 +76,7 @@ namespace PhoenixModel.CrossRef
         {
             nummer, ruestort, Baupunkte, Kapazitaet_truppen, Kapazitaet_HF, Kapazitaet_Z, canSieged
         }
+
         public new void Load(DbDataReader reader)
         {
             base.Load(reader);
@@ -82,6 +85,8 @@ namespace PhoenixModel.CrossRef
             KapazitätHF = DatabaseConverter.ToInt32(reader[(int)Felder.Kapazitaet_HF]);
             KapazitätZ = DatabaseConverter.ToInt32(reader[(int)Felder.Kapazitaet_Z]);
             canSieged = DatabaseConverter.ToBool(reader[(int)Felder.canSieged]);
+            if (Baupunkte > 0)
+                NachBaupunkten.Add(Baupunkte.Value, this);
         }
     }
 }

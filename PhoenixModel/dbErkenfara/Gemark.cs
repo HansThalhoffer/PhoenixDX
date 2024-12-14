@@ -148,9 +148,9 @@ namespace PhoenixModel.dbErkenfara
             kreatur_eigen ,
             kreatur_feind ,
             kreatur_freund ,
-            Baupunkte ,
-            Bauwerknamen ,
-            lehensid ,
+            Baupunkte,
+            Bauwerknamen,
+            lehensid,
         }
 
          public string ReichZugehörigkeit {
@@ -161,7 +161,19 @@ namespace PhoenixModel.dbErkenfara
                 return SharedData.Nationen.ElementAt(Reich.Value).Reich ?? string.Empty; 
             }
         }
-  
+
+        public Gebäude? Bauwerk
+        {
+            get
+            {
+                if (SharedData.Gebäude == null || Baupunkte == 0)
+                    return null;
+                if (SharedData.Gebäude.ContainsKey(Bezeichner))
+                    return SharedData.Gebäude[Bezeichner];
+                return null;
+            }
+        }
+
 
         private static readonly string[] PropertiestoIgnore = { "x", "y","Rand","db_xy","ph_xy"};
         public Dictionary<string, string> Properties

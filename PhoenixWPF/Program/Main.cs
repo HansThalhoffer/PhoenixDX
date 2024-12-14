@@ -28,8 +28,8 @@ namespace PhoenixWPF.Program
         {
             Settings = new AppSettings("Settings.jpk");
             Settings.InitializeSettings();
-            LoadKarte();
-            LoadCrossRef();
+            LoadCrossRef(); // die referenzen vor der Karte laden, auch wenn es dann weniger zu sehen gibt - insgesamt geht das schneller
+            LoadKarte();            
             LoadPZE();
         }
 

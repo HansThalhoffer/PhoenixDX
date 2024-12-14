@@ -253,7 +253,8 @@ namespace PhoenixDX
             {
                 if ( Weltkarte.ReicheInitalized == false && SharedData.Nationen != null && SharedData.Nationen.IsAddingCompleted)
                     Weltkarte.AddNationen(SharedData.Nationen);
-                if (Weltkarte.RüstorteInitalized == false && SharedData.Rüstorte != null && SharedData.Rüstorte.IsAddingCompleted)
+                if (Weltkarte.RüstorteInitalized == false && SharedData.RüstortReferenz != null && SharedData.RüstortReferenz.IsAddingCompleted
+                    && SharedData.Gebäude != null && SharedData.Gebäude.IsAddingCompleted )
                     Weltkarte.AddBauwerke(SharedData.Gebäude);
             }
 
