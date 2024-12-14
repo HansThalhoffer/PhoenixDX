@@ -112,6 +112,11 @@ namespace PhoenixDX.Structures
 
             if (gem.Gebäude != null )
             {
+                if (gem.Gebäude.InBau)
+                    MappaMundi.Log(this.Koordinaten.gf, this.Koordinaten.kf, new PhoenixModel.Program.LogEntry($"Gebäude in Bau {gem.Gebäude.Bauwerknamen} von {gem.Gebäude.Reich}"));
+                if (gem.Gebäude.Zerstört)
+                    MappaMundi.Log(this.Koordinaten.gf, this.Koordinaten.kf, new PhoenixModel.Program.LogEntry($"Gebäude zerstört {gem.Gebäude.Bauwerknamen} von {gem.Gebäude.Reich}"));
+
                 string name = gem.Gebäude.Rüstort.Bauwerk;
                 if (RuestortSymbol.Ruestorte.ContainsKey(name))
                 {

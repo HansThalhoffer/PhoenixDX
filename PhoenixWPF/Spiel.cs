@@ -29,6 +29,10 @@ namespace PhoenixWPF
                 SelectGemark(e);
             if (e.EventType == MapEventArgs.MapEventType.Log && e.LogEntry != null)
             {
+                if (e.GF > 0 && e.KF > 0)
+                {
+                    e.LogEntry.Message = $"[{e.GF}/{e.KF}] {e.LogEntry.Message}";
+                }
                 Log(e.LogEntry);
             }
                 
