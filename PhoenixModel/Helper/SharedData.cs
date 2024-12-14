@@ -75,7 +75,7 @@ namespace PhoenixModel.Helper
         public static BlockingCollection<Nation>? Nationen = null;
 
         // crossref
-        // public static BlockingDictionary<Bauwerk>? BauwerkeRef= null; // kosten für wälle etc - steht aber auch in der Kosten Tabelle
+        // public static BlockingDictionary<Gebäude>? BauwerkeRef= null; // kosten für wälle etc - steht aber auch in der Kosten Tabelle
         public static BlockingDictionary<Rüstort>? RüstortReferenz = null;
     }
 }

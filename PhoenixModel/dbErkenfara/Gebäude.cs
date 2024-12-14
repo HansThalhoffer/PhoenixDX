@@ -1,4 +1,5 @@
-﻿using PhoenixModel.Database;
+﻿using PhoenixModel.CrossRef;
+using PhoenixModel.Database;
 using PhoenixModel.Helper;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace PhoenixModel.dbErkenfara
         // IDatabaseTable
         public const string TableName = "bauwerksliste";
         string IDatabaseTable.TableName => TableName;
-        public string Bezeichner { get => CreateBezeichner(gf, kf); }
+        public string Bezeichner { get => CreateBezeichner(); }
         // IPropertyHolder
         private static readonly string[] PropertiestoIgnore = [];
         public Dictionary<string, string> Properties { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
@@ -23,6 +24,10 @@ namespace PhoenixModel.dbErkenfara
         // Felder der Tabellen
         public string? Reich { get; set; }
         public string? Bauwerknamen { get; set; }
+        public Rüstort? Rüstort { get; set; } = null;
+        // falls kaputt oder noch nicht fertig aufgebaut
+        public bool InBau { get; set; } = false;
+        public bool Zerstört { get; set; } = false;
 
         public enum Felder
         {

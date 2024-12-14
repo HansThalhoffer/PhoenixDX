@@ -34,7 +34,15 @@ namespace PhoenixModel.CrossRef
 
         }
         
-        public string Bezeichner { get => Bauwerk ?? "Bauwerk"; }
+        public string Bezeichner { get => Bauwerk ?? "Gebäude"; }
+    }
+
+    // kosten von Wall etc
+    public class Bauwerk : BauwerkBasis, IDatabaseTable, IPropertyHolder
+    {
+        public const string TableName = "Bauwerke_crossref";
+        string IDatabaseTable.TableName => TableName;
+
         public enum Felder
         {
             Nummer, Baupunkte, Bauwerk
@@ -45,21 +53,9 @@ namespace PhoenixModel.CrossRef
             Baupunkte = DatabaseConverter.ToInt32(reader[(int)Felder.Baupunkte]);
             Bauwerk = DatabaseConverter.ToString(reader[(int)Felder.Bauwerk]);
         }
-
     }
 
-    public class Bauwerk : BauwerkBasis, IDatabaseTable, IPropertyHolder
-    {
-        public const string TableName = "Bauwerke_crossref";
-        string IDatabaseTable.TableName => TableName;
-       
-        public new void Load(DbDataReader reader)
-        {
-            base.Load(reader);
-        }
-    }
-
-
+    // referenzliste
     public class Rüstort : BauwerkBasis, IDatabaseTable, IPropertyHolder
     {
         public const string TableName = "ruestort_crossref";
@@ -72,14 +68,16 @@ namespace PhoenixModel.CrossRef
         public int? KapazitätZ { get; set; }
         public bool? canSieged { get; set; }
 
-        public new enum Felder
+        public enum Felder
         {
             nummer, ruestort, Baupunkte, Kapazitaet_truppen, Kapazitaet_HF, Kapazitaet_Z, canSieged
         }
 
-        public new void Load(DbDataReader reader)
+        public void Load(DbDataReader reader)
         {
-            base.Load(reader);
+            Nummer = DatabaseConverter.ToInt32(reader[(int)Felder.nummer]);
+            Baupunkte = DatabaseConverter.ToInt32(reader[(int)Felder.Baupunkte]);
+            Bauwerk = DatabaseConverter.ToString(reader[(int)Felder.ruestort]);
             Ruestort = DatabaseConverter.ToString(reader[(int)Felder.ruestort]);
             KapazitätTruppen = DatabaseConverter.ToInt32(reader[(int)Felder.Kapazitaet_truppen]);
             KapazitätHF = DatabaseConverter.ToInt32(reader[(int)Felder.Kapazitaet_HF]);
