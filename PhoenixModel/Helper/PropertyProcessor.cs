@@ -12,34 +12,28 @@ namespace PhoenixModel.Helper
 {
     public class Eigenschaft
     {
-        public Eigenschaft(string name, IFormattable? wert)
+        public Eigenschaft(string name, string? wert)
         {
             Name = name;
             Wert = wert;
         }
 
+        public Eigenschaft(string name, List<Eigenschaft> liste)
+        {
+            Name = name;
+            Eigenschaften = liste;
+        }
+
         public string Name { get; set; } = string.Empty;
-        public IFormattable? Wert { get; set; } = null;
+        public string? Wert { get; set; } = null;
+        public List<Eigenschaft>? Eigenschaften { get; set; } = null;
+
     }
 
 
     public static class PropertyProcessor
     {
         
-        class Text : IFormattable
-        {
-            string? _text;
-            public Text (string? text)
-            { _text = text; }
-       
-            public string ToString(string? format, IFormatProvider? formatProvider)
-            {
-                return _text ?? string.Empty;
-            }
-        }
-
-
-
         private static readonly string[] Directions = { "NW", "NO", "O", "SO", "SW", "W","eigen","eigene","feind","freund" };
 
 
@@ -68,9 +62,7 @@ namespace PhoenixModel.Helper
         {
             if (value ==  null)
                 return;
-             if (value is IFormattable)
-                result.Add(new Eigenschaft(name, value as IFormattable));
-            else if (value is IEigenschaftler)
+            if (value is IEigenschaftler)
             {
                foreach (var eigenschaft in ((IEigenschaftler)value).Eigenschaften)
                 {
@@ -78,15 +70,14 @@ namespace PhoenixModel.Helper
                     result.Add(eigenschaft);
                 }
             }
-            else
-                result.Add(new Eigenschaft(name, new Text(value.ToString())));
+            result.Add(new Eigenschaft(name, value.ToString()));
         }
 
         static void AppendProperties<T>(T data, ref List<Eigenschaft> result, string[] toIgnore)
         {
             // Get all properties of the Data class
             var ar = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            var safeproperties = ar.Where(p => p.Name != "Bezeichner" && p.Name != "Properties").ToArray();
+            var safeproperties = ar.Where(p => p.Name != "Bezeichner" && p.Name != "Eigenschaften").ToArray();
             var properties = safeproperties.Where(prop => !toIgnore.Contains(prop.Name)).ToList();
 
             // Group properties by their prefix (e.g., Fluss, Wall, etc.)
@@ -117,7 +108,7 @@ namespace PhoenixModel.Helper
 
                 if (directionList.Any())
                 {
-                    result.Add(new Eigenschaft(key, new Text( string.Join(" ", directionList))));
+                    result.Add(new Eigenschaft(key, string.Join(" ", directionList)));
                 }
             }
             foreach (var property in properties)
