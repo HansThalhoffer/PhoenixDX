@@ -12,8 +12,24 @@
         <StackPanel Orientation="Vertical" Margin="20">
             <CheckBox Content="Reichszugehörigkeit sichtbar" 
                       IsChecked="{Binding IsReichszugehorigkeitSichtbar}" 
-                      FontFamily="Consolas" 
                       FontSize="14" />
+
+                <TextBlock Foreground="Wheat" FontSize="12" FontStyle="Italic" Width="200" HorizontalAlignment="Left">
+                <Run Text="Zoom: " />
+                </TextBlock>
+            <StackPanel Orientation="Horizontal">
+            <Slider x:Name="sldZoom"  Maximum="1000" Minimum="200" Value="{Binding Zoom, Mode=TwoWay}"
+                    Margin="0,2,0,4" Width="150"  
+                    Orientation="Horizontal" IsEnabled="True" Height="18" HorizontalAlignment="Left"/>
+                <ComboBox Text="{Binding Zoom, Mode=TwoWay}" HorizontalAlignment="Left" Width="50">
+                    <ComboBoxItem Content="50"/>
+                    <ComboBoxItem Content="100"/>
+                    <ComboBoxItem Content="200"/>
+                    <ComboBoxItem Content="300"/>
+                    <ComboBoxItem Content="500"/>
+                </ComboBox>
+            </StackPanel>
+
         </StackPanel>
     </Grid>
 </Page>

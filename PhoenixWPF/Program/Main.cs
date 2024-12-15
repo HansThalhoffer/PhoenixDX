@@ -45,8 +45,8 @@ namespace PhoenixWPF.Program
             }
         }
 
-      
         
+
         public delegate ILoadableDatabase LoadableDatabase(string databaseLocation, string encryptedPassword);
 
 

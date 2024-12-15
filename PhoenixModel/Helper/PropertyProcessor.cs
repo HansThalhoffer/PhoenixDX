@@ -70,7 +70,8 @@ namespace PhoenixModel.Helper
                     result.Add(eigenschaft);
                 }
             }
-            result.Add(new Eigenschaft(name, value.ToString()));
+            else
+                result.Add(new Eigenschaft(name, value.ToString()));
         }
 
         static void AppendProperties<T>(T data, ref List<Eigenschaft> result, string[] toIgnore)

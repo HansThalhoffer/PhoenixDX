@@ -89,7 +89,13 @@ namespace PhoenixDX
         {
             _game?.Goto(gf, kf);
         }
-
+        public float Zoom {
+            get => _game != null ? _game.Zoom : 0f; 
+            set { 
+                if (_game != null) 
+                    _game.Zoom = value; 
+            } 
+        }
         #endregion
 
         #region EventsFromDirectXToWpf
