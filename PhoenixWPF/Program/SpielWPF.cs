@@ -15,23 +15,27 @@ using PhoenixWPF.Host;
 using static PhoenixModel.Program.LogEntry;
 using PhoenixModel.Program;
 
-namespace PhoenixWPF
+namespace PhoenixWPF.Program
 {
-    public class Spiel :IDisposable
+    public class SpielWPF : IDisposable
     {
-        public Spiel ()
+        public SpielWPF()
         {
         }
-        
+
         public void MapEventHandler(MapEventArgs e)
         {
-           if (e.EventType == MapEventArgs.MapEventType.SelectGemark)
+            if (e.EventType == MapEventArgs.MapEventType.SelectGemark)
                 SelectGemark(e);
             if (e.EventType == MapEventArgs.MapEventType.Log && e.LogEntry != null)
             {
+                if (e.GF > 0 && e.KF > 0)
+                {
+                    e.LogEntry.Message = $"[{e.GF}/{e.KF}] {e.LogEntry.Message}";
+                }
                 Log(e.LogEntry);
             }
-                
+
         }
 
         public static void Log(LogEntry logentry)
@@ -43,23 +47,14 @@ namespace PhoenixWPF
         {
             if (SharedData.Map != null && SharedData.Map.IsAddingCompleted)
             {
-                
-                var bezeichner = Gemark.CreateBezeichner(e.GF, e.KF);
+
+                var bezeichner = GemarkPosition.CreateBezeichner(e.GF, e.KF);
                 var gem = SharedData.Map[bezeichner];
-                var main = Application.Current.MainWindow;
-                ListBox? lb = VisualTreeHelperExtensions.FindControlByName(main, "PropertyListBox") as ListBox;
-                if (lb != null)
-                {
-                    lb.ItemsSource = gem.Properties;
-                }
-                
+                Main.Instance.PropertyDisplay?.Display(gem.Eigenschaften);
             }
-            
         }
 
         public void Dispose()
-        {
-           
-        }
+        {  }
     }
 }

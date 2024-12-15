@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.Database;
+using PhoenixModel.dbErkenfara;
 using PhoenixModel.Helper;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace PhoenixModel.CrossRef
         public string? Bauwerk { get; set; }
 
         private static readonly string[] PropertiestoIgnore = [];
-        public virtual Dictionary<string, string> Properties
+        public virtual List<Eigenschaft> Eigenschaften
         {
             get
             {
@@ -33,7 +34,15 @@ namespace PhoenixModel.CrossRef
 
         }
         
-        public string Bezeichner { get => Bauwerk ?? "Bauwerk"; }
+        public string Bezeichner { get => Bauwerk ?? "Gebäude"; }
+    }
+
+    // kosten von Wall etc
+    public class Bauwerk : BauwerkBasis, IDatabaseTable, IEigenschaftler
+    {
+        public const string TableName = "Bauwerke_crossref";
+        string IDatabaseTable.TableName => TableName;
+
         public enum Felder
         {
             Nummer, Baupunkte, Bauwerk
@@ -44,25 +53,14 @@ namespace PhoenixModel.CrossRef
             Baupunkte = DatabaseConverter.ToInt32(reader[(int)Felder.Baupunkte]);
             Bauwerk = DatabaseConverter.ToString(reader[(int)Felder.Bauwerk]);
         }
-
     }
 
-    public class Bauwerk : BauwerkBasis, IDatabaseTable, IPropertyHolder
-    {
-        public const string TableName = "Bauwerke_crossref";
-        string IDatabaseTable.TableName => TableName;
-       
-        public new void Load(DbDataReader reader)
-        {
-            base.Load(reader);
-        }
-    }
-
-
-    public class Rüstort : BauwerkBasis, IDatabaseTable, IPropertyHolder
+    // referenzliste
+    public class Rüstort : BauwerkBasis, IDatabaseTable, IEigenschaftler
     {
         public const string TableName = "ruestort_crossref";
         string IDatabaseTable.TableName => TableName;
+        public static Dictionary<int, Rüstort> NachBaupunkten = [];
 
         public string? Ruestort { get; set; }
         public int? KapazitätTruppen { get; set; }
@@ -70,18 +68,23 @@ namespace PhoenixModel.CrossRef
         public int? KapazitätZ { get; set; }
         public bool? canSieged { get; set; }
 
-        public new enum Felder
+        public enum Felder
         {
             nummer, ruestort, Baupunkte, Kapazitaet_truppen, Kapazitaet_HF, Kapazitaet_Z, canSieged
         }
-        public new void Load(DbDataReader reader)
+
+        public void Load(DbDataReader reader)
         {
-            base.Load(reader);
+            Nummer = DatabaseConverter.ToInt32(reader[(int)Felder.nummer]);
+            Baupunkte = DatabaseConverter.ToInt32(reader[(int)Felder.Baupunkte]);
+            Bauwerk = DatabaseConverter.ToString(reader[(int)Felder.ruestort]);
             Ruestort = DatabaseConverter.ToString(reader[(int)Felder.ruestort]);
             KapazitätTruppen = DatabaseConverter.ToInt32(reader[(int)Felder.Kapazitaet_truppen]);
             KapazitätHF = DatabaseConverter.ToInt32(reader[(int)Felder.Kapazitaet_HF]);
             KapazitätZ = DatabaseConverter.ToInt32(reader[(int)Felder.Kapazitaet_Z]);
             canSieged = DatabaseConverter.ToBool(reader[(int)Felder.canSieged]);
+            if (Baupunkte > 0)
+                NachBaupunkten.Add(Baupunkte.Value, this);
         }
     }
 }

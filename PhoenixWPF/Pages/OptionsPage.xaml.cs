@@ -35,6 +35,17 @@ namespace PhoenixWPF.Pages
             } 
         }
 
+        public float Zoom
+        {
+            get => Main.Instance.Map != null ? Main.Instance.Map.Zoom * 100 : 0f;
+            set
+            {
+                if (Main.Instance.Map != null)
+                    Main.Instance.Map.Zoom = value / 100;
+            }
+        }
+
+
         public OptionsPage()
         {
             InitializeComponent();

@@ -14,6 +14,7 @@ using static PhoenixModel.Database.PasswordHolder;
 using static PhoenixWPF.Program.ErkenfaraKarte;
 using System.IO;
 using PhoenixModel.CrossRef;
+using PhoenixWPF.Program;
 
 namespace PhoenixWPF.Database
 {
@@ -61,10 +62,11 @@ namespace PhoenixWPF.Database
                 try
                 {
                     Load<Nation>(connector, ref SharedData.Nationen, Enum.GetNames(typeof(Nation.Felder)));
+                    Load<Nation>(connector, ref SharedData.Nationen, Enum.GetNames(typeof(Nation.Felder)));
                 }
                 catch (Exception ex)
                 {
-                    Spiel.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, ("Fehler beim Öffnen der PZE Datenbank: " + ex.Message)));
+                    SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, ("Fehler beim Öffnen der PZE Datenbank: " + ex.Message)));
                 }
                 connector?.Close();
             }

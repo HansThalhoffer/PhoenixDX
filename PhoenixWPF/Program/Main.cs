@@ -19,7 +19,8 @@ namespace PhoenixWPF.Program
         private static Main _instance = new Main();
         public AppSettings? Settings { get; private set; }
         public PhoenixDX.MappaMundi? Map { get; set; }
-        public PhoenixWPF.Spiel? Spiel { get; set; }
+        public SpielWPF? Spiel { get; set; }
+        public IPropertyDisplay? PropertyDisplay { get; set; } = null;
 
         static public Main Instance { get { return _instance; } }
 
@@ -28,8 +29,8 @@ namespace PhoenixWPF.Program
         {
             Settings = new AppSettings("Settings.jpk");
             Settings.InitializeSettings();
-            LoadKarte();
-            LoadCrossRef();
+            LoadCrossRef(); // die referenzen vor der Karte laden, auch wenn es dann weniger zu sehen gibt - insgesamt geht das schneller
+            LoadKarte();            
             LoadPZE();
         }
 
@@ -44,8 +45,8 @@ namespace PhoenixWPF.Program
             }
         }
 
-      
         
+
         public delegate ILoadableDatabase LoadableDatabase(string databaseLocation, string encryptedPassword);
 
 

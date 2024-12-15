@@ -1,5 +1,6 @@
 ﻿// Gemark.cs
 
+using PhoenixModel.CrossRef;
 using PhoenixModel.Database;
 using PhoenixModel.Helper;
 using System.Data.Common;
@@ -12,17 +13,21 @@ namespace PhoenixModel.dbErkenfara
         public int gf { get; set; } = 0;
         public int kf { get; set; } = 0;
 
+        public string CreateBezeichner()
+        {
+            return $"{gf}/{kf}";
+        }
         public static string CreateBezeichner(int gf, int kf)
         {
-            int i = gf * 100 + kf;
-            return i.ToString();
+            return $"{gf}/{kf}";
         }
+
     }
-    public class Gemark : GemarkPosition, IPropertyHolder, IDatabaseTable
+    public class Gemark : GemarkPosition, IEigenschaftler, IDatabaseTable
     {
         public const string TableName = "Karte";
         string IDatabaseTable.TableName => TableName;
-        public string Bezeichner { get => CreateBezeichner(gf, kf); }
+        public string Bezeichner { get => CreateBezeichner(); }
 
         public string? ph_xy { get; set; }
         public int x { get; set; } = 0;
@@ -82,7 +87,7 @@ namespace PhoenixModel.dbErkenfara
         public int? kreatur_eigen { get; set; }
         public int? kreatur_feind { get; set; }
         public int? kreatur_freund { get; set; }
-        public int? Baupunkte { get; set; }
+        public int Baupunkte { get; set; } = 0;
         public string? Bauwerknamen { get; set; }
         public int? lehensid { get; set; }
 
@@ -148,9 +153,9 @@ namespace PhoenixModel.dbErkenfara
             kreatur_eigen ,
             kreatur_feind ,
             kreatur_freund ,
-            Baupunkte ,
-            Bauwerknamen ,
-            lehensid ,
+            Baupunkte,
+            Bauwerknamen,
+            lehensid,
         }
 
          public string ReichZugehörigkeit {
@@ -161,10 +166,64 @@ namespace PhoenixModel.dbErkenfara
                 return SharedData.Nationen.ElementAt(Reich.Value).Reich ?? string.Empty; 
             }
         }
-  
+
+        // die Funktion beseitigt Fehler in den Datenbanken
+        public Gebäude? Gebäude
+        {
+            get
+            {
+                if (SharedData.Gebäude == null)
+                    throw new Exception("Die Bauwerliste muss vor denen Kartendaten gelasen werden");
+                if (SharedData.RüstortReferenz == null)
+                    throw new Exception("Die Rüstort Referenzdaten müssen vor denen Kartendaten gelasen werden");
+                if (Baupunkte == 0)
+                    return null;
+                try
+                {
+                    Gebäude? gebäude = null;
+                    if (SharedData.Gebäude.ContainsKey(Bezeichner))
+                        gebäude = SharedData.Gebäude[Bezeichner];
+                    if (gebäude == null)
+                    {
+                        gebäude = new Gebäude();
+                        gebäude.kf = this.kf;
+                        gebäude.gf = this.gf;
+                        gebäude.Bauwerknamen = this.Bauwerknamen;
+                        SharedData.Gebäude.Add(gebäude.Bezeichner, gebäude);
+                    }
+                    if (gebäude.Rüstort == null)
+                    {
+                        if (Rüstort.NachBaupunkten.ContainsKey(Baupunkte))
+                            gebäude.Rüstort = Rüstort.NachBaupunkten[Baupunkte];
+                        else
+                        {
+                            int bp = Baupunkte - Baupunkte % 250;
+                            while (Rüstort.NachBaupunkten.ContainsKey(bp) == false && bp > 0)
+                                bp -= 250;
+                            if (bp > 0)
+                            {
+                                gebäude.InBau = true;
+                                gebäude.Rüstort = Rüstort.NachBaupunkten[bp];
+                            }
+                            else
+                            {
+                                gebäude.Zerstört = true;
+                            }
+                        }
+                    }
+                    return gebäude;
+                }
+                catch ( Exception ex)
+                {
+                    // auf Ebene des Modells werden keine Exceptions gefangen
+                    throw new Exception($"Ausnahme bei der Festlegung des Geäudes auf Kleinfeld {Bezeichner}", ex);
+                }
+            }
+        }
+
 
         private static readonly string[] PropertiestoIgnore = { "x", "y","Rand","db_xy","ph_xy"};
-        public Dictionary<string, string> Properties
+        public List<Eigenschaft> Eigenschaften
         {
             get
             {
@@ -238,7 +297,6 @@ namespace PhoenixModel.dbErkenfara
             Baupunkte = DatabaseConverter.ToInt32(reader[(int)Felder.Baupunkte]);
             Bauwerknamen = reader.GetString((int)Felder.Bauwerknamen);
             lehensid = DatabaseConverter.ToInt32(reader[(int)Felder.lehensid]);
-
         }
     }
 }

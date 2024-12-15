@@ -22,7 +22,7 @@ using Vektor = Microsoft.Xna.Framework.Vector2;
 
 namespace PhoenixDX
 {
-    public class Spiel : Game
+    public class SpielDX : Game
     {
         private GraphicsDeviceManager _graphics;
         private CancellationToken _cancellationToken;
@@ -45,7 +45,7 @@ namespace PhoenixDX
             _actionQueue.Enqueue(action);
         }
 
-        public Spiel(IntPtr windowHandle, CancellationToken token, MappaMundi bridge)
+        public SpielDX(IntPtr windowHandle, CancellationToken token, MappaMundi bridge)
         {
             _wpfBridge = bridge;
             _clientWidth = _virtualWidth;
@@ -148,7 +148,8 @@ namespace PhoenixDX
             if (kleinfeld == null)
                 return;
             Vektor ? v = Weltkarte.GetPosition(gf, kf, _scale);
-            Vektor offset = new Vektor(100f * _scale.X, 100f * _scale.Y);
+            
+            Vektor offset = new Vektor(_clientWidth/2,_clientHeight/2);
             v -= offset;
             v *= -1;
             _cameraPosition.SetFromVector2( v.Value);
@@ -253,8 +254,6 @@ namespace PhoenixDX
             {
                 if ( Weltkarte.ReicheInitalized == false && SharedData.Nationen != null && SharedData.Nationen.IsAddingCompleted)
                     Weltkarte.AddNationen(SharedData.Nationen);
-                if (Weltkarte.RüstorteInitalized == false && SharedData.Rüstorte != null && SharedData.Rüstorte.IsAddingCompleted)
-                    Weltkarte.AddBauwerke(SharedData.Gebäude);
             }
 
             HandleInput();

@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static PhoenixModel.Helper.PropertyProcessor;
 
 namespace PhoenixModel
 {
-    public interface IPropertyHolder
+    public interface IEigenschaftler
     {
-        public abstract Dictionary<string, string> Properties
+        public abstract List<Eigenschaft> Eigenschaften
         {
             get;
         }

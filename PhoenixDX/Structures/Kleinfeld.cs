@@ -13,6 +13,7 @@ using System.Drawing;
 using Microsoft.Xna.Framework;
 using System.Collections.Concurrent;
 using PhoenixModel.dbErkenfara.Defaults;
+using PhoenixModel.CrossRef;
 
 namespace PhoenixDX.Structures
 {
@@ -108,6 +109,24 @@ namespace PhoenixDX.Structures
             Adorner.Add("Brücke", new Bruecke(gem));
             Adorner.Add("Strasse", new Strasse(gem));
             Adorner.Add("Wand", new Wall(gem));
+
+            if (gem.Gebäude != null )
+            {
+                if (gem.Gebäude.InBau)
+                    MappaMundi.Log(this.Koordinaten.gf, this.Koordinaten.kf, new PhoenixModel.Program.LogEntry($"Gebäude in Bau {gem.Gebäude.Bauwerknamen} von {gem.Gebäude.Reich}"));
+                if (gem.Gebäude.Zerstört)
+                    MappaMundi.Log(this.Koordinaten.gf, this.Koordinaten.kf, new PhoenixModel.Program.LogEntry($"Gebäude zerstört {gem.Gebäude.Bauwerknamen} von {gem.Gebäude.Reich}"));
+
+                string name = gem.Gebäude.Rüstort.Bauwerk;
+                if (RuestortSymbol.Ruestorte.ContainsKey(name))
+                {
+                    Adorner.Add("Rüstort", RuestortSymbol.Ruestorte[name]);
+                }
+                else
+                {
+                    MappaMundi.Log(this.Koordinaten.gf, this.Koordinaten.kf, new PhoenixModel.Program.LogEntry($"Unbekanntes Gebäude {name}"));
+                }
+            }
 
             return true;
         }

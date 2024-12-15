@@ -3,6 +3,7 @@ using PhoenixModel.Database;
 using PhoenixModel.dbPZE;
 using PhoenixModel.Helper;
 using PhoenixWPF.Dialogs;
+using PhoenixWPF.Program;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -56,11 +57,11 @@ namespace PhoenixWPF.Database
                     return;
                 try
                 {
-                    Load<Rüstort>(connector, ref SharedData.Rüstorte, Enum.GetNames(typeof(Rüstort.Felder)));
+                    Load<Rüstort>(connector, ref SharedData.RüstortReferenz, Enum.GetNames(typeof(Rüstort.Felder)));
                 }
                 catch (Exception ex)
                 {
-                    Spiel.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, ("Fehler beim Öffnen der PZE Datenbank: " + ex.Message)));
+                    SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, ("Fehler beim Öffnen der PZE Datenbank: " + ex.Message)));
                 }
                 connector?.Close();
             }

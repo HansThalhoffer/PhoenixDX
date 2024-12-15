@@ -1,4 +1,7 @@
-﻿using System;
+﻿using PhoenixModel.Helper;
+using PhoenixWPF.Helper;
+using PhoenixWPF.Program;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,11 +21,17 @@ namespace PhoenixWPF.Pages
     /// <summary>
     /// Interaktionslogik für PropertyListPage.xaml
     /// </summary>
-    public partial class PropertyListPage : Page
+    public partial class PropertyListPage : Page, IPropertyDisplay
     {
         public PropertyListPage()
         {
             InitializeComponent();
+            Main.Instance.PropertyDisplay = this;
+        }
+
+        public void Display(List<Eigenschaft> eigenschaften)
+        {
+            this.PropertyListBox.ItemsSource = eigenschaften;
         }
     }
 }

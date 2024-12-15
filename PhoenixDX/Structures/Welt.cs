@@ -119,31 +119,6 @@ namespace PhoenixDX.Structures
             }
         }
 
-        public bool RüstorteInitalized = false;
-        public void AddBauwerke(BlockingDictionary<Gebäude> gebäude)
-        {
-            RüstorteInitalized = true;
-            foreach (var g in gebäude.Values)
-            {
-                if (Provinzen.ContainsKey(g.gf) == false)
-                    continue;
-
-                var provinz = Provinzen[g.gf];
-                var kleinfeld = provinz.GetKleinfeld(g.kf);
-                if (kleinfeld == null)
-                    continue;
-                string typ =  g.Bauwerknamen.Split(' ')[0];
-                if (RuestortSymbol.Ruestorte.ContainsKey(typ) == true)
-                    kleinfeld.Adorner.Add("Rüstort",RuestortSymbol.Ruestorte[typ]);
-                else
-                {
-                    MappaMundi.Log(g.gf,g.kf, new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error,$"Gebäude {typ} von {g.Reich} auf [{kleinfeld.Koordinaten.gf}/{kleinfeld.Koordinaten.kf}]"));
-                }
-
-            }
-            
-        }
-
         public static void LoadContent(ContentManager contentManager)
         {
             Gelaende.LoadContent(contentManager);
