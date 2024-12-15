@@ -13,9 +13,9 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Key}" Width="150" FontWeight="Bold" />
+                        <TextBlock Text="{Binding Name}" Width="150" FontWeight="Bold" />
                         <TextBlock Text=": " />
-                        <TextBlock Text="{Binding Value}" />
+                        <TextBlock Text="{Binding Wert}" />
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>

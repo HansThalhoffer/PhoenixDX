@@ -17,9 +17,9 @@ using PhoenixModel.Program;
 
 namespace PhoenixWPF
 {
-    public class Spiel :IDisposable
+    public class SpielWPF :IDisposable
     {
-        public Spiel ()
+        public SpielWPF ()
         {
         }
         
@@ -54,7 +54,7 @@ namespace PhoenixWPF
                 ListBox? lb = VisualTreeHelperExtensions.FindControlByName(main, "PropertyListBox") as ListBox;
                 if (lb != null)
                 {
-                    lb.ItemsSource = gem.Properties;
+                    lb.ItemsSource = gem.Eigenschaften;
                 }
                 
             }

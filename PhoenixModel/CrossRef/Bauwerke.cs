@@ -25,7 +25,7 @@ namespace PhoenixModel.CrossRef
         public string? Bauwerk { get; set; }
 
         private static readonly string[] PropertiestoIgnore = [];
-        public virtual Dictionary<string, string> Properties
+        public virtual List<Eigenschaft> Eigenschaften
         {
             get
             {
@@ -38,7 +38,7 @@ namespace PhoenixModel.CrossRef
     }
 
     // kosten von Wall etc
-    public class Bauwerk : BauwerkBasis, IDatabaseTable, IPropertyHolder
+    public class Bauwerk : BauwerkBasis, IDatabaseTable, IEigenschaftler
     {
         public const string TableName = "Bauwerke_crossref";
         string IDatabaseTable.TableName => TableName;
@@ -56,7 +56,7 @@ namespace PhoenixModel.CrossRef
     }
 
     // referenzliste
-    public class Rüstort : BauwerkBasis, IDatabaseTable, IPropertyHolder
+    public class Rüstort : BauwerkBasis, IDatabaseTable, IEigenschaftler
     {
         public const string TableName = "ruestort_crossref";
         string IDatabaseTable.TableName => TableName;

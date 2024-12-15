@@ -10,15 +10,15 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.dbErkenfara
 {
-    public class Gebäude : GemarkPosition, IPropertyHolder, IDatabaseTable
+    public class Gebäude : GemarkPosition, IEigenschaftler, IDatabaseTable
     {
         // IDatabaseTable
         public const string TableName = "bauwerksliste";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner { get => CreateBezeichner(); }
-        // IPropertyHolder
+        // IEigenschaftler
         private static readonly string[] PropertiestoIgnore = [];
-        public Dictionary<string, string> Properties { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
+        public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
       
         // Felder der Tabellen

@@ -59,11 +59,11 @@ namespace PhoenixWPF.Database
             }
             catch (Exception ex)
             {
-                Spiel.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, ("Fehler beim Öffnen der PZE Datenbank: " + ex.Message +"\n\r"+query)));
+                SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, ("Fehler beim Öffnen der PZE Datenbank: " + ex.Message +"\n\r"+query)));
             }
             collection.CompleteAdding();
             total = collection.Count();
-            Spiel.Log(new PhoenixModel.Program.LogEntry($"{total} {typeof(T)} geladen"));
+            SpielWPF.Log(new PhoenixModel.Program.LogEntry($"{total} {typeof(T)} geladen"));
         }
 
 
@@ -88,7 +88,7 @@ namespace PhoenixWPF.Database
             }
             collection.CompleteAdding();
             total = collection.Count();
-            Spiel.Log(new PhoenixModel.Program.LogEntry($"{total} {typeof(T)} geladen"));
+            SpielWPF.Log(new PhoenixModel.Program.LogEntry($"{total} {typeof(T)} geladen"));
         }
 
         

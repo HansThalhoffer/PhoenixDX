@@ -5,11 +5,41 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PhoenixModel.Helper
 {
-    public class PropertyProcessor
+    public class Eigenschaft
     {
+        public Eigenschaft(string name, IFormattable? wert)
+        {
+            Name = name;
+            Wert = wert;
+        }
+
+        public string Name { get; set; } = string.Empty;
+        public IFormattable? Wert { get; set; } = null;
+    }
+
+
+    public static class PropertyProcessor
+    {
+        
+        class Text : IFormattable
+        {
+            string? _text;
+            public Text (string? text)
+            { _text = text; }
+       
+            public string ToString(string? format, IFormatProvider? formatProvider)
+            {
+                return _text ?? string.Empty;
+            }
+        }
+
+
+
         private static readonly string[] Directions = { "NW", "NO", "O", "SO", "SW", "W","eigen","eigene","feind","freund" };
 
 
@@ -25,15 +55,34 @@ namespace PhoenixModel.Helper
             return info?.GetValue(null)?.ToString() ?? string.Empty;
         }
 
-        public static Dictionary<string, string> CreateProperties<T>(T data, string[] toIgnore)
+        public static List<Eigenschaft> CreateProperties<T>(T data, string[] toIgnore)
         {
-            Dictionary<string, string> result = new Dictionary<string, string>();
-            AppendProperties(data, ref result, toIgnore);
-            
-            return result;
+            List <Eigenschaft> eigenschaften= [];
+            AppendProperties(data, ref eigenschaften, toIgnore);
+
+            return eigenschaften;
         }
 
-        public static void AppendProperties<T>(T data, ref Dictionary<string, string> result, string[] toIgnore)
+
+        static void AppendProperty(ref List<Eigenschaft> result, string name, object? value)
+        {
+            if (value ==  null)
+                return;
+             if (value is IFormattable)
+                result.Add(new Eigenschaft(name, value as IFormattable));
+            else if (value is IEigenschaftler)
+            {
+               foreach (var eigenschaft in ((IEigenschaftler)value).Eigenschaften)
+                {
+                    eigenschaft.Name= $"{name}.{eigenschaft.Name}";
+                    result.Add(eigenschaft);
+                }
+            }
+            else
+                result.Add(new Eigenschaft(name, new Text(value.ToString())));
+        }
+
+        static void AppendProperties<T>(T data, ref List<Eigenschaft> result, string[] toIgnore)
         {
             // Get all properties of the Data class
             var ar = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
@@ -68,32 +117,24 @@ namespace PhoenixModel.Helper
 
                 if (directionList.Any())
                 {
-                    result[key] = string.Join(" ", directionList);
-                } 
+                    result.Add(new Eigenschaft(key, new Text( string.Join(" ", directionList))));
+                }
             }
             foreach (var property in properties)
             {
-                if (!result.ContainsKey(property.Name))
-                {
-                    var value = property.GetValue(data)?.ToString() ?? string.Empty;
-                    if (value != string.Empty)
-                        result[property.Name] = value;
-                }
+                AppendProperty(ref result, property.Name, property.GetValue(data));
+                         
             }
         }
-
-        public static void AppendMissingProperties<T>(T obj, ref Dictionary<string, string> dictionary)
+       
+        public static void AppendMissingProperties<T>(T obj, ref List<Eigenschaft> result)
         {
             var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
             properties = properties.Where(p => p.Name != "Bezeichner" && p.Name != "Properties").ToArray();
 
             foreach (var property in properties)
             {
-                if (!dictionary.ContainsKey(property.Name))
-                {
-                    var value = property.GetValue(obj)?.ToString() ?? "null";
-                    dictionary[property.Name] = value;
-                }
+                AppendProperty(ref result, property.Name, property.GetValue(obj));
             }
         }
     }

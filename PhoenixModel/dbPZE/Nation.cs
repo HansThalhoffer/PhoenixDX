@@ -11,16 +11,16 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.dbPZE
 {
-    public class Nation : IDatabaseTable, IPropertyHolder
+    public class Nation : IDatabaseTable, IEigenschaftler
     {
         // IDatabaseTable
         public const string TableName = "DBhandle";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner { get => Reich ?? "Null"; }
 
-        // IPropertyHolder
+        // IEigenschaftler
         private static readonly string[] PropertiestoIgnore = { "Alias" };
-        public Dictionary<string, string> Properties { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
+        public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
        
 

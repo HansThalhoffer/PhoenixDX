@@ -23,7 +23,7 @@ namespace PhoenixModel.dbErkenfara
         }
 
     }
-    public class Gemark : GemarkPosition, IPropertyHolder, IDatabaseTable
+    public class Gemark : GemarkPosition, IEigenschaftler, IDatabaseTable
     {
         public const string TableName = "Karte";
         string IDatabaseTable.TableName => TableName;
@@ -180,7 +180,7 @@ namespace PhoenixModel.dbErkenfara
                     return null;
                 try
                 {
-                    Gebäude gebäude = null;
+                    Gebäude? gebäude = null;
                     if (SharedData.Gebäude.ContainsKey(Bezeichner))
                         gebäude = SharedData.Gebäude[Bezeichner];
                     if (gebäude == null)
@@ -223,7 +223,7 @@ namespace PhoenixModel.dbErkenfara
 
 
         private static readonly string[] PropertiestoIgnore = { "x", "y","Rand","db_xy","ph_xy"};
-        public Dictionary<string, string> Properties
+        public List<Eigenschaft> Eigenschaften
         {
             get
             {

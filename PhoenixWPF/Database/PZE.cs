@@ -65,7 +65,7 @@ namespace PhoenixWPF.Database
                 }
                 catch (Exception ex)
                 {
-                    Spiel.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, ("Fehler beim Öffnen der PZE Datenbank: " + ex.Message)));
+                    SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, ("Fehler beim Öffnen der PZE Datenbank: " + ex.Message)));
                 }
                 connector?.Close();
             }

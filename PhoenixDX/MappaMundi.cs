@@ -17,7 +17,7 @@ namespace PhoenixDX
 {
     public class MappaMundi
     {
-        private Spiel _game;
+        private SpielDX _game;
         private readonly IntPtr _hWnd;
      
         Thread _gameThread;
@@ -33,7 +33,7 @@ namespace PhoenixDX
             try
             {
                 _cancellationTokenSource = new CancellationTokenSource();
-                _game = new Spiel(_hWnd, _cancellationTokenSource.Token, this);
+                _game = new SpielDX(_hWnd, _cancellationTokenSource.Token, this);
                 _game?.Run();
             }
             catch (Exception ex)

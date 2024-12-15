@@ -22,7 +22,7 @@ using Vektor = Microsoft.Xna.Framework.Vector2;
 
 namespace PhoenixDX
 {
-    public class Spiel : Game
+    public class SpielDX : Game
     {
         private GraphicsDeviceManager _graphics;
         private CancellationToken _cancellationToken;
@@ -45,7 +45,7 @@ namespace PhoenixDX
             _actionQueue.Enqueue(action);
         }
 
-        public Spiel(IntPtr windowHandle, CancellationToken token, MappaMundi bridge)
+        public SpielDX(IntPtr windowHandle, CancellationToken token, MappaMundi bridge)
         {
             _wpfBridge = bridge;
             _clientWidth = _virtualWidth;

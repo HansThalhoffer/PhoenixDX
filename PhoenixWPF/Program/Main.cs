@@ -19,7 +19,7 @@ namespace PhoenixWPF.Program
         private static Main _instance = new Main();
         public AppSettings? Settings { get; private set; }
         public PhoenixDX.MappaMundi? Map { get; set; }
-        public PhoenixWPF.Spiel? Spiel { get; set; }
+        public PhoenixWPF.SpielWPF? Spiel { get; set; }
 
         static public Main Instance { get { return _instance; } }
 

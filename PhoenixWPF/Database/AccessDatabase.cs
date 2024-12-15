@@ -46,7 +46,7 @@ namespace PhoenixWPF.Database
             string provider = GetInstalledAceOleDbProvider();
             if (provider == null)
             {
-                Spiel.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, "Es ist kein Microsoft.ACE.OLEDB Treiber installiert. Bitte einen entsprechenden Treiber installieren"));
+                SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, "Es ist kein Microsoft.ACE.OLEDB Treiber installiert. Bitte einen entsprechenden Treiber installieren"));
             }
             string connectionString = $@"Provider={provider};Data Source={databaseFilePath};Persist Security Info=False;";
             
@@ -76,7 +76,7 @@ namespace PhoenixWPF.Database
                 }
                 catch (Exception ex)
                 {
-                    Spiel.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, ("Fehler beim Öffnen der PZE Datenbank: " + ex.Message)));
+                    SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, ("Fehler beim Öffnen der PZE Datenbank: " + ex.Message)));
                     return false;
                 }
             }
