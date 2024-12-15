@@ -65,7 +65,7 @@ namespace PhoenixDX.Drawing
                 // var sizeP = province.GetMapSize();
                 foreach (var gemark in province.Felder.Values)
                 {
-                    var posG = gemark.GetMapPosition(posP, scale.X, scale.Y); // aktualisiert die MapSize - Reihenfolge wichtig
+                    var posG = gemark.GetMapPosition(posP, scale); // aktualisiert die MapSize - Reihenfolge wichtig
                     var sizeG = Kleinfeld.GetMapSize();
                     Rectangle rScreenG = new Rectangle(Convert.ToInt32(posG.X), Convert.ToInt32(posG.Y), Convert.ToInt32(sizeG.X), Convert.ToInt32(sizeG.Y));
                     bool inKleinfeld = isMoving == false && mouseover == null && gemark.InKleinfeld(mausPos);

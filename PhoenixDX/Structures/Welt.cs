@@ -138,6 +138,16 @@ namespace PhoenixDX.Structures
             return null;
         }
 
+        public Provinz GetProviz(int gf)
+        {
+            Provinz provinz;
+            if (Provinzen.TryGetValue(gf, out provinz))
+            {
+                return provinz;
+            }
+            return null;
+        }
+
         public Vector2? GetPosition(int gf, int kf, Vector2 scale)
         {
             Provinz provinz;

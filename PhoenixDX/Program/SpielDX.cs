@@ -19,6 +19,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 
 using Vektor = Microsoft.Xna.Framework.Vector2;
+using PhoenixModel.dbErkenfara;
 
 namespace PhoenixDX.Program
 {
@@ -147,12 +148,17 @@ namespace PhoenixDX.Program
             Kleinfeld kleinfeld = Weltkarte.GetKleinfeld(gf, kf);
             if (kleinfeld == null)
                 return;
-            Vektor? v = Weltkarte.GetPosition(gf, kf, _scale);
-
+            Provinz provinz = Weltkarte.GetProviz(gf);
+            if (provinz == null) return;
+            Vektor posP = provinz.GetMapPosition(_scale);
+            // Vektor sizeP = provinz.GetMapSize();
+            var gemark = provinz.GetKleinfeld(kf);
+            var posG = gemark.GetMapPosition(posP, _scale); // aktualisiert die MapSize - Reihenfolge wichtig
+            // var sizeG = Kleinfeld.GetMapSize();
+            posG *= -1;
             Vektor offset = new Vektor(_clientWidth / 2, _clientHeight / 2);
-            v -= offset;
-            v *= -1;
-            _cameraPosition.SetFromVector2(v.Value);
+            posG += offset;
+            _cameraPosition.SetFromVector2(posG);
             _selected = kleinfeld;
             _wpfBridge.SelectKleinfeld(_selected.Koordinaten.gf, _selected.Koordinaten.kf, MausEventArgs.MouseEventType.None);
         }
@@ -205,7 +211,7 @@ namespace PhoenixDX.Program
                         }
                     case MausEventArgs.MouseEventType.MouseMove:
                         {
-                            if (_maus.LeftButton == MausEventArgs.MouseButtonState.Pressed)
+                            if (_maus.RightButton == MausEventArgs.MouseButtonState.Pressed)
                             {
                                 Position delta = _maus.ScreenPositionDelta * 18;
                                 MoveCamera(delta);
@@ -214,6 +220,8 @@ namespace PhoenixDX.Program
                         }
                     case MausEventArgs.MouseEventType.MouseWheel:
                         {
+                            if (Zoom >= 2.6f && _maus.WheelDelta > 0)
+                                return;
                             if (Zoom > 0.2f || _maus.WheelDelta > 0)
                                 Zoom = Zoom + _maus.WheelDelta / 1000f;
                             break;

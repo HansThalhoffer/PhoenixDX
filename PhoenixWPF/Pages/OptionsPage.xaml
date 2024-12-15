@@ -18,7 +18,7 @@
                 <Run Text="Zoom: " />
                 </TextBlock>
             <StackPanel Orientation="Horizontal">
-            <Slider x:Name="sldZoom"  Maximum="300" Minimum="20"
+            <Slider x:Name="sldZoom"  Maximum="260" Minimum="20"
                     Margin="0,2,0,4" Width="200"  ValueChanged="sldZoom_ValueChanged"
                     Orientation="Horizontal" IsEnabled="True" Height="18" HorizontalAlignment="Left"/>
             </StackPanel>

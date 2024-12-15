@@ -14,16 +14,17 @@ using Microsoft.Xna.Framework;
 using System.Collections.Concurrent;
 using PhoenixModel.dbErkenfara.Defaults;
 using PhoenixModel.CrossRef;
+using Vektor = Microsoft.Xna.Framework.Vector2;
 
 namespace PhoenixDX.Structures
 {
     public class Kleinfeld : Hex
     {
-        
+
         static Microsoft.Xna.Framework.Vector2 _mapCoords = new();
         static Microsoft.Xna.Framework.Vector2 _mapSize = new();
-        static float _scaleX = 0;
-        static float _scaleY = 0;
+        static Vektor _scale = new(0,0);
+        
         public static readonly int TextureWidth = 138;
         public static readonly int TextureHeight = 160;
         
@@ -59,33 +60,33 @@ namespace PhoenixDX.Structures
 
     
 
-        public static Microsoft.Xna.Framework.Vector2 GetMapSize()
+        public static Vektor GetMapSize()
         {
             return _mapSize;
         }
 
-        public Microsoft.Xna.Framework.Vector2 GetMapPosition(Microsoft.Xna.Framework.Vector2 provinzCoords, float scaleX, float scaleY)
+        public Vektor GetMapPosition(Microsoft.Xna.Framework.Vector2 provinzCoords, Vektor scale )
         {
-            if (scaleX != _scaleX || scaleX != _scaleY)
+            if (scale.X != _scale.X || scale.X != _scale.Y)
             {
-                _mapSize = new Microsoft.Xna.Framework.Vector2(Height * scaleX, Width * scaleY);
-                _scaleX = scaleX;
-                _scaleY = scaleY;
+                _mapSize = new Microsoft.Xna.Framework.Vector2(Height * scale.X, Width * scale.Y);
+                _scale.X = scale.X;
+                _scale.Y = scale.Y;
                 float x = 0;
                 if (Y < 4)
-                    x = ((X - 1) * ColumnWidth - (6-Y-x)*ColumnWidth/2 )* scaleX;
+                    x = ((X - 1) * ColumnWidth - (6-Y-x)*ColumnWidth/2 )* scale.X;
                 if (Y == 4)
-                    x = (X - 1) * ColumnWidth * scaleX;
+                    x = (X - 1) * ColumnWidth * scale.X;
                 if (Y == 5)
-                    x = ((X - 1) * ColumnWidth - ColumnWidth/2) * scaleX;
+                    x = ((X - 1) * ColumnWidth - ColumnWidth/2) * scale.X;
                 if (Y == 6)
-                    x = (X - 1) * ColumnWidth * scaleX;
+                    x = (X - 1) * ColumnWidth * scale.X;
                 if (Y == 7)
-                    x = ((X - 2) * ColumnWidth - ColumnWidth / 2) * scaleX;
+                    x = ((X - 2) * ColumnWidth - ColumnWidth / 2) * scale.X;
                 if (Y == 8)
-                    x = ((X - 4) * ColumnWidth) * scaleX;
+                    x = ((X - 4) * ColumnWidth) * scale.X;
 
-                float y = (Y - 1) * RowHeight * scaleY;
+                float y = (Y - 1) * RowHeight * scale.Y;
                 _mapCoords = new Microsoft.Xna.Framework.Vector2(provinzCoords.X+x, provinzCoords.Y+y);
             }
             return _mapCoords;
@@ -140,7 +141,7 @@ namespace PhoenixDX.Structures
             if (_mapCoords.X > mousePos.X ||  _mapCoords.Y > mousePos.Y)
                 return false;
             
-            if (mousePos.X > _mapCoords.X + Width *_scaleX * 0.85f || mousePos.Y > _mapCoords.Y + Height *_scaleY * 0.85f)
+            if (mousePos.X > _mapCoords.X + Width *_scale.X * 0.85f || mousePos.Y > _mapCoords.Y + Height *_scale.Y * 0.85f)
                return false;
             
            /* PointF[] hexVertices = {
