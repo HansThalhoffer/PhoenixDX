@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using PhoenixDX.Classes;
+using PhoenixDX.Helper;
 using PhoenixDX.Drawing;
 using PhoenixDX.Structures;
 using PhoenixModel.CrossRef;
@@ -20,13 +20,13 @@ using System.Threading;
 
 using Vektor = Microsoft.Xna.Framework.Vector2;
 
-namespace PhoenixDX
+namespace PhoenixDX.Program
 {
     public class SpielDX : Game
     {
         private GraphicsDeviceManager _graphics;
         private CancellationToken _cancellationToken;
-        private IntPtr _windowHandle;
+        private nint _windowHandle;
         private readonly ConcurrentQueue<Action> _actionQueue = new ConcurrentQueue<Action>();
 
         Position _cameraPosition = new Position(0, 0);
@@ -45,20 +45,20 @@ namespace PhoenixDX
             _actionQueue.Enqueue(action);
         }
 
-        public SpielDX(IntPtr windowHandle, CancellationToken token, MappaMundi bridge)
+        public SpielDX(nint windowHandle, CancellationToken token, MappaMundi bridge)
         {
             _wpfBridge = bridge;
             _clientWidth = _virtualWidth;
             _clientHeight = _virtualWidth;
             Zoom = 0.4f;
             _cancellationToken = token;
-           IsMouseVisible = true;
+            IsMouseVisible = true;
 
             _windowHandle = windowHandle;
             _graphics = new GraphicsDeviceManager(this);
 
             _graphics.PreparingDeviceSettings += Graphics_PreparingDeviceSettings;
-            _graphics.PreferredBackBufferWidth = _virtualWidth; 
+            _graphics.PreferredBackBufferWidth = _virtualWidth;
             _graphics.PreferredBackBufferHeight = _virtualHeight;
             _graphics.ApplyChanges();
 
@@ -76,16 +76,16 @@ namespace PhoenixDX
 
 
         [DllImport("user32.dll")]
-        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-        
+        private static extern bool ShowWindow(nint hWnd, int nCmdShow);
+
         // Hide the MonoGame window 
         private void HideGameWindow()
         {
-            var windowHandle = this.Window.Handle;
-            if (windowHandle != IntPtr.Zero)
+            var windowHandle = Window.Handle;
+            if (windowHandle != nint.Zero)
             {
                 const int SW_HIDE = 0;
-                ShowWindow(windowHandle, SW_HIDE); 
+                ShowWindow(windowHandle, SW_HIDE);
             }
         }
 
@@ -102,8 +102,8 @@ namespace PhoenixDX
 
         void _RecalcScale()
         {
-            _scale.X = (float)_virtualWidth / (float)_clientWidth * Zoom;
-            _scale.Y = (float)_virtualHeight / (float)_clientHeight * Zoom;
+            _scale.X = _virtualWidth / (float)_clientWidth * Zoom;
+            _scale.Y = _virtualHeight / (float)_clientHeight * Zoom;
         }
 
 
@@ -121,7 +121,7 @@ namespace PhoenixDX
             });
         }
 
-    
+
         bool _isMoving = false;
         void MoveCamera(Position delta)
         {
@@ -130,7 +130,7 @@ namespace PhoenixDX
         }
         public Vektor ClientToVirtualScreen(Position pos)
         {
-            return new Vektor(pos.X - _cameraPosition.X , pos.Y - _cameraPosition.Y);
+            return new Vektor(pos.X - _cameraPosition.X, pos.Y - _cameraPosition.Y);
         }
 
         MausEventArgs _maus = new MausEventArgs();
@@ -138,7 +138,7 @@ namespace PhoenixDX
         {
             EnqueueAction(() =>
             {
-                 _maus= args;
+                _maus = args;
             });
         }
 
@@ -147,12 +147,12 @@ namespace PhoenixDX
             Kleinfeld kleinfeld = Weltkarte.GetKleinfeld(gf, kf);
             if (kleinfeld == null)
                 return;
-            Vektor ? v = Weltkarte.GetPosition(gf, kf, _scale);
-            
-            Vektor offset = new Vektor(_clientWidth/2,_clientHeight/2);
+            Vektor? v = Weltkarte.GetPosition(gf, kf, _scale);
+
+            Vektor offset = new Vektor(_clientWidth / 2, _clientHeight / 2);
             v -= offset;
             v *= -1;
-            _cameraPosition.SetFromVector2( v.Value);
+            _cameraPosition.SetFromVector2(v.Value);
             _selected = kleinfeld;
             _wpfBridge.SelectKleinfeld(_selected.Koordinaten.gf, _selected.Koordinaten.kf, MausEventArgs.MouseEventType.None);
         }
@@ -161,7 +161,7 @@ namespace PhoenixDX
         {
             EnqueueAction(() =>
             {
-                _goto(gf, kf); 
+                _goto(gf, kf);
             });
         }
 
@@ -207,15 +207,15 @@ namespace PhoenixDX
                         {
                             if (_maus.LeftButton == MausEventArgs.MouseButtonState.Pressed)
                             {
-                                Position delta = _maus.ScreenPositionDelta*18;
+                                Position delta = _maus.ScreenPositionDelta * 18;
                                 MoveCamera(delta);
                             }
                             break;
                         }
                     case MausEventArgs.MouseEventType.MouseWheel:
                         {
-                            if (Zoom > 0.2f || _maus.WheelDelta>0)
-                                Zoom = Zoom + (float) _maus.WheelDelta / 1000f;
+                            if (Zoom > 0.2f || _maus.WheelDelta > 0)
+                                Zoom = Zoom + _maus.WheelDelta / 1000f;
                             break;
                         }
 
@@ -229,7 +229,7 @@ namespace PhoenixDX
 
         protected override void LoadContent()
         {
-            _spriteBatch = new Microsoft.Xna.Framework.Graphics.SpriteBatch(_graphics.GraphicsDevice);
+            _spriteBatch = new SpriteBatch(_graphics.GraphicsDevice);
             Content.RootDirectory = "Content";
             WeltDrawer.LoadContent(Content);
             Welt.LoadContent(Content);
@@ -252,27 +252,30 @@ namespace PhoenixDX
                 Weltkarte = new Welt(SharedData.Map);
             else if (Weltkarte != null)
             {
-                if ( Weltkarte.ReicheInitalized == false && SharedData.Nationen != null && SharedData.Nationen.IsAddingCompleted)
+                if (Weltkarte.ReicheInitalized == false && SharedData.Nationen != null && SharedData.Nationen.IsAddingCompleted)
                     Weltkarte.AddNationen(SharedData.Nationen);
             }
 
             HandleInput();
             if (_lastDrawTime == null)
-            // TODO: Add your update logic here
-            base.Update(gameTime);
+                // TODO: Add your update logic here
+                base.Update(gameTime);
         }
 
         Vektor _scale = Vektor.Zero;
 
 
-        private Microsoft.Xna.Framework.Graphics.SpriteBatch _spriteBatch;
+        private SpriteBatch _spriteBatch;
         float _zoom = 0f;
-        public float Zoom { get => _zoom; 
-            set {  
-                _zoom = value; 
+        public float Zoom
+        {
+            get => _zoom;
+            set
+            {
+                _zoom = value;
                 _RecalcScale();
                 _wpfBridge.OnZoomChanged(Zoom);
-            } 
+            }
         }
         GameTime _lastDrawTime = null;
         protected override void Draw(GameTime gameTime)
@@ -284,7 +287,7 @@ namespace PhoenixDX
             {
                 X = _cameraPosition.X,
                 Y = _cameraPosition.Y,
-                Width = _virtualWidth- _cameraPosition.X,
+                Width = _virtualWidth - _cameraPosition.X,
                 Height = _virtualHeight - _cameraPosition.Y,
                 MinDepth = 0,
                 MaxDepth = 1
@@ -293,10 +296,10 @@ namespace PhoenixDX
             if (Weltkarte != null)
             {
                 Vektor? mousePos = _maus.ScreenPosition == null ? null : ClientToVirtualScreen(_maus.ScreenPosition);
-                Rectangle visibleScreen = new Rectangle(_cameraPosition.X * -1, _cameraPosition.Y *-1, _clientWidth, _clientHeight);
+                Rectangle visibleScreen = new Rectangle(_cameraPosition.X * -1, _cameraPosition.Y * -1, _clientWidth, _clientHeight);
                 _mouseOver = Weltkarte.Draw(_spriteBatch, _scale, mousePos, _isMoving, gameTime.TotalGameTime, _selected, visibleScreen);
             }
-            
+
             /*if (_maus.ScreenPosition != null)
             {
                 Vektor mousePos = ClientToVirtualScreen(_maus.ScreenPosition);
@@ -323,8 +326,8 @@ namespace PhoenixDX
             // TODO: Add your drawing code here
             base.Draw(gameTime);
 
-            
+
         }
-              
+
     }
 }

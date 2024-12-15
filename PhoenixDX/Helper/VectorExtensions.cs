@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PhoenixModel.Helper;
 
-namespace PhoenixDX.Classes
+namespace PhoenixDX.Helper
 {
     public static class VectorExtensions
     {

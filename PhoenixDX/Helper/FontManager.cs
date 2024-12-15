@@ -7,7 +7,7 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhoenixDX.Classes
+namespace PhoenixDX.Helper
 {
     internal class FontManager
     {

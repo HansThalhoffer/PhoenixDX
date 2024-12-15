@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using PhoenixDX.Classes;
+using PhoenixDX.Helper;
 using PhoenixDX.Drawing;
 using PhoenixModel.Helper;
 using PhoenixModel.dbErkenfara;

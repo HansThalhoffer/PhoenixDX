@@ -8,6 +8,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using PhoenixDX.Drawing;
+using PhoenixDX.Program;
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
 using SharpDX.Direct3D9;
@@ -15,6 +16,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace PhoenixDX
 {
+    // stellt die API zur Verfügung für die WPF Welt
     public class MappaMundi
     {
         private SpielDX _game;
