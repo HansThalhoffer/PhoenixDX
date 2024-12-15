@@ -43,6 +43,8 @@ namespace PhoenixWPF.Host
         public const int WM_XBUTTONDBLCLK = 0x020D;
         public const int WM_MOUSELEAVE = 0x02A3;
         public const int WM_NCCALCSIZE = 0x0083;
+        public const int WM_KEYDOWN = 0x0100;
+        public const int WM_KEYUP = 0x0101;
 
         // Define the values that let us differentiate between the two extra mouse buttons
         public const int MK_XBUTTON1 = 0x020;

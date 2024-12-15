@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------------
 #endregion
 
+using Microsoft.Xna.Framework.Input;
 using PhoenixDX;
 using PhoenixModel.Helper;
 using PhoenixWPF.Program;
@@ -463,6 +464,13 @@ namespace PhoenixWPF.Host
                     NativeMethods.SetFocus(_hWndPrev);
 
                     break;
+                case NativeMethods.WM_KEYDOWN:
+                    OnKeyEvent(new PhoenixModel.Helper.KeyEventArgs(Convert.ToInt32(wParam), PhoenixModel.Helper.KeyEventArgs.KeyState.Down));
+                    break;
+                case NativeMethods.WM_KEYUP:
+                    OnKeyEvent(new PhoenixModel.Helper.KeyEventArgs(Convert.ToInt32(wParam), PhoenixModel.Helper.KeyEventArgs.KeyState.Up));
+                    break;
+
             }
 
             return base.WndProc(hwnd, msg, wParam, lParam, ref handled);
@@ -473,7 +481,11 @@ namespace PhoenixWPF.Host
             Main.Instance.Map?.OnMouseEvent(args);
         }
 
-       
+        protected virtual void OnKeyEvent(PhoenixModel.Helper.KeyEventArgs args)
+        {
+            Main.Instance.Map?.OnKeyEvent(args);
+        }
+
 
         #endregion
     }

@@ -143,6 +143,37 @@ namespace PhoenixDX.Program
             });
         }
 
+        private void _OnKeyEvent(PhoenixModel.Helper.KeyEventArgs args)
+        {
+            if (args.State == KeyEventArgs.KeyState.Down)
+            {
+                switch (args.Key)
+                {
+                    case 0x41: //   A key page left
+                        _cameraPosition.X += 200;
+                        break;
+                    case 0x44://   D key page right
+                        _cameraPosition.X -= 200;
+                        break;
+                    case 0x57: //   W key page up
+                        _cameraPosition.Y += 200;
+                        break;
+                    case 0x53: //   S key page down
+                        _cameraPosition.Y -= 200;
+                        break;
+                }
+            }
+        }
+
+        public void OnKeyEvent(PhoenixModel.Helper.KeyEventArgs args)
+        {
+            EnqueueAction(() =>
+            {
+                _OnKeyEvent(args);
+            });
+        }
+
+
         void _goto(int gf, int kf)
         {
             Kleinfeld kleinfeld = Weltkarte.GetKleinfeld(gf, kf);

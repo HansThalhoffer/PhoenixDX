@@ -87,6 +87,12 @@ namespace PhoenixDX
             _game?.OnMouseEvent(args);
         }
 
+        public void OnKeyEvent(PhoenixModel.Helper.KeyEventArgs args)
+        {
+            _game?.OnKeyEvent(args);
+        }
+
+
         public void Goto(int gf, int kf)
         {
             _game?.Goto(gf, kf);
