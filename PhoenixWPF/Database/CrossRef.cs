@@ -3,6 +3,7 @@ using PhoenixModel.Database;
 using PhoenixModel.dbPZE;
 using PhoenixModel.Helper;
 using PhoenixWPF.Dialogs;
+using PhoenixWPF.Program;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

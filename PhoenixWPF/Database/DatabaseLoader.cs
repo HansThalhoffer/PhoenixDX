@@ -2,6 +2,7 @@
 using PhoenixModel.dbPZE;
 using PhoenixModel.Helper;
 using PhoenixWPF.Dialogs;
+using PhoenixWPF.Program;
 using SharpDX.DirectWrite;
 using System;
 using System.Collections.Concurrent;

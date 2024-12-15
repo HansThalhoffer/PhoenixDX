@@ -240,7 +240,7 @@ namespace PhoenixWPF.Host
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject()) == false)
             {
                 Main.Instance.Map = new PhoenixDX.MappaMundi(_hWnd);
-                Main.Instance.Spiel = new PhoenixWPF.SpielWPF();
+                Main.Instance.Spiel = new SpielWPF();
                 MappaMundi.OnMapEvent += new MappaMundi.MapEventHandler(MapEventHandler);
                 Main.Instance.Map.Run();
             }

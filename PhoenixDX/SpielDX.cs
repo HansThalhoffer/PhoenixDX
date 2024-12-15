@@ -148,7 +148,8 @@ namespace PhoenixDX
             if (kleinfeld == null)
                 return;
             Vektor ? v = Weltkarte.GetPosition(gf, kf, _scale);
-            Vektor offset = new Vektor(800f * _scale.X, 600f * _scale.Y);
+            
+            Vektor offset = new Vektor((_clientWidth / 2), (_clientHeight / 2));
             v -= offset;
             v *= -1;
             _cameraPosition.SetFromVector2( v.Value);
