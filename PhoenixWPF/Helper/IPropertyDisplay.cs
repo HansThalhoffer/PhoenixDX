@@ -11,4 +11,9 @@ namespace PhoenixWPF.Helper
     {
         public void Display(List<Eigenschaft> eigenschaften);
     }
+
+    public interface IOptions
+    {
+        public void ChangeZoomLevel(float zoomLevel);
+    }
 }

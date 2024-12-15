@@ -71,7 +71,7 @@
                     <TabItem Header="Eigenschaften" Name="Eigenschaften">
                         <Frame Source="Pages/PropertyListPage.xaml" />
                     </TabItem>
-                    <TabItem Header="Informationen" Name="Informationen">
+                    <TabItem Header="Infos" Name="Informationen">
                         <Frame Source="Pages/LogPage.xaml" />
                     </TabItem>
                     <TabItem Header="Optionen" Name="Optionen">

@@ -18,16 +18,9 @@
                 <Run Text="Zoom: " />
                 </TextBlock>
             <StackPanel Orientation="Horizontal">
-            <Slider x:Name="sldZoom"  Maximum="1000" Minimum="200" Value="{Binding Zoom, Mode=TwoWay}"
-                    Margin="0,2,0,4" Width="150"  
+            <Slider x:Name="sldZoom"  Maximum="300" Minimum="20"
+                    Margin="0,2,0,4" Width="200"  ValueChanged="sldZoom_ValueChanged"
                     Orientation="Horizontal" IsEnabled="True" Height="18" HorizontalAlignment="Left"/>
-                <ComboBox Text="{Binding Zoom, Mode=TwoWay}" HorizontalAlignment="Left" Width="50">
-                    <ComboBoxItem Content="50"/>
-                    <ComboBoxItem Content="100"/>
-                    <ComboBoxItem Content="200"/>
-                    <ComboBoxItem Content="300"/>
-                    <ComboBoxItem Content="500"/>
-                </ComboBox>
             </StackPanel>
 
         </StackPanel>

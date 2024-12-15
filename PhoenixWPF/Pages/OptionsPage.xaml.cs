@@ -1,4 +1,5 @@
-﻿using PhoenixWPF.Program;
+﻿using PhoenixWPF.Helper;
+using PhoenixWPF.Program;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace PhoenixWPF.Pages
     /// <summary>
     /// Interaktionslogik für OptionsPage.xaml
     /// </summary>
-    public partial class OptionsPage : Page
+    public partial class OptionsPage : Page, IOptions
     {
         // Property to hold the state of "Reichszugehörigkeit sichtbar"
         bool _isReichszugehorigkeitSichtbar = false;
@@ -35,21 +36,25 @@ namespace PhoenixWPF.Pages
             } 
         }
 
-        public float Zoom
+        bool _self = false;
+        public void ChangeZoomLevel(float zoomLevel)
         {
-            get => Main.Instance.Map != null ? Main.Instance.Map.Zoom * 100 : 0f;
-            set
-            {
-                if (Main.Instance.Map != null)
-                    Main.Instance.Map.Zoom = value / 100;
-            }
+            _self = true;
+            sldZoom.Value = zoomLevel *100;
+            _self = false;
         }
 
+        private void sldZoom_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (Main.Instance.Map != null)
+                Main.Instance.Map.SetZoom((float)e.NewValue / 100);
+        }
 
         public OptionsPage()
         {
             InitializeComponent();
             DataContext = this;
+            Main.Instance.Options = this;
         }
     }
 }

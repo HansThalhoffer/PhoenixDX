@@ -25,15 +25,33 @@ namespace PhoenixWPF.Program
 
         public void MapEventHandler(MapEventArgs e)
         {
-            if (e.EventType == MapEventArgs.MapEventType.SelectGemark)
-                SelectGemark(e);
-            if (e.EventType == MapEventArgs.MapEventType.Log && e.LogEntry != null)
+            switch (e.EventType)
             {
-                if (e.GF > 0 && e.KF > 0)
+            case MapEventArgs.MapEventType.SelectGemark:
+            {
+                SelectGemark(e);
+                break;
+            }
+            case MapEventArgs.MapEventType.Log:
+            {
+                if (e.LogEntry != null)
                 {
-                    e.LogEntry.Message = $"[{e.GF}/{e.KF}] {e.LogEntry.Message}";
+                    if (e.GF > 0 && e.KF > 0)
+                    {
+                        e.LogEntry.Message = $"[{e.GF}/{e.KF}] {e.LogEntry.Message}";
+                    }
+                    Log(e.LogEntry);
                 }
-                Log(e.LogEntry);
+                break;
+            }
+            case MapEventArgs.MapEventType.Zoom:
+            {
+                if (Main.Instance.Options != null && e.floatValue != null)
+                    Main.Instance.Options.ChangeZoomLevel(e.floatValue.Value);
+                break;
+            }
+
+            
             }
 
         }

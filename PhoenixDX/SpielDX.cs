@@ -267,7 +267,13 @@ namespace PhoenixDX
 
         private Microsoft.Xna.Framework.Graphics.SpriteBatch _spriteBatch;
         float _zoom = 0f;
-        public float Zoom { get => _zoom; set {  _zoom = value; _RecalcScale(); } }
+        public float Zoom { get => _zoom; 
+            set {  
+                _zoom = value; 
+                _RecalcScale();
+                _wpfBridge.OnZoomChanged(Zoom);
+            } 
+        }
         GameTime _lastDrawTime = null;
         protected override void Draw(GameTime gameTime)
         {

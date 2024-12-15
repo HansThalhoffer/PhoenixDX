@@ -89,12 +89,15 @@ namespace PhoenixDX
         {
             _game?.Goto(gf, kf);
         }
-        public float Zoom {
-            get => _game != null ? _game.Zoom : 0f; 
-            set { 
-                if (_game != null) 
-                    _game.Zoom = value; 
-            } 
+
+        public void SetZoom(float val) {
+            if (_game != null) 
+                _game.Zoom = val; 
+        }
+
+        internal void OnZoomChanged(float val)
+        {
+            _OnMapEvent(new MapEventArgs(0, 0, MapEventArgs.MapEventType.Zoom, _game?.Zoom));
         }
         #endregion
 

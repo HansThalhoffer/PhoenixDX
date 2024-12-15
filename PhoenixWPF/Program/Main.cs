@@ -21,6 +21,8 @@ namespace PhoenixWPF.Program
         public PhoenixDX.MappaMundi? Map { get; set; }
         public SpielWPF? Spiel { get; set; }
         public IPropertyDisplay? PropertyDisplay { get; set; } = null;
+        public IOptions? Options { get; set; } = null;
+        
 
         static public Main Instance { get { return _instance; } }
 
