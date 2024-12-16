@@ -114,7 +114,6 @@ namespace PhoenixDX.Structures
                 {
                     if (Reiche.ContainsKey(kleinfeld.ReichID) == true)
                         kleinfeld.Reich = Reiche[kleinfeld.ReichID];
-
                 }
             }
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PhoenixModel.dbPZE;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,19 +22,21 @@ namespace PhoenixWPF.Dialogs
     public partial class StartDialog : Window
     {
         // Public properties to access dialog values
-        public string SelectedReich { get; private set; } = string.Empty;
         public string Password { get; private set; } = string.Empty;
         public bool IsSaveChecked { get; private set; } = false;
+        Dictionary<string, Nation> _nationen = [];
 
-        public StartDialog()
+        public StartDialog(Nation[] nationen)
         {
             InitializeComponent();
+            foreach (Nation nation in nationen)
+                _nationen.Add(nation.Bezeichner, nation);
+            ReichsAuswahl.ItemsSource = _nationen.Keys;
         }
 
         private void OKButton_Click(object sender, RoutedEventArgs e)
         {
             // Extract values from the dialog controls
-            SelectedReich = ReichsAuswahl.SelectedItem?.ToString() ?? string.Empty;
             Password = PasswordBox.Password;
             IsSaveChecked = Speichern.IsChecked ?? false;
 
@@ -43,9 +46,9 @@ namespace PhoenixWPF.Dialogs
         }
 
         // Public method to prepopulate control values (optional, if needed)
-        public void SetInitialValues(string selectedReich, string password, bool isSaveChecked)
+        public void SetInitialValues(int selectedReich, string password, bool isSaveChecked)
         {
-            ReichsAuswahl.SelectedItem = selectedReich;
+            ReichsAuswahl.SelectedIndex = selectedReich;
             PasswordBox.Password = password;
             Speichern.IsChecked = isSaveChecked;
         }
@@ -53,6 +56,42 @@ namespace PhoenixWPF.Dialogs
         public EncryptedString ProvidePassword()
         {
             return string.IsNullOrEmpty(Password) ? "" : Password;
+        }
+
+        Nation? GetSelectedReich()
+        {
+            string? reich = ReichsAuswahl.SelectedItem.ToString();
+            if (reich != null)
+            {
+                return _nationen[reich];
+            }
+            return null;
+        }
+
+
+        public int ProvideReich()
+        {
+            return GetSelectedReich()?.Nummer ?? -1;
+        }
+
+        private void PasswordBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (GetSelectedReich() != null)
+            {
+                string pw = PasswordBox.Password;
+                if (pw != null)
+                {
+                    string pwOrg = GetSelectedReich()?.DBpass ?? "hannebambel";
+                    if (pwOrg == pw)
+                    {
+                        OKButton.IsEnabled = true;
+                    }
+                    else
+                    {
+                        OKButton.IsEnabled = false;
+                    }
+                }
+            }
         }
     }
 }

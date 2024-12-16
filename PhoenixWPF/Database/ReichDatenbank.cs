@@ -56,7 +56,7 @@ namespace PhoenixWPF.Database
                 try
                 {
                     Load<Nation>(connector, ref SharedData.Nationen, Enum.GetNames(typeof(Nation.Felder)));
-                    Load<Nation>(connector, ref SharedData.Nationen, Enum.GetNames(typeof(Nation.Felder)));
+              
                 }
                 catch (Exception ex)
                 {

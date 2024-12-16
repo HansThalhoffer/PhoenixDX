@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using PhoenixModel.Database;
+using PhoenixModel.Helper;
 using PhoenixModel.Program;
 using PhoenixWPF.Database;
+using PhoenixWPF.Dialogs;
 using PhoenixWPF.Helper;
 using static PhoenixModel.Database.PasswordHolder;
 using static PhoenixWPF.Program.ErkenfaraKarte;
@@ -34,6 +36,19 @@ namespace PhoenixWPF.Program
             LoadCrossRef(); // die referenzen vor der Karte laden, auch wenn es dann weniger zu sehen gibt - insgesamt geht das schneller
             LoadKarte();            
             LoadPZE();
+            SelectReich();
+        }
+
+        public void SelectReich()
+        {
+            var nationen = SharedData.Nationen?.ToArray();
+            if (nationen != null)
+            {
+                StartDialog dialog = new StartDialog(nationen);
+                dialog.ShowDialog();
+                var pw = dialog.ProvidePassword();
+                var reich = dialog.ProvideReich();
+            }
         }
 
         public void SetReichOverlay(Visibility visibility)

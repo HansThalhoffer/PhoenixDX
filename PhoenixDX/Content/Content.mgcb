@@ -1066,7 +1066,7 @@
 /processorParam:TextureFormat=Color
 /build:Images/TilesetV/ocean.png
 
-#begin Images/TilesetV/strasse_no.gif
+#begin Images/TilesetV/strasse_n.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1076,9 +1076,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/TilesetV/strasse_no.gif
+/build:Images/TilesetV/strasse_n.png
 
-#begin Images/TilesetV/strasse_nw.gif
+#begin Images/TilesetV/strasse_no.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1088,9 +1088,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/TilesetV/strasse_nw.gif
+/build:Images/TilesetV/strasse_no.png
 
-#begin Images/TilesetV/strasse_o.gif
+#begin Images/TilesetV/strasse_nw.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1100,9 +1100,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/TilesetV/strasse_o.gif
+/build:Images/TilesetV/strasse_nw.png
 
-#begin Images/TilesetV/strasse_so.gif
+#begin Images/TilesetV/strasse_o.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1112,9 +1112,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/TilesetV/strasse_so.gif
+/build:Images/TilesetV/strasse_o.png
 
-#begin Images/TilesetV/strasse_sw.gif
+#begin Images/TilesetV/strasse_s.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1124,9 +1124,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/TilesetV/strasse_sw.gif
+/build:Images/TilesetV/strasse_s.png
 
-#begin Images/TilesetV/strasse_w.gif
+#begin Images/TilesetV/strasse_so.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1136,7 +1136,31 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/TilesetV/strasse_w.gif
+/build:Images/TilesetV/strasse_so.png
+
+#begin Images/TilesetV/strasse_sw.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Images/TilesetV/strasse_sw.png
+
+#begin Images/TilesetV/strasse_w.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Images/TilesetV/strasse_w.png
 
 #begin Images/TilesetV/swamp.png
 /importer:TextureImporter

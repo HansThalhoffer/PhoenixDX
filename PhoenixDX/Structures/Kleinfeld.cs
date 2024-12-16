@@ -34,8 +34,10 @@ namespace PhoenixDX.Structures
 
         private Reich _reich = null;
         public Reich Reich { get => _reich; 
-            set {  _reich = value;
-             Adorner.Add("Reich", value);
+            set {  
+                _reich = value;
+                //Adorner.Add("Reich", value);
+                Adorner.Insert(0,value);
             }
         }
         public bool IsSelected { get; set; } = false;
@@ -45,8 +47,10 @@ namespace PhoenixDX.Structures
 
         TerrainType _terrainType  = TerrainType.Default;
 
-        Dictionary<string, KleinfeldAdorner> _adorner = [];
-        public Dictionary<string, KleinfeldAdorner> Adorner { get { return _adorner; } }
+        // Dictionary<string, KleinfeldAdorner> _adorner = [];
+        // public Dictionary<string, KleinfeldAdorner> Adorner { get { return _adorner; } }
+        List<KleinfeldAdorner> _adorner = [];
+        public List<KleinfeldAdorner> Adorner { get { return _adorner; } }
 
         public Kleinfeld(int gf, int kf): base(Hex.RadiusGemark, true)
         {
@@ -105,11 +109,17 @@ namespace PhoenixDX.Structures
             Koordinaten =  new KartenKoordinaten(Koordinaten.gf, Koordinaten.kf, (int)gem.x, (int)gem.y);
             ReichID = gem.Reich ?? -1;
             
-            Adorner.Add("Fluss", new Fluss(gem));
-            Adorner.Add("Kai", new Kai(gem));
-            Adorner.Add("Brücke", new Bruecke(gem));
-            Adorner.Add("Strasse", new Strasse(gem));
-            Adorner.Add("Wand", new Wall(gem));
+            // Adorner.Add("Fluss", new Fluss(gem));
+            // Adorner.Add("Kai", new Kai(gem));
+            // Adorner.Add("Brücke", new Bruecke(gem));
+            // Adorner.Add("Strasse", new Strasse(gem));
+            // Adorner.Add("Wand", new Wall(gem));
+
+            Adorner.Add(new Fluss(gem));
+            Adorner.Add(new Kai(gem));
+            Adorner.Add(new Bruecke(gem));
+            Adorner.Add(new Strasse(gem));
+            Adorner.Add(new Wall(gem));
 
             if (gem.Gebäude != null )
             {
@@ -121,7 +131,8 @@ namespace PhoenixDX.Structures
                 string name = gem.Gebäude.Rüstort.Bauwerk;
                 if (RuestortSymbol.Ruestorte.ContainsKey(name))
                 {
-                    Adorner.Add("Rüstort", RuestortSymbol.Ruestorte[name]);
+                    // Adorner.Add("Rüstort", RuestortSymbol.Ruestorte[name]);
+                    Adorner.Add(RuestortSymbol.Ruestorte[name]);
                 }
                 else
                 {
@@ -167,7 +178,7 @@ namespace PhoenixDX.Structures
             Gelaende gel = Terrain.Terrains[(int)_terrainType] as Gelaende;
             if (gel != null)
                 textures.Add(gel.GetTexture());
-            foreach(KleinfeldAdorner adorner in Adorner.Values)
+            foreach(KleinfeldAdorner adorner in Adorner)
             {
                 if (adorner.HasDirections)
                     textures.AddRange(adorner.GetTextures());
