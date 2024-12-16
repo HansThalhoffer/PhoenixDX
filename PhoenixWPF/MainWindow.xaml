@@ -13,12 +13,15 @@
         <!-- Menu -->
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="View">
-                <MenuItem Header="Top Tab 1" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="TopTab1" />
-                <MenuItem Header="Top Tab 2" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="TopTab2" />
+                <MenuItem Header="Rüsten von Figuren und Gebäuden" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="BuildPage" />
+                <MenuItem Header="Befehle an Figuren" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="CommandPage" />
+                <MenuItem Header="History" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="HistoryPage" />
+                <MenuItem Header="Optionen" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="Optionen" />
                 <Separator/>
                 <MenuItem Header="Eigenschaften" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="Eigenschaften" />
                 <MenuItem Header="Informationen" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="Informationen" />
-                <MenuItem Header="Optionen" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="Optionen" />
+                <MenuItem Header="Auswahl Figuren" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="FigurenAuswahl" />
+                <MenuItem Header="Auswahl Rüstorte" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="RüstortAuswahl" />
             </MenuItem>
         </Menu>
 
@@ -55,11 +58,17 @@
 
                 <!-- Top TabControl -->
                 <TabControl Grid.Row="0" Margin="5" Name="TopTabControl">
-                    <TabItem Header="Top Tab 1" Name="TopTab1">
-                        <TextBlock Text="Content of Top Tab 1" Margin="10" />
+                    <TabItem Header="Rüsten" Name="BuildPage">
+                        <Frame Source="Pages/BuildPage.xaml" />
                     </TabItem>
-                    <TabItem Header="Top Tab 2" Name="TopTab2">
-                        <TextBlock Text="Content of Top Tab 2" Margin="10" />
+                    <TabItem Header="Befehle" Name="CommandPage">
+                        <Frame Source="Pages/CommandPage.xaml" />
+                    </TabItem>
+                    <TabItem Header="History" Name="HistoryPage">
+                        <Frame Source="Pages/HistoryPage.xaml" />
+                    </TabItem>
+                    <TabItem Header="Optionen" Name="Optionen">
+                        <Frame Source="Pages/OptionsPage.xaml" />
                     </TabItem>
                 </TabControl>
 
@@ -74,8 +83,11 @@
                     <TabItem Header="Infos" Name="Informationen">
                         <Frame Source="Pages/LogPage.xaml" />
                     </TabItem>
-                    <TabItem Header="Optionen" Name="Optionen">
-                        <Frame Source="Pages/OptionsPage.xaml" />
+                    <TabItem Header="Figuren" Name="FigurenAuswahl">
+                        <Frame Source="Pages/SelectFigurPage.xaml" />
+                    </TabItem>
+                    <TabItem Header="Rüstorte" Name="RüstortAuswahl">
+                        <Frame Source="Pages/SelectRüstortPage.xaml" />
                     </TabItem>
                 </TabControl>
             </Grid>

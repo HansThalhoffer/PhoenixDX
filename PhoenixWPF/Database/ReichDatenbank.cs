@@ -1,24 +1,18 @@
 ﻿using PhoenixModel.Database;
-using PhoenixModel.Helper;
-using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbPZE;
-using PhoenixWPF.Dialogs;
+using PhoenixModel.Helper;
+using PhoenixWPF.Program;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static PhoenixModel.Database.PasswordHolder;
-using static PhoenixWPF.Program.ErkenfaraKarte;
-using System.IO;
-using PhoenixModel.CrossRef;
-using PhoenixWPF.Program;
 
 namespace PhoenixWPF.Database
 {
-    public class PZE : DatabaseLoader, ILoadableDatabase
+
+    public class ReichDatenbank : DatabaseLoader, ILoadableDatabase
     {
         EncryptedString _encryptedpassword;
         string _databaseFileName;
@@ -26,7 +20,7 @@ namespace PhoenixWPF.Database
         public string DatabaseFileName { get => _databaseFileName; set => _databaseFileName = value; }
 
 
-        public PZE(string databaseFileName, EncryptedString encryptedpassword)
+        public ReichDatenbank(string databaseFileName, EncryptedString encryptedpassword)
         {
             _databaseFileName = databaseFileName;
             _encryptedpassword = encryptedpassword;
@@ -47,21 +41,22 @@ namespace PhoenixWPF.Database
             {
                 foreach (var gem in SharedData.Map)
                 {
-                    
+
                 }
             }
         }
 
         public void Load()
         {
-            PasswordHolder holder = new (_encryptedpassword);
+            PasswordHolder holder = new(_encryptedpassword);
             using (AccessDatabase connector = new(_databaseFileName, holder.DecryptPassword()))
             {
                 if (connector?.Open() == false)
                     return;
                 try
                 {
-                    Load<Nation>(connector, ref SharedData.Nationen, Enum.GetNames(typeof(Nation.Felder)));              
+                    Load<Nation>(connector, ref SharedData.Nationen, Enum.GetNames(typeof(Nation.Felder)));
+                    Load<Nation>(connector, ref SharedData.Nationen, Enum.GetNames(typeof(Nation.Felder)));
                 }
                 catch (Exception ex)
                 {
