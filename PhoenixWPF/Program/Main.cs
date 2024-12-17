@@ -19,7 +19,7 @@ namespace PhoenixWPF.Program
     public class Main :IDisposable
     {
         private static Main _instance = new Main();
-        public AppSettings Settings { get; private set; } = null;
+        public AppSettings Settings { get; } = new AppSettings("Settings.jpk");
         public PhoenixDX.MappaMundi? Map { get; set; }
         public SpielWPF? Spiel { get; set; }
         public IPropertyDisplay? PropertyDisplay { get; set; } = null;
@@ -31,7 +31,12 @@ namespace PhoenixWPF.Program
 
         public void InitInstance() 
         {
-            Settings = new AppSettings("Settings.jpk");
+            //ModelGenerator.Start("Zugdaten\\167\\Theostelos.mdb", "", "chars", "dbZugdaten");
+            ModelGenerator.Start("\\Crossreferenzen\\crossref.mdb", "", "chars", "dbZugdaten");
+
+
+
+
             Settings.InitializeSettings();
             LoadCrossRef(); // die referenzen vor der Karte laden, auch wenn es dann weniger zu sehen gibt - insgesamt geht das schneller
             LoadKarte();            

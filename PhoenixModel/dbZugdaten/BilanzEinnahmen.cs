@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.Database;
+using PhoenixModel.Helper;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -6,12 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhoenixModel.dbZugdatan
+namespace PhoenixModel.dbZugdaten
 {
-    public class BilanzEinnahmen : IDatabaseTable
+    public class BilanzEinnahmen : IDatabaseTable, IEigenschaftler
     {
         public const string TableName = "Bilanz_einnahmen";
         string IDatabaseTable.TableName => TableName;
+        // IEigenschaftler
+        private static readonly string[] PropertiestoIgnore = [];
+        public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
+
 
         public int monat { get; set; } = 0;
         public int? Tiefland { get; set; }

@@ -34,7 +34,7 @@ namespace PhoenixModel.Database
             catch { }
             return -1;
         }
-
+      
         /// </summary>
         static public bool ToBool(object o)
         {

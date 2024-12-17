@@ -33,7 +33,7 @@ namespace PhoenixWPF.Dialogs
 
         Dictionary<string, Nation> _nationen = [];
 
-        public StartDialog(Nation[] nationen, int selectedReich, string password)
+        public StartDialog(Nation[] nationen, int selectedReich, string? password)
         {
             string selectedNation = string.Empty;
             InitializeComponent();
