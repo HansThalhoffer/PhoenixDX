@@ -6,22 +6,23 @@ namespace PhoenixModel.dbErkenfara.Defaults
 {
     public class Terrain
     {
-        public enum TerrainType
+        public enum TerrainType // entnommmen aus der Tabelle [crossref.mdb][Geleandetypen_crossref]
         {
-            Default,
-            Wasser,
-            Hochland,
-            Wald,
-            Wüste,
-            Sumpf,
-            Bergland,
-            Gebirge,
-            Tiefsee,
-            Tiefland,
-            Auftauchpunkt,
-            Tiefseeeinbahnpunkt,
-            AuftauchpunktUnbekannt
+            Default = 0,
+            Wasser = 1,
+            Hochland = 2,
+            Wald = 3,
+            Wüste = 4,
+            Sumpf = 5,
+            Bergland = 6,
+            Gebirge = 7,
+            Tiefsee = 8,
+            Tiefland = 9,
+            Auftauchpunkt = 10,
+            Tiefseeeinbahnpunkt = 11,
+            AuftauchpunktUnbekannt // den gibt es nicht in der Tabelle der Datenbank
         }
+        
 
         public TerrainType Typ { get; set; }
         public string Name { get; set; }

@@ -5,6 +5,8 @@ using PhoenixModel.Database;
 using PhoenixModel.Helper;
 using System.Data.Common;
 using System.Reflection.Metadata.Ecma335;
+using static PhoenixModel.dbErkenfara.Defaults.Terrain;
+using PhoenixModel.dbErkenfara.Defaults;
 
 namespace PhoenixModel.dbErkenfara
 {
@@ -25,10 +27,15 @@ namespace PhoenixModel.dbErkenfara
     }
     public class Gemark : GemarkPosition, IEigenschaftler, IDatabaseTable
     {
+        #region Schnittstellen
         public const string TableName = "Karte";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner { get => CreateBezeichner(); }
+        private static readonly string[] PropertiestoIgnore = { "x", "y", "Rand", "db_xy", "ph_xy" };
+        public List<Eigenschaft> Eigenschaften => PropertyProcessor.CreateProperties(this, PropertiestoIgnore);
+        #endregion
 
+        #region Datenbankfelder
         public string? ph_xy { get; set; }
         public int x { get; set; } = 0;
         public int? y { get; set; }
@@ -91,145 +98,16 @@ namespace PhoenixModel.dbErkenfara
         public string? Bauwerknamen { get; set; }
         public int? lehensid { get; set; }
 
-
+       
         public enum Felder
         {
-            gf, kf,
-            ph_xy ,
-            x , 
-            y ,
-            db_xy ,
-            Rand ,
-            Index ,
-            Gelaendetyp ,
-            Ruestort ,
-            Fluss_NW ,
-            Fluss_NO ,
-            Fluss_O ,
-            Fluss_SO ,
-            Fluss_SW ,
-            Fluss_W ,
-            Wall_NW ,
-            Wall_NO ,
-            Wall_O ,
-            Wall_SO ,
-            Wall_SW ,
-            Wall_W ,
-            Kai_NW ,
-            Kai_NO ,
-            Kai_O ,
-            Kai_SO ,
-            Kai_SW ,
-            Kai_W ,
-            Strasse_NW ,
-            Strasse_NO ,
-            Strasse_O ,
-            Strasse_SO ,
-            Strasse_SW ,
-            Strasse_W ,
-            Bruecke_NW ,
-            Bruecke_NO ,
-            Bruecke_O ,
-            Bruecke_SO ,
-            Bruecke_SW ,
-            Bruecke_W ,
-            Reich ,
-            Krieger_eigen ,
-            Krieger_feind ,
-            Krieger_freund ,
-            Reiter_eigene ,
-            Reiter_feind ,
-            Reiter_freund ,
-            Schiffe_eigene ,
-            schiffe_feind ,
-            Schiffe_freund ,
-            Zauberer_eigene ,
-            Zauberer_feind ,
-            Zauberer_freund ,
-            Char_eigene ,
-            Char_feind ,
-            Char_freund ,
-            krieger_text ,
-            kreatur_eigen ,
-            kreatur_feind ,
-            kreatur_freund ,
-            Baupunkte,
-            Bauwerknamen,
-            lehensid,
-        }
-
-         public string ReichZugehörigkeit {
-            get
-            {
-                if (SharedData.Nationen == null || Reich == null)
-                    return string.Empty;
-                return SharedData.Nationen.ElementAt(Reich.Value).Reich ?? string.Empty; 
-            }
-        }
-
-        // die Funktion beseitigt Fehler in den Datenbanken
-        public Gebäude? Gebäude
-        {
-            get
-            {
-                if (SharedData.Gebäude == null)
-                    throw new Exception("Die Bauwerliste muss vor denen Kartendaten gelasen werden");
-                if (SharedData.RüstortReferenz == null)
-                    throw new Exception("Die Rüstort Referenzdaten müssen vor denen Kartendaten gelasen werden");
-                if (Baupunkte == 0)
-                    return null;
-                try
-                {
-                    Gebäude? gebäude = null;
-                    if (SharedData.Gebäude.ContainsKey(Bezeichner))
-                        gebäude = SharedData.Gebäude[Bezeichner];
-                    if (gebäude == null)
-                    {
-                        gebäude = new Gebäude();
-                        gebäude.kf = this.kf;
-                        gebäude.gf = this.gf;
-                        gebäude.Bauwerknamen = this.Bauwerknamen;
-                        SharedData.Gebäude.Add(gebäude.Bezeichner, gebäude);
-                    }
-                    if (gebäude.Rüstort == null)
-                    {
-                        if (Rüstort.NachBaupunkten.ContainsKey(Baupunkte))
-                            gebäude.Rüstort = Rüstort.NachBaupunkten[Baupunkte];
-                        else
-                        {
-                            int bp = Baupunkte - Baupunkte % 250;
-                            while (Rüstort.NachBaupunkten.ContainsKey(bp) == false && bp > 0)
-                                bp -= 250;
-                            if (bp > 0)
-                            {
-                                gebäude.InBau = true;
-                                gebäude.Rüstort = Rüstort.NachBaupunkten[bp];
-                            }
-                            else
-                            {
-                                gebäude.Zerstört = true;
-                            }
-                        }
-                    }
-                    return gebäude;
-                }
-                catch ( Exception ex)
-                {
-                    // auf Ebene des Modells werden keine Exceptions gefangen
-                    throw new Exception($"Ausnahme bei der Festlegung des Geäudes auf Kleinfeld {Bezeichner}", ex);
-                }
-            }
-        }
-
-
-        private static readonly string[] PropertiestoIgnore = { "x", "y","Rand","db_xy","ph_xy"};
-        public List<Eigenschaft> Eigenschaften
-        {
-            get
-            {
-                return PropertyProcessor.CreateProperties(this, PropertiestoIgnore);
-            }
-
+            gf, kf, ph_xy, x, y, db_xy, Rand, Index, Gelaendetyp, Ruestort,
+            Fluss_NW, Fluss_NO, Fluss_O, Fluss_SO, Fluss_SW, Fluss_W, Wall_NW, Wall_NO, Wall_O, Wall_SO,
+            Wall_SW, Wall_W, Kai_NW, Kai_NO, Kai_O, Kai_SO, Kai_SW, Kai_W, Strasse_NW, Strasse_NO,
+            Strasse_O, Strasse_SO, Strasse_SW, Strasse_W, Bruecke_NW, Bruecke_NO, Bruecke_O, Bruecke_SO, Bruecke_SW, Bruecke_W,
+            Reich, Krieger_eigen, Krieger_feind, Krieger_freund, Reiter_eigene, Reiter_feind, Reiter_freund, Schiffe_eigene, schiffe_feind, Schiffe_freund,
+            Zauberer_eigene, Zauberer_feind, Zauberer_freund, Char_eigene, Char_feind, Char_freund, krieger_text, kreatur_eigen, kreatur_feind, kreatur_freund,
+            Baupunkte, Bauwerknamen, lehensid
         }
 
         public void Load(DbDataReader reader)
@@ -298,5 +176,89 @@ namespace PhoenixModel.dbErkenfara
             Bauwerknamen = reader.GetString((int)Felder.Bauwerknamen);
             lehensid = DatabaseConverter.ToInt32(reader[(int)Felder.lehensid]);
         }
+        #endregion
+
+        public TerrainType TerrainType
+        {
+            get
+            {
+                if (Gelaendetyp <= (int)TerrainType.AuftauchpunktUnbekannt)
+                    return (TerrainType)Gelaendetyp;
+                return TerrainType.Default;
+            }
+        }
+
+        public Terrain Terrain
+        {
+            get { return Terrains[(int)TerrainType]; }
+        }
+
+        public string ReichZugehörigkeit {
+            get
+            {
+                if (SharedData.Nationen == null || Reich == null)
+                    return string.Empty;
+                return SharedData.Nationen.ElementAt(Reich.Value).Reich ?? string.Empty; 
+            }
+        }
+
+        // die Funktion beseitigt Fehler in den Datenbanken
+        public Gebäude? Gebäude
+        {
+            get
+            {
+                if (SharedData.Gebäude == null)
+                    throw new Exception("Die Bauwerliste muss vor denen Kartendaten gelasen werden");
+                if (SharedData.RüstortReferenz == null)
+                    throw new Exception("Die Rüstort Referenzdaten müssen vor denen Kartendaten gelasen werden");
+                if (Baupunkte == 0)
+                    return null;
+                try
+                {
+                    Gebäude? gebäude = null;
+                    if (SharedData.Gebäude.ContainsKey(Bezeichner))
+                        gebäude = SharedData.Gebäude[Bezeichner];
+                    if (gebäude == null)
+                    {
+                        gebäude = new Gebäude();
+                        gebäude.kf = this.kf;
+                        gebäude.gf = this.gf;
+                        gebäude.Bauwerknamen = this.Bauwerknamen;
+                        SharedData.Gebäude.Add(gebäude.Bezeichner, gebäude);
+                    }
+                    if (gebäude.Rüstort == null)
+                    {
+                        if (Rüstort.NachBaupunkten.ContainsKey(Baupunkte))
+                            gebäude.Rüstort = Rüstort.NachBaupunkten[Baupunkte];
+                        else
+                        {
+                            int bp = Baupunkte - Baupunkte % 250;
+                            while (Rüstort.NachBaupunkten.ContainsKey(bp) == false && bp > 0)
+                                bp -= 250;
+                            if (bp > 0)
+                            {
+                                gebäude.InBau = true;
+                                gebäude.Rüstort = Rüstort.NachBaupunkten[bp];
+                            }
+                            else
+                            {
+                                gebäude.Zerstört = true;
+                            }
+                        }
+                    }
+                    return gebäude;
+                }
+                catch ( Exception ex)
+                {
+                    // auf Ebene des Modells werden keine Exceptions gefangen
+                    throw new Exception($"Ausnahme bei der Festlegung des Geäudes auf Kleinfeld {Bezeichner}", ex);
+                }
+            }
+        }
+
+
+      
+        
+        
     }
 }

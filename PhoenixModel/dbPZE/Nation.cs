@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.Database;
+using PhoenixModel.dbPZE.Defaults;
 using PhoenixModel.Helper;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace PhoenixModel.dbPZE
 {
     public class Nation : IDatabaseTable, IEigenschaftler
     {
+        #region InterfaceFelder
         // IDatabaseTable
         public const string TableName = "DBhandle";
         string IDatabaseTable.TableName => TableName;
@@ -21,9 +23,9 @@ namespace PhoenixModel.dbPZE
         // IEigenschaftler
         private static readonly string[] PropertiestoIgnore = { "Alias" };
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
+        #endregion
 
-       
-
+        #region DatenbankFelder
         public string[]? Alias { get; set; }
         public string? Farbname { get; set; }
         public Color? Farbe { get; set; }
@@ -57,8 +59,8 @@ namespace PhoenixModel.dbPZE
                 if (Farbname != null)
                     break;
             }
-
         }
+        #endregion
 
     }
 
