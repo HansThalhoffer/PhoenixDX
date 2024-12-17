@@ -27,6 +27,8 @@ namespace PhoenixWPF.Dialogs
         {
             InitializeComponent();
             PromptLabel.Text = context;
+            Owner = Application.Current.MainWindow; // Set the owner to the current window
+            WindowStartupLocation = WindowStartupLocation.CenterOwner;
         }
 
         private void OKButton_Click(object sender, RoutedEventArgs e)

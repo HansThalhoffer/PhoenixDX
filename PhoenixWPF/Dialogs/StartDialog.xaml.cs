@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using static PhoenixModel.Database.PasswordHolder;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace PhoenixWPF.Dialogs
 {
@@ -28,10 +29,13 @@ namespace PhoenixWPF.Dialogs
 
         public StartDialog(Nation[] nationen)
         {
+            
             InitializeComponent();
             foreach (Nation nation in nationen)
                 _nationen.Add(nation.Bezeichner, nation);
             ReichsAuswahl.ItemsSource = _nationen.Keys;
+            Owner = Application.Current.MainWindow; // Set the owner to the current window
+            WindowStartupLocation = WindowStartupLocation.CenterOwner;
         }
 
         private void OKButton_Click(object sender, RoutedEventArgs e)
@@ -42,6 +46,13 @@ namespace PhoenixWPF.Dialogs
 
             // Close the dialog and set the result to true
             DialogResult = true;
+            Close();
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Close the dialog and set the result to true
+            DialogResult = false;
             Close();
         }
 
@@ -60,7 +71,7 @@ namespace PhoenixWPF.Dialogs
 
         Nation? GetSelectedReich()
         {
-            string? reich = ReichsAuswahl.SelectedItem.ToString();
+            string? reich = ReichsAuswahl.SelectedItem == null? null: ReichsAuswahl.SelectedItem.ToString();
             if (reich != null)
             {
                 return _nationen[reich];
@@ -74,7 +85,12 @@ namespace PhoenixWPF.Dialogs
             return GetSelectedReich()?.Nummer ?? -1;
         }
 
-        private void PasswordBox_KeyUp(object sender, KeyEventArgs e)
+        public bool IsOK()
+        {
+            return OKButton.IsEnabled == true; ;
+        }
+
+        void CheckPassword()
         {
             if (GetSelectedReich() != null)
             {
@@ -85,13 +101,21 @@ namespace PhoenixWPF.Dialogs
                     if (pwOrg == pw)
                     {
                         OKButton.IsEnabled = true;
-                    }
-                    else
-                    {
-                        OKButton.IsEnabled = false;
+                        return;
                     }
                 }
             }
+           OKButton.IsEnabled = false;
+        }
+
+        private void PasswordBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            CheckPassword();
+        }
+
+        private void ReichsAuswahl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            CheckPassword();
         }
     }
 }

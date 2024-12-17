@@ -45,9 +45,15 @@ namespace PhoenixWPF.Program
             if (nationen != null)
             {
                 StartDialog dialog = new StartDialog(nationen);
-                dialog.ShowDialog();
-                var pw = dialog.ProvidePassword();
-                var reich = dialog.ProvideReich();
+                
+                bool? ok = dialog.ShowDialog();
+                if (ok != null && ok == true)
+                {
+                    var pw = dialog.ProvidePassword();
+                    var reich = dialog.ProvideReich();
+                }
+                else
+                    Application.Current.Shutdown();
             }
         }
 
