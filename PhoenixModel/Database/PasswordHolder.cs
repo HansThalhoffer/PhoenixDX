@@ -41,7 +41,9 @@ namespace PhoenixModel.Database
         { encryptedPasswordBase64 = string.Empty; }
 
         public PasswordHolder(string plainPassword)
-        { encryptedPasswordBase64 = EncryptPassword(plainPassword); }
+        { 
+            encryptedPasswordBase64 = EncryptPassword(plainPassword); 
+        }
 
         public PasswordHolder(EncryptedString password)
         {

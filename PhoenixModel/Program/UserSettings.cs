@@ -23,6 +23,9 @@ namespace PhoenixModel.Program
         private string _databaseLocationCrossRef = "_Data\\Crossreferenzen\\crossref.mdb";
         private string _passwordCrossRef = string.Empty ;
 
+        private string _passwordReich = string.Empty;
+        private int _selectedReich = -1;
+
         private bool _showWindowNavigator = true;
         private bool _showWindowProperties = true;
         private bool _showWindowDiplomacy = true;
@@ -158,6 +161,25 @@ namespace PhoenixModel.Program
                     OnPropertyChanged(nameof(ShowWindowDiplomacy));
                 }
             }
+        }
+
+        public string PasswordReich 
+        { 
+            get => _passwordReich; 
+            set { 
+                _passwordReich = value;
+                OnPropertyChanged(nameof(PasswordReich));
+            }
+        }
+        public int SelectedReich 
+        { 
+            get => _selectedReich;
+            set
+            {
+                _selectedReich = value;
+                OnPropertyChanged(nameof(SelectedReich));
+            }
+
         }
         #endregion
 

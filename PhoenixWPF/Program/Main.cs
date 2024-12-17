@@ -19,7 +19,7 @@ namespace PhoenixWPF.Program
     public class Main :IDisposable
     {
         private static Main _instance = new Main();
-        public AppSettings? Settings { get; private set; }
+        public AppSettings Settings { get; private set; } = null;
         public PhoenixDX.MappaMundi? Map { get; set; }
         public SpielWPF? Spiel { get; set; }
         public IPropertyDisplay? PropertyDisplay { get; set; } = null;
@@ -44,16 +44,35 @@ namespace PhoenixWPF.Program
             var nationen = SharedData.Nationen?.ToArray();
             if (nationen != null)
             {
-                StartDialog dialog = new StartDialog(nationen);
-                
-                bool? ok = dialog.ShowDialog();
-                if (ok != null && ok == true)
+                if (Settings != null && Settings.UserSettings != null)
                 {
-                    var pw = dialog.ProvidePassword();
-                    var reich = dialog.ProvideReich();
+                    int r = Settings.UserSettings.SelectedReich;
+                    EncryptedString encrypted = Settings.UserSettings.PasswordReich;
+                    PasswordHolder holder = new(encrypted);
+                    var pw = holder.DecryptPassword();
+                    StartDialog dialog = new StartDialog(nationen, r, pw);
+
+                    bool? ok = dialog.ShowDialog();
+                    if (ok != null && ok == true)
+                    {
+                        var pass = dialog.Password;
+                        var reich = dialog.SelectedNation;
+                        var safe = dialog.IsSaveChecked;
+                        if (safe == true)
+                        {
+                            holder = new(pass);
+                            Settings.UserSettings.PasswordReich = holder.EncryptedPasswordBase64;
+                            Settings.UserSettings.SelectedReich = reich?.Nummer ?? -1;
+                        }
+                        else
+                        {
+                            Settings.UserSettings.SelectedReich = -1;
+                            Settings.UserSettings.PasswordReich = string.Empty;
+                        }
+                    }
+                    else
+                        Application.Current.Shutdown();
                 }
-                else
-                    Application.Current.Shutdown();
             }
         }
 

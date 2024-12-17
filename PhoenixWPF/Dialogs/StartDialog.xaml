@@ -1,12 +1,12 @@
 ﻿<Window x:Class="PhoenixWPF.Dialogs.StartDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="Passworteingabe" Height="200" Width="480"
+    Title="Passworteingabe" Height="160" Width="480"
     WindowStartupLocation="CenterOwner"
     BorderBrush ="#FF0000"
     BorderThickness ="6"
     ResizeMode="NoResize"
-    WindowStyle="SingleBorderWindow">
+    WindowStyle="None">
     <Grid Margin="8">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
