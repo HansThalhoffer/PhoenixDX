@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.Database;
+using PhoenixModel.Helper;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -8,11 +9,13 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.dbPZE
 {
-    internal class DBTablesExtern : IDatabaseTable
+    internal class DBTablesExtern : IDatabaseTable, IEigenschaftler
     {
         public const string TableName = "DBTablesextern";
         string IDatabaseTable.TableName => TableName;
-
+        // IEigenschaftler
+        private static readonly string[] PropertiestoIgnore = [];
+        public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
         public int id { get; set; } = 0;
         public string? tablename { get; set; }
         public string? usedbflag { get; set; }

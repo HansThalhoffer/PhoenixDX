@@ -3,7 +3,7 @@ using System.Data.Common;
 using PhoenixModel.Database;
 using PhoenixModel.Helper;
 
-namespace PhoenixModel.CrossRef
+namespace PhoenixModel.dbCrossRef
 {
     public class Crossref_zauberer_teleport : IDatabaseTable, IEigenschaftler
     {

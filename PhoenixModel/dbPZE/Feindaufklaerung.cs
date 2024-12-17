@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.Database;
+using PhoenixModel.Helper;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -8,11 +9,14 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.dbPZE
 {
-    internal class Feindaufklaerung : IDatabaseTable
+    internal class Feindaufklaerung : IDatabaseTable, IEigenschaftler
     {
         public const string TableName = "Feindaufklaerung";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => id.ToString();
+        // IEigenschaftler
+        private static readonly string[] PropertiestoIgnore = [];
+        public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
         public int id { get; set; } = 0;
         public int? Nummer { get; set; }

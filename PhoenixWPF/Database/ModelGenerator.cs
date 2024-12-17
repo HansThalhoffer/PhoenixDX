@@ -11,6 +11,8 @@ using static System.Net.WebRequestMethods;
 
 namespace PhoenixWPF.Database
 {
+    // generiert die datenbankklassen für das Model 1:1 aus der Access Tabelle
+    // usage ModelGenerator.Start("Zugdaten\\167\\Theostelos.mdb", "", "chars", "dbZugdaten");
     internal class ModelGenerator
     {
         public static void Start(string databasePath, string password, string tableName, string nspace)
@@ -54,7 +56,7 @@ namespace PhoenixWPF.Database
 
                 writer.WriteLine($"public const string TableName = \"{tableName}\";");
                 writer.WriteLine("string IDatabaseTable.TableName => TableName;");
-                writer.WriteLine("public string Bezeichner => id.ToString();");
+                writer.WriteLine("public string Bezeichner => ID.ToString();");
                 writer.WriteLine("// IEigenschaftler");
                 writer.WriteLine("private static readonly string[] PropertiestoIgnore = [];");
                 writer.WriteLine("public List<Eigenschaft> Eigenschaften {get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }");

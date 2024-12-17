@@ -13,7 +13,7 @@ using System.Drawing;
 using Microsoft.Xna.Framework;
 using System.Collections.Concurrent;
 using PhoenixModel.dbErkenfara.Defaults;
-using PhoenixModel.CrossRef;
+using PhoenixModel.dbCrossRef;
 using Vektor = Microsoft.Xna.Framework.Vector2;
 
 namespace PhoenixDX.Structures

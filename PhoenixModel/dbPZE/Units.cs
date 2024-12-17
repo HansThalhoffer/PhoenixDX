@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.Database;
+using PhoenixModel.Helper;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -9,11 +10,14 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.dbPZE
 {
-    public class Units : IDatabaseTable
+    public class Units : IDatabaseTable, IEigenschaftler
     {
         public const string TableName = "Units";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => ID.ToString();
+        // IEigenschaftler
+        private static readonly string[] PropertiestoIgnore = [];
+        public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
         public int ID { get; set; } = 0;
         public int? nummer { get; set; }

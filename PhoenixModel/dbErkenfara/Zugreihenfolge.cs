@@ -1,0 +1,36 @@
+using System;
+using System.Data.Common;
+using PhoenixModel.Database;
+using PhoenixModel.Helper;
+
+namespace PhoenixModel.dbErkenfara
+{
+    public class Zugreihenfolge : IDatabaseTable, IEigenschaftler
+    {
+        public const string TableName = "Zugreihenfolge";
+        string IDatabaseTable.TableName => TableName;
+        public string Bezeichner => ID.ToString();
+        // IEigenschaftler
+        private static readonly string[] PropertiestoIgnore = [];
+        public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
+        public string? Monat { get; set; }
+        public int Reihenfolge { get; set; }
+        public string? Reich { get; set; }
+        public string? Auftauchpunkt_A { get; set; }
+        public int ID { get; set; }
+
+        public enum Felder
+        {
+            Monat, Reihenfolge, Reich, Auftauchpunkt_A, id,
+        }
+
+        public void Load(DbDataReader reader)
+        {
+            this.Monat = DatabaseConverter.ToString(reader[(int)Felder.Monat]);
+            this.Reihenfolge = DatabaseConverter.ToInt32(reader[(int)Felder.Reihenfolge]);
+            this.Reich = DatabaseConverter.ToString(reader[(int)Felder.Reich]);
+            this.Auftauchpunkt_A = DatabaseConverter.ToString(reader[(int)Felder.Auftauchpunkt_A]);
+            this.ID = DatabaseConverter.ToInt32(reader[(int)Felder.id]);
+        }
+    }
+}

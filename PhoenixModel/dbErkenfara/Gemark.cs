@@ -1,6 +1,6 @@
 ﻿// Gemark.cs
 
-using PhoenixModel.CrossRef;
+using PhoenixModel.dbCrossRef;
 using PhoenixModel.Database;
 using PhoenixModel.Helper;
 using System.Data.Common;

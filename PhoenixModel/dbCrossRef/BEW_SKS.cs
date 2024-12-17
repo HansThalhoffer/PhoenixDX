@@ -3,11 +3,11 @@ using System.Data.Common;
 using PhoenixModel.Database;
 using PhoenixModel.Helper;
 
-namespace PhoenixModel.CrossRef
+namespace PhoenixModel.dbCrossRef
 {
-    public class BEW_Kreaturen : BEW, IDatabaseTable, IEigenschaftler
+    public class BEW_SKS : BEW, IDatabaseTable, IEigenschaftler
     {
-        public const string TableName = "BEW_Kreaturen";
+        public const string TableName = "BEW_SKS";
         string IDatabaseTable.TableName => TableName;
     }
 }

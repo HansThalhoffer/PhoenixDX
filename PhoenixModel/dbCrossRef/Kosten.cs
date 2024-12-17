@@ -3,7 +3,7 @@ using System.Data.Common;
 using PhoenixModel.Database;
 using PhoenixModel.Helper;
 
-namespace PhoenixModel.CrossRef
+namespace PhoenixModel.dbCrossRef
 {
     public class Kosten : IDatabaseTable, IEigenschaftler
     {

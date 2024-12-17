@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhoenixModel.CrossRef
+namespace PhoenixModel.dbCrossRef
 {
     public class BauwerkBasis 
     {

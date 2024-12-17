@@ -31,14 +31,6 @@ namespace PhoenixWPF.Program
 
         public void InitInstance() 
         {
-            //ModelGenerator.Start("Zugdaten\\167\\Theostelos.mdb", "", "chars", "dbZugdaten");
-            ModelGenerator.Start("\\Kartendaten\\Erkenfarakarte.mdb", "!mmu14686", "BEW_chars", "dbErkenfara");
-          
-
-
-
-
-
             Settings.InitializeSettings();
             LoadCrossRef(); // die referenzen vor der Karte laden, auch wenn es dann weniger zu sehen gibt - insgesamt geht das schneller
             LoadKarte();            
@@ -125,7 +117,7 @@ namespace PhoenixWPF.Program
                 return;
             string databaseLocation = Settings.UserSettings.DatabaseLocationCrossRef;
             string encryptedPassword = Settings.UserSettings.PasswordCrossRef;
-            Load(ref databaseLocation,ref encryptedPassword, CreateCrossRef, "CrossRef");
+            Load(ref databaseLocation,ref encryptedPassword, CreateCrossRef, "dbCrossRef");
             Settings.UserSettings.DatabaseLocationCrossRef = databaseLocation;
             Settings.UserSettings.PasswordCrossRef =encryptedPassword;
         }

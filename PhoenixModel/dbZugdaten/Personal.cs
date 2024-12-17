@@ -9,7 +9,7 @@ namespace PhoenixModel.dbZugdaten
     {
         public const string TableName = "personal";
         string IDatabaseTable.TableName => TableName;
-        public string Bezeichner => ID.ToString();
+        public string Bezeichner => ID?? "unbekanntes Personal";
         // IEigenschaftler
         private static readonly string[] PropertiestoIgnore = [];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }

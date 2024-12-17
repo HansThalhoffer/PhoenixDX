@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.Database;
+using PhoenixModel.Helper;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -8,10 +9,13 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.dbPZE
 {
-    internal class EinfuegeFehler : IDatabaseTable
+    internal class EinfuegeFehler : IDatabaseTable, IEigenschaftler
     {
         public const string TableName = "Einfuegefehler";
         string IDatabaseTable.TableName => TableName;
+        // IEigenschaftler
+        private static readonly string[] PropertiestoIgnore = [];
+        public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
         public string? Reich { get; set; }
         public string? Referenzreich { get; set; }
