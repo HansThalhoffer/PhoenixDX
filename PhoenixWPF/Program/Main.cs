@@ -32,7 +32,9 @@ namespace PhoenixWPF.Program
         public void InitInstance() 
         {
             //ModelGenerator.Start("Zugdaten\\167\\Theostelos.mdb", "", "chars", "dbZugdaten");
-            ModelGenerator.Start("\\Crossreferenzen\\crossref.mdb", "", "chars", "dbZugdaten");
+            ModelGenerator.Start("\\Kartendaten\\Erkenfarakarte.mdb", "!mmu14686", "BEW_chars", "dbErkenfara");
+          
+
 
 
 

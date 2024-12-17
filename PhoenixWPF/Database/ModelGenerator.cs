@@ -52,7 +52,7 @@ namespace PhoenixWPF.Database
                 writer.WriteLine($"public class {className}: IDatabaseTable, IEigenschaftler");
                 writer.WriteLine("{");
 
-                writer.WriteLine($"public const string TableName = \"{tableName}\"");
+                writer.WriteLine($"public const string TableName = \"{tableName}\";");
                 writer.WriteLine("string IDatabaseTable.TableName => TableName;");
                 writer.WriteLine("public string Bezeichner => id.ToString();");
                 writer.WriteLine("// IEigenschaftler");
