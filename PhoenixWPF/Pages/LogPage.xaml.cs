@@ -25,7 +25,7 @@ namespace PhoenixWPF.Pages
     public partial class LogPage : Page
     {
         // ObservableCollection for thread-safe data binding to ListBox
-        private static ObservableCollection<string> _logEntries = new ObservableCollection<string>();
+        private static ObservableCollection<LogEntry> _logEntries = [];
 
         // Lock object to ensure thread-safety when adding log entries
         private static readonly object _logLock = new object();
@@ -80,13 +80,8 @@ namespace PhoenixWPF.Pages
             {
                 lock (_logLock)
                 {
-                    _logEntries.Add($"{logentry.Type.ToString()} {logentry.Message}");
-
-                    // Optionally limit log size to avoid memory overuse
-                    if (_logEntries.Count > 1000) // Keep last 1000 entries
-                    {
-                        _logEntries.RemoveAt(0);
-                    }
+                    logentry.Message = $"{logentry.Type.ToString()} {logentry.Message}";
+                    _logEntries.Add(logentry);
                 }
             });
         }
