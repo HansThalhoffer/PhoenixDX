@@ -1,13 +1,7 @@
 ﻿using PhoenixModel.Database;
-using PhoenixModel.dbCrossRef;
-using PhoenixModel.dbPZE;
+using PhoenixModel.dbZugdaten;
 using PhoenixModel.Helper;
 using PhoenixWPF.Program;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static PhoenixModel.Database.PasswordHolder;
 
 namespace PhoenixWPF.Database
@@ -56,7 +50,6 @@ namespace PhoenixWPF.Database
                     return;
                 try
                 {
-                    Load<Nation>(connector, ref SharedData.Nationen, Enum.GetNames(typeof(Nation.Felder)));
               
                 }
                 catch (Exception ex)
@@ -80,6 +73,22 @@ namespace PhoenixWPF.Database
                     return;
                 try
                 {
+                    Load<PhoenixModel.dbZugdaten.BilanzEinnahmen>(connector, ref SharedData.BilanzEinnahmen_Zugdaten, Enum.GetNames(typeof(PhoenixModel.dbZugdaten.BilanzEinnahmen.Felder)));
+                    Load<Character>(connector, ref SharedData.Character, Enum.GetNames(typeof(Character.Felder)));
+                    Load<Diplomatiechange>(connector, ref SharedData.Diplomatiechange, Enum.GetNames(typeof(Diplomatiechange.Felder)));
+                    Load<Kreaturen>(connector, ref SharedData.Kreaturen, Enum.GetNames(typeof(Kreaturen.Felder)));
+                    Load<Krieger>(connector, ref SharedData.Krieger, Enum.GetNames(typeof(Krieger.Felder)));
+                    Load<Lehensvergabe>(connector, ref SharedData.Lehensvergabe, Enum.GetNames(typeof(Lehensvergabe.Felder)));
+                    Load<Personal>(connector, ref SharedData.Personal, Enum.GetNames(typeof(Personal.Felder)));
+                    Load<Reiter>(connector, ref SharedData.Reiter, Enum.GetNames(typeof(Reiter.Felder)));
+                    Load<RuestungBauwerke>(connector, ref SharedData.RuestungBauwerke, Enum.GetNames(typeof(RuestungBauwerke.Felder)));
+                    Load<RuestungRuestorte>(connector, ref SharedData.RuestungRuestorte, Enum.GetNames(typeof(RuestungRuestorte.Felder)));
+                    Load<Schatzkammer>(connector, ref SharedData.Schatzkammer, Enum.GetNames(typeof(Schatzkammer.Felder)));
+                    Load<Schenkungen>(connector, ref SharedData.Schenkungen, Enum.GetNames(typeof(Schenkungen.Felder)));
+                    Load<Schiffe>(connector, ref SharedData.Schiffe, Enum.GetNames(typeof(Schiffe.Felder)));
+                    Load<PhoenixModel.dbZugdaten.Units>(connector, ref SharedData.Units_Zugdaten, Enum.GetNames(typeof(PhoenixModel.dbZugdaten.Units.Felder)));
+                    Load<Zauberer>(connector, ref SharedData.Zauberer, Enum.GetNames(typeof(Zauberer.Felder)));
+
                 }
                 catch (Exception ex)
                 {

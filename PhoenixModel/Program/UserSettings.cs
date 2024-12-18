@@ -23,8 +23,10 @@ namespace PhoenixModel.Program
         private string _databaseLocationCrossRef = "_Data\\Crossreferenzen\\crossref.mdb";
         private string _passwordCrossRef = string.Empty ;
 
+        private string _databaseLocationZugdaten = "_Data\\Zudaten\\reich.mdb";
         private string _passwordReich = string.Empty;
         private int _selectedReich = -1;
+        private int _selectedZug = -1;
 
         private bool _showWindowNavigator = true;
         private bool _showWindowProperties = true;
@@ -178,6 +180,29 @@ namespace PhoenixModel.Program
             {
                 _selectedReich = value;
                 OnPropertyChanged(nameof(SelectedReich));
+            }
+
+        }
+
+        public string DatabaseLocationZugdaten
+        {
+            get => _databaseLocationZugdaten;
+            set
+            {
+                if (_databaseLocationZugdaten != value)
+                {
+                    _databaseLocationZugdaten = value;
+                    OnPropertyChanged(nameof(DatabaseLocationZugdaten));
+                }
+            }
+        }
+        public int SelectedZug
+        {
+            get => _selectedZug;
+            set
+            {
+                _selectedZug = value;
+                OnPropertyChanged(nameof(SelectedZug));
             }
 
         }

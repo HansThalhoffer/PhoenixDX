@@ -7,7 +7,7 @@ namespace PhoenixModel.dbZugdaten
 {
     public class Schatzkammer : IDatabaseTable, IEigenschaftler
     {
-        public const string TableName = "Units";
+        public const string TableName = "Schatzkammer";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => $"Monat {monat} {schenkung_bekommen} {schenkung_getaetigt}";
         // IEigenschaftler

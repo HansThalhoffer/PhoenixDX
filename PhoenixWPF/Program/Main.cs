@@ -5,12 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using PhoenixDX.Structures;
 using PhoenixModel.Database;
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
 using PhoenixWPF.Database;
 using PhoenixWPF.Dialogs;
 using PhoenixWPF.Helper;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using static PhoenixModel.Database.PasswordHolder;
 using static PhoenixWPF.Program.ErkenfaraKarte;
 
@@ -37,7 +39,7 @@ namespace PhoenixWPF.Program
             LoadPZE();
             BackgroundLoadCrossRef();
             SelectReich();
-            
+            LoadZugdaten();
         }
 
         public void SelectReich()
@@ -51,25 +53,29 @@ namespace PhoenixWPF.Program
                     EncryptedString encrypted = Settings.UserSettings.PasswordReich;
                     PasswordHolder holder = new(encrypted);
                     var pw = holder.DecryptPassword();
-                    StartDialog dialog = new StartDialog(nationen, r, pw);
+                    string zugdatenPath = Helper.FileSystem.ExtractBasePath(Settings.UserSettings.DatabaseLocationCrossRef, "_Data");
+                    zugdatenPath = System.IO.Path.Combine(zugdatenPath, "Zugdaten");
+                    StartDialog dialog = new StartDialog(nationen, r, pw, zugdatenPath);
 
                     bool? ok = dialog.ShowDialog();
                     if (ok != null && ok == true)
                     {
-                        var pass = dialog.Password;
-                        var reich = dialog.SelectedNation;
-                        var safe = dialog.IsSaveChecked;
-                        if (safe == true)
+                        if (dialog.IsSaveChecked == true)
                         {
-                            holder = new(pass);
+                            holder = new(dialog.Password);
                             Settings.UserSettings.PasswordReich = holder.EncryptedPasswordBase64;
-                            Settings.UserSettings.SelectedReich = reich?.Nummer ?? -1;
+                            
                         }
                         else
                         {
-                            Settings.UserSettings.SelectedReich = -1;
                             Settings.UserSettings.PasswordReich = string.Empty;
                         }
+                        Settings.UserSettings.SelectedReich = dialog.SelectedNation?.Nummer ?? -1;
+                        Settings.UserSettings.SelectedZug = dialog.SelectedZug ?? -1;
+                        zugdatenPath = System.IO.Path.Combine(zugdatenPath, Settings.UserSettings.SelectedZug.ToString());
+                        var reich = SharedData.Nationen?.ElementAt(Settings.UserSettings.SelectedReich);
+                        zugdatenPath = System.IO.Path.Combine(zugdatenPath, $"{reich?.DBname}.mdb");
+                        Settings.UserSettings.DatabaseLocationZugdaten = zugdatenPath;
                     }
                     else
                         Application.Current.Shutdown();
@@ -88,12 +94,12 @@ namespace PhoenixWPF.Program
             }
         }
 
-        
 
+        #region Daten Laden
         public delegate ILoadableDatabase LoadableDatabase(string databaseLocation, string encryptedPassword);
 
 
-        public void Load(ref string databaseLocation, ref string encryptedPassword, LoadableDatabase dbCreator,string databaseName) 
+        public void Load(ref string databaseLocation, ref string encryptedPassword, LoadableDatabase dbCreator,string databaseName, bool inBackground) 
         {
             if (Settings == null)
                 return;
@@ -103,21 +109,10 @@ namespace PhoenixWPF.Program
             encryptedPassword = pwdHolder.EncryptedPasswordBase64;
             using (ILoadableDatabase db = dbCreator(databaseLocation, encryptedPassword))
             {
-                db.Load();
-            }
-        }
-
-        public void BackgroundLoad(ref string databaseLocation, ref string encryptedPassword, LoadableDatabase dbCreator, string databaseName)
-        {
-            if (Settings == null)
-                return;
-
-            databaseLocation = FileSystem.LocateFile(databaseLocation);
-            PasswordHolder pwdHolder = new PasswordHolder(encryptedPassword, new DatabaseLoader.PasswortProvider(databaseName));
-            encryptedPassword = pwdHolder.EncryptedPasswordBase64;
-            using (ILoadableDatabase db = dbCreator(databaseLocation, encryptedPassword))
-            {
-                db.BackgroundLoad();
+                if (inBackground)
+                    db.BackgroundLoad();
+                else
+                    db.Load();
             }
         }
 
@@ -126,26 +121,20 @@ namespace PhoenixWPF.Program
             return new CrossRef(databaseLocation, encryptedPassword);
         }
 
-        public void LoadCrossRef()
+        public void LoadCrossRef(bool inBackground = false)
         {
             if (Settings == null)
                 return;
             string databaseLocation = Settings.UserSettings.DatabaseLocationCrossRef;
             string encryptedPassword = Settings.UserSettings.PasswordCrossRef;
-            Load(ref databaseLocation,ref encryptedPassword, CreateCrossRef, "dbCrossRef");
+            Load(ref databaseLocation,ref encryptedPassword, CreateCrossRef, "dbCrossRef", inBackground);
             Settings.UserSettings.DatabaseLocationCrossRef = databaseLocation;
             Settings.UserSettings.PasswordCrossRef =encryptedPassword;
         }
 
         public void BackgroundLoadCrossRef()
         {
-            if (Settings == null)
-                return;
-            string databaseLocation = Settings.UserSettings.DatabaseLocationCrossRef;
-            string encryptedPassword = Settings.UserSettings.PasswordCrossRef;
-            BackgroundLoad(ref databaseLocation, ref encryptedPassword, CreateCrossRef, "dbCrossRef");
-            Settings.UserSettings.DatabaseLocationCrossRef = databaseLocation;
-            Settings.UserSettings.PasswordCrossRef = encryptedPassword;
+            LoadCrossRef(true);
         }
 
         private ILoadableDatabase CreateKarte(string databaseLocation, string encryptedPassword)
@@ -159,7 +148,7 @@ namespace PhoenixWPF.Program
                 return;
             string databaseLocation = Settings.UserSettings.DatabaseLocationKarte;
             string encryptedPassword = Settings.UserSettings.PasswordKarte;
-            Load(ref databaseLocation, ref encryptedPassword, CreateKarte,"ErkenfaraKarte");
+            Load(ref databaseLocation, ref encryptedPassword, CreateKarte,"ErkenfaraKarte", false);
             Settings.UserSettings.DatabaseLocationKarte = databaseLocation;
             Settings.UserSettings.PasswordKarte = encryptedPassword;
         }
@@ -176,11 +165,35 @@ namespace PhoenixWPF.Program
                 return;
             string databaseLocation = Settings.UserSettings.DatabaseLocationPZE;
             string encryptedPassword = Settings.UserSettings.PasswordPZE;
-            Load(ref databaseLocation, ref encryptedPassword, CreatePZE,"PZ");
+            Load(ref databaseLocation, ref encryptedPassword, CreatePZE,"PZ", false);
             Settings.UserSettings.DatabaseLocationPZE = databaseLocation;
             Settings.UserSettings.PasswordPZE = encryptedPassword;
         }
-        
+
+        private ILoadableDatabase CreateZugdaten(string databaseLocation, string encryptedPassword)
+        {
+            return new Zugdaten(databaseLocation, encryptedPassword);
+        }
+
+        public void LoadZugdaten(bool inBackground = false)
+        {
+            if (Settings == null || SharedData.Nationen == null|| Settings.UserSettings.SelectedReich < 0)
+                return;
+            string databaseLocation = Settings.UserSettings.DatabaseLocationZugdaten;
+            string encryptedPassword = Settings.UserSettings.PasswordReich;
+            var reich = SharedData.Nationen.ElementAt(Settings.UserSettings.SelectedReich);
+            Load(ref databaseLocation, ref encryptedPassword, CreateZugdaten, $"{reich.DBname}", true);
+            Settings.UserSettings.DatabaseLocationZugdaten = databaseLocation;
+            Settings.UserSettings.PasswordReich = encryptedPassword;
+        }
+
+        public void BackgroundZudaten()
+        {
+            LoadZugdaten(true);
+        }
+
+        #endregion
+
         public void Dispose()
         {
             if (Settings != null) 

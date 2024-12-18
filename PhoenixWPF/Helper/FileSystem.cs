@@ -66,6 +66,43 @@ namespace PhoenixWPF.Helper
         }
 
         /// <summary>
+        /// Extracts the part of the path ending with the specified folder name.
+        /// </summary>
+        /// <param name="fullPath">The full path to search in.</param>
+        /// <param name="folderName">The folder name to find and end the path.</param>
+        /// <returns>The extracted path ending with the specified folder name.</returns>
+        public static string ExtractBasePath(string fullPath, string folderName)
+        {
+            int index = fullPath.IndexOf(folderName, StringComparison.OrdinalIgnoreCase);
+            if (index != -1)
+            {
+                return fullPath.Substring(0, index + folderName.Length);
+            }
+            else
+            {
+                throw new ArgumentException($"The folder name '{folderName}' was not found in the path '{fullPath}'.");
+            }
+        }
+
+        /// <summary>
+        /// Gets a list of directories with numeric names in the specified path.
+        /// </summary>
+        /// <param name="path">The path to search for directories.</param>
+        /// <returns>A list of directory names that contain only numbers.</returns>
+        public static List<string> GetNumericDirectories(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                throw new DirectoryNotFoundException($"The specified path '{path}' does not exist.");
+            }
+
+            return Directory.GetDirectories(path)
+                            .Select(dir => Path.GetFileName(dir))
+                            .Where(name => !string.IsNullOrEmpty(name) && name.All(char.IsDigit))
+                            .ToList();
+        }
+
+        /// <summary>
         /// Loads the contents of a JSON file into a string.
         /// </summary>
         /// <param name="filePath">The path to the JSON file.</param>

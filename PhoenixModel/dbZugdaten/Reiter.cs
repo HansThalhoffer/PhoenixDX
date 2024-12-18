@@ -7,7 +7,7 @@ namespace PhoenixModel.dbZugdaten
 {
     public class Reiter : IDatabaseTable, IEigenschaftler
     {
-        public const string TableName = "Schenkungen";
+        public const string TableName = "Reiter";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => Nummer.ToString();
         private static readonly string[] PropertiestoIgnore = [];

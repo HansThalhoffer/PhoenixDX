@@ -7,7 +7,7 @@ namespace PhoenixModel.dbZugdaten
 {
     public class Kreaturen : IDatabaseTable, IEigenschaftler
     {
-        public const string TableName = "Schenkungen";
+        public const string TableName = "Kreaturen";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => Nummer.ToString();
         // IEigenschaftler

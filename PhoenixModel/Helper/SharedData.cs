@@ -1,6 +1,7 @@
 ﻿using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbPZE;
+using PhoenixModel.dbZugdaten;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using static PhoenixModel.Helper.SharedData;
@@ -73,6 +74,9 @@ namespace PhoenixModel.Helper
 
         // PZE
         public static BlockingCollection<Nation>? Nationen = null;
+        public static BlockingCollection<Feindaufklaerung>? Feindaufklaerung = null;
+        public static BlockingCollection<Handout>? Handout = null;
+        public static BlockingCollection<Infolog>? Infolog = null;
 
         // crossref
         // public static BlockingDictionary<Gebäude>? BauwerkeRef= null; // kosten für wälle etc - steht aber auch in der Kosten Tabelle
@@ -96,6 +100,21 @@ namespace PhoenixModel.Helper
         public static BlockingCollection<Crossref_zauberer_teleport>? Crossref_zauberer_teleport = null;
 
         // Zugdaten
-        public static BlockingCollection<BilanzEinnahmen>? BilanzEinnahmen = null;
+        public static BlockingCollection<dbZugdaten.BilanzEinnahmen>? BilanzEinnahmen_Zugdaten = null;
+        public static BlockingCollection<Character>? Character = null;
+        public static BlockingCollection<Diplomatiechange>? Diplomatiechange = null;
+        public static BlockingCollection<Kreaturen>? Kreaturen = null;
+        public static BlockingCollection<Krieger>? Krieger = null;
+        public static BlockingCollection<Lehensvergabe>? Lehensvergabe = null;
+        public static BlockingCollection<Personal>? Personal = null;
+        public static BlockingCollection<Reiter>? Reiter = null;
+        public static BlockingCollection<RuestungBauwerke>? RuestungBauwerke = null;
+        public static BlockingCollection<RuestungRuestorte>? RuestungRuestorte = null;
+        public static BlockingCollection<Schatzkammer>? Schatzkammer = null;
+        public static BlockingCollection<Schenkungen>? Schenkungen = null;
+        public static BlockingCollection<Schiffe>? Schiffe = null;
+        public static BlockingCollection<dbZugdaten.Units>? Units_Zugdaten = null;
+        public static BlockingCollection<Zauberer>? Zauberer = null;
+
     }
 }

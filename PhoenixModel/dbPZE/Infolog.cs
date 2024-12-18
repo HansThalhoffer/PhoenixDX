@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.dbPZE
 {
-    internal class Infolog : IDatabaseTable, IEigenschaftler
+    public class Infolog : IDatabaseTable, IEigenschaftler
     {
         public const string TableName = "Infolog";
         string IDatabaseTable.TableName => TableName;

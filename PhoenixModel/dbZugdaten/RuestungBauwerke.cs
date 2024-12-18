@@ -5,7 +5,7 @@ using PhoenixModel.Helper;
 
 namespace PhoenixModel.dbZugdaten
 {
-    public class RuestungNauwerke : IDatabaseTable, IEigenschaftler
+    public class RuestungBauwerke : IDatabaseTable, IEigenschaftler
     {
         public const string TableName = "ruestung_bauwerke";
         string IDatabaseTable.TableName => TableName;

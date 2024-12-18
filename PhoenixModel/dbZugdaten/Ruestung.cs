@@ -8,7 +8,7 @@ namespace PhoenixModel.dbZugdaten
 {
     public class Ruestung : GemarkPosition, IDatabaseTable, IEigenschaftler
     {
-        public const string TableName = "chars";
+        public const string TableName = "ruestung";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner { get => CreateBezeichner(); }
         private static readonly string[] PropertiestoIgnore = [];

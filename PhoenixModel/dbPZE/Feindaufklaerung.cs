@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.dbPZE
 {
-    internal class Feindaufklaerung : IDatabaseTable, IEigenschaftler
+    public class Feindaufklaerung : IDatabaseTable, IEigenschaftler
     {
         public const string TableName = "Feindaufklaerung";
         string IDatabaseTable.TableName => TableName;

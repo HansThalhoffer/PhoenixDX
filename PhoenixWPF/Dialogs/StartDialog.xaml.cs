@@ -1,4 +1,5 @@
-﻿using PhoenixModel.dbPZE;
+﻿using Microsoft.VisualBasic;
+using PhoenixModel.dbPZE;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,9 @@ namespace PhoenixWPF.Dialogs
         public string Password { get; private set; } = string.Empty;
         public bool IsSaveChecked { get; private set; } = true;
 
+        private List<string>? ZugDatenListe = null;
+
+
         public int SelectedReich
         {
             get => SelectedNation?.Nummer ?? -1;
@@ -33,7 +37,7 @@ namespace PhoenixWPF.Dialogs
 
         Dictionary<string, Nation> _nationen = [];
 
-        public StartDialog(Nation[] nationen, int selectedReich, string? password)
+        public StartDialog(Nation[] nationen, int selectedReich, string? password, string pathToZugdaten)
         {
             string selectedNation = string.Empty;
             InitializeComponent();
@@ -60,6 +64,10 @@ namespace PhoenixWPF.Dialogs
                     CheckPassword();
                 }
             }
+
+            ZugDatenListe = Helper.FileSystem.GetNumericDirectories(pathToZugdaten);
+            ZugAuswahl.ItemsSource = ZugDatenListe;
+            ZugAuswahl.SelectedItem = ZugDatenListe[ZugDatenListe.Count-1];
         }
 
         private void OKButton_Click(object sender, RoutedEventArgs e)
@@ -117,6 +125,25 @@ namespace PhoenixWPF.Dialogs
         }
 
         private void ReichsAuswahl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            CheckPassword();
+        }
+
+
+        public int? SelectedZug
+        {
+            get
+            {
+                string? zug = ZugAuswahl.SelectedItem == null ? null : ZugAuswahl.SelectedItem.ToString();
+                if (zug != null)
+                {
+                    return int.Parse(zug);
+                }
+                return null;
+            }
+        }
+
+        private void ZugAuswahl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             CheckPassword();
         }
