@@ -5,7 +5,7 @@ using PhoenixModel.Helper;
 
 namespace PhoenixModel.dbErkenfara
 {
-public class Bestiarium: IDatabaseTable, IEigenschaftler
+    public class Bestiarium: IDatabaseTable, IEigenschaftler
 {
 public const string TableName = "bestiarium";
 string IDatabaseTable.TableName => TableName;

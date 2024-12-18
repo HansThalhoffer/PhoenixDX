@@ -1,6 +1,7 @@
 ﻿using PhoenixModel.dbErkenfara;
-using PhoenixModel.dbErkenfara.Defaults;
+using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
+using PhoenixModel.Program;
 using System;
 
 
@@ -8,37 +9,38 @@ namespace PhoenixModel.View
 {
     public static class Einnahmen
     {
-        public static Dictionary<string, int[]> SonstigeEinnahmen = new Dictionary<string, int[]>
-        {
-            // name,              max einwohner, einnahmen
-            { "Burg", new int[] { 10000, 1000 } },
-            { "Stadt", new int[] { 30000, 2000 } },
-            { "Festung", new int[] { 70000, 3000 } },
-            { "Hauptstadt", new int[] { 100000, 5000 } },
-            { "Festungshauptstadt", new int[] { 100000, 6000 } }
-        };
-
-
+    
         public static int GetTerrainEinnahmen(Gemark gem)
         {
-            int summe = 0;
-            summe += gem.Terrain.Einnahmen;
-            Gebäude? gebäude = gem.Gebäude;
-            return summe;
+            if (gem.Terrain != null)
+            {
+                if (gem.Terrain.Name != null && EinwohnerUndEinnahmenTabelle.EinwohnerUndEinnahmen.ContainsKey(gem.Terrain.Name))
+                {
+                    return EinwohnerUndEinnahmenTabelle.EinwohnerUndEinnahmen[gem.Terrain.Name].MultiplikatorEinnahmen;
+                }
+                else
+                {
+                    ViewModel.LogError(gem.gf, gem.kf, $"Das Gelände {gem.Terrain.Name} hat keine Einahmen in der Einnahmen Tabelle");
+                }
+            }
+            return 0;
         }
 
         public static int GetGebäudeEinnahmen(Gemark gem)
         {
             Gebäude? gebäude = gem.Gebäude;
-            int summeGebäude = 0;
             if (gebäude != null)
             {
-                if (gebäude.Bauwerknamen != null && SonstigeEinnahmen.ContainsKey(gebäude.Bauwerknamen))
+                if (gebäude.Bauwerknamen != null && EinwohnerUndEinnahmenTabelle.EinwohnerUndEinnahmen.ContainsKey(gebäude.Bauwerknamen))
                 {
-                    summeGebäude += SonstigeEinnahmen[gebäude.Bauwerknamen][1];
+                    return EinwohnerUndEinnahmenTabelle.EinwohnerUndEinnahmen[gebäude.Bauwerknamen].MultiplikatorEinnahmen;
+                }
+                else
+                {
+                    ViewModel.LogError(gem.gf, gem.kf, $"Das Gebäude {gebäude.Bauwerknamen} hat keine Einahmen in der Einnahmen Tabelle");
                 }
             }
-            return summeGebäude;
+            return 0;
         }
 
         public static int GetReichEinnahmen(int reich)

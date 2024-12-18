@@ -35,7 +35,9 @@ namespace PhoenixWPF.Program
             LoadCrossRef(); // die referenzen vor der Karte laden, auch wenn es dann weniger zu sehen gibt - insgesamt geht das schneller
             LoadKarte();            
             LoadPZE();
+            BackgroundLoadCrossRef();
             SelectReich();
+            
         }
 
         public void SelectReich()
@@ -105,7 +107,20 @@ namespace PhoenixWPF.Program
             }
         }
 
-    
+        public void BackgroundLoad(ref string databaseLocation, ref string encryptedPassword, LoadableDatabase dbCreator, string databaseName)
+        {
+            if (Settings == null)
+                return;
+
+            databaseLocation = FileSystem.LocateFile(databaseLocation);
+            PasswordHolder pwdHolder = new PasswordHolder(encryptedPassword, new DatabaseLoader.PasswortProvider(databaseName));
+            encryptedPassword = pwdHolder.EncryptedPasswordBase64;
+            using (ILoadableDatabase db = dbCreator(databaseLocation, encryptedPassword))
+            {
+                db.BackgroundLoad();
+            }
+        }
+
         private ILoadableDatabase CreateCrossRef(string databaseLocation, string encryptedPassword)
         {
             return new CrossRef(databaseLocation, encryptedPassword);
@@ -120,6 +135,17 @@ namespace PhoenixWPF.Program
             Load(ref databaseLocation,ref encryptedPassword, CreateCrossRef, "dbCrossRef");
             Settings.UserSettings.DatabaseLocationCrossRef = databaseLocation;
             Settings.UserSettings.PasswordCrossRef =encryptedPassword;
+        }
+
+        public void BackgroundLoadCrossRef()
+        {
+            if (Settings == null)
+                return;
+            string databaseLocation = Settings.UserSettings.DatabaseLocationCrossRef;
+            string encryptedPassword = Settings.UserSettings.PasswordCrossRef;
+            BackgroundLoad(ref databaseLocation, ref encryptedPassword, CreateCrossRef, "dbCrossRef");
+            Settings.UserSettings.DatabaseLocationCrossRef = databaseLocation;
+            Settings.UserSettings.PasswordCrossRef = encryptedPassword;
         }
 
         private ILoadableDatabase CreateKarte(string databaseLocation, string encryptedPassword)

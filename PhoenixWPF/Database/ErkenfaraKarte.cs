@@ -47,16 +47,26 @@ namespace PhoenixWPF.Program
             }
         }
 
-        Gebäude LoadGebäude(DbDataReader reader)
-        {
-            return new Gebäude
-            {
-                
-            };
-        }
-       
         public void Dispose()
         {
+        }
+
+        protected override void LoadInBackground()
+        {
+            PasswordHolder holder = new(_encryptedpassword);
+            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptPassword()))
+            {
+                if (connector?.Open() == false)
+                    return;
+                try
+                {
+                }
+                catch (Exception ex)
+                {
+                    SpielWPF.LogError("Fehler beim Laden der Erkenfare Datenbank: " + ex.Message);
+                }
+                connector?.Close();
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.Database;
+using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbPZE;
 using PhoenixModel.Helper;
 using PhoenixWPF.Program;
@@ -12,7 +13,7 @@ using static PhoenixModel.Database.PasswordHolder;
 namespace PhoenixWPF.Database
 {
 
-    public class ReichDatenbank : DatabaseLoader, ILoadableDatabase
+    public class Zugdaten : DatabaseLoader, ILoadableDatabase
     {
         EncryptedString _encryptedpassword;
         string _databaseFileName;
@@ -20,7 +21,7 @@ namespace PhoenixWPF.Database
         public string DatabaseFileName { get => _databaseFileName; set => _databaseFileName = value; }
 
 
-        public ReichDatenbank(string databaseFileName, EncryptedString encryptedpassword)
+        public Zugdaten(string databaseFileName, EncryptedString encryptedpassword)
         {
             _databaseFileName = databaseFileName;
             _encryptedpassword = encryptedpassword;
@@ -68,6 +69,24 @@ namespace PhoenixWPF.Database
 
         public void Dispose()
         {
+        }
+
+        protected override void LoadInBackground()
+        {
+            PasswordHolder holder = new(_encryptedpassword);
+            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptPassword()))
+            {
+                if (connector?.Open() == false)
+                    return;
+                try
+                {
+                }
+                catch (Exception ex)
+                {
+                    SpielWPF.LogError("Fehler beim Öffnen der Zugdaten Datenbank: " + ex.Message);
+                }
+                connector?.Close();
+            }
         }
     }
 }

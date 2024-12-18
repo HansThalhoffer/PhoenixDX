@@ -7,14 +7,15 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using System.Reflection;
-using static PhoenixModel.dbErkenfara.Defaults.Terrain;
+using static PhoenixModel.ExternalTables.GeländeTabelle;
 using SharpDX.Direct2D1.Effects;
 using System.Drawing;
 using Microsoft.Xna.Framework;
 using System.Collections.Concurrent;
-using PhoenixModel.dbErkenfara.Defaults;
 using PhoenixModel.dbCrossRef;
 using Vektor = Microsoft.Xna.Framework.Vector2;
+using PhoenixModel.ExternalTables;
+using SharpDX.XAudio2;
 
 namespace PhoenixDX.Structures
 {
@@ -124,9 +125,9 @@ namespace PhoenixDX.Structures
             if (gem.Gebäude != null )
             {
                 if (gem.Gebäude.InBau)
-                    MappaMundi.Log(this.Koordinaten.gf, this.Koordinaten.kf, new PhoenixModel.Program.LogEntry($"Gebäude in Bau {gem.Gebäude.Bauwerknamen} von {gem.Gebäude.Reich}"));
+                    MappaMundi.Log(this.Koordinaten.gf, this.Koordinaten.kf, new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Warning, $"Gebäude in Bau {gem.Gebäude.Bauwerknamen} von {gem.Gebäude.Reich}"));
                 if (gem.Gebäude.Zerstört)
-                    MappaMundi.Log(this.Koordinaten.gf, this.Koordinaten.kf, new PhoenixModel.Program.LogEntry($"Gebäude zerstört {gem.Gebäude.Bauwerknamen} von {gem.Gebäude.Reich}"));
+                    MappaMundi.Log(this.Koordinaten.gf, this.Koordinaten.kf, new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Warning, $"Gebäude zerstört {gem.Gebäude.Bauwerknamen} von {gem.Gebäude.Reich}"));
 
                 string name = gem.Gebäude.Rüstort.Bauwerk;
                 if (RuestortSymbol.Ruestorte.ContainsKey(name))
@@ -175,7 +176,7 @@ namespace PhoenixDX.Structures
         public List<Texture2D> GetTextures()
         {
             List<Texture2D> textures = new List<Texture2D>();
-            Gelaende gel = Terrain.Terrains[(int)_terrainType] as Gelaende;
+            Gelaende gel = GeländeTabelle.Terrains[(int)_terrainType] as Gelaende;
             if (gel != null)
                 textures.Add(gel.GetTexture());
             foreach(KleinfeldAdorner adorner in Adorner)

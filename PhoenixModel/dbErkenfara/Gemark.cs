@@ -5,8 +5,8 @@ using PhoenixModel.Database;
 using PhoenixModel.Helper;
 using System.Data.Common;
 using System.Reflection.Metadata.Ecma335;
-using static PhoenixModel.dbErkenfara.Defaults.Terrain;
-using PhoenixModel.dbErkenfara.Defaults;
+using static PhoenixModel.ExternalTables.GeländeTabelle;
+using PhoenixModel.ExternalTables;
 
 namespace PhoenixModel.dbErkenfara
 {
@@ -188,7 +188,7 @@ namespace PhoenixModel.dbErkenfara
             }
         }
 
-        public Terrain Terrain
+        public GeländeTabelle Terrain
         {
             get { return Terrains[(int)TerrainType]; }
         }

@@ -7,6 +7,7 @@ using SharpDX.DirectWrite;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
@@ -67,7 +68,7 @@ namespace PhoenixWPF.Database
             SpielWPF.Log(new PhoenixModel.Program.LogEntry($"{total} {typeof(T)} geladen"));
         }
 
-
+        // andere Collection - hier Dictionary
         protected void Load<T>(AccessDatabase? connector, ref BlockingDictionary<T>? collection, string[] felder) where T : IDatabaseTable, new()
         {
             if (connector == null)
@@ -92,6 +93,37 @@ namespace PhoenixWPF.Database
             SpielWPF.Log(new PhoenixModel.Program.LogEntry($"{total} {typeof(T)} geladen"));
         }
 
-        
+        protected abstract void LoadInBackground();
+
+        private void Worker_DoWork(object? sender, DoWorkEventArgs e)
+        {
+            // Do the actual work here
+            LoadInBackground();
+        }
+
+        public int Percentage = 0;
+        private void Worker_ProgressChanged(object? sender, ProgressChangedEventArgs e)
+        {
+            Percentage = e.ProgressPercentage;
+        }
+
+        private void Worker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Cancelled)
+            {
+                SpielWPF.LogError("Das Laden im Hintergrund war nicht erfolgreich");
+            }
+        }
+
+        public void BackgroundLoad()
+        {
+            using (var worker = new BackgroundWorker { WorkerReportsProgress = true, WorkerSupportsCancellation = true})
+            {
+                worker.DoWork += Worker_DoWork;
+                worker.ProgressChanged += Worker_ProgressChanged;
+                worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
+                worker.RunWorkerAsync();
+            }
+        }
     }
 }

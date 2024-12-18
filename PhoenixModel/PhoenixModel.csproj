@@ -8,4 +8,8 @@
     <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="dbPZE\Defaults\" />
+  </ItemGroup>
+
 </Project>

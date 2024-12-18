@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static PhoenixModel.dbErkenfara.Defaults.Terrain;
+using static PhoenixModel.ExternalTables.GeländeTabelle;
 
 namespace PhoenixDX.Structures
 {

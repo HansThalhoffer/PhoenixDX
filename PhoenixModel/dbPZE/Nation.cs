@@ -1,5 +1,5 @@
 ﻿using PhoenixModel.Database;
-using PhoenixModel.dbPZE.Defaults;
+using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
 using System;
 using System.Collections.Generic;
@@ -44,7 +44,7 @@ namespace PhoenixModel.dbPZE
             Reich = DatabaseConverter.ToString(reader[(int)Nation.Felder.Reich]);
             DBname = DatabaseConverter.ToString(reader[(int)Nation.Felder.DBname]);
             DBpass = DatabaseConverter.ToString(reader[(int)Nation.Felder.DBpass]);
-            foreach (var defData in PhoenixModel.dbPZE.Defaults.ReichDefaultData.Vorbelegung)
+            foreach (var defData in ReichTabelle.Vorbelegung)
             {
                 foreach (var name in defData.Alias)
                 {

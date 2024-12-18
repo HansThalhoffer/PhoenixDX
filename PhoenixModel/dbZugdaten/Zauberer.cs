@@ -5,7 +5,7 @@ using PhoenixModel.Helper;
 
 namespace PhoenixModel.dbZugdaten
 {
-public class Zauberer : IDatabaseTable, IEigenschaftler
+    public class Zauberer : IDatabaseTable, IEigenschaftler
     {
         public const string TableName = "Zauberer";
         string IDatabaseTable.TableName => TableName;

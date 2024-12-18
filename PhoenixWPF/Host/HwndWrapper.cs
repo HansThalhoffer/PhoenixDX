@@ -9,6 +9,7 @@
 using Microsoft.Xna.Framework.Input;
 using PhoenixDX;
 using PhoenixModel.Helper;
+using PhoenixModel.Program;
 using PhoenixWPF.Program;
 using System;
 using System.ComponentModel;
@@ -243,6 +244,7 @@ namespace PhoenixWPF.Host
                 Main.Instance.Map = new PhoenixDX.MappaMundi(_hWnd);
                 Main.Instance.Spiel = new SpielWPF();
                 MappaMundi.OnMapEvent += new MappaMundi.MapEventHandler(MapEventHandler);
+                ViewModel.OnViewEvent += new ViewModel.ViewEventHandler(ViewEventHandler);
                 Main.Instance.Map.Run();
             }
             return new HandleRef(this, _hWnd);
@@ -256,6 +258,16 @@ namespace PhoenixWPF.Host
                 Main.Instance.Spiel?.MapEventHandler(e);
             }));
         }
+
+        // dispatch events from the game engine thread back to UI
+        public void ViewEventHandler(object? sender, ViewEventArgs e)
+        {
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                Main.Instance.Spiel?.ViewEventHandler(e);
+            }));
+        }
+
 
         protected override void DestroyWindowCore(HandleRef hwnd)
         {

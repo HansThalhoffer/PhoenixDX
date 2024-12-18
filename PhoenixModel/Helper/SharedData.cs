@@ -77,6 +77,23 @@ namespace PhoenixModel.Helper
         // crossref
         // public static BlockingDictionary<Gebäude>? BauwerkeRef= null; // kosten für wälle etc - steht aber auch in der Kosten Tabelle
         public static BlockingDictionary<Rüstort>? RüstortReferenz = null;
+        public static BlockingCollection<BEW_chars>? BEW_chars = null;
+        public static BlockingCollection<BEW_Kreaturen>? BEW_Kreaturen = null;
+        public static BlockingCollection<BEW_Krieger>? BEW_Krieger = null;
+        public static BlockingCollection<BEW_LKP>? BEW_LKP = null;
+        public static BlockingCollection<BEW_LKS>? BEW_LKS = null;
+        public static BlockingCollection<BEW_PiratenChars>? BEW_PiratenChars = null;
+        public static BlockingCollection<BEW_PiratenLKS>? BEW_PiratenLKS = null;
+        public static BlockingCollection<BEW_PiratenSchiffe>? BEW_PiratenSchiffe = null;
+        public static BlockingCollection<BEW_PiratenSKS>? BEW_PiratenSKS = null;
+        public static BlockingCollection<BEW_Reiter>? BEW_Reiter = null;
+        public static BlockingCollection<BEW_SKP>? BEW_SKP = null;
+        public static BlockingCollection<BEW_SKS>? BEW_SKS = null;
+        public static BlockingCollection<Kosten>? Kosten = null;
+        public static BlockingCollection<Teleportpunkte>? Teleportpunkte = null;
+        public static BlockingCollection<Units_crossref>? Units_crossref = null;
+        public static BlockingCollection<Wall_crossref>? Wall_crossref = null;
+        public static BlockingCollection<Crossref_zauberer_teleport>? Crossref_zauberer_teleport = null;
 
         // Zugdaten
         public static BlockingCollection<BilanzEinnahmen>? BilanzEinnahmen = null;

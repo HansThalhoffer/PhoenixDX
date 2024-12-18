@@ -13,6 +13,7 @@ namespace PhoenixModel.Database
         public EncryptedString Encryptedpassword { get; set; }
         public string DatabaseFileName { get; set; }
         public void Load();
+        public void BackgroundLoad();
     }
 
     public interface IDatabaseTable

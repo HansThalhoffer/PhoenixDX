@@ -5,21 +5,21 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using SharpDX.Direct3D9;
-using static PhoenixModel.dbErkenfara.Defaults.Terrain;
+using static PhoenixModel.ExternalTables.GeländeTabelle;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using System.Net;
-using PhoenixModel.dbErkenfara.Defaults;
+using PhoenixModel.ExternalTables;
 
 namespace PhoenixDX.Structures
 {
-    public class Gelaende : Terrain
+    public class Gelaende : GeländeTabelle
     {
         Texture2D hexTexture;
         List<Texture2D>hexTextures = new List<Texture2D>();
 
-        public Gelaende(Terrain source, string image, ContentManager contentManager):
-            base(source.Typ, source.Name, source.Höhe, source.Einwohner, source.Einnahmen, source.Farbe, source.Art)
+        public Gelaende(GeländeTabelle source, string image, ContentManager contentManager):
+            base(source.Typ, source.Name, source.Höhe, source.Einwohner, source.Einnahmen, source.Farbe, source.IsWasser)
         {
             try
             {

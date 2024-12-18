@@ -1,12 +1,11 @@
-﻿using PhoenixModel.Helper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static PhoenixModel.Helper.PropertyProcessor;
 
-namespace PhoenixModel
+namespace PhoenixModel.Helper
 {
     public interface IEigenschaftler
     {

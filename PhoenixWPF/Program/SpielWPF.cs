@@ -23,6 +23,26 @@ namespace PhoenixWPF.Program
         {
         }
 
+        public void ViewEventHandler(ViewEventArgs e)
+        {
+            switch (e.EventType)
+            {
+          
+                case ViewEventArgs.ViewEventType.Log:
+                    {
+                        if (e.LogEntry != null)
+                        {
+                            if (e.GF > 0 && e.KF > 0)
+                            {
+                                e.LogEntry.Message = $"[{e.GF}/{e.KF}] {e.LogEntry.Message}";
+                            }
+                            Log(e.LogEntry);
+                        }
+                        break;
+                    }
+            }
+        }
+
         public void MapEventHandler(MapEventArgs e)
         {
             switch (e.EventType)
@@ -60,6 +80,23 @@ namespace PhoenixWPF.Program
         {
             LogPage.AddToLog(logentry);
         }
+
+        public static void LogInfo(string message)
+        {
+            LogPage.AddToLog(new LogEntry(LogType.Info, message));
+        }
+
+        public static void LogWarning(string message)
+        {
+            LogPage.AddToLog(new LogEntry(LogType.Warning, message));
+        }
+
+        public static void LogError(string message)
+        {
+            LogPage.AddToLog(new LogEntry(LogType.Error,message));
+        }
+
+
 
         public void SelectGemark(MapEventArgs e)
         {
