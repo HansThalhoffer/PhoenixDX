@@ -18,82 +18,78 @@ using PhoenixModel.dbZugdaten;
 using PhoenixWPF.Database;
 using System.Collections.ObjectModel;
 using PhoenixModel.Helper;
+using SharpDX.Direct2D1.Effects;
+using PhoenixDX.Structures;
+using SharpDX.Direct3D9;
 
 namespace PhoenixWPF.Pages
 {
     /// <summary>
-    /// Interaktionslogik für BilanzEinnahmenPage.xaml
+    /// Interaktionslogik für ChartPage.xaml
     /// </summary>
-    public partial class BilanzEinnahmenPage : Page
+    public partial class ChartPage : Page
     {
-        public BilanzEinnahmenPage()
+        public ChartPage()
         {
             DataContext = this;
-            
-            List<Schatzkammer> bilanzData = new List<Schatzkammer>
-            {
-            
-            };
-
-            CreateSeriesCollection(bilanzData);
-            Categories = new ObservableCollection<string>();
-          
             InitializeComponent();
-
         }
 
         public SeriesCollection SeriesCollection { get; set; } = new SeriesCollection();
         public ObservableCollection<string> Categories { get; set; } = new ObservableCollection<string>();
 
-        private void CreateSeriesCollection(List<Schatzkammer>? bilanzData)
+
+        private void ZeigeSchatzkammer()
         {
-            if (bilanzData == null || bilanzData.Count == 0)
+            if (SharedData.Schatzkammer == null || SharedData.Schatzkammer.Count == 0)
                 return;
 
-            var properties = typeof(Schatzkammer).GetProperties();
+            List<ChartValues<int>> lineValues = [];
 
-            foreach (var prop in properties)
+            foreach (var val in Enum.GetValues(typeof(Schatzkammer.Felder)))
             {
-                if (prop.Name != "monat")
+                if (val.ToString() != "monat")
+                    lineValues.Add(new ChartValues<int>());
+            }
+
+            foreach (var item in SharedData.Schatzkammer)
+            {
+                lineValues[(int)Schatzkammer.Felder.Reichschatz].Add((int)item.Reichschatz);
+                lineValues[(int)Schatzkammer.Felder.Einahmen_land].Add((int)item.Einahmen_land);
+                lineValues[(int)Schatzkammer.Felder.schenkung_bekommen].Add((int)item.schenkung_bekommen);
+                lineValues[(int)Schatzkammer.Felder.GS_bei_truppen].Add((int)item.GS_bei_truppen);
+                lineValues[(int)Schatzkammer.Felder.schenkung_getaetigt].Add((int)item.schenkung_getaetigt);
+                lineValues[(int)Schatzkammer.Felder.Verruestet].Add((int)item.Verruestet);
+                Categories.Add("Monat " + item.monat);
+            }
+
+            int i = 0;
+            foreach (var val in Enum.GetValues(typeof(Schatzkammer.Felder)))
+            {
+                if (val.ToString() == "monat")
+                    continue;
+                SeriesCollection.Add(new LineSeries
                 {
-                    Categories.Add("Monat " + item.monat);
-                }
-                if (prop.PropertyType == typeof(int))
-                {
-                    var lineValues = new ChartValues<int>();
-
-                    foreach (var item in bilanzData)
-                    {
-                        var value = prop.GetValue(item);
-                        if (value is int)
-                            lineValues.Add((int)value);
-                    }
-
-                    var lineSeries = new LineSeries
-                    {
-                        Title = prop.Name,
-                        Values = lineValues,
-                        PointGeometry = DefaultGeometries.Circle,
-                        PointGeometrySize = 10,
-                        DataLabels = false,                        
-                    };
-
-                    SeriesCollection.Add(lineSeries);
-                }
+                    Title = val.ToString(),
+                    Values = lineValues[i++],
+                    PointGeometry = DefaultGeometries.Circle,
+                    PointGeometrySize = 10,
+                    DataLabels = false,
+                });
             }
         }
 
-        public void UpdateData()
+        public void LoadData()
         {
-           var einnahmen = SharedData.Schatzkammer?.ToList();
+            if (Tag != null && Tag.ToString() == "Schatzkammer")
+                ZeigeSchatzkammer();
 
-            var series = CreateSeriesCollection(einnahmen);
             // SeriesCollection.AddRange(series);
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            UpdateData();
+            LoadData();
         }
     }
 }

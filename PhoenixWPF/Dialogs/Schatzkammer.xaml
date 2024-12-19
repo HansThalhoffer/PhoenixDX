@@ -9,7 +9,7 @@
     <Grid>
         <TabControl TabStripPlacement="Bottom">
             <TabItem Header="Historische Bilanzen">
-                <Frame Source="/Pages/BilanzEinnahmenPage.xaml" />
+                <Frame Source="/Pages/BilanzEinnahmenPage.xaml" Tag="Schatzkammer"/>
             </TabItem>
         </TabControl>
     </Grid>
