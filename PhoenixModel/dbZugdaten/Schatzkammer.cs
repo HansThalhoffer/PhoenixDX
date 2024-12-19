@@ -25,7 +25,7 @@ namespace PhoenixModel.dbZugdaten
 
         public enum Felder
         {
-            Reichschatz, Einahmen_land, schenkung_bekommen, GS_bei_truppen, schenkung_getaetigt, Verruestet, monat,
+            monat, Reichschatz, Einahmen_land, schenkung_bekommen, GS_bei_truppen, schenkung_getaetigt, Verruestet
         }
 
         public void Load(DbDataReader reader)

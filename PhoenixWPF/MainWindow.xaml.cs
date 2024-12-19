@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using PhoenixWPF.Dialogs;
 using PhoenixWPF.Program;
 
 namespace PhoenixWPF
@@ -42,6 +43,22 @@ namespace PhoenixWPF
                 if (FindName(tag) is TabItem tabItem)
                 {
                     tabItem.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem menuItem)
+            {
+                string? tag = menuItem.Tag as string;
+                if (tag == null)
+                    return;
+                switch (tag)
+                {
+                    case "Schatzkammer":
+                        new SchatzkammerDialog().Show();
+                        break;
                 }
             }
         }

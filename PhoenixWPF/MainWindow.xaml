@@ -12,7 +12,7 @@
     <DockPanel>
         <!-- Menu -->
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="View">
+            <MenuItem Header="Ansicht">
                 <MenuItem Header="Rüsten von Figuren und Gebäuden" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="BuildPage" />
                 <MenuItem Header="Befehle an Figuren" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="CommandPage" />
                 <MenuItem Header="History" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="HistoryPage" />
@@ -22,6 +22,9 @@
                 <MenuItem Header="Informationen" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="Informationen" />
                 <MenuItem Header="Auswahl Figuren" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="FigurenAuswahl" />
                 <MenuItem Header="Auswahl Rüstorte" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="RüstortAuswahl" />
+            </MenuItem>
+            <MenuItem Header="Analysen">
+                <MenuItem Header="Schatzkammer" IsCheckable="False"  Click="MenuItem_Click" Tag="Schatzkammer" />
             </MenuItem>
         </Menu>
 

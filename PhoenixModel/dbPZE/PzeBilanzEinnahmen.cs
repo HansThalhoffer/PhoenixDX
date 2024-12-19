@@ -5,7 +5,7 @@ using PhoenixModel.Helper;
 
 namespace PhoenixModel.dbPZE
 {
-    public class BilanzEinnahmen : IDatabaseTable, IEigenschaftler
+    public class PzeBilanzEinnahmen : IDatabaseTable, IEigenschaftler
     {
         public const string TableName = "Bilanz_einnahmen";
         string IDatabaseTable.TableName => TableName;

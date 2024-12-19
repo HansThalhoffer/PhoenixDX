@@ -186,12 +186,6 @@ namespace PhoenixWPF.Program
             Settings.UserSettings.DatabaseLocationZugdaten = databaseLocation;
             Settings.UserSettings.PasswordReich = encryptedPassword;
         }
-
-        public void BackgroundZudaten()
-        {
-            LoadZugdaten(true);
-        }
-
         #endregion
 
         public void Dispose()

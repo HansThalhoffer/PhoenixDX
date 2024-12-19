@@ -1,7 +1,11 @@
 ﻿using PhoenixModel.Database;
+using PhoenixModel.dbPZE;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.Helper;
+using PhoenixWPF.Dialogs;
 using PhoenixWPF.Program;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using static PhoenixModel.Database.PasswordHolder;
 
 namespace PhoenixWPF.Database
@@ -86,7 +90,7 @@ namespace PhoenixWPF.Database
                     Load<Schatzkammer>(connector, ref SharedData.Schatzkammer, Enum.GetNames(typeof(Schatzkammer.Felder)));
                     Load<Schenkungen>(connector, ref SharedData.Schenkungen, Enum.GetNames(typeof(Schenkungen.Felder)));
                     Load<Schiffe>(connector, ref SharedData.Schiffe, Enum.GetNames(typeof(Schiffe.Felder)));
-                    Load<PhoenixModel.dbZugdaten.Units>(connector, ref SharedData.Units_Zugdaten, Enum.GetNames(typeof(PhoenixModel.dbZugdaten.Units.Felder)));
+                    Load<Units>(connector, ref SharedData.Units_Zugdaten, Enum.GetNames(typeof(Units.Felder)));
                     Load<Zauberer>(connector, ref SharedData.Zauberer, Enum.GetNames(typeof(Zauberer.Felder)));
 
                 }
@@ -97,5 +101,54 @@ namespace PhoenixWPF.Database
                 connector?.Close();
             }
         }
+
+
+    
+
+        public static List<BilanzEinnahmen> LoadBilanzEinnahmenHistory()
+        {
+            if (Main.Instance.Settings == null || SharedData.Nationen == null || Main.Instance.Settings.UserSettings.SelectedReich < 0)
+                return [];
+
+            string databaseLocation = Main.Instance.Settings.UserSettings.DatabaseLocationZugdaten;
+            string databaseFileName = System.IO.Path.GetFileName(databaseLocation);
+            string zugdatenPath = Helper.FileSystem.ExtractBasePath(databaseLocation, "Zugdaten");
+            var zugDatenListe = Helper.FileSystem.GetNumericDirectories(zugdatenPath);
+
+            var zugDaten = new Zugdaten(databaseLocation, (Main.Instance.Settings.UserSettings.PasswordReich));
+            PasswordHolder holder = new(new EncryptedString(Main.Instance.Settings.UserSettings.PasswordReich));
+            List<BilanzEinnahmen> result = [];
+            int tl = 100;
+            foreach(string alteZugdaten in zugDatenListe)
+            { 
+                string aktuellesDatenbank= System.IO.Path.Combine(zugdatenPath, alteZugdaten);
+                aktuellesDatenbank = System.IO.Path.Combine(aktuellesDatenbank, databaseFileName);
+                using (AccessDatabase connector = new(databaseLocation, holder.DecryptPassword()))
+                {
+                    if (connector?.Open() == false)
+                        return result;
+                    try
+                    {
+                        BlockingCollection<BilanzEinnahmen>? bilanzEinnahmen = [];
+                        zugDaten.Load<BilanzEinnahmen>(connector, ref bilanzEinnahmen, Enum.GetNames(typeof(BilanzEinnahmen.Felder)));
+                        if (bilanzEinnahmen != null && bilanzEinnahmen.Count > 0)
+                        {
+                            var einnahmen = bilanzEinnahmen.ElementAt(0);
+                            einnahmen.monat = int.Parse(alteZugdaten);
+                            if (tl != einnahmen.Tiefland)
+                                tl = einnahmen.Tiefland ?? 100;
+                            result.Add(einnahmen);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        SpielWPF.LogError("Fehler beim Öffnen der Zugdaten Datenbank: " + ex.Message);
+                    }
+                    connector?.Close();
+                }
+            }
+            return result;
+        }
+
     }
 }

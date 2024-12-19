@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.dbPZE
 {
-    public class Units : IDatabaseTable, IEigenschaftler
+    public class PzeUnits : IDatabaseTable, IEigenschaftler
     {
         public const string TableName = "Units";
         string IDatabaseTable.TableName => TableName;

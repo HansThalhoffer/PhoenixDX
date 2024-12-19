@@ -100,7 +100,7 @@ namespace PhoenixModel.Helper
         public static BlockingCollection<Crossref_zauberer_teleport>? Crossref_zauberer_teleport = null;
 
         // Zugdaten
-        public static BlockingCollection<dbZugdaten.BilanzEinnahmen>? BilanzEinnahmen_Zugdaten = null;
+        public static BlockingCollection<BilanzEinnahmen>? BilanzEinnahmen_Zugdaten = null;
         public static BlockingCollection<Character>? Character = null;
         public static BlockingCollection<Diplomatiechange>? Diplomatiechange = null;
         public static BlockingCollection<Kreaturen>? Kreaturen = null;
@@ -113,7 +113,7 @@ namespace PhoenixModel.Helper
         public static BlockingCollection<Schatzkammer>? Schatzkammer = null;
         public static BlockingCollection<Schenkungen>? Schenkungen = null;
         public static BlockingCollection<Schiffe>? Schiffe = null;
-        public static BlockingCollection<dbZugdaten.Units>? Units_Zugdaten = null;
+        public static BlockingCollection<Units>? Units_Zugdaten = null;
         public static BlockingCollection<Zauberer>? Zauberer = null;
 
     }
