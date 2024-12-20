@@ -59,6 +59,9 @@ namespace PhoenixWPF
                     case "Schatzkammer":
                         new SchatzkammerDialog().Show();
                         break;
+                    case "Truppen":
+                        new TruppenEntwicklungDialog().Show();
+                        break;
                 }
             }
         }

@@ -125,5 +125,30 @@ namespace PhoenixWPF.Database
                 worker.RunWorkerAsync();
             }
         }
+
+
+
+        protected int GetCount(AccessDatabase? connector, string tableName)
+        {
+            if (connector == null)
+                return -1;
+            int total = 0;
+            string query = $"SELECT count(*) FROM {tableName}";
+            try
+            {
+                using (DbDataReader? reader = connector?.OpenReader(query))
+                {
+                    while (reader != null && reader.Read())
+                    {
+                        total = DatabaseConverter.ToInt32(reader[0]);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, ($"Fehler beim Öffnen der Tabelle {tableName}: " + ex.Message + "\n\r" + query)));
+            }
+            return total;
+        }
     }
 }

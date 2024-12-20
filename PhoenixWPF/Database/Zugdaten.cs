@@ -77,7 +77,7 @@ namespace PhoenixWPF.Database
                     return;
                 try
                 {
-                    Load<PhoenixModel.dbZugdaten.BilanzEinnahmen>(connector, ref SharedData.BilanzEinnahmen_Zugdaten, Enum.GetNames(typeof(PhoenixModel.dbZugdaten.BilanzEinnahmen.Felder)));
+                    Load<BilanzEinnahmen>(connector, ref SharedData.BilanzEinnahmen_Zugdaten, Enum.GetNames(typeof(BilanzEinnahmen.Felder)));
                     Load<Character>(connector, ref SharedData.Character, Enum.GetNames(typeof(Character.Felder)));
                     Load<Diplomatiechange>(connector, ref SharedData.Diplomatiechange, Enum.GetNames(typeof(Diplomatiechange.Felder)));
                     Load<Kreaturen>(connector, ref SharedData.Kreaturen, Enum.GetNames(typeof(Kreaturen.Felder)));
@@ -101,9 +101,6 @@ namespace PhoenixWPF.Database
                 connector?.Close();
             }
         }
-
-
-    
 
         public static List<BilanzEinnahmen> LoadBilanzEinnahmenHistory()
         {
@@ -150,5 +147,57 @@ namespace PhoenixWPF.Database
             return result;
         }
 
+        public class TruppenStatistik
+        {
+            public int Krieger = 0;
+            public int Reiter = 0;
+
+            public enum Felder { Krieger, Reiter, Schiffe, LKS, SKS, LKP, SKP }
+            public string Monat = string.Empty;
+        }
+
+
+        public static List<TruppenStatistik> LoadTruppenStatistik()
+        {
+            if (Main.Instance.Settings == null || SharedData.Nationen == null || Main.Instance.Settings.UserSettings.SelectedReich < 0)
+                return [];
+
+            string databaseLocation = Main.Instance.Settings.UserSettings.DatabaseLocationZugdaten;
+            string databaseFileName = System.IO.Path.GetFileName(databaseLocation);
+            string zugdatenPath = Helper.FileSystem.ExtractBasePath(databaseLocation, "Zugdaten");
+            var zugDatenListe = Helper.FileSystem.GetNumericDirectories(zugdatenPath);
+
+            var zugDaten = new Zugdaten(databaseLocation, (Main.Instance.Settings.UserSettings.PasswordReich));
+            PasswordHolder holder = new(new EncryptedString(Main.Instance.Settings.UserSettings.PasswordReich));
+            int tl = 100;
+            List<TruppenStatistik> result = [];
+            foreach (string alteZugdaten in zugDatenListe)
+            {
+                string aktuellesDatenbank = System.IO.Path.Combine(zugdatenPath, alteZugdaten);
+                aktuellesDatenbank = System.IO.Path.Combine(aktuellesDatenbank, databaseFileName);
+                using (AccessDatabase connector = new(databaseLocation, holder.DecryptPassword()))
+                {
+                    if (connector?.Open() == false)
+                        return result;
+                    try
+                    {
+                        int krieger = zugDaten.GetCount(connector, "Krieger");
+                        int reiter = zugDaten.GetCount(connector, "Reiter");
+                        result.Add(new TruppenStatistik
+                        {
+                            Krieger = krieger,
+                            Reiter = reiter,
+                            Monat = alteZugdaten
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        SpielWPF.LogError("Fehler beim Öffnen der Zugdaten Datenbank: " + ex.Message);
+                    }
+                    connector?.Close();
+                }
+            }
+            return result;
+        }
     }
 }

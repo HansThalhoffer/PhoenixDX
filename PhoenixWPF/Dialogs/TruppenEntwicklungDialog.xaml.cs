@@ -15,15 +15,17 @@ using System.Windows.Shapes;
 namespace PhoenixWPF.Dialogs
 {
     /// <summary>
-    /// Interaktionslogik für SchatzkammerDialog.xaml
+    /// Interaktionslogik für TruppenEntwicklungDialog.xaml
     /// </summary>
-    public partial class SchatzkammerDialog : Window
+    public partial class TruppenEntwicklungDialog : Window
     {
-        public SchatzkammerDialog()
+        public TruppenEntwicklungDialog()
         {
             Owner = Application.Current.MainWindow; // Set the owner to the current window
-            WindowStartupLocation = WindowStartupLocation.CenterOwner; 
-            InitializeComponent();            
+            WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            InitializeComponent();
         }
+
+      
     }
 }

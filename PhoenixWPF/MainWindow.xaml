@@ -25,6 +25,7 @@
             </MenuItem>
             <MenuItem Header="Analysen">
                 <MenuItem Header="Schatzkammer" IsCheckable="False"  Click="MenuItem_Click" Tag="Schatzkammer" />
+                <MenuItem Header="Truppenentwicklung" IsCheckable="False"  Click="MenuItem_Click" Tag="Truppen" />
             </MenuItem>
         </Menu>
 
