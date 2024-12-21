@@ -150,9 +150,17 @@ namespace PhoenixWPF.Database
         public class TruppenStatistik
         {
             public int Krieger = 0;
+            public int KriegerHF = 0;
             public int Reiter = 0;
+            public int ReiterHF = 0;
+            public int Schiffe = 0;
+            public int LKS = 0;
+            public int SKS = 0;
+            public int LKP = 0;
+            public int SKP = 0;
 
-            public enum Felder { Krieger, Reiter, Schiffe, LKS, SKS, LKP, SKP }
+
+            public enum Felder { Krieger, KriegerHF, Reiter, ReiterHF, Schiffe, LKS, SKS, LKP, SKP }
             public string Monat = string.Empty;
         }
 
@@ -169,25 +177,41 @@ namespace PhoenixWPF.Database
 
             var zugDaten = new Zugdaten(databaseLocation, (Main.Instance.Settings.UserSettings.PasswordReich));
             PasswordHolder holder = new(new EncryptedString(Main.Instance.Settings.UserSettings.PasswordReich));
-            int tl = 100;
             List<TruppenStatistik> result = [];
             foreach (string alteZugdaten in zugDatenListe)
             {
-                string aktuellesDatenbank = System.IO.Path.Combine(zugdatenPath, alteZugdaten);
-                aktuellesDatenbank = System.IO.Path.Combine(aktuellesDatenbank, databaseFileName);
-                using (AccessDatabase connector = new(databaseLocation, holder.DecryptPassword()))
+                string aktuelleDatenbank = System.IO.Path.Combine(zugdatenPath, alteZugdaten);
+                aktuelleDatenbank = System.IO.Path.Combine(aktuelleDatenbank, databaseFileName);
+                using (AccessDatabase connector = new(aktuelleDatenbank, holder.DecryptPassword()))
                 {
                     if (connector?.Open() == false)
                         return result;
                     try
                     {
-                        int krieger = zugDaten.GetCount(connector, "Krieger");
-                        int reiter = zugDaten.GetCount(connector, "Reiter");
+                        int krieger = zugDaten.GetSum(connector, "Krieger","staerke");
+                        int kriegerHF = zugDaten.GetSum(connector, "Krieger", "hf");
+                        int reiter = zugDaten.GetSum(connector, "Reiter", "staerke");
+                        int reiterHF = zugDaten.GetSum(connector, "Reiter", "hf");
+                        int Schiffe = zugDaten.GetSum(connector, "Schiffe", "staerke", "LKP=0 AND SKP=0");
+                        int LKS = zugDaten.GetSum(connector, "Schiffe", "LKP");
+                        int SKS = zugDaten.GetSum(connector, "Schiffe", "SKP");
+                        int LKP = zugDaten.GetSum(connector, "Krieger", "LKP");
+                        LKP += zugDaten.GetSum(connector, "Reiter", "LKP");
+                        int SKP = zugDaten.GetSum(connector, "Krieger", "SKP");
+                        SKP += zugDaten.GetSum(connector, "Reiter", "SKP");
+
                         result.Add(new TruppenStatistik
                         {
                             Krieger = krieger,
+                            KriegerHF = kriegerHF,
                             Reiter = reiter,
-                            Monat = alteZugdaten
+                            ReiterHF = reiterHF,
+                            Monat = alteZugdaten,
+                            Schiffe = Schiffe,
+                            LKS = LKS,
+                            SKS = SKS,
+                            LKP = LKP,
+                            SKP = SKP,
                         });
                     }
                     catch (Exception ex)

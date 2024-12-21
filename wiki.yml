@@ -1,0 +1,31 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  organization: 'https://dev.azure.com/erkenfara'
+  project: 'PhoenixDX'
+  repository: '_git/Phoenix%20MonoGame%20in%20WPF'
+  pat: $(PersonalAccessToken)
+
+steps:
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      echo "Getting folder structure..."
+      response=$(curl -u :$pat -X GET "$organization/$project/_apis/git/repositories/$repository/items?scopePath=/&recursionLevel=Full&api-version=7.1-preview.1")
+      files=$(echo $response | jq -r '.value[] | select(.isFolder == false) | .path')
+      content="## Solution Structure\n"
+      for file in $files; do
+          content="$content\n- $file"
+      done
+      echo "Content generated"
+      
+      echo "Creating or updating the Wiki page..."
+      curl -X PUT -u :$pat \
+        -H "Content-Type: application/json" \
+        -d "{\"content\": \"$content\"}" \
+        "$organization/$project/_apis/wiki/wikis/{wikiIdentifier}/pages?path=/Solution-Structure&api-version=7.1-preview.1"

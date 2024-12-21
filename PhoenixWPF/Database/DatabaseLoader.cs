@@ -3,6 +3,7 @@ using PhoenixModel.dbPZE;
 using PhoenixModel.Helper;
 using PhoenixWPF.Dialogs;
 using PhoenixWPF.Program;
+using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
 using System;
 using System.Collections.Concurrent;
@@ -126,14 +127,36 @@ namespace PhoenixWPF.Database
             }
         }
 
-
-
-        protected int GetCount(AccessDatabase? connector, string tableName)
+        protected int GetSum(AccessDatabase? connector, string tableName, string fieldName, string? filter = null)
         {
             if (connector == null)
                 return -1;
             int total = 0;
-            string query = $"SELECT count(*) FROM {tableName}";
+            string query = string.IsNullOrEmpty(filter) ? $"SELECT SUM({fieldName}) AS Total FROM {tableName}" : $"SELECT SUM({fieldName}) AS Total FROM {tableName} WHERE {filter}";
+            try
+            {
+                using (DbDataReader? reader = connector?.OpenReader(query))
+                {
+                    while (reader != null && reader.Read())
+                    {
+                        total = DatabaseConverter.ToInt32(reader[0]);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, ($"Fehler beim Öffnen der Tabelle {tableName}: " + ex.Message + "\n\r" + query)));
+            }
+            return total;
+        }
+
+
+        protected int GetCount(AccessDatabase? connector, string tableName, string filter)
+        {
+            if (connector == null)
+                return -1;
+            int total = 0;
+            string query = string.IsNullOrEmpty(filter) ? $"SELECT count(*) FROM {tableName}": $"SELECT count(*) FROM {tableName} WHERE {filter}";
             try
             {
                 using (DbDataReader? reader = connector?.OpenReader(query))

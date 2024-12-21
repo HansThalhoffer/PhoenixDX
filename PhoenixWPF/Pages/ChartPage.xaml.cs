@@ -39,17 +39,7 @@ namespace PhoenixWPF.Pages
             
         }
 
-        public static T FindParent<T>(DependencyObject child) where T : DependencyObject
-        {
-            DependencyObject parentObject = VisualTreeHelper.GetParent(child);
-
-            while (parentObject != null && !(parentObject is T))
-            {
-                parentObject = VisualTreeHelper.GetParent(parentObject);
-            }
-
-            return parentObject as T;
-        }
+   
         public SeriesCollection? SeriesCollection { get; set; } = [];
         public ObservableCollection<string> Labels { get; set; } = [];
 
@@ -93,38 +83,147 @@ namespace PhoenixWPF.Pages
         public void ZeigeTruppenStatistik()
         {
             var statistik = Zugdaten.LoadTruppenStatistik();
-            const int maxFelder = 2;
+            const int maxFelder = 9;
 
             List<ChartValues<double>> lineValues = [];
             for (int i = 0; i < maxFelder; i++)
                 lineValues.Add(new ChartValues<double>());
+            
             foreach (TruppenStatistik item in statistik)
             {
-                lineValues[0].Add(item.Krieger);
-                lineValues[1].Add(item.Reiter);
-               
+                lineValues[0].Add(item.Krieger/2000);
+                lineValues[1].Add(item.KriegerHF);
+                lineValues[2].Add(item.Reiter/500);
+                lineValues[3].Add(item.ReiterHF);
+                lineValues[4].Add(item.Schiffe/10);
+                lineValues[5].Add(item.LKS);
+                lineValues[6].Add(item.SKS);
+                lineValues[7].Add(item.LKP);
+                lineValues[8].Add(item.SKP);
+
                 Labels.Add("Monat " + item.Monat);
             }
 
-
-
-            for (int i = 0; i < maxFelder; i++)
+            // Krieger
+            SeriesCollection?.Add(new LineSeries
             {
-                var rls = new LineSeries
+                Title = "Krieger (2000)",
+                Values = lineValues[0],
+                Stroke = new SolidColorBrush
                 {
-                    Title = ((TruppenStatistik.Felder)i + 1).ToString(),
-                    Values = lineValues[i],
-                    LineSmoothness = 0
+                    Color = Color.FromArgb(255, 183, 189, 74),
+                    Opacity = 1
+                },
+                Fill = Brushes.Transparent,
+                LineSmoothness = 0
+            });
+            SeriesCollection?.Add(new LineSeries
+            {
+                Title = "Krieger Heerführer",
+                Values = lineValues[1],
+                Stroke = new SolidColorBrush
+                {
+                    Color = Color.FromArgb(255, 121, 125, 52),
+                    Opacity = 1
+                },
+                Fill = Brushes.Transparent,
+                LineSmoothness = 0
+            });
+
+            // Reiter
+            SeriesCollection?.Add(new LineSeries
+            {
+                Title = "Reiter (500)",
+                Values = lineValues[2],
+                Stroke = new SolidColorBrush
+                {
+                    Color = Color.FromArgb(255, 3, 252, 98),
+                    Opacity = 1
+                },
+                Fill = Brushes.Transparent,
+                LineSmoothness = 0
+            });
+            SeriesCollection?.Add(new LineSeries
+            {
+                Title = "Reiter Heerführer",
+                Values = lineValues[3],
+                Stroke = new SolidColorBrush
+                {
+                    Color = Color.FromArgb(255, 67, 143, 56),
+                    Opacity = 1
+                },
+                Fill = Brushes.Transparent,
+                LineSmoothness = 0
+            });
+
+            // schiffe
+            SeriesCollection?.Add(new LineSeries
+            {
+                Title = "Schiffe (50)",
+                Values = lineValues[4],
+                Stroke = new SolidColorBrush
+                {
+                    Color = Color.FromArgb(255, 24, 137, 186),
+                    Opacity = 1
+                },
+                Fill = Brushes.Transparent,
+                LineSmoothness = 0
+            });
+            SeriesCollection?.Add(new LineSeries
+            {
+                Title = "Leichte Kriegsschiffe",
+                Values = lineValues[5],
+                Stroke = new SolidColorBrush
+                {
+                    Color = Color.FromArgb(255, 3, 103, 252),
+                    Opacity = 1
+                },
+                Fill = Brushes.Transparent,
+                LineSmoothness = 0
+            });
+            SeriesCollection?.Add(new LineSeries
+            {
+                Title = "Schwere Kriegsschiffe",
+                Values = lineValues[6],
+                Stroke = new SolidColorBrush
+                {
+                    Color = Color.FromArgb(255, 24, 105, 186),
+                    Opacity = 1
+                },
+                Fill = Brushes.Transparent,
+                LineSmoothness = 0
+            });
 
 
-                };
-                SeriesCollection?.Add(rls);
-            }
+            SeriesCollection?.Add(new LineSeries
+            {
+                Title = "Leichte Katapulte",
+                Values = lineValues[7],
+                Stroke = new SolidColorBrush
+                {
+                    Color = Color.FromArgb(255, 186, 24, 143),
+                    Opacity = 1
+                },
+                Fill = Brushes.Transparent,
+                LineSmoothness = 0
+            });
+            SeriesCollection?.Add(new LineSeries
+            {
+                Title = "Schwere Katapulte",
+                Values = lineValues[8],
+                Stroke = new SolidColorBrush
+                {
+                    Color = Color.FromArgb(255, 145, 32, 115),
+                    Opacity = 1
+                },
+                Fill = Brushes.Transparent,
+                LineSmoothness = 0
+            });
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            Frame frame = FindParent<Frame>(this);
+            Frame? frame = Helper.VisualTreeHelperExtensions.FindParent<Frame>(this);
             if (frame != null && frame.Tag != null)
             {
                 if (frame.Tag.ToString() == "Schatzkammer")

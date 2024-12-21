@@ -6,6 +6,19 @@ namespace PhoenixWPF.Helper
 {
     public static class VisualTreeHelperExtensions
     {
+
+        public static T? FindParent<T>(DependencyObject child) where T : DependencyObject
+        {
+            DependencyObject parentObject = VisualTreeHelper.GetParent(child);
+
+            while (parentObject != null && !(parentObject is T))
+            {
+                parentObject = VisualTreeHelper.GetParent(parentObject);
+            }
+
+            return parentObject as T;
+        }
+
         /// <summary>
         /// Recursively searches the VisualTree to find a ctrl with the specified name.
         /// Usage example: ctrl propertyctrl = VisualTreeHelperExtensions.FindctrlByName(yourRootElement);
