@@ -66,18 +66,86 @@ namespace PhoenixWPF.Pages
                 count ++;
             }
 
-            for (int i = 0; i < 6; i++)
+            SeriesCollection?.Add(new LineSeries
             {
-                var rls = new LineSeries
+                Title = "Reichsschatz",
+                Values = lineValues[0],
+                Stroke = new SolidColorBrush
                 {
-                    Title = ((Schatzkammer.Felder)i+1).ToString(),
-                    Values = lineValues[i],
-                    LineSmoothness = 0
+                    Color = Color.FromArgb(255, 64, 119, 207),
+                    Opacity = 1
+                },
+                Fill = Brushes.Transparent,
+                LineSmoothness = 1
+            });
+            SeriesCollection?.Add(new LineSeries
+            {
+                Title = "Einnahmen",
+                Values = lineValues[1],
+                Stroke = new SolidColorBrush
+                {
+                    Color = Color.FromArgb(255, 44, 163, 110),
+                    Opacity = 1
+                },
+                Fill = Brushes.Transparent,
+                LineSmoothness = 1
+            });
 
-                    
-                };
-                SeriesCollection?.Add(rls);
-            }
+            SeriesCollection?.Add(new LineSeries
+            {
+                Title = "Schenkung erhalten",
+                Values = lineValues[2],
+                Stroke = new SolidColorBrush
+                {
+                    Color = Color.FromArgb(255, 99, 201, 104),
+                    Opacity = 1
+                },
+                Fill = Brushes.Transparent,
+                LineSmoothness = 1,
+                PointGeometry = DefaultGeometries.Square,
+                PointGeometrySize = 12
+            });
+            SeriesCollection?.Add(new LineSeries
+            {
+                Title = "Plünderungen",
+                Values = lineValues[3],
+                Stroke = new SolidColorBrush
+                {
+                    Color = Color.FromArgb(255, 235, 229, 56),
+                    Opacity = 1
+                },
+                Fill = Brushes.Transparent,
+                LineSmoothness = 1
+            });
+            SeriesCollection?.Add(new LineSeries
+            {
+                Title = "Verschenkt",
+                Values = lineValues[4],
+                Stroke = new SolidColorBrush
+                {
+                    Color = Color.FromArgb(255, 204, 90, 49),
+                    Opacity = 1
+                },
+                Fill = Brushes.Transparent,
+                LineSmoothness = 1,
+                PointGeometry = DefaultGeometries.Square,
+                PointGeometrySize = 12
+            });
+            SeriesCollection?.Add(new LineSeries
+            {
+                Title = "Verrüstet",
+                Values = lineValues[5],
+                Stroke = new SolidColorBrush
+                {
+                    Color = Color.FromArgb(255, 208, 17, 214),
+                    Opacity = 1
+                },
+                Fill = Brushes.Transparent,
+                LineSmoothness = 1,
+                PointGeometry = DefaultGeometries.Triangle,
+                PointGeometrySize = 12
+
+            });
         }
 
         public void ZeigeTruppenStatistik()
@@ -115,7 +183,7 @@ namespace PhoenixWPF.Pages
                     Opacity = 1
                 },
                 Fill = Brushes.Transparent,
-                LineSmoothness = 0
+                LineSmoothness = 1
             });
             SeriesCollection?.Add(new LineSeries
             {
@@ -127,7 +195,7 @@ namespace PhoenixWPF.Pages
                     Opacity = 1
                 },
                 Fill = Brushes.Transparent,
-                LineSmoothness = 0
+                LineSmoothness = 1
             });
 
             // Reiter
@@ -141,7 +209,7 @@ namespace PhoenixWPF.Pages
                     Opacity = 1
                 },
                 Fill = Brushes.Transparent,
-                LineSmoothness = 0
+                LineSmoothness = 1
             });
             SeriesCollection?.Add(new LineSeries
             {
@@ -153,7 +221,7 @@ namespace PhoenixWPF.Pages
                     Opacity = 1
                 },
                 Fill = Brushes.Transparent,
-                LineSmoothness = 0
+                LineSmoothness = 1
             });
 
             // schiffe
@@ -167,7 +235,7 @@ namespace PhoenixWPF.Pages
                     Opacity = 1
                 },
                 Fill = Brushes.Transparent,
-                LineSmoothness = 0
+                LineSmoothness = 1
             });
             SeriesCollection?.Add(new LineSeries
             {
@@ -179,7 +247,7 @@ namespace PhoenixWPF.Pages
                     Opacity = 1
                 },
                 Fill = Brushes.Transparent,
-                LineSmoothness = 0
+                LineSmoothness = 1
             });
             SeriesCollection?.Add(new LineSeries
             {
@@ -191,7 +259,7 @@ namespace PhoenixWPF.Pages
                     Opacity = 1
                 },
                 Fill = Brushes.Transparent,
-                LineSmoothness = 0
+                LineSmoothness = 1
             });
 
 
@@ -205,7 +273,7 @@ namespace PhoenixWPF.Pages
                     Opacity = 1
                 },
                 Fill = Brushes.Transparent,
-                LineSmoothness = 0
+                LineSmoothness = 1
             });
             SeriesCollection?.Add(new LineSeries
             {
@@ -213,11 +281,11 @@ namespace PhoenixWPF.Pages
                 Values = lineValues[8],
                 Stroke = new SolidColorBrush
                 {
-                    Color = Color.FromArgb(255, 145, 32, 115),
+                    Color = Color.FromArgb(255, 145, 32, 112),
                     Opacity = 1
                 },
                 Fill = Brushes.Transparent,
-                LineSmoothness = 0
+                LineSmoothness = 1
             });
         }
 
