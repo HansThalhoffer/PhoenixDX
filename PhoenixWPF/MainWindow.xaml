@@ -23,8 +23,11 @@
                 <MenuItem Header="Auswahl Figuren" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="FigurenAuswahl" />
                 <MenuItem Header="Auswahl Rüstorte" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="RüstortAuswahl" />
             </MenuItem>
+            <MenuItem Header="Schatzkammer">
+                <MenuItem Header="Bericht des Kämmerers" IsCheckable="False"  Click="MenuItem_Click" Tag="Schatzkammer" />
+                <MenuItem Header="Geld verschenken" IsCheckable="False"  Click="MenuItem_Click" Tag="Schenken" />
+            </MenuItem>
             <MenuItem Header="Analysen">
-                <MenuItem Header="Schatzkammer" IsCheckable="False"  Click="MenuItem_Click" Tag="Schatzkammer" />
                 <MenuItem Header="Truppenentwicklung" IsCheckable="False"  Click="MenuItem_Click" Tag="Truppen" />
             </MenuItem>
         </Menu>

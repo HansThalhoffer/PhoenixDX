@@ -65,7 +65,7 @@ namespace PhoenixWPF.Dialogs
                 }
             }
 
-            ZugDatenListe = Helper.FileSystem.GetNumericDirectories(pathToZugdaten);
+            ZugDatenListe = Helper.StorageSystem.GetNumericDirectories(pathToZugdaten);
             ZugAuswahl.ItemsSource = ZugDatenListe;
             ZugAuswahl.SelectedItem = ZugDatenListe[ZugDatenListe.Count-1];
         }

@@ -25,7 +25,9 @@ namespace PhoenixDX.Program
 {
     public class SpielDX : Game
     {
-        private GraphicsDeviceManager _graphics;
+        private static GraphicsDeviceManager _graphics;
+        public static GraphicsDeviceManager Graphics { get => _graphics; private set => _graphics = value; }
+
         private CancellationToken _cancellationToken;
         private nint _windowHandle;
         private readonly ConcurrentQueue<Action> _actionQueue = new ConcurrentQueue<Action>();
@@ -274,7 +276,7 @@ namespace PhoenixDX.Program
             Welt.LoadContent(Content);
             FontManager.LoadContent(Content);
             RuestortSymbol.LoadContent(Content);
-            Figur.LoadContent(Content);
+            Truppen.LoadContent(Content);
 
         }
 
@@ -316,6 +318,8 @@ namespace PhoenixDX.Program
                 _wpfBridge.OnZoomChanged(Zoom);
             }
         }
+
+    
         GameTime _lastDrawTime = null;
         protected override void Draw(GameTime gameTime)
         {
@@ -339,33 +343,8 @@ namespace PhoenixDX.Program
                 _mouseOver = Weltkarte.Draw(_spriteBatch, _scale, mousePos, _isMoving, gameTime.TotalGameTime, _selected, visibleScreen);
             }
 
-            /*if (_maus.ScreenPosition != null)
-            {
-                Vektor mousePos = ClientToVirtualScreen(_maus.ScreenPosition);
-                _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-              
-                _selected.Draw(_spriteBatch, mousePos, gameTime);
-
-                string statusText = "Maus " + mousePos.ToString();
-                SpriteFont font = FontManager.Fonts["Large"];
-                _spriteBatch.DrawString(font, statusText, new Vektor(10, 10), Color.Azure);
-                _spriteBatch.End();
-            }*/
-
-            // Draw status text
-            /*
-            _spriteBatch.Begin();
-
-            string statusText = "Breite " + _virtualWidth.ToString() + "  Client " + _clientWidth.ToString() + " ScaleX " + scaleX.ToString();
-
-            _spriteBatch.DrawString(font, statusText, new Vektor(10, 10), Color.Violet);
-
-            _spriteBatch.End();*/
-
             // TODO: Add your drawing code here
             base.Draw(gameTime);
-
-
         }
 
     }

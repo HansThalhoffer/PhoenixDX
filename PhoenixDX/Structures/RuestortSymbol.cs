@@ -35,6 +35,7 @@ namespace PhoenixDX.Structures
             this._nummer = Nummer;
             this._name = Name;
             this._image = Image;
+            HasDirections = false;
         }
 
         public static void LoadContent(ContentManager contentManager)

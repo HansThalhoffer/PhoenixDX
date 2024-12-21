@@ -20,14 +20,14 @@ namespace PhoenixWPF.Database
         string UserFilename;
         public AppSettings( string fileName) {
             UserSettings = new UserSettings();
-            UserFilename = FileSystem.AppSettingsFile(fileName);
+            UserFilename = StorageSystem.AppSettingsFile(fileName);
         }
         
         public void InitializeSettings()
         {
             if (string.IsNullOrEmpty(UserFilename) == false)
             {
-                string? jsonString = FileSystem.LoadJsonFile(UserFilename);
+                string? jsonString = StorageSystem.LoadJsonFile(UserFilename);
                 if (string.IsNullOrEmpty(jsonString) == false)
                 {
                     ObjectStore store = new ObjectStore();
@@ -56,7 +56,7 @@ namespace PhoenixWPF.Database
             if (UserSettings != null)
                 store.Add<UserSettings>(UserSettings);
             string jsonString = store.Serialize();
-            FileSystem.StoreJsonFile(UserFilename, jsonString);
+            StorageSystem.StoreJsonFile(UserFilename, jsonString);
         }
 
         public void Dispose()

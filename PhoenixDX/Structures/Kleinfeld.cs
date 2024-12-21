@@ -63,8 +63,6 @@ namespace PhoenixDX.Structures
             Bezeichner = kf.ToString();
         }
 
-    
-
         public static Vektor GetMapSize()
         {
             return _mapSize;
@@ -110,12 +108,6 @@ namespace PhoenixDX.Structures
             Koordinaten =  new KartenKoordinaten(Koordinaten.gf, Koordinaten.kf, (int)gem.x, (int)gem.y);
             ReichID = gem.Reich ?? -1;
             
-            // Adorner.Add("Fluss", new Fluss(gem));
-            // Adorner.Add("Kai", new Kai(gem));
-            // Adorner.Add("Brücke", new Bruecke(gem));
-            // Adorner.Add("Strasse", new Strasse(gem));
-            // Adorner.Add("Wand", new Wall(gem));
-
             Adorner.Add(new Fluss(gem));
             Adorner.Add(new Kai(gem));
             Adorner.Add(new Bruecke(gem));

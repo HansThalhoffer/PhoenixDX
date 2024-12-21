@@ -1,20 +1,19 @@
 using System;
 using System.Data.Common;
 using PhoenixModel.Database;
+using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
 namespace PhoenixModel.dbZugdaten
 {
-    public class Character : IDatabaseTable, IEigenschaftler
+    public class Character : Spielfigur,  IDatabaseTable, IEigenschaftler
     {
         public const string TableName = "chars";
         string IDatabaseTable.TableName => TableName;
-        public string Bezeichner => Nummer.ToString();
         // IEigenschaftler
         private static readonly string[] PropertiestoIgnore = [];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
+        public override FigurType Type => FigurType.Charakter;
 
-
-        public int Nummer { get; set; }
         public string? Beschriftung { get; set; }
         public int GP_ges { get; set; }
         public int GP_akt { get; set; }
@@ -22,12 +21,6 @@ namespace PhoenixModel.dbZugdaten
         public int GP_akt_alt { get; set; }
         public string? Charname { get; set; }
         public string? Spielername { get; set; }
-        public int gf_von { get; set; }
-        public int kf_von { get; set; }
-        public int gf_nach { get; set; }
-        public int kf_nach { get; set; }
-        public int rp { get; set; }
-        public int bp { get; set; }
         public int tp_alt { get; set; }
         public int tp { get; set; }
         public string? ph_xy { get; set; }

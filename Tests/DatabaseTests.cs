@@ -64,7 +64,7 @@ namespace Tests
         {
             AppSettings settings = new AppSettings("Tests.jpk");
             settings.InitializeSettings();
-            settings.UserSettings.DatabaseLocationKarte = FileSystem.LocateFile(settings.UserSettings.DatabaseLocationKarte);
+            settings.UserSettings.DatabaseLocationKarte = StorageSystem.LocateFile(settings.UserSettings.DatabaseLocationKarte);
 
             // Arrange
             PasswordHolder pwdHolder = new PasswordHolder(settings.UserSettings.PasswordKarte, new PasswortProvider());

@@ -109,8 +109,8 @@ namespace PhoenixWPF.Database
 
             string databaseLocation = Main.Instance.Settings.UserSettings.DatabaseLocationZugdaten;
             string databaseFileName = System.IO.Path.GetFileName(databaseLocation);
-            string zugdatenPath = Helper.FileSystem.ExtractBasePath(databaseLocation, "Zugdaten");
-            var zugDatenListe = Helper.FileSystem.GetNumericDirectories(zugdatenPath);
+            string zugdatenPath = Helper.StorageSystem.ExtractBasePath(databaseLocation, "Zugdaten");
+            var zugDatenListe = Helper.StorageSystem.GetNumericDirectories(zugdatenPath);
 
             var zugDaten = new Zugdaten(databaseLocation, (Main.Instance.Settings.UserSettings.PasswordReich));
             PasswordHolder holder = new(new EncryptedString(Main.Instance.Settings.UserSettings.PasswordReich));
@@ -172,8 +172,8 @@ namespace PhoenixWPF.Database
 
             string databaseLocation = Main.Instance.Settings.UserSettings.DatabaseLocationZugdaten;
             string databaseFileName = System.IO.Path.GetFileName(databaseLocation);
-            string zugdatenPath = Helper.FileSystem.ExtractBasePath(databaseLocation, "Zugdaten");
-            var zugDatenListe = Helper.FileSystem.GetNumericDirectories(zugdatenPath);
+            string zugdatenPath = Helper.StorageSystem.ExtractBasePath(databaseLocation, "Zugdaten");
+            var zugDatenListe = Helper.StorageSystem.GetNumericDirectories(zugdatenPath);
 
             var zugDaten = new Zugdaten(databaseLocation, (Main.Instance.Settings.UserSettings.PasswordReich));
             PasswordHolder holder = new(new EncryptedString(Main.Instance.Settings.UserSettings.PasswordReich));

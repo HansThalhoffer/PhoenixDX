@@ -12,7 +12,7 @@ namespace PhoenixDX.Drawing
 {
     internal static class WeltDrawer
     {
-         static Texture2D _weiss = null;
+        static Texture2D _weiss = null;
         static Texture2D _selection1 = null;
         static Texture2D _selection2 = null;
         static public bool ShowReichOverlay = false;

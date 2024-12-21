@@ -8,6 +8,12 @@
             X = x; Y = y;
         }
 
+        public Position(float x, float y)
+        {
+            X = Convert.ToInt32(x); 
+            Y = Convert.ToInt32(y);
+        }
+
         public Position(System.Drawing.Point p)
         {
             X = p.X; Y = p.Y;

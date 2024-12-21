@@ -53,7 +53,7 @@ namespace PhoenixWPF.Program
                     EncryptedString encrypted = Settings.UserSettings.PasswordReich;
                     PasswordHolder holder = new(encrypted);
                     var pw = holder.DecryptPassword();
-                    string zugdatenPath = Helper.FileSystem.ExtractBasePath(Settings.UserSettings.DatabaseLocationCrossRef, "_Data");
+                    string zugdatenPath = Helper.StorageSystem.ExtractBasePath(Settings.UserSettings.DatabaseLocationCrossRef, "_Data");
                     zugdatenPath = System.IO.Path.Combine(zugdatenPath, "Zugdaten");
                     StartDialog dialog = new StartDialog(nationen, r, pw, zugdatenPath);
 
@@ -104,7 +104,7 @@ namespace PhoenixWPF.Program
             if (Settings == null)
                 return;
 
-            databaseLocation = FileSystem.LocateFile(databaseLocation);
+            databaseLocation = StorageSystem.LocateFile(databaseLocation);
             PasswordHolder pwdHolder = new PasswordHolder(encryptedPassword, new DatabaseLoader.PasswortProvider(databaseName));
             encryptedPassword = pwdHolder.EncryptedPasswordBase64;
             using (ILoadableDatabase db = dbCreator(databaseLocation, encryptedPassword))
