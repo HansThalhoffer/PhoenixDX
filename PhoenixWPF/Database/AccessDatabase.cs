@@ -44,12 +44,17 @@ namespace PhoenixWPF.Database
             if (string.IsNullOrWhiteSpace(databaseFilePath))
                 throw new ArgumentException("Database file path must be provided.", nameof(databaseFilePath));
 
+            string connectionString = string.Empty;
             string provider = GetInstalledAceOleDbProvider();
             if (provider == null)
             {
                 SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, "Es ist kein Microsoft.ACE.OLEDB Treiber installiert. Bitte einen entsprechenden Treiber installieren"));
+                connectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=\"" + databaseFilePath + "\"; ";
             }
-            string connectionString = $@"Provider={provider};Data Source={databaseFilePath};Persist Security Info=False;";
+            else
+            {
+                connectionString = $@"Provider={provider};Data Source={databaseFilePath};Persist Security Info=False;";
+            }
             
             if (string.IsNullOrEmpty(pw) == false)
             {
