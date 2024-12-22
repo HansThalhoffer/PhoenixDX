@@ -15,6 +15,8 @@ namespace PhoenixModel.ExternalTables
         public string Farbname { get; set; }
         public string FarbeHex { get; set; }
 
+        public static int Piraten = 9;
+
         public static ReichTabelle[] Vorbelegung =
         {
                 new ReichTabelle( new string[] { "Kein Reich", "keinreich",  "kein reich" }, "grau", "#808080"),

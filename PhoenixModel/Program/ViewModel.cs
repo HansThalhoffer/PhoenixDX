@@ -1,4 +1,6 @@
 ﻿using Microsoft.VisualBasic.FileIO;
+using PhoenixModel.dbErkenfara;
+using PhoenixModel.dbPZE;
 using PhoenixModel.Helper;
 using System;
 using System.Collections.Generic;
@@ -10,6 +12,7 @@ namespace PhoenixModel.Program
 {
     public static class ViewModel
     {
+        public static Nation? SelectedNation { get; set; }
 
         public delegate void ViewEventHandler(object? sender, ViewEventArgs e);
         public static event ViewEventHandler? OnViewEvent;

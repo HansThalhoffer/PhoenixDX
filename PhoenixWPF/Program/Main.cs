@@ -73,8 +73,8 @@ namespace PhoenixWPF.Program
                         Settings.UserSettings.SelectedReich = dialog.SelectedNation?.Nummer ?? -1;
                         Settings.UserSettings.SelectedZug = dialog.SelectedZug ?? -1;
                         zugdatenPath = System.IO.Path.Combine(zugdatenPath, Settings.UserSettings.SelectedZug.ToString());
-                        var reich = SharedData.Nationen?.ElementAt(Settings.UserSettings.SelectedReich);
-                        zugdatenPath = System.IO.Path.Combine(zugdatenPath, $"{reich?.DBname}.mdb");
+                        ViewModel.SelectedNation = SharedData.Nationen?.ElementAt(Settings.UserSettings.SelectedReich);
+                        zugdatenPath = System.IO.Path.Combine(zugdatenPath, $"{ViewModel.SelectedNation?.DBname}.mdb");
                         Settings.UserSettings.DatabaseLocationZugdaten = zugdatenPath;
                     }
                     else

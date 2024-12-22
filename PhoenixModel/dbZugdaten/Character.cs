@@ -23,7 +23,6 @@ namespace PhoenixModel.dbZugdaten
         public string? Spielername { get; set; }
         public int tp_alt { get; set; }
         public int tp { get; set; }
-        public string? ph_xy { get; set; }
         public int Teleport_gf_von { get; set; }
         public int Teleport_kf_von { get; set; }
         public int Teleport_gf_nach { get; set; }

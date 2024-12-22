@@ -20,5 +20,8 @@ namespace PhoenixModel.dbZugdaten
         public int kf_nach { get; set; }
         public int rp { get; set; }
         public int bp { get; set; }
+        
+        // wird nicht benötigt
+        public string? ph_xy { get; set; }
     }
 }

@@ -1,20 +1,28 @@
 using System;
 using System.Data.Common;
 using PhoenixModel.Database;
+using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
 
 namespace PhoenixModel.dbZugdaten
 {
-    public class Reiter : IDatabaseTable, IEigenschaftler
+    public class Reiter : Spielfigur, IDatabaseTable, IEigenschaftler
     {
         public const string TableName = "Reiter";
         string IDatabaseTable.TableName => TableName;
-        public string Bezeichner => Nummer.ToString();
         private static readonly string[] PropertiestoIgnore = [];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
-
-
-        public int Nummer { get; set; }
+        public override FigurType Type
+        {
+            get
+            {
+                if (SKP > 0)
+                    return FigurType.BeritteneSchwereArtillerie;
+                if (LKP > 0)
+                    return FigurType.BeritteneLeichteArtillerie;
+                return FigurType.Reiter;
+            }
+        }
         public int staerke_alt { get; set; }
         public int staerke { get; set; }
         public int hf_alt { get; set; }
@@ -25,13 +33,6 @@ namespace PhoenixModel.dbZugdaten
         public int SKP { get; set; }
         public int pferde_alt { get; set; }
         public int Pferde { get; set; }
-        public int gf_von { get; set; }
-        public int kf_von { get; set; }
-        public int gf_nach { get; set; }
-        public int kf_nach { get; set; }
-        public int rp { get; set; }
-        public int bp { get; set; }
-        public string? ph_xy { get; set; }
         public bool Garde { get; set; }
         public string? Befehl_bew { get; set; }
         public string? Befehl_ang { get; set; }

@@ -1,20 +1,41 @@
 using System;
 using System.Data.Common;
 using PhoenixModel.Database;
+using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
+using PhoenixModel.Program;
 
 namespace PhoenixModel.dbZugdaten
 {
-    public class Schiffe : IDatabaseTable, IEigenschaftler
+    public class Schiffe : Spielfigur, IDatabaseTable, IEigenschaftler
     {
         public const string TableName = "Schiffe";
         string IDatabaseTable.TableName => TableName;
-        public string Bezeichner => Nummer.ToString();
         // IEigenschaftler
         private static readonly string[] PropertiestoIgnore = [];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
+        public override FigurType Type
+        {
+            get
+            {
+                // es sind piraten
+                if (ViewModel.SelectedNation != null && ViewModel.SelectedNation.Nummer == ReichTabelle.Piraten)
+                {
+                    if (SKP > 0)
+                        return FigurType.PiratenSchweresKriegsschiff;
+                    if (SKP > 0)
+                        return FigurType.PiratenLeichtesKriegsschiff;
+                    return FigurType.PiratenSchiff;
+                }
+                if (SKP > 0)
+                    return FigurType.SchweresKriegsschiff;
+                if (SKP > 0)
+                    return FigurType.LeichtesKriegsschiff;
+                return FigurType.Schiff;
+            }
+        }
+        
 
-        public int Nummer { get; set; }
         public int staerke_alt { get; set; }
         public int staerke { get; set; }
         public int hf_alt { get; set; }
@@ -25,13 +46,6 @@ namespace PhoenixModel.dbZugdaten
         public int SKP { get; set; }
         public int pferde_alt { get; set; }
         public int Pferde { get; set; }
-        public int gf_von { get; set; }
-        public int kf_von { get; set; }
-        public int gf_nach { get; set; }
-        public int kf_nach { get; set; }
-        public int rp { get; set; }
-        public int bp { get; set; }
-        public string? ph_xy { get; set; }
         public bool Garde { get; set; }
         public string? Befehl_bew { get; set; }
         public string? Befehl_ang { get; set; }
