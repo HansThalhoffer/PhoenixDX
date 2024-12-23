@@ -7,6 +7,7 @@ using System.Data.Common;
 using System.Reflection.Metadata.Ecma335;
 using static PhoenixModel.ExternalTables.GeländeTabelle;
 using PhoenixModel.ExternalTables;
+using PhoenixModel.dbZugdaten;
 
 namespace PhoenixModel.dbErkenfara
 {
@@ -187,6 +188,14 @@ namespace PhoenixModel.dbErkenfara
                 return TerrainType.Default;
             }
         }
+
+        public List<Spielfigur> GetTruppen(int reichNummer)
+        {
+            List<Spielfigur> truppen = [];
+            return truppen;
+        }
+
+
 
         public GeländeTabelle Terrain
         {
