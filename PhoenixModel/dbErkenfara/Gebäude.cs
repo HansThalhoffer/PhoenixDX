@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.dbErkenfara
 {
-    public class Gebäude : GemarkPosition, IEigenschaftler, IDatabaseTable
+    public class Gebäude : dbZugdaten.GemarkPosition, IEigenschaftler, IDatabaseTable
     {
         // IDatabaseTable
         public const string TableName = "bauwerksliste";
