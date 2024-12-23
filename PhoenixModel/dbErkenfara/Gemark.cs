@@ -11,21 +11,6 @@ using PhoenixModel.dbZugdaten;
 
 namespace PhoenixModel.dbErkenfara
 {
-    public class GemarkPosition
-    {
-        public int gf { get; set; } = 0;
-        public int kf { get; set; } = 0;
-
-        public string CreateBezeichner()
-        {
-            return $"{gf}/{kf}";
-        }
-        public static string CreateBezeichner(int gf, int kf)
-        {
-            return $"{gf}/{kf}";
-        }
-
-    }
     public class Gemark : GemarkPosition, IEigenschaftler, IDatabaseTable
     {
         #region Schnittstellen
@@ -192,6 +177,7 @@ namespace PhoenixModel.dbErkenfara
         public List<Spielfigur> GetTruppen(int reichNummer)
         {
             List<Spielfigur> truppen = [];
+
             return truppen;
         }
 

@@ -45,7 +45,7 @@ namespace PhoenixModel.ExternalTables
             { "Festung", new Werte ( 70000, 3000 ) },
             { "Hauptstadt", new Werte ( 100000, 5000 ) },
             { "Festungshauptstadt", new Werte ( 100000, 6000 ) },
-            // sonstige Einnahmen
+            // sonstige EinnahmenView
             {"Kampfeinnahmen", new Werte( 0, 1) },
             {"Pluenderungen", new Werte( 0, 1) },
             {"eroberte_burgen", new Werte( 0, 1) },

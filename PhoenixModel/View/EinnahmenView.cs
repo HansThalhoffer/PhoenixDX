@@ -7,7 +7,7 @@ using System;
 
 namespace PhoenixModel.View
 {
-    public static class Einnahmen
+    public static class EinnahmenView
     {
     
         public static int GetTerrainEinnahmen(Gemark gem)
@@ -20,7 +20,7 @@ namespace PhoenixModel.View
                 }
                 else
                 {
-                    ViewModel.LogError(gem.gf, gem.kf, $"Das Gelände {gem.Terrain.Name} hat keine Einahmen in der Einnahmen Tabelle");
+                    ViewModel.LogError(gem.gf, gem.kf, $"Das Gelände {gem.Terrain.Name} hat keine Einahmen in der EinnahmenView Tabelle");
                 }
             }
             return 0;
@@ -37,7 +37,7 @@ namespace PhoenixModel.View
                 }
                 else
                 {
-                    ViewModel.LogError(gem.gf, gem.kf, $"Das Gebäude {gebäude.Bauwerknamen} hat keine Einahmen in der Einnahmen Tabelle");
+                    ViewModel.LogError(gem.gf, gem.kf, $"Das Gebäude {gebäude.Bauwerknamen} hat keine Einahmen in der EinnahmenView Tabelle");
                 }
             }
             return 0;
