@@ -106,9 +106,9 @@ namespace PhoenixWPF.Program
         {
             if (database is Zugdaten)
             {
-                foreach(Gemark gem in SharedData.Map)
+                foreach(Gemark gem in SharedData.Map.Values)
                 {
-                    if ()
+                 
                 }
                 //this.Map?.OnUpdateEvent(new MapEventArgs(MapEventType.UpdateAll));
             }
