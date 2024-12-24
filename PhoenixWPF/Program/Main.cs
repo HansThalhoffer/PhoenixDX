@@ -42,10 +42,12 @@ namespace PhoenixWPF.Program
             LoadCrossRef(); // die referenzen vor der Karte laden, auch wenn es dann weniger zu sehen gibt - insgesamt geht das schneller
             LoadKarte();            
             LoadPZE();
+            // die Anteile laden, die im Hintergrund geladen werden können
             LoadCrossRef(true);
+            LoadKarte(true);
             if (SelectReich())
             {
-              LoadZugdaten(true);
+                LoadZugdaten(true);
             }
             else
             {
@@ -111,6 +113,19 @@ namespace PhoenixWPF.Program
         private bool _everythingLoaded = false;
         private void OnLoadCompleted(ILoadableDatabase database)
         {
+            if (database is ErkenfaraKarte && SharedData.Map != null && SharedData.Gebäude != null)
+            {
+                foreach (var gem in SharedData.Map.Values)
+                {
+                    var gebäude = BauwerkeView.GetGebäude(gem);
+                    if (gebäude != null)
+                    {
+                        this.Map?.OnUpdateEvent(new MapEventArgs(gem, MapEventType.UpdateGemark));
+                    }
+                }
+                //this.Map?.OnUpdateEvent(new MapEventArgs(MapEventType.UpdateAll));
+            }
+
             if (database is Zugdaten && SharedData.Map != null)
             {
                 _everythingLoaded = true;

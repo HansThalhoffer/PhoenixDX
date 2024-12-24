@@ -40,8 +40,7 @@ namespace PhoenixWPF.Program
             {
                 if (connector?.Open() == false)
                     return;
-                Load<Gebäude>(connector, ref SharedData.Gebäude, Enum.GetNames(typeof(Gebäude.Felder)));
-                Load<Gemark>(connector, ref SharedData.Map, Enum.GetNames(typeof(Gemark.Felder)));
+                  Load<Gemark>(connector, ref SharedData.Map, Enum.GetNames(typeof(Gemark.Felder)));
                 connector?.Close();
                 return;
             }
@@ -60,6 +59,7 @@ namespace PhoenixWPF.Program
                     return;
                 try
                 {
+                    Load<Gebäude>(connector, ref SharedData.Gebäude, Enum.GetNames(typeof(Gebäude.Felder)));
                 }
                 catch (Exception ex)
                 {
