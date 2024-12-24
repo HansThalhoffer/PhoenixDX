@@ -195,7 +195,7 @@ namespace PhoenixModel.dbErkenfara
             }
         }
 
-        // die Funktion beseitigt Fehler in den Datenbanken
+        // aktuell wird die Update Queue für Gebäude nicht verwendet, da die Gebäude sehr statisch sind
         public Gebäude? Gebäude
         {
             get

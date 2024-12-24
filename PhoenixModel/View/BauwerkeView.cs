@@ -11,6 +11,7 @@ namespace PhoenixModel.View
 {
     public static class BauwerkeView
     {
+        // die Funktion beseitigt Fehler in den Datenbanken
         public static Gebäude? GetGebäude(Gemark gemark)
         {
                 if (SharedData.Gebäude == null)

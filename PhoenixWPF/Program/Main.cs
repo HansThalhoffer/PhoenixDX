@@ -113,7 +113,8 @@ namespace PhoenixWPF.Program
         private bool _everythingLoaded = false;
         private void OnLoadCompleted(ILoadableDatabase database)
         {
-            if (database is ErkenfaraKarte && SharedData.Map != null && SharedData.Gebäude != null)
+            // aktuell wird die Update Queue für Gebäude nicht verwendet, da die Gebäude sehr statisch sind
+            /*if (database is ErkenfaraKarte && SharedData.Map != null && SharedData.Gebäude != null)
             {
                 foreach (var gem in SharedData.Map.Values)
                 {
@@ -124,8 +125,9 @@ namespace PhoenixWPF.Program
                     }
                 }
                 //this.Map?.OnUpdateEvent(new MapEventArgs(MapEventType.UpdateAll));
-            }
+            }*/
 
+            // fülle die UpdateQueue mit gemarken, die Truppen erhalten haben
             if (database is Zugdaten && SharedData.Map != null)
             {
                 _everythingLoaded = true;
