@@ -4,10 +4,10 @@ using PhoenixModel.dbCrossRef;
 using PhoenixModel.Database;
 using PhoenixModel.Helper;
 using System.Data.Common;
-using System.Reflection.Metadata.Ecma335;
 using static PhoenixModel.ExternalTables.GeländeTabelle;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.dbZugdaten;
+using PhoenixModel.View;
 
 namespace PhoenixModel.dbErkenfara
 {
@@ -174,11 +174,9 @@ namespace PhoenixModel.dbErkenfara
             }
         }
 
-        public List<Spielfigur> GetTruppen(int reichNummer)
+        public List<Spielfigur> GetTruppen()
         {
-            List<Spielfigur> truppen = [];
-
-            return truppen;
+            return SpielfigurenView.GetSpielfiguren(this);
         }
 
 
@@ -202,52 +200,7 @@ namespace PhoenixModel.dbErkenfara
         {
             get
             {
-                if (SharedData.Gebäude == null)
-                    throw new Exception("Die Bauwerliste muss vor denen Kartendaten gelasen werden");
-                if (SharedData.RüstortReferenz == null)
-                    throw new Exception("Die Rüstort Referenzdaten müssen vor denen Kartendaten gelasen werden");
-                if (Baupunkte == 0)
-                    return null;
-                try
-                {
-                    Gebäude? gebäude = null;
-                    if (SharedData.Gebäude.ContainsKey(Bezeichner))
-                        gebäude = SharedData.Gebäude[Bezeichner];
-                    if (gebäude == null)
-                    {
-                        gebäude = new Gebäude();
-                        gebäude.kf = this.kf;
-                        gebäude.gf = this.gf;
-                        gebäude.Bauwerknamen = this.Bauwerknamen;
-                        SharedData.Gebäude.Add(gebäude.Bezeichner, gebäude);
-                    }
-                    if (gebäude.Rüstort == null)
-                    {
-                        if (Rüstort.NachBaupunkten.ContainsKey(Baupunkte))
-                            gebäude.Rüstort = Rüstort.NachBaupunkten[Baupunkte];
-                        else
-                        {
-                            int bp = Baupunkte - Baupunkte % 250;
-                            while (Rüstort.NachBaupunkten.ContainsKey(bp) == false && bp > 0)
-                                bp -= 250;
-                            if (bp > 0)
-                            {
-                                gebäude.InBau = true;
-                                gebäude.Rüstort = Rüstort.NachBaupunkten[bp];
-                            }
-                            else
-                            {
-                                gebäude.Zerstört = true;
-                            }
-                        }
-                    }
-                    return gebäude;
-                }
-                catch ( Exception ex)
-                {
-                    // auf Ebene des Modells werden keine Exceptions gefangen
-                    throw new Exception($"Ausnahme bei der Festlegung des Geäudes auf Kleinfeld {Bezeichner}", ex);
-                }
+                return PhoenixModel.View.BauwerkeView.GetGebäude(this);
             }
         }
 

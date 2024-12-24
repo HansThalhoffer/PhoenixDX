@@ -118,7 +118,7 @@ namespace PhoenixWPF.Database
                 _loadCompletedDelegate((ILoadableDatabase)this);
         }
 
-        LoadCompleted _loadCompletedDelegate = null;
+        LoadCompleted? _loadCompletedDelegate = null;
         public void BackgroundLoad(LoadCompleted loadCompletedDelegate)
         {
             using (var worker = new BackgroundWorker { WorkerReportsProgress = true, WorkerSupportsCancellation = true})

@@ -35,6 +35,13 @@ namespace PhoenixModel.Helper
             floatValue = value;
         }
 
+        public MapEventArgs(GemarkPosition gem, MapEventType mapevent)
+        {
+            GF = gem.gf;
+            KF = gem.kf;
+            EventType = mapevent;
+        }
+
         public MapEventArgs(int gf, int kf, MapEventType mapevent)
         {
             GF = gf;

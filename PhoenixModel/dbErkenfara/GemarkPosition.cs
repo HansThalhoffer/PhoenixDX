@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhoenixModel.dbZugdaten
+namespace PhoenixModel.dbErkenfara
 {
     /*  wird aktuell noch nicht gebraucht, Figuren haben eigenes Verzeichnis
     public class Verzeichnis : Dictionary<int, GemarkPosition>
@@ -38,7 +38,7 @@ namespace PhoenixModel.dbZugdaten
         {
             this.gf = gf;
             this.kf = kf;
-        }   
+        }
 
 
         public string CreateBezeichner()
@@ -54,5 +54,5 @@ namespace PhoenixModel.dbZugdaten
             get { return gf * 100 + kf; }
         }
     }
-    }
+}
 

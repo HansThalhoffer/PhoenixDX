@@ -1,4 +1,5 @@
-﻿using PhoenixModel.dbZugdaten;
+﻿using PhoenixModel.dbErkenfara;
+using PhoenixModel.dbZugdaten;
 using PhoenixModel.Helper;
 using System;
 using System.Collections.Concurrent;
@@ -11,22 +12,22 @@ namespace PhoenixModel.View
 {
     public static class SpielfigurenView
     {
-        public static List<Spielfigur> GetSpielfiguren(int gf, int kf)
+        public static List<Spielfigur> GetSpielfiguren(GemarkPosition gem)
         {
             List<Spielfigur> result = [];
-            var kreaturen = SharedData.Kreaturen?.Where(s => s.gf == gf && s.kf == kf);
+            var kreaturen = SharedData.Kreaturen?.Where(s => s.gf == gem.gf && s.kf == gem.kf);
             if (kreaturen != null)
                 result.AddRange( kreaturen);
 
-            var krieger = SharedData.Krieger?.Where(s => s.gf == gf && s.kf == kf);
+            var krieger = SharedData.Krieger?.Where(s => s.gf == gem.gf && s.kf == gem.kf);
             if (krieger != null) 
                 result.AddRange(krieger);
             
-            var reiter = SharedData.Reiter?.Where(s => s.gf == gf && s.kf == kf);
+            var reiter = SharedData.Reiter?.Where(s => s.gf == gem.gf && s.kf == gem.kf);
             if (reiter != null)
                 result.AddRange(reiter);
             
-            var schiffe = SharedData.Schiffe?.Where(s => s.gf == gf && s.kf == kf).ToArray();
+            var schiffe = SharedData.Schiffe?.Where(s => s.gf == gem.gf && s.kf == gem.kf).ToArray();
             if (schiffe != null)
                 result.AddRange(schiffe);
             

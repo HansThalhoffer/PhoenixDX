@@ -11,6 +11,7 @@ using PhoenixModel.Database;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
+using PhoenixModel.View;
 using PhoenixWPF.Database;
 using PhoenixWPF.Dialogs;
 using PhoenixWPF.Helper;
@@ -42,11 +43,17 @@ namespace PhoenixWPF.Program
             LoadKarte();            
             LoadPZE();
             LoadCrossRef(true);
-            SelectReich();
-            LoadZugdaten(true);
+            if (SelectReich())
+            {
+              LoadZugdaten(true);
+            }
+            else
+            {
+                Application.Current.Shutdown();         
+            }
         }
 
-        public void SelectReich()
+        public bool SelectReich()
         {
             var nationen = SharedData.Nationen?.ToArray();
             if (nationen != null)
@@ -68,7 +75,7 @@ namespace PhoenixWPF.Program
                         {
                             holder = new(dialog.Password);
                             Settings.UserSettings.PasswordReich = holder.EncryptedPasswordBase64;
-                            
+
                         }
                         else
                         {
@@ -80,11 +87,11 @@ namespace PhoenixWPF.Program
                         ViewModel.SelectedNation = SharedData.Nationen?.ElementAt(Settings.UserSettings.SelectedReich);
                         zugdatenPath = System.IO.Path.Combine(zugdatenPath, $"{ViewModel.SelectedNation?.DBname}.mdb");
                         Settings.UserSettings.DatabaseLocationZugdaten = zugdatenPath;
+                        return true;
                     }
-                    else
-                        Application.Current.Shutdown();
                 }
             }
+            return false;
         }
 
         public void SetReichOverlay(Visibility visibility)
@@ -101,14 +108,19 @@ namespace PhoenixWPF.Program
 
         #region Daten Laden
         public delegate ILoadableDatabase LoadableDatabase(string databaseLocation, string encryptedPassword);
-      
+        private bool _everythingLoaded = false;
         private void OnLoadCompleted(ILoadableDatabase database)
         {
-            if (database is Zugdaten)
+            if (database is Zugdaten && SharedData.Map != null)
             {
-                foreach(Gemark gem in SharedData.Map.Values)
+                _everythingLoaded = true;
+                foreach (var gem in SharedData.Map.Values)
                 {
-                 
+                    var figuren = SpielfigurenView.GetSpielfiguren(gem);
+                    if ( figuren != null && figuren.Count > 0)
+                    {
+                        this.Map?.OnUpdateEvent(new MapEventArgs(gem, MapEventType.UpdateGemark));
+                    }
                 }
                 //this.Map?.OnUpdateEvent(new MapEventArgs(MapEventType.UpdateAll));
             }

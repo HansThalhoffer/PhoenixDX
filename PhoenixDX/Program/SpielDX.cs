@@ -20,7 +20,6 @@ using System.Threading;
 
 using Vektor = Microsoft.Xna.Framework.Vector2;
 using PhoenixModel.dbErkenfara;
-using PhoenixModel.dbZugdaten;
 
 namespace PhoenixDX.Program
 {
