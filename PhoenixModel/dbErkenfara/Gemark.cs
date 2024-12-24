@@ -15,6 +15,15 @@ namespace PhoenixModel.dbErkenfara
         public int gf { get; set; } = 0;
         public int kf { get; set; } = 0;
 
+        public GemarkPosition()
+        { }
+
+        public GemarkPosition(int gf, int kf)
+        {
+            this.gf = gf;
+            this.kf = kf;
+        }   
+
         public string CreateBezeichner()
         {
             return $"{gf}/{kf}";

@@ -114,12 +114,16 @@ namespace PhoenixWPF.Database
             {
                 SpielWPF.LogError("Das Laden im Hintergrund war nicht erfolgreich");
             }
+            if (_loadCompletedDelegate != null && (this as ILoadableDatabase) != null)
+                _loadCompletedDelegate((ILoadableDatabase)this);
         }
 
-        public void BackgroundLoad()
+        LoadCompleted _loadCompletedDelegate = null;
+        public void BackgroundLoad(LoadCompleted loadCompletedDelegate)
         {
             using (var worker = new BackgroundWorker { WorkerReportsProgress = true, WorkerSupportsCancellation = true})
             {
+                _loadCompletedDelegate = loadCompletedDelegate; 
                 worker.DoWork += Worker_DoWork;
                 worker.ProgressChanged += Worker_ProgressChanged;
                 worker.RunWorkerCompleted += Worker_RunWorkerCompleted;

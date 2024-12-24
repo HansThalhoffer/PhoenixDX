@@ -145,6 +145,16 @@ namespace PhoenixDX.Program
             });
         }
 
+        // wenn sich die Daten geändert haben, werden die jeweiligen Gemarken neu gezeichnet
+        BlockingCollection<GemarkPosition> updateQueue = [];
+        public void OnUpdateEvent(MapEventArgs args)
+        {
+            EnqueueAction(() =>
+            {
+                updateQueue.Add(new GemarkPosition(args.GF, args.KF));
+            });
+        }
+
         private void _OnKeyEvent(PhoenixModel.Helper.KeyEventArgs args)
         {
             if (args.State == KeyEventArgs.KeyState.Down)

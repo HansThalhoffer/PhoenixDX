@@ -87,6 +87,12 @@ namespace PhoenixDX
             _game?.OnMouseEvent(args);
         }
 
+        public void OnUpdateEvent(MapEventArgs args)
+        {
+            _game?.OnUpdateEvent(args);
+        }
+
+
         public void OnKeyEvent(PhoenixModel.Helper.KeyEventArgs args)
         {
             _game?.OnKeyEvent(args);

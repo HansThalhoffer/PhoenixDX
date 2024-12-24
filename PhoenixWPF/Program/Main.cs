@@ -5,15 +5,19 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using PhoenixDX;
 using PhoenixDX.Structures;
 using PhoenixModel.Database;
+using PhoenixModel.dbErkenfara;
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
 using PhoenixWPF.Database;
 using PhoenixWPF.Dialogs;
 using PhoenixWPF.Helper;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrayNotify;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using static PhoenixModel.Database.PasswordHolder;
+using static PhoenixModel.Helper.MapEventArgs;
 using static PhoenixWPF.Program.ErkenfaraKarte;
 
 namespace PhoenixWPF.Program
@@ -37,9 +41,9 @@ namespace PhoenixWPF.Program
             LoadCrossRef(); // die referenzen vor der Karte laden, auch wenn es dann weniger zu sehen gibt - insgesamt geht das schneller
             LoadKarte();            
             LoadPZE();
-            BackgroundLoadCrossRef();
+            LoadCrossRef(true);
             SelectReich();
-            LoadZugdaten();
+            LoadZugdaten(true);
         }
 
         public void SelectReich()
@@ -97,9 +101,20 @@ namespace PhoenixWPF.Program
 
         #region Daten Laden
         public delegate ILoadableDatabase LoadableDatabase(string databaseLocation, string encryptedPassword);
+      
+        private void OnLoadCompleted(ILoadableDatabase database)
+        {
+            if (database is Zugdaten)
+            {
+                foreach(Gemark gem in SharedData.Map)
+                {
+                    if ()
+                }
+                //this.Map?.OnUpdateEvent(new MapEventArgs(MapEventType.UpdateAll));
+            }
+        }
 
-
-        public void Load(ref string databaseLocation, ref string encryptedPassword, LoadableDatabase dbCreator,string databaseName, bool inBackground) 
+        public void Load(ref string databaseLocation, ref string encryptedPassword, LoadableDatabase dbCreator,string databaseName, LoadCompleted? loadCompletedDelegate = null) 
         {
             if (Settings == null)
                 return;
@@ -109,8 +124,8 @@ namespace PhoenixWPF.Program
             encryptedPassword = pwdHolder.EncryptedPasswordBase64;
             using (ILoadableDatabase db = dbCreator(databaseLocation, encryptedPassword))
             {
-                if (inBackground)
-                    db.BackgroundLoad();
+                if (loadCompletedDelegate != null)
+                    db.BackgroundLoad(loadCompletedDelegate);
                 else
                     db.Load();
             }
@@ -127,28 +142,25 @@ namespace PhoenixWPF.Program
                 return;
             string databaseLocation = Settings.UserSettings.DatabaseLocationCrossRef;
             string encryptedPassword = Settings.UserSettings.PasswordCrossRef;
-            Load(ref databaseLocation,ref encryptedPassword, CreateCrossRef, "dbCrossRef", inBackground);
+            Load(ref databaseLocation,ref encryptedPassword, CreateCrossRef, "dbCrossRef", inBackground? OnLoadCompleted: null);
             Settings.UserSettings.DatabaseLocationCrossRef = databaseLocation;
             Settings.UserSettings.PasswordCrossRef =encryptedPassword;
         }
 
-        public void BackgroundLoadCrossRef()
-        {
-            LoadCrossRef(true);
-        }
+     
 
         private ILoadableDatabase CreateKarte(string databaseLocation, string encryptedPassword)
         {
             return new ErkenfaraKarte(databaseLocation, encryptedPassword);
         }
 
-        public void LoadKarte()
+        public void LoadKarte(bool inBackground = false)
         {
             if (Settings == null)
                 return;
             string databaseLocation = Settings.UserSettings.DatabaseLocationKarte;
             string encryptedPassword = Settings.UserSettings.PasswordKarte;
-            Load(ref databaseLocation, ref encryptedPassword, CreateKarte,"ErkenfaraKarte", false);
+            Load(ref databaseLocation, ref encryptedPassword, CreateKarte,"ErkenfaraKarte", inBackground ? OnLoadCompleted : null);
             Settings.UserSettings.DatabaseLocationKarte = databaseLocation;
             Settings.UserSettings.PasswordKarte = encryptedPassword;
         }
@@ -159,13 +171,13 @@ namespace PhoenixWPF.Program
             return new PZE(databaseLocation, encryptedPassword);
         }
 
-        public void LoadPZE()
+        public void LoadPZE(bool inBackground = false)
         {
             if (Settings == null)
                 return;
             string databaseLocation = Settings.UserSettings.DatabaseLocationPZE;
             string encryptedPassword = Settings.UserSettings.PasswordPZE;
-            Load(ref databaseLocation, ref encryptedPassword, CreatePZE,"PZ", false);
+            Load(ref databaseLocation, ref encryptedPassword, CreatePZE,"PZ", inBackground ? OnLoadCompleted : null);
             Settings.UserSettings.DatabaseLocationPZE = databaseLocation;
             Settings.UserSettings.PasswordPZE = encryptedPassword;
         }
@@ -182,7 +194,7 @@ namespace PhoenixWPF.Program
             string databaseLocation = Settings.UserSettings.DatabaseLocationZugdaten;
             string encryptedPassword = Settings.UserSettings.PasswordReich;
             var reich = SharedData.Nationen.ElementAt(Settings.UserSettings.SelectedReich);
-            Load(ref databaseLocation, ref encryptedPassword, CreateZugdaten, $"{reich.DBname}", true);
+            Load(ref databaseLocation, ref encryptedPassword, CreateZugdaten, $"{reich.DBname}", inBackground ? OnLoadCompleted : null);
             Settings.UserSettings.DatabaseLocationZugdaten = databaseLocation;
             Settings.UserSettings.PasswordReich = encryptedPassword;
         }
