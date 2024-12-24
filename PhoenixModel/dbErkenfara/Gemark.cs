@@ -7,33 +7,10 @@ using System.Data.Common;
 using System.Reflection.Metadata.Ecma335;
 using static PhoenixModel.ExternalTables.GeländeTabelle;
 using PhoenixModel.ExternalTables;
+using PhoenixModel.dbZugdaten;
 
 namespace PhoenixModel.dbErkenfara
 {
-    public class GemarkPosition
-    {
-        public int gf { get; set; } = 0;
-        public int kf { get; set; } = 0;
-
-        public GemarkPosition()
-        { }
-
-        public GemarkPosition(int gf, int kf)
-        {
-            this.gf = gf;
-            this.kf = kf;
-        }   
-
-        public string CreateBezeichner()
-        {
-            return $"{gf}/{kf}";
-        }
-        public static string CreateBezeichner(int gf, int kf)
-        {
-            return $"{gf}/{kf}";
-        }
-
-    }
     public class Gemark : GemarkPosition, IEigenschaftler, IDatabaseTable
     {
         #region Schnittstellen
@@ -196,6 +173,15 @@ namespace PhoenixModel.dbErkenfara
                 return TerrainType.Default;
             }
         }
+
+        public List<Spielfigur> GetTruppen(int reichNummer)
+        {
+            List<Spielfigur> truppen = [];
+
+            return truppen;
+        }
+
+
 
         public GeländeTabelle Terrain
         {

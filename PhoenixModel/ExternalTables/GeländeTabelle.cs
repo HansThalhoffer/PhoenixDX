@@ -47,7 +47,7 @@ namespace PhoenixModel.ExternalTables
 
         public override string ToString()
         {
-            return $"{Typ}: {Name}, Höhe: {Höhe}, Einwohner: {Einwohner}, Einnahmen: {Einnahmen}, Farbe: {Farbe}, Ist Wasser: {IsWasser}";
+            return $"{Typ}: {Name}, Höhe: {Höhe}, Einwohner: {Einwohner}, EinnahmenView: {Einnahmen}, Farbe: {Farbe}, Ist Wasser: {IsWasser}";
         }
 
         public static GeländeTabelle[] Terrains =

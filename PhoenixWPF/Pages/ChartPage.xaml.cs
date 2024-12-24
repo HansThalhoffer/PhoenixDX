@@ -80,7 +80,7 @@ namespace PhoenixWPF.Pages
             });
             SeriesCollection?.Add(new LineSeries
             {
-                Title = "Einnahmen",
+                Title = "EinnahmenView",
                 Values = lineValues[1],
                 Stroke = new SolidColorBrush
                 {
