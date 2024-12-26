@@ -40,7 +40,7 @@ namespace PhoenixDX
             }
             catch (Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show(ex.Message);
+                MappaMundi.Log(0, 0, ex);
             }
         }
 

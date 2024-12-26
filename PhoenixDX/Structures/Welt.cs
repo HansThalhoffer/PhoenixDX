@@ -91,9 +91,28 @@ namespace PhoenixDX.Structures
             }
         }
 
-        public Gemark FindGemarkByPosition(Vector2 position)
+        public void UpdateGemark(GemarkPosition pos)
         {
-            return null;
+            if (pos.gf < 0 || pos.kf < 0 || pos.kf > 48)
+                return;
+            try
+            {
+                var provinz = Provinzen[pos.gf];
+                var gemark = SharedData.Map[Gemark.CreateBezeichner(pos.gf, pos.kf)];
+                Kleinfeld updatedKleinfeld = new Kleinfeld(pos.gf, pos.kf);
+                updatedKleinfeld.Initialize(gemark);
+
+                // reich verändert?
+                if (Reiche.ContainsKey(updatedKleinfeld.ReichID) == true)
+                    updatedKleinfeld.Reich = Reiche[updatedKleinfeld.ReichID];
+
+                provinz.Felder[pos.kf] = updatedKleinfeld;
+            }
+            catch (Exception ex)
+            {
+                MappaMundi.Log(0, 0, ex);
+            }
+
         }
 
         public bool ReicheInitalized = false;

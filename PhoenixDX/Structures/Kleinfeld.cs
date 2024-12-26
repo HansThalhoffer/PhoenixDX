@@ -220,7 +220,7 @@ namespace PhoenixDX.Structures
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine(ex.Message);
+                        MappaMundi.Log(0, 0, ex);
                     }
                 }
                 adornerTexture.SetTextures(textures.ToArray());

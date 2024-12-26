@@ -20,6 +20,7 @@ using System.Threading;
 
 using Vektor = Microsoft.Xna.Framework.Vector2;
 using PhoenixModel.dbErkenfara;
+using PhoenixModel.Database;
 
 namespace PhoenixDX.Program
 {
@@ -37,6 +38,8 @@ namespace PhoenixDX.Program
         const int _virtualHeight = 2160;
         int _clientWidth = _virtualWidth;
         int _clientHeight = _virtualHeight;
+        Vektor _scale = Vektor.Zero;
+        private SpriteBatch _spriteBatch;
 
         public Welt Weltkarte { get; private set; }
         private Kleinfeld _selected = null;
@@ -66,6 +69,7 @@ namespace PhoenixDX.Program
             _graphics.ApplyChanges();
 
             Activated += Spiel_Activated;
+            _updateFunction = DoInitialization;
         }
 
         protected override void Initialize()
@@ -146,13 +150,12 @@ namespace PhoenixDX.Program
         }
 
         // wenn sich die Daten geändert haben, werden die jeweiligen Gemarken neu gezeichnet
-        BlockingCollection<GemarkPosition> updateQueue = [];
+        ConcurrentQueue<GemarkPosition> _updateQueue = [];
         public void OnUpdateEvent(MapEventArgs args)
         {
-            EnqueueAction(() =>
-            {
-                updateQueue.Add(new GemarkPosition(args.GF, args.KF));
-            });
+            
+            _updateQueue.Enqueue(new GemarkPosition(args.GF, args.KF));
+          
         }
 
         private void _OnKeyEvent(PhoenixModel.Helper.KeyEventArgs args)
@@ -290,6 +293,25 @@ namespace PhoenixDX.Program
 
         }
 
+        public delegate void UpdateFunction();
+        private UpdateFunction _updateFunction;
+
+        
+        private void DoInitialization()
+        {
+            if (Weltkarte == null && SharedData.Map != null && SharedData.Map.IsAddingCompleted)
+                Weltkarte = new Welt(SharedData.Map);
+            else if (Weltkarte != null)
+            {
+                if (Weltkarte.ReicheInitalized == false && SharedData.Nationen != null && SharedData.Nationen.IsAddingCompleted)
+                    Weltkarte.AddNationen(SharedData.Nationen);
+                // sobald minimal alles initialisiert, die Funktion auf HandleInput umstellen
+                if (Weltkarte.ReicheInitalized)
+                    _updateFunction = HandleInput;
+            }
+        }
+
+
         protected override void Update(GameTime gameTime)
         {
             if (_cancellationToken.IsCancellationRequested)
@@ -299,24 +321,15 @@ namespace PhoenixDX.Program
             while (_actionQueue.TryDequeue(out var action))
                 action();
 
-            if (Weltkarte == null && SharedData.Map != null && SharedData.Map.IsAddingCompleted)
-                Weltkarte = new Welt(SharedData.Map);
-            else if (Weltkarte != null)
-            {
-                if (Weltkarte.ReicheInitalized == false && SharedData.Nationen != null && SharedData.Nationen.IsAddingCompleted)
-                    Weltkarte.AddNationen(SharedData.Nationen);
-            }
+            // while (_updateQueue.TryDequeue(out var gemarkPosition))
+            //    Weltkarte.UpdateGemark(gemarkPosition);
 
-            HandleInput();
-            if (_lastDrawTime == null)
-                // TODO: Add your update logic here
-                base.Update(gameTime);
+            // entweder DoInitialization oder HandleInput
+            _updateFunction();
+
+            base.Update(gameTime);
         }
 
-        Vektor _scale = Vektor.Zero;
-
-
-        private SpriteBatch _spriteBatch;
         float _zoom = 0f;
         public float Zoom
         {
@@ -328,9 +341,7 @@ namespace PhoenixDX.Program
                 _wpfBridge.OnZoomChanged(Zoom);
             }
         }
-
-    
-        GameTime _lastDrawTime = null;
+            
         protected override void Draw(GameTime gameTime)
         {
             _graphics.GraphicsDevice.Clear(Color.Black);
