@@ -68,7 +68,7 @@ namespace PhoenixDX.Structures
 
         public Truppen(List<Figur> truppen)
         {
-            _truppen=truppen;
+            _truppen = truppen;
             this.HasDirections = false;
         }
 
@@ -87,10 +87,10 @@ namespace PhoenixDX.Structures
                 return;
 
             var graphicsDevice = SpielDX.Graphics.GraphicsDevice;
-            const int figurHeight = 719;
-            const int figurWidth = 670;
-            const int height = figurHeight * 8;
-            const int width = figurWidth * 8;
+            const int figurHeight = 719 /8;
+            const int figurWidth = 670 / 8;
+            const int height = 138 ;
+            const int width = 160 ;
 
             float h3 = (height - 8) / 3f;
             float h4 = (height - 8) / 5f;
@@ -106,44 +106,51 @@ namespace PhoenixDX.Structures
                 new Position(h3 - 3f, h3 - 3f)
             ];
 
-            // Create a new RenderTarget2D where we will draw all the layers
-            RenderTarget2D renderTarget = new RenderTarget2D(graphicsDevice, width,height);
-
-            // Set the RenderTarget for the GraphicsDevice
-            graphicsDevice.SetRenderTarget(renderTarget);
-            graphicsDevice.Clear(Color.Transparent); // Clear the render target to fully transparent
-
-            // Create a new SpriteBatch to render the textures
-            SpriteBatch spriteBatch = new SpriteBatch(graphicsDevice);
-            spriteBatch.Begin();
-
-            // Draw each texture in the list on top of each other
-            int i = 0;
-            foreach (var figur in _truppen)
+            try
             {
-                int index = (int)figur.Typ;
-                var texture = FigurImages[index].Texture;
-                Rectangle rScreenG = new Rectangle(pos[i].X, pos[i].Y, Convert.ToInt32(figurWidth / 2), Convert.ToInt32(figurHeight / 2));
+                // Create a new RenderTarget2D where we will draw all the layers
+                using (RenderTarget2D renderTarget = new RenderTarget2D(graphicsDevice, width, height))
+                {
 
-                spriteBatch.Draw(texture, rScreenG, null, Color.White);
-                if (++i > pos.Length - 1)
-                    i = 0;
+                    // Set the RenderTarget for the GraphicsDevice
+                    graphicsDevice.SetRenderTarget(renderTarget);
+                    graphicsDevice.Clear(Color.Transparent); // Clear the render target to fully transparent
+
+                    // Create a new SpriteBatch to render the textures
+                    SpriteBatch spriteBatch = new SpriteBatch(graphicsDevice);
+                    spriteBatch.Begin();
+
+                    // Draw each texture in the list on top of each other
+                    int i = 0;
+                    foreach (var figur in _truppen)
+                    {
+                        int index = (int)figur.Typ;
+                        var texture = FigurImages[index].Texture;
+                        //Rectangle rScreenG = new Rectangle(pos[i].X, pos[i].Y, Convert.ToInt32(figurWidth / 4), Convert.ToInt32(figurHeight /4));
+                        Rectangle rScreenG = new Rectangle(0, 0, figurWidth , figurHeight);
+
+                        spriteBatch.Draw(texture, rScreenG, null, figur.Color);
+                        if (++i > pos.Length - 1)
+                            i = 0;
+                    }
+                    spriteBatch.End();
+
+                    // Unset the render target (set it back to the main screen buffer)
+                    graphicsDevice.SetRenderTarget(null);
+
+                    // Get the final merged texture from the render target
+                    _texture = new Texture2D(graphicsDevice, width, height);
+
+                    // Copy the data from the render target to the final texture
+                    Color[] data = new Color[width * height];
+                    renderTarget.GetData(data);
+                    _texture.SetData(data);
+                }
             }
-            spriteBatch.End();
-
-            // Unset the render target (set it back to the main screen buffer)
-            graphicsDevice.SetRenderTarget(null);
-
-            // Get the final merged texture from the render target
-            _texture = new Texture2D(graphicsDevice, width, height);
-
-            // Copy the data from the render target to the final texture
-            Color[] data = new Color[width * height];
-            renderTarget.GetData(data);
-            _texture.SetData(data);
-
-            // Dispose of the render target as it is no longer needed
-            renderTarget.Dispose();
+            catch (Exception ex)
+            {
+                MappaMundi.Log(0, 0, ex);
+            }
         }
 
 
@@ -154,11 +161,13 @@ namespace PhoenixDX.Structures
 
         public override List<Texture2D> GetTextures()
         {
-            return new List<Texture2D>() { _texture };
+            return new List<Texture2D>() { GetTexture() };
         }
 
         public override Texture2D GetTexture()
         {
+            if (_texture == null)
+                CreateTexture();
             return _texture;
         }
     }

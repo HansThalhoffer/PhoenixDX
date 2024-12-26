@@ -16,6 +16,7 @@ using PhoenixModel.dbCrossRef;
 using Vektor = Microsoft.Xna.Framework.Vector2;
 using PhoenixModel.ExternalTables;
 using SharpDX.XAudio2;
+using PhoenixDX.Helper;
 
 namespace PhoenixDX.Structures
 {
@@ -37,8 +38,8 @@ namespace PhoenixDX.Structures
         public Reich Reich { get => _reich; 
             set {  
                 _reich = value;
-                //Adorner.Add("Reich", value);
-                Adorner.Insert(0,value);
+                //Layer_0.Add("Reich", value);
+                Layer_0.Insert(0,value);
             }
         }
         public bool IsSelected { get; set; } = false;
@@ -48,10 +49,12 @@ namespace PhoenixDX.Structures
 
         TerrainType _terrainType  = TerrainType.Default;
 
-        // Dictionary<string, KleinfeldAdorner> _adorner = [];
-        // public Dictionary<string, KleinfeldAdorner> Adorner { get { return _adorner; } }
-        List<KleinfeldAdorner> _adorner = [];
-        public List<KleinfeldAdorner> Adorner { get { return _adorner; } }
+        // Dictionary<string, KleinfeldAdorner> _layer_1 = [];
+        // public Dictionary<string, KleinfeldAdorner> Layer_0 { get { return _layer_1; } }
+        List<KleinfeldAdorner> _layer_0 = [];
+        List<KleinfeldAdorner> _layer_1 = [];
+        public List<KleinfeldAdorner> Layer_0 { get { return _layer_0; } }
+        public List<KleinfeldAdorner> Layer_1 { get { return _layer_1; } }
 
         public Kleinfeld(int gf, int kf): base(Hex.RadiusGemark, true)
         {
@@ -95,6 +98,7 @@ namespace PhoenixDX.Structures
             return _mapCoords;
         }
 
+        // verwandelt die Daten aus der Gemark in ein visuelles Element
         bool _isInitalized = false;
         public bool Initialize(Gemark gem)
         {
@@ -108,11 +112,11 @@ namespace PhoenixDX.Structures
             Koordinaten =  new KartenKoordinaten(Koordinaten.gf, Koordinaten.kf, (int)gem.x, (int)gem.y);
             ReichID = gem.Reich ?? -1;
             
-            Adorner.Add(new Fluss(gem));
-            Adorner.Add(new Kai(gem));
-            Adorner.Add(new Bruecke(gem));
-            Adorner.Add(new Strasse(gem));
-            Adorner.Add(new Wall(gem));
+            Layer_0.Add(new Fluss(gem));
+            Layer_0.Add(new Kai(gem));
+            Layer_0.Add(new Bruecke(gem));
+            Layer_0.Add(new Strasse(gem));
+            Layer_0.Add(new Wall(gem));
 
             if (gem.Gebäude != null )
             {
@@ -124,8 +128,8 @@ namespace PhoenixDX.Structures
                 string name = gem.Gebäude.Rüstort.Bauwerk;
                 if (RuestortSymbol.Ruestorte.ContainsKey(name))
                 {
-                    // Adorner.Add("Rüstort", RuestortSymbol.Ruestorte[name]);
-                    Adorner.Add(RuestortSymbol.Ruestorte[name]);
+                    // Layer_0.Add("Rüstort", RuestortSymbol.Ruestorte[name]);
+                    Layer_0.Add(RuestortSymbol.Ruestorte[name]);
                 }
                 else
                 {
@@ -133,6 +137,20 @@ namespace PhoenixDX.Structures
                 }
             }
 
+            var spielfiguren = gem.GetTruppen();
+            if (spielfiguren != null && spielfiguren.Count > 0)
+            {
+                List<Truppen.Figur> truppen = [];
+                foreach (var figur in spielfiguren)
+                {
+                    Microsoft.Xna.Framework.Color color = Kolor.Convert(figur.Reich.Farbe);
+                    truppen.Add(new Truppen.Figur(figur.Typ, color));
+                }
+                if (truppen.Count > 0) 
+                {
+                   Layer_1.Add(new Truppen(truppen));
+                }
+            }
             return true;
         }
 
@@ -165,20 +183,40 @@ namespace PhoenixDX.Structures
 
         #region Content
 
-        public List<Texture2D> GetTextures()
+        public List<Texture2D> GetTextures(int layer)
         {
             List<Texture2D> textures = new List<Texture2D>();
-            Gelaende gel = GeländeTabelle.Terrains[(int)_terrainType] as Gelaende;
-            if (gel != null)
-                textures.Add(gel.GetTexture());
-            foreach(KleinfeldAdorner adorner in Adorner)
+            switch(layer)
             {
-                if (adorner.HasDirections)
-                    textures.AddRange(adorner.GetTextures());
-                else
-                    textures.Add(adorner.GetTexture());
+                case 0:
+                {    Gelaende gel = GeländeTabelle.Terrains[(int)_terrainType] as Gelaende;
+                    if (gel != null)
+                        textures.Add(gel.GetTexture());
+                    foreach (KleinfeldAdorner adorner in Layer_0)
+                    {
+                        if (adorner.HasDirections)
+                            textures.AddRange(adorner.GetTextures());
+                        else
+                            textures.Add(adorner.GetTexture());
+                    }
+                    break;
+                }
+                case 1:
+                {
+                    foreach (KleinfeldAdorner adorner in Layer_1)
+                    {
+                        if (adorner.HasDirections)
+                            textures.AddRange(adorner.GetTextures());
+                        else
+                            textures.Add(adorner.GetTexture());
+                    }
+                    break;
+                }
+                default:
+                    MappaMundi.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, "Fehler bei der Auswahl des Layers"));
+                    break;
             }
-            
+
             return textures;
         }
 

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using static PhoenixModel.Helper.SharedData;
+using PhoenixModel.View;
 
 namespace PhoenixDX.Structures
 {
@@ -65,7 +66,7 @@ namespace PhoenixDX.Structures
 
             foreach (Gemark gem in map.Values)
             {
-                if (gem != null && gem.gf > 0 && gem.kf > 0 && gem.kf < 50)
+                if (Plausibilität.IsValid(gem))
                 {
                     if (Provinzen.ContainsKey(gem.gf) == false)
                     {

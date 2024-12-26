@@ -70,18 +70,45 @@ namespace PhoenixDX.Drawing
                     Rectangle rScreenG = new Rectangle(Convert.ToInt32(posG.X), Convert.ToInt32(posG.Y), Convert.ToInt32(sizeG.X), Convert.ToInt32(sizeG.Y));
                     bool inKleinfeld = isMoving == false && mouseover == null && gemark.InKleinfeld(mausPos);
                     if (inKleinfeld)
-                        mouseover = gemark;
-                  
+                        mouseover = gemark;                  
 
-                    var listTexture = gemark.GetTextures();
+                    var listTexture = gemark.GetTextures(0);
                     foreach (var hexTexture in listTexture)
                     {
                         // spriteBatch.Draw(hexTexture, posP, null, Color.Transparent);
                         spriteBatch.Draw(hexTexture, rScreenG, null, inKleinfeld ? Color.Plum : colorTiles);
                     }
                     
+                }
+            }
+            foreach (var province in provinzen.Values)
+            {
+                var posP = province.GetMapPosition(scale); // aktualisiert die MapSize - Reihenfolge wichtig
+                posP.X += offset.X;
+                posP.Y += offset.Y;
+                if (posP.X > visibleScreen.Right || posP.Y > visibleScreen.Bottom)
+                    continue;
+                var sizeP = province.GetMapSize();
+                if (posP.X + sizeP.X < visibleScreen.Left || posP.Y + sizeP.Y + 50 < visibleScreen.Top)
+                    continue;
+                // var sizeP = province.GetMapSize();
+                foreach (var gemark in province.Felder.Values)
+                {
+                    var posG = gemark.GetMapPosition(posP, scale); // aktualisiert die MapSize - Reihenfolge wichtig
+                    var sizeG = Kleinfeld.GetMapSize();
+                    Rectangle rScreenG = new Rectangle(Convert.ToInt32(posG.X), Convert.ToInt32(posG.Y), Convert.ToInt32(sizeG.X), Convert.ToInt32(sizeG.Y));
+                    bool inKleinfeld = isMoving == false && mouseover == null && gemark.InKleinfeld(mausPos);
+                    if (inKleinfeld)
+                        mouseover = gemark;
 
-                    if (ShowReichOverlay == true && gemark.ReichID > 0 && gemark.Reich != null )
+                    var listTexture = gemark.GetTextures(1);
+                    foreach (var hexTexture in listTexture)
+                    {
+                        // spriteBatch.Draw(hexTexture, posP, null, Color.Transparent);
+                        spriteBatch.Draw(hexTexture, rScreenG, null, inKleinfeld ? Color.Plum : colorTiles);
+                    }
+
+                    if (ShowReichOverlay == true && gemark.ReichID > 0 && gemark.Reich != null)
                     {
                         spriteBatch.Draw(_weiss, rScreenG, null, inKleinfeld ? Color.Plum : gemark.Reich.color * 0.5f);
                     }

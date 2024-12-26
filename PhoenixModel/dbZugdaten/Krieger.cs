@@ -14,7 +14,7 @@ namespace PhoenixModel.dbZugdaten
         // IEigenschaftler
         private static readonly string[] PropertiestoIgnore = [];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
-        public override FigurType Type
+        public override FigurType Typ
         {
             get
             {
@@ -99,8 +99,9 @@ namespace PhoenixModel.dbZugdaten
         }
 
 
-        public void Load(DbDataReader reader)
+        public override void Load(DbDataReader reader)
         {
+            base.Load(reader);
             this.Nummer = DatabaseConverter.ToInt32(reader[(int)Felder.nummer]);
             this.staerke_alt = DatabaseConverter.ToInt32(reader[(int)Felder.staerke_alt]);
             this.staerke = DatabaseConverter.ToInt32(reader[(int)Felder.staerke]);

@@ -54,8 +54,8 @@ namespace PhoenixDX.Program
         public SpielDX(nint windowHandle, CancellationToken token, MappaMundi bridge)
         {
             _wpfBridge = bridge;
-            _clientWidth = _virtualWidth;
-            _clientHeight = _virtualWidth;
+            _clientWidth = 10;
+            _clientHeight = 10;
             Zoom = 0.4f;
             _cancellationToken = token;
             IsMouseVisible = true;
@@ -321,8 +321,8 @@ namespace PhoenixDX.Program
             while (_actionQueue.TryDequeue(out var action))
                 action();
 
-            // while (_updateQueue.TryDequeue(out var gemarkPosition))
-            //    Weltkarte.UpdateGemark(gemarkPosition);
+            while (_updateQueue.TryDequeue(out var gemarkPosition))
+                Weltkarte.UpdateGemark(gemarkPosition);
 
             // entweder DoInitialization oder HandleInput
             _updateFunction();

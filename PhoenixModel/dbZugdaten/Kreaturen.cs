@@ -13,7 +13,7 @@ namespace PhoenixModel.dbZugdaten
         // IEigenschaftler
         private static readonly string[] PropertiestoIgnore = [];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
-        public override FigurType Type => FigurType.Kreatur;
+        public override FigurType Typ => FigurType.Kreatur;
 
         public int staerke_alt { get; set; }
         public int staerke { get; set; }
@@ -87,8 +87,9 @@ namespace PhoenixModel.dbZugdaten
             y3, hoehenstufen, schritt, x4, y4, x5, y5, x6, y6, x7, y7, x8, y8, x9, y9, auf_Flotte, Sonstiges, spaltetab, fusmit, Chars, bp_max, isbanned, x10, y10, x11, y11, x12, y12, x13, y13, x14, y14, x15, y15, x16, y16, x17, y17, x18, y18, x19, y19,
         }
 
-        public void Load(DbDataReader reader)
+        public override void Load(DbDataReader reader)
         {
+            base.Load(reader);
             this.Nummer = DatabaseConverter.ToInt32(reader[(int)Felder.nummer]);
             this.staerke_alt = DatabaseConverter.ToInt32(reader[(int)Felder.staerke_alt]);
             this.staerke = DatabaseConverter.ToInt32(reader[(int)Felder.staerke]);

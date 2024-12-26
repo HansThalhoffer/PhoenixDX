@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using PhoenixDX.Helper;
 using PhoenixModel.dbPZE;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace PhoenixDX.Structures
         {
             HasDirections = false;
 
-            color = new Color(nation.Farbe.Value.R, nation.Farbe.Value.G, nation.Farbe.Value.B);
+            color = Kolor.Convert(nation.Farbe);
             name = nation.Reich;
             if (reichsFarben.ContainsKey(nation.Farbname))
             {

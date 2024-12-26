@@ -12,7 +12,7 @@ namespace PhoenixModel.dbZugdaten
         // IEigenschaftler
         private static readonly string[] PropertiestoIgnore = [];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
-        public override FigurType Type => FigurType.Charakter;
+        public override FigurType Typ => FigurType.Charakter;
 
         public string? Beschriftung { get; set; }
         public int GP_ges { get; set; }
@@ -60,8 +60,9 @@ namespace PhoenixModel.dbZugdaten
             x1, y1, x2, y2, x3, y3, hoehenstufen, schritt, x4, y4, x5, y5, x6, y6, x7, y7, x8, y8, x9, y9, sonstiges, Einheit, bp_max,
         }
 
-        public void Load(DbDataReader reader)
+        public override void Load(DbDataReader reader)
         {
+            base.Load(reader);
             this.Nummer = DatabaseConverter.ToInt32(reader[(int)Felder.nummer]);
             this.Beschriftung = DatabaseConverter.ToString(reader[(int)Felder.Beschriftung]);
             this.GP_ges = DatabaseConverter.ToInt32(reader[(int)Felder.GP_ges]);

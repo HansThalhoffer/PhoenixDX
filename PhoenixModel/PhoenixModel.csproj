@@ -9,7 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="dbPZE\Defaults\" />
+    <Compile Remove="dbPZE\Defaults\**" />
+    <EmbeddedResource Remove="dbPZE\Defaults\**" />
+    <None Remove="dbPZE\Defaults\**" />
   </ItemGroup>
 
 </Project>

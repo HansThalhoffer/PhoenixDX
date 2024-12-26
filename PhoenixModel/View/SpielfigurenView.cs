@@ -15,19 +15,19 @@ namespace PhoenixModel.View
         public static List<Spielfigur> GetSpielfiguren(GemarkPosition gem)
         {
             List<Spielfigur> result = [];
-            var kreaturen = SharedData.Kreaturen?.Where(s => s.gf == gem.gf && s.kf == gem.kf);
+            var kreaturen = SharedData.Kreaturen?.Where(s => s.gf == gem.gf && s.kf == gem.kf && Plausibilität.IsValid(s));
             if (kreaturen != null)
                 result.AddRange( kreaturen);
 
-            var krieger = SharedData.Krieger?.Where(s => s.gf == gem.gf && s.kf == gem.kf);
+            var krieger = SharedData.Krieger?.Where(s => s.gf == gem.gf && s.kf == gem.kf && Plausibilität.IsValid(s));
             if (krieger != null) 
                 result.AddRange(krieger);
             
-            var reiter = SharedData.Reiter?.Where(s => s.gf == gem.gf && s.kf == gem.kf);
+            var reiter = SharedData.Reiter?.Where(s => s.gf == gem.gf && s.kf == gem.kf && Plausibilität.IsValid(s));
             if (reiter != null)
                 result.AddRange(reiter);
             
-            var schiffe = SharedData.Schiffe?.Where(s => s.gf == gem.gf && s.kf == gem.kf).ToArray();
+            var schiffe = SharedData.Schiffe?.Where(s => s.gf == gem.gf && s.kf == gem.kf && Plausibilität.IsValid(s));
             if (schiffe != null)
                 result.AddRange(schiffe);
             
