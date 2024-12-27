@@ -1,36 +1,37 @@
 using System;
 using System.Data.Common;
 using PhoenixModel.Database;
+using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
 
 namespace PhoenixModel.dbZugdaten
 {
-    public class Zauberer : IDatabaseTable, IEigenschaftler
+    public class Zauberer : Spielfigur, IDatabaseTable, IEigenschaftler
     {
         public const string TableName = "Zauberer";
         string IDatabaseTable.TableName => TableName;
-        public string Bezeichner => Nummer.ToString();
-        private static readonly string[] PropertiestoIgnore = [];
+         private static readonly string[] PropertiestoIgnore = [];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
+        public override FigurType Typ
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(this.Spielername))
+                    return FigurType.Zauberer;
+              
+                return FigurType.CharakterZauberer;
+            }
+        }
 
-
-        public int Nummer { get; set; }
-    public string? Beschriftung { get; set; }
+        public string? Beschriftung { get; set; }
     public int GP_ges_alt { get; set; }
     public int GP_ges { get; set; }
     public int GP_akt_alt { get; set; }
     public int GP_akt { get; set; }
     public string? charname { get; set; }
     public string? Spielername { get; set; }
-    public int gf_von { get; set; }
-    public int kf_von { get; set; }
-    public int gf_nach { get; set; }
-    public int kf_nach { get; set; }
-    public int rp { get; set; }
-    public int bp { get; set; }
     public int tp_alt { get; set; }
     public int tp { get; set; }
-    public string? ph_xy { get; set; }
     public int Teleport_gf_von { get; set; }
     public int Teleport_kf_von { get; set; }
     public int Teleport_gf_nach { get; set; }
@@ -68,16 +69,17 @@ nummer, Beschriftung, GP_ges_alt, GP_ges, GP_akt_alt, GP_akt, charname, Spielern
 x1, y1, x2, y2, x3, y3, hoehenstufen, schritt, x4, y4, x5, y5, x6, y6, x7, y7, x8, y8, x9, y9, sonstiges, einheit, bp_max,
 }
 
-    public void Load(DbDataReader reader)
+    public override void Load(DbDataReader reader)
     {
-        this.Nummer = DatabaseConverter.ToInt32(reader[(int) Felder.nummer]);
+       base.Load(reader);
+            this.Nummer = DatabaseConverter.ToInt32(reader[(int) Felder.nummer]);
         this.Beschriftung = DatabaseConverter.ToString(reader[(int) Felder.Beschriftung]);
         this.GP_ges_alt = DatabaseConverter.ToInt32(reader[(int) Felder.GP_ges_alt]);
         this.GP_ges = DatabaseConverter.ToInt32(reader[(int) Felder.GP_ges]);
         this.GP_akt_alt = DatabaseConverter.ToInt32(reader[(int) Felder.GP_akt_alt]);
         this.GP_akt = DatabaseConverter.ToInt32(reader[(int) Felder.GP_akt]);
         this.charname = DatabaseConverter.ToString(reader[(int) Felder.charname]);
-        this.Spielername = DatabaseConverter.ToString(reader[(int) Felder.Spielername]);
+        this.Spielername = DatabaseConverter.ToString(reader[(int) Felder.Spielername]).Trim();
         this.gf_von = DatabaseConverter.ToInt32(reader[(int) Felder.gf_von]);
         this.kf_von = DatabaseConverter.ToInt32(reader[(int) Felder.kf_von]);
         this.gf_nach = DatabaseConverter.ToInt32(reader[(int) Felder.gf_nach]);

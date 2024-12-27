@@ -93,8 +93,6 @@ namespace PhoenixDX.Structures
             const int height = 138 *2;
             const int width = 160 *2;
 
-            //  float figurHeight = (height - 8) / 24 * 9;
-            float marg = (height - 8) / 12f;
             Position[] pos = [
                 new Position(_truppen.Count > 1 ? 4:40, _truppen.Count > 1 ? -8:20),
                 new Position(140, 0),

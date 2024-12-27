@@ -110,7 +110,6 @@ namespace PhoenixWPF.Program
 
         #region Daten Laden
         public delegate ILoadableDatabase LoadableDatabase(string databaseLocation, string encryptedPassword);
-        private bool _everythingLoaded = false;
         private void OnLoadCompleted(ILoadableDatabase database)
         {
             // aktuell wird die Update Queue für Gebäude nicht verwendet, da die Gebäude sehr statisch sind
@@ -130,7 +129,6 @@ namespace PhoenixWPF.Program
             // fülle die UpdateQueue mit gemarken, die Truppen erhalten haben
             if (database is Zugdaten && SharedData.Map != null)
             {
-                _everythingLoaded = true;
                 foreach (var gem in SharedData.Map.Values)
                 {
                     var figuren = SpielfigurenView.GetSpielfiguren(gem);

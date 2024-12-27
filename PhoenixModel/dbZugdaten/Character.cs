@@ -8,7 +8,7 @@ namespace PhoenixModel.dbZugdaten
     public class Character : Spielfigur,  IDatabaseTable, IEigenschaftler
     {
         public const string TableName = "chars";
-        string IDatabaseTable.TableName => TableName;
+        string IDatabaseTable.TableName => TableName;   
         // IEigenschaftler
         private static readonly string[] PropertiestoIgnore = [];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }

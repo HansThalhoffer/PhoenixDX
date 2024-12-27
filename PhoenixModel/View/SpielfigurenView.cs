@@ -30,7 +30,12 @@ namespace PhoenixModel.View
             var schiffe = SharedData.Schiffe?.Where(s => s.gf == gem.gf && s.kf == gem.kf && Plausibilität.IsValid(s));
             if (schiffe != null)
                 result.AddRange(schiffe);
-            
+            var charaktere = SharedData.Character?.Where(s => s.gf == gem.gf && s.kf == gem.kf && Plausibilität.IsValid(s));
+            if (schiffe != null)
+                result.AddRange(charaktere);
+            var zauberer = SharedData.Zauberer?.Where(s => s.gf == gem.gf && s.kf == gem.kf && Plausibilität.IsValid(s));
+            if (schiffe != null)
+                result.AddRange(zauberer);
             return result;
         }
 
