@@ -70,5 +70,99 @@ namespace PhoenixModel.dbZugdaten
             this.id = DatabaseConverter.ToInt32(reader[(int)Felder.id]);
             this.besRuestung = DatabaseConverter.ToInt32(reader[(int)Felder.besRuestung]);
         }
+
+        public void Save(DbCommand command)
+        {
+            command.CommandText = $@"
+        UPDATE {DatabaseConverter.EscapeString(TableName)} SET
+            GF = {this.gf},
+            KF = {this.kf},
+            HF = {this.HF},
+            Z = {this.Z},
+            K = {this.K},
+            R = {this.R},
+            P = {this.P},
+            LKS = {this.LKS},
+            SKS = {this.SKS},
+            LKP = {this.LKP},
+            SKP = {this.SKP},
+            GP_akt = {this.GP_akt},
+            GP_ges = {this.GP_ges},
+            ZB = {this.ZB},
+            S = {this.S},
+            Neuruestung = {this.Neuruestung},
+            KF_Flotte = {this.KF_Flotte},
+            GF_Flotte = {this.GF_Flotte},
+            Garde = {this.Garde},
+            Name_x = '{DatabaseConverter.EscapeString(this.Name_x)}',
+            Beschriftung = '{DatabaseConverter.EscapeString(this.Beschriftung)}',
+            id = {this.id},
+            besRuestung = {this.besRuestung}
+        WHERE Nummer = {this.Nummer}";
+
+            // Execute the command
+            command.ExecuteNonQuery();
+        }
+
+        public void Insert(DbCommand command)
+        {
+            command.CommandText = $@"
+        INSERT INTO {DatabaseConverter.EscapeString(TableName)} (
+            GF,
+            KF,
+            Nummer,
+            HF,
+            Z,
+            K,
+            R,
+            P,
+            LKS,
+            SKS,
+            LKP,
+            SKP,
+            GP_akt,
+            GP_ges,
+            ZB,
+            S,
+            Neuruestung,
+            KF_Flotte,
+            GF_Flotte,
+            Garde,
+            Name_x,
+            Beschriftung,
+            id,
+            besRuestung
+        ) VALUES (
+            {this.gf},
+            {this.kf},
+            {this.Nummer},
+            {this.HF},
+            {this.Z},
+            {this.K},
+            {this.R},
+            {this.P},
+            {this.LKS},
+            {this.SKS},
+            {this.LKP},
+            {this.SKP},
+            {this.GP_akt},
+            {this.GP_ges},
+            {this.ZB},
+            {this.S},
+            {this.Neuruestung},
+            {this.KF_Flotte},
+            {this.GF_Flotte},
+            {this.Garde},
+            '{DatabaseConverter.EscapeString(this.Name_x)}',
+            '{DatabaseConverter.EscapeString(this.Beschriftung)}',
+            {this.id},
+            {this.besRuestung}
+        )";
+
+            // Execute the command
+            command.ExecuteNonQuery();
+        }
+
+
     }
 }

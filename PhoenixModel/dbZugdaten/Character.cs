@@ -111,5 +111,63 @@ namespace PhoenixModel.dbZugdaten
             this.Einheit = DatabaseConverter.ToString(reader[(int)Felder.Einheit]);
             this.bp_max = DatabaseConverter.ToInt32(reader[(int)Felder.bp_max]);
         }
+
+        public override void Save(DbCommand command)
+        {
+            base.Save(command);
+            command.CommandText = $@"
+        UPDATE {TableName} SET
+            Beschriftung = '{DatabaseConverter.EscapeString(this.Beschriftung)}',
+            GP_ges = {this.GP_ges},
+            GP_akt = {this.GP_akt},
+            GP_ges_alt = {this.GP_ges_alt},
+            GP_akt_alt = {this.GP_akt_alt},
+            Charname = '{DatabaseConverter.EscapeString(this.Charname)}',
+            Spielername = '{DatabaseConverter.EscapeString(this.Spielername)}',
+            gf_von = {this.gf_von},
+            kf_von = {this.kf_von},
+            gf_nach = {this.gf_nach},
+            kf_nach = {this.kf_nach},
+            rp = {this.rp},
+            bp = {this.bp},
+            tp_alt = {this.tp_alt},
+            tp = {this.tp},
+            ph_xy = '{DatabaseConverter.EscapeString(this.ph_xy)}',
+            Teleport_gf_von = {this.Teleport_gf_von},
+            Teleport_kf_von = {this.Teleport_kf_von},
+            Teleport_gf_nach = {this.Teleport_gf_nach},
+            Teleport_kf_nach = {this.Teleport_kf_nach},
+            Befehl_magie = '{DatabaseConverter.EscapeString(this.Befehl_magie)}',
+            Befehl_Teleport = '{DatabaseConverter.EscapeString(this.Befehl_Teleport)}',
+            Befehl_bannt = '{DatabaseConverter.EscapeString(this.Befehl_bannt)}',
+            x1 = {this.x1},
+            y1 = {this.y1},
+            x2 = {this.x2},
+            y2 = {this.y2},
+            x3 = {this.x3},
+            y3 = {this.y3},
+            hoehenstufen = {this.hoehenstufen},
+            schritt = {this.schritt},
+            x4 = {this.x4},
+            y4 = {this.y4},
+            x5 = {this.x5},
+            y5 = {this.y5},
+            x6 = {this.x6},
+            y6 = {this.y6},
+            x7 = {this.x7},
+            y7 = {this.y7},
+            x8 = {this.x8},
+            y8 = {this.y8},
+            x9 = {this.x9},
+            y9 = {this.y9},
+            sonstiges = '{DatabaseConverter.EscapeString(this.sonstiges)}',
+            Einheit = '{DatabaseConverter.EscapeString(this.Einheit)}',
+            bp_max = {this.bp_max}
+        WHERE nummer = {this.Nummer}";
+
+            // Execute the command
+            command.ExecuteNonQuery();
+        }
+
     }
 }

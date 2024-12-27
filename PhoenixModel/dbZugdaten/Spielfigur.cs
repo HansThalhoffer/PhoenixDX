@@ -97,6 +97,10 @@ namespace PhoenixModel.dbZugdaten
             AssignToSelectedReich();
         }
 
+        public virtual void Save(DbCommand command)
+        {
+        }
+
         public void AssignToSelectedReich()
         {
             if (ViewModel.SelectedNation == null)

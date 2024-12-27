@@ -164,5 +164,88 @@ namespace PhoenixModel.dbZugdaten
             this.x19 = DatabaseConverter.ToInt32(reader[(int)Felder.x19]);
             this.y19 = DatabaseConverter.ToInt32(reader[(int)Felder.y19]);
         }
+        public override void Save(DbCommand command)
+        {
+            base.Save(command);
+            command.CommandText = $@"
+        UPDATE {TableName} SET
+            staerke_alt = {this.staerke_alt},
+            staerke = {this.staerke},
+            hf_alt = {this.hf_alt},
+            hf = {this.hf},
+            lkp_alt = {this.lkp_alt},
+            LKP = {this.LKP},
+            skp_alt = {this.skp_alt},
+            SKP = {this.SKP},
+            pferde_alt = {this.pferde_alt},
+            Pferde = {this.Pferde},
+            Garde = {(this.Garde ? 1 : 0)},
+            gf_von = {this.gf_von},
+            kf_von = {this.kf_von},
+            gf_nach = {this.gf_nach},
+            kf_nach = {this.kf_nach},
+            rp = {this.rp},
+            bp = {this.bp},
+            ph_xy = '{DatabaseConverter.EscapeString(this.ph_xy)}',
+            Befehl_bew = '{DatabaseConverter.EscapeString(this.Befehl_bew)}',
+            Befehl_ang = '{DatabaseConverter.EscapeString(this.Befehl_ang)}',
+            Befehl_erobert = '{DatabaseConverter.EscapeString(this.Befehl_erobert)}',
+            GS = {this.GS},
+            GS_alt = {this.GS_alt},
+            Kampfeinnahmen = {this.Kampfeinnahmen},
+            Kampfeinnahmen_alt = {this.Kampfeinnahmen_alt},
+            x1 = {this.x1},
+            y1 = {this.y1},
+            x2 = {this.x2},
+            y2 = {this.y2},
+            x3 = {this.x3},
+            y3 = {this.y3},
+            hoehenstufen = {this.hoehenstufen},
+            schritt = {this.schritt},
+            x4 = {this.x4},
+            y4 = {this.y4},
+            x5 = {this.x5},
+            y5 = {this.y5},
+            x6 = {this.x6},
+            y6 = {this.y6},
+            x7 = {this.x7},
+            y7 = {this.y7},
+            x8 = {this.x8},
+            y8 = {this.y8},
+            x9 = {this.x9},
+            y9 = {this.y9},
+            auf_Flotte = '{DatabaseConverter.EscapeString(this.auf_Flotte)}',
+            Sonstiges = '{DatabaseConverter.EscapeString(this.Sonstiges)}',
+            spaltetab = '{DatabaseConverter.EscapeString(this.spaltetab)}',
+            fusmit = '{DatabaseConverter.EscapeString(this.fusmit)}',
+            Chars = '{DatabaseConverter.EscapeString(this.Chars)}',
+            bp_max = {this.bp_max},
+            isbanned = {this.isbanned},
+            x10 = {this.x10},
+            y10 = {this.y10},
+            x11 = {this.x11},
+            y11 = {this.y11},
+            x12 = {this.x12},
+            y12 = {this.y12},
+            x13 = {this.x13},
+            y13 = {this.y13},
+            x14 = {this.x14},
+            y14 = {this.y14},
+            x15 = {this.x15},
+            y15 = {this.y15},
+            x16 = {this.x16},
+            y16 = {this.y16},
+            x17 = {this.x17},
+            y17 = {this.y17},
+            x18 = {this.x18},
+            y18 = {this.y18},
+            x19 = {this.x19},
+            y19 = {this.y19}
+        WHERE Nummer = {this.Nummer}";
+
+            // Execute the command
+            command.ExecuteNonQuery();
+        }
+
     }
 }

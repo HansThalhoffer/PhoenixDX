@@ -8,6 +8,12 @@ namespace PhoenixModel.Database
 {
     public static class DatabaseConverter
     {
+
+        public static string EscapeString(string? value)
+        {
+             return value?.Replace("'", "''") ?? string.Empty; // Escapes single quotes for SQL and handles null values
+        }
+
         /// <summary>
         /// converts a database field object to Int
         /// </summary>

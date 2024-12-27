@@ -33,5 +33,28 @@ namespace PhoenixModel.dbZugdaten
             this.BP_up = DatabaseConverter.ToInt32(reader[(int)Felder.BP_up]);
             this.ID = DatabaseConverter.ToInt32(reader[(int)Felder.id]);
         }
+        public void Update(DbCommand command)
+        {
+            command.CommandText = $@"
+        UPDATE {TableName} SET
+            GF = {this.GF},
+            KF = {this.KF},
+            BP_rep = {this.BP_rep},
+            BP_up = {this.BP_up}
+        WHERE ID = {this.ID}";
+
+            // Execute the command
+            command.ExecuteNonQuery();
+        }
+        public void Insert(DbCommand command)
+        {
+            command.CommandText = $@"
+        INSERT INTO {TableName} (GF, KF, BP_rep, BP_up)
+        VALUES ({this.GF}, {this.KF}, {this.BP_rep}, {this.BP_up})";
+
+            // Execute the command
+            command.ExecuteNonQuery();
+        }
+
     }
 }

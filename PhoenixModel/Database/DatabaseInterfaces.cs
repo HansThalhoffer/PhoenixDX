@@ -23,5 +23,7 @@ namespace PhoenixModel.Database
         public abstract string TableName { get; }
         public string Bezeichner { get;}
         public abstract void Load(DbDataReader reader);
+        public abstract void Save(DbCommand reader);
+        public abstract void Insert(DbCommand reader);
     }
 }

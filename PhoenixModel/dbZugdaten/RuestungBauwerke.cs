@@ -37,5 +37,40 @@ namespace PhoenixModel.dbZugdaten
             this.Kosten = DatabaseConverter.ToInt32(reader[(int)Felder.Kosten]);
             this.ID = DatabaseConverter.ToInt32(reader[(int)Felder.id]);
         }
+
+        public void Update(DbCommand command)
+        {
+            command.CommandText = $@"
+        UPDATE {TableName} SET
+            GF = {this.GF},
+            KF = {this.KF},
+            BP_rep = {this.BP_rep},
+            BP_neu = {this.BP_neu},
+            Art = '{DatabaseConverter.EscapeString(this.Art)}',
+            Kosten = {this.Kosten}
+        WHERE ID = {this.ID}";
+
+            // Execute the command
+            command.ExecuteNonQuery();
+        }
+
+        public void Insert(DbCommand command)
+        {
+            command.CommandText = $@"
+        INSERT INTO {TableName} (
+            GF, KF, BP_rep, BP_neu, Art, Kosten
+        ) VALUES (
+            {this.GF},
+            {this.KF},
+            {this.BP_rep},
+            {this.BP_neu},
+            '{DatabaseConverter.EscapeString(this.Art)}',
+            {this.Kosten}
+        )";
+
+            // Execute the command
+            command.ExecuteNonQuery();
+        }
+
     }
 }
