@@ -8,10 +8,11 @@ using static PhoenixModel.ExternalTables.GeländeTabelle;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.View;
+using PhoenixModel.Program;
 
 namespace PhoenixModel.dbErkenfara
 {
-    public class Gemark : GemarkPosition, IEigenschaftler, IDatabaseTable
+    public class Gemark : GemarkPosition, ISelectable, IDatabaseTable
     {
         #region Schnittstellen
         public const string TableName = "Karte";
@@ -179,7 +180,20 @@ namespace PhoenixModel.dbErkenfara
             return SpielfigurenView.GetSpielfiguren(this);
         }
 
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
 
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Select()
+        {
+            
+        }
 
         public GeländeTabelle Terrain
         {
