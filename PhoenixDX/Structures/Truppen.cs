@@ -87,23 +87,20 @@ namespace PhoenixDX.Structures
                 return;
 
             var graphicsDevice = SpielDX.Graphics.GraphicsDevice;
-            const int figurHeight = 719 /8;
-            const int figurWidth = 670 / 8;
-            const int height = 138 ;
-            const int width = 160 ;
+            float faktor = _truppen.Count > 1 ? 1.2f :0.8f;
+             int figurHeight = Convert.ToInt32(719f / faktor);
+             int figurWidth = Convert.ToInt32(670f / faktor);
+            const int height = 138 *2;
+            const int width = 160 *2;
 
-            float h3 = (height - 8) / 3f;
-            float h4 = (height - 8) / 5f;
             //  float figurHeight = (height - 8) / 24 * 9;
             float marg = (height - 8) / 12f;
             Position[] pos = [
-                new Position(h3, 0),
-                new Position(0, h4),
-                new Position(h3 * 2f - marg, h4),
-                new Position(0, h4 * 3 - marg),
-                new Position(h3 * 2f - marg, h4 *3f -marg),
-                new Position( h3,  h3 * 2f),
-                new Position(h3 - 3f, h3 - 3f)
+                new Position(_truppen.Count > 1 ? 4:40, _truppen.Count > 1 ? -8:20),
+                new Position(140, 0),
+                new Position(-8, 140),
+                new Position(140, 140),
+                new Position(70, 70),
             ];
 
             try
@@ -126,8 +123,8 @@ namespace PhoenixDX.Structures
                     {
                         int index = (int)figur.Typ;
                         var texture = FigurImages[index].Texture;
-                        //Rectangle rScreenG = new Rectangle(pos[i].X, pos[i].Y, Convert.ToInt32(figurWidth / 4), Convert.ToInt32(figurHeight /4));
-                        Rectangle rScreenG = new Rectangle(0, 0, figurWidth , figurHeight);
+                        Rectangle rScreenG = new Rectangle(pos[i].X, pos[i].Y, Convert.ToInt32(figurWidth / 4), Convert.ToInt32(figurHeight /4));
+                      
 
                         spriteBatch.Draw(texture, rScreenG, null, figur.Color);
                         if (++i > pos.Length - 1)
