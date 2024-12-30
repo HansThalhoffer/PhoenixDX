@@ -87,5 +87,25 @@ namespace PhoenixModel.Program
         {
             _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Error, msg)));
         }
+        public static void LogWarning(string msg)
+        {
+            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Warning, msg)));
+        }
+        public static void LogInfo(string msg)
+        {
+            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Info, msg)));
+        }
+        public static void LogError(KleinfeldPosition pos, string msg)
+        {
+            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Error, $"[{pos.CreateBezeichner()}] {msg}")));
+        }
+        public static void LogWarning(KleinfeldPosition pos, string msg)
+        {
+            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Warning, $"[{pos.CreateBezeichner()}] {msg}")));
+        }
+        public static void LogInfo(KleinfeldPosition pos, string msg)
+        {
+            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Info, $"[{pos.CreateBezeichner()}] {msg}")));
+        }
     }
 }

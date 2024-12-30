@@ -7,8 +7,17 @@
         <converter:LogTypeToColorConverter x:Key="LogTypeToColorConverter"/>
     </Page.Resources>
     <Grid>
-        <ListBox Name="LogListBox" 
-         ItemsSource="{Binding LogEntries}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Margin="10">
+            <CheckBox Content="Info" IsChecked="{Binding FilterInfos, Mode=TwoWay}" Margin="0,0,10,0"/>
+            <CheckBox Content="Errors" IsChecked="{Binding FilterErrors, Mode=TwoWay}" Margin="0,0,10,0"/>
+            <CheckBox Content="Warnings" IsChecked="{Binding FilterWarnings, Mode=TwoWay}" Margin="0,0,10,0"/>
+        </StackPanel>
+        <ListBox Grid.Row="1" Name="LogListBox" MinHeight="100"
+         ItemsSource="{Binding FilteredLogEntries}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
                  FontFamily="Consolas" FontSize="10" MouseDoubleClick="LogListBox_MouseDoubleClick">
             <ListBox.ItemTemplate>
                 <DataTemplate>

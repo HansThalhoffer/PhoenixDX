@@ -80,7 +80,7 @@ namespace PhoenixModel.Helper
 
         // crossref
         // public static BlockingDictionary<Gebäude>? BauwerkeRef= null; // kosten für wälle etc - steht aber auch in der Kosten Tabelle
-        public static BlockingDictionary<Rüstort>? RüstortReferenz = null;
+        public static BlockingCollection<Rüstort>? RüstortReferenz = null;
         public static BlockingCollection<BEW_chars>? BEW_chars = null;
         public static BlockingCollection<BEW_Kreaturen>? BEW_Kreaturen = null;
         public static BlockingCollection<BEW_Krieger>? BEW_Krieger = null;

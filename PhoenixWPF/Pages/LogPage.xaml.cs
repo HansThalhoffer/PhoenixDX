@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -19,25 +20,83 @@ using static PhoenixModel.Program.LogEntry;
 
 namespace PhoenixWPF.Pages
 {
-    /// <summary>
-    /// Interaktionslogik für Log.xaml
-    /// </summary>
-    public partial class LogPage : Page
+    public partial class LogPage : Page, INotifyPropertyChanged
     {
-        // ObservableCollection for thread-safe data binding to ListBox
-        private static ObservableCollection<LogEntry> _logEntries = [];
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        // Lock object to ensure thread-safety when adding log entries
-        private static readonly object _logLock = new object();
+        private static ObservableCollection<LogEntry> _logEntries = new();
+        private ObservableCollection<LogEntry> _filteredLogEntries = new();
+
+        public ObservableCollection<LogEntry> FilteredLogEntries
+        {
+            get => _filteredLogEntries;
+            private set
+            {
+                _filteredLogEntries = value;
+                OnPropertyChanged(nameof(FilteredLogEntries));
+            }
+        }
+
+        private bool _filterInfo = false;
+        public bool FilterInfos
+        {
+            get => _filterInfo;
+            set
+            {
+                _filterInfo = value;
+                OnPropertyChanged(nameof(FilterInfos));
+                UpdateFilteredLogEntries();
+            }
+        }
+
+        private bool _filterErrors = true;
+        public bool FilterErrors
+        {
+            get => _filterErrors;
+            set
+            {
+                _filterErrors = value;
+                OnPropertyChanged(nameof(FilterErrors));
+                UpdateFilteredLogEntries();
+            }
+        }
+
+        private bool _filterWarnings = true;
+        public bool FilterWarnings
+        {
+            get => _filterWarnings;
+            set
+            {
+                _filterWarnings = value;
+                OnPropertyChanged(nameof(FilterWarnings));
+                UpdateFilteredLogEntries();
+            }
+        }
 
         public LogPage()
         {
             InitializeComponent();
+            _logEntries.CollectionChanged += _logEntries_CollectionChanged;
+            DataContext = this;
+            FilteredLogEntries = new ObservableCollection<LogEntry>(_logEntries);
 
-            // Set the data context for ListBox to bind to the log entries
-            LogListBox.ItemsSource = _logEntries;
         }
 
+        private void _logEntries_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            UpdateFilteredLogEntries();
+        }
+
+        public static void AddToLog(LogEntry logentry)
+        {
+            if (string.IsNullOrWhiteSpace(logentry.Message)) return;
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                logentry.Message = $"{logentry.Type} {logentry.Message}";
+                _logEntries.Add(logentry);
+            });
+        }
         private void LogListBox_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (LogListBox.SelectedItem != null)
@@ -62,30 +121,29 @@ namespace PhoenixWPF.Pages
                 if (int.TryParse(match.Groups[1].Value, out int gf) && int.TryParse(match.Groups[2].Value, out int kf))
                 {
                     Program.Main.Instance.Map?.Goto(gf, kf);
-                }                
-            }          
-        }
-    
-
-        /// <summary>
-        /// Static method to add a message to the log from any thread.
-        /// </summary>
-        /// <param name="message">The message to be added to the log.</param>
-        public static void AddToLog(LogEntry logentry)
-        {
-            if (string.IsNullOrWhiteSpace(logentry.Message)) return;
-
-            // Ensure the log entries are updated on the UI thread
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                lock (_logLock)
-                {
-                    logentry.Message = $"{logentry.Type.ToString()} {logentry.Message}";
-                    _logEntries.Add(logentry);
                 }
-            });
+            }
         }
 
-       
+        private void UpdateFilteredLogEntries()
+        {
+            FilteredLogEntries.Clear();
+
+            foreach (var log in _logEntries)
+            {
+                if ((FilterInfos && log.Type == LogEntry.LogType.Info) ||
+                    (FilterErrors && log.Type == LogEntry.LogType.Error) ||
+                    (FilterWarnings && log.Type == LogEntry.LogType.Warning))
+                {
+                    FilteredLogEntries.Add(log);
+                }
+            }
+        }
+
+        protected void OnPropertyChanged(string propertyName) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+
+
+    
 }
