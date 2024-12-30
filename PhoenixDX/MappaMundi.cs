@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using PhoenixDX.Drawing;
 using PhoenixDX.Program;
+using PhoenixModel.dbErkenfara;
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
 using SharpDX.Direct3D9;
@@ -99,9 +100,9 @@ namespace PhoenixDX
         }
 
 
-        public void Goto(int gf, int kf)
+        public void Goto(KleinfeldPosition pos)
         {
-            _game?.Goto(gf, kf);
+            _game?.Goto(pos);
         }
 
         public void SetZoom(float val) {

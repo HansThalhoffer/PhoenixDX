@@ -1,4 +1,5 @@
-﻿using PhoenixModel.Program;
+﻿using PhoenixModel.dbErkenfara;
+using PhoenixModel.Program;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -107,11 +108,9 @@ namespace PhoenixWPF.Pages
 
         [GeneratedRegex(@"\[(\d+)/(\d+)\]")]
         public static partial Regex KoordinatenRegex();
-        private void ExtractAndGoTo(object? input)
+        
+        public static KleinfeldPosition? ExtractPosition(LogEntry entry)
         {
-            var entry = input as LogEntry;
-            if (entry == null)
-                return;
             // Regex to match the pattern [number1/number2] 
             Regex regex = KoordinatenRegex();
             Match match = regex.Match(entry.Message);
@@ -120,8 +119,22 @@ namespace PhoenixWPF.Pages
             {
                 if (int.TryParse(match.Groups[1].Value, out int gf) && int.TryParse(match.Groups[2].Value, out int kf))
                 {
-                    Program.Main.Instance.Map?.Goto(gf, kf);
+                    return new KleinfeldPosition(gf, kf);
                 }
+            }
+            return null;
+        }
+
+
+        private void ExtractAndGoTo(object? input)
+        {
+            var entry = input as LogEntry;
+            if (entry == null)
+                return;
+            KleinfeldPosition? pos = ExtractPosition(entry);
+            if (pos != null)
+            {
+               Program.Main.Instance.Map?.Goto(pos);
             }
         }
 

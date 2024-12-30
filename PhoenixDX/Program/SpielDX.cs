@@ -189,17 +189,17 @@ namespace PhoenixDX.Program
         }
 
 
-        void _goto(int gf, int kf)
+        void _goto(KleinfeldPosition pos)
         {
-            Gemark kleinfeld = Weltkarte.GetKleinfeld(gf, kf);
+            Provinz provinz = Weltkarte.GetProviz(pos.gf);
+            if (provinz == null) 
+                return;
+            Gemark kleinfeld = provinz.GetKleinfeld(pos.kf);
             if (kleinfeld == null)
                 return;
-            Provinz provinz = Weltkarte.GetProviz(gf);
-            if (provinz == null) return;
+
             Vektor posP = provinz.GetMapPosition(_scale);
-            // Vektor sizeP = provinz.GetMapSize();
-            var gemark = provinz.GetKleinfeld(kf);
-            var posG = gemark.GetMapPosition(posP, _scale); // aktualisiert die MapSize - Reihenfolge wichtig
+            var posG = kleinfeld.GetMapPosition(posP, _scale); // aktualisiert die MapSize - Reihenfolge wichtig
             // var sizeG = Gemark.GetMapSize();
             posG *= -1;
             Vektor offset = new Vektor(_clientWidth / 2, _clientHeight / 2);
@@ -209,11 +209,11 @@ namespace PhoenixDX.Program
             _wpfBridge.SelectKleinfeld(_selected.Koordinaten.gf, _selected.Koordinaten.kf, MausEventArgs.MouseEventType.None);
         }
 
-        public void Goto(int gf, int kf)
+        public void Goto(KleinfeldPosition pos)
         {
             EnqueueAction(() =>
             {
-                _goto(gf, kf);
+                _goto(pos);
             });
         }
 
