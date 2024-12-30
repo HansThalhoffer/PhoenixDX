@@ -17,11 +17,11 @@ using System.Windows.Shapes;
 namespace PhoenixWPF.Pages
 {
     /// <summary>
-    /// Interaktionslogik für PropertyGridPage.xaml
+    /// Interaktionslogik für EigenschaftlerListGridPage.xaml
     /// </summary>
-    public partial class PropertyGridPage : Page
+    public partial class EigenschaftlerListGridPage : Page
     {
-        public PropertyGridPage()
+        public EigenschaftlerListGridPage()
         {
             InitializeComponent();
         }

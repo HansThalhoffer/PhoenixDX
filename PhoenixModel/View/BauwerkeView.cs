@@ -12,7 +12,7 @@ namespace PhoenixModel.View
     public static class BauwerkeView
     {
         // die Funktion beseitigt Fehler in den Datenbanken
-        public static Gebäude? GetGebäude(Gemark gemark)
+        public static Gebäude? GetGebäude(KleinFeld gemark)
         {
                 if (SharedData.Gebäude == null)
                     throw new Exception("Die Bauwerliste muss vor denen Kartendaten gelasen werden");

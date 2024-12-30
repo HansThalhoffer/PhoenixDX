@@ -11,7 +11,7 @@ using PhoenixModel.Program;
 
 namespace PhoenixModel.dbErkenfara
 {
-    public class Gebäude : GemarkPosition, IEigenschaftler, IDatabaseTable, ISelectable
+    public class Gebäude : KleinfeldPosition, IEigenschaftler, IDatabaseTable, ISelectable
     {
         // IDatabaseTable
         public const string TableName = "bauwerksliste";

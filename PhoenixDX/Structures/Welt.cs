@@ -20,7 +20,7 @@ namespace PhoenixDX.Structures
         Dictionary<int, Provinz> Provinzen = [] ;
         Dictionary<int, Reich> Reiche = [];
 
-        public Welt(SharedData.BlockingDictionary<Gemark> map) 
+        public Welt(SharedData.BlockingDictionary<KleinFeld> map) 
         {
             Provinzen.Add(701, new Provinz(7, 0, 701));
             Provinzen.Add(901, new Provinz(9, 0, 901));
@@ -64,7 +64,7 @@ namespace PhoenixDX.Structures
                 }
             }
 
-            foreach (Gemark gem in map.Values)
+            foreach (KleinFeld gem in map.Values)
             {
                 if (Plausibilität.IsValid(gem))
                 {
@@ -92,15 +92,15 @@ namespace PhoenixDX.Structures
             }
         }
 
-        public void UpdateGemark(GemarkPosition pos)
+        public void UpdateGemark(KleinfeldPosition pos)
         {
             if (pos.gf < 0 || pos.kf < 0 || pos.kf > 48)
                 return;
             try
             {
                 var provinz = Provinzen[pos.gf];
-                var gemark = SharedData.Map[Gemark.CreateBezeichner(pos.gf, pos.kf)];
-                Kleinfeld updatedKleinfeld = new Kleinfeld(pos.gf, pos.kf);
+                var gemark = SharedData.Map[KleinFeld.CreateBezeichner(pos.gf, pos.kf)];
+                Gemark updatedKleinfeld = new Gemark(pos.gf, pos.kf);
                 updatedKleinfeld.Initialize(gemark);
 
                 // reich verändert?
@@ -142,12 +142,12 @@ namespace PhoenixDX.Structures
         {
             Gelaende.LoadContent(contentManager);
             Reich.LoadContent(contentManager);
-            Kleinfeld.LoadContent(contentManager);
+            Gemark.LoadContent(contentManager);
         }
 
         public float TileTransparancy { get; set; } = 1f;
 
-        public Kleinfeld GetKleinfeld(int gf, int kf)
+        public Gemark GetKleinfeld(int gf, int kf)
         {
             Provinz provinz;
             if (Provinzen.TryGetValue(gf, out provinz))
@@ -177,7 +177,7 @@ namespace PhoenixDX.Structures
             return null;
         }
       
-        public Kleinfeld Draw(SpriteBatch spriteBatch, Vector2 scale, Vector2? mousePos, bool isMoving, TimeSpan gameTime, Kleinfeld selected, Rectangle visibleScreen)
+        public Gemark Draw(SpriteBatch spriteBatch, Vector2 scale, Vector2? mousePos, bool isMoving, TimeSpan gameTime, Gemark selected, Rectangle visibleScreen)
         {
             return WeltDrawer.Draw(spriteBatch, scale, mousePos, isMoving, TileTransparancy, ref Provinzen, gameTime, selected, visibleScreen );
         }    

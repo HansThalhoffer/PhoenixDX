@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace PhoenixDX.Structures
 {
-    internal class RuestortSymbol : KleinfeldAdorner
+    internal class RuestortSymbol : GemarkAdorner
     {
         public static Dictionary<string, RuestortSymbol> Ruestorte = new Dictionary<string, RuestortSymbol>
         {

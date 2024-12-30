@@ -35,7 +35,7 @@ namespace PhoenixModel.Helper
             floatValue = value;
         }
 
-        public MapEventArgs(GemarkPosition gem, MapEventType mapevent)
+        public MapEventArgs(KleinfeldPosition gem, MapEventType mapevent)
         {
             GF = gem.gf;
             KF = gem.kf;

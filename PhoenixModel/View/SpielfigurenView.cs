@@ -13,7 +13,7 @@ namespace PhoenixModel.View
 {
     public static class SpielfigurenView
     {
-        public static List<Spielfigur> GetSpielfiguren(GemarkPosition gem)
+        public static List<Spielfigur> GetSpielfiguren(KleinfeldPosition gem)
         {
             List<Spielfigur> result = [];
             var kreaturen = SharedData.Kreaturen?.Where(s => s.gf == gem.gf && s.kf == gem.kf && Plausibilität.IsValid(s));

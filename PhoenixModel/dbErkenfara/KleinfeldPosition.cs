@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace PhoenixModel.dbErkenfara
 {
     /*  wird aktuell noch nicht gebraucht, Figuren haben eigenes Verzeichnis
-    public class Verzeichnis : Dictionary<int, GemarkPosition>
+    public class Verzeichnis : Dictionary<int, KleinfeldPosition>
     {
-       public void Add(GemarkPosition gemarkPosition)
+       public void Add(KleinfeldPosition gemarkPosition)
         {
             if (this.ContainsKey(gemarkPosition.Key) == false)
             {
@@ -17,7 +17,7 @@ namespace PhoenixModel.dbErkenfara
             }
         }
 
-        public GemarkPosition? Get(int gf, int kf)
+        public KleinfeldPosition? Get(int gf, int kf)
         {
             int key = gf * 100 + kf; 
             if (this.ContainsKey(key))
@@ -26,15 +26,15 @@ namespace PhoenixModel.dbErkenfara
         }
     }*/
 
-    public class GemarkPosition
+    public class KleinfeldPosition
     {
         public virtual int gf { get; set; } = 0;
         public virtual int kf { get; set; } = 0;
 
-        public GemarkPosition()
+        public KleinfeldPosition()
         { }
 
-        public GemarkPosition(int gf, int kf)
+        public KleinfeldPosition(int gf, int kf)
         {
             this.gf = gf;
             this.kf = kf;

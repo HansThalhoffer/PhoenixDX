@@ -23,7 +23,7 @@ namespace PhoenixWPF.Dialogs
         }
         private void Schenkungen_Navigated(object sender, NavigationEventArgs e)
         {
-            if (Schenkungen.Content is PropertyGridPage page)
+            if (Schenkungen.Content is EigenschaftlerListGridPage page)
             {
                 if (SharedData.Schenkungen != null)
                 {

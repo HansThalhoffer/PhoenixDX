@@ -31,10 +31,10 @@ namespace PhoenixModel.Program
         }
 
         /// <summary>
-        /// überprüft den Besitz der Gemark/des Kleinfelds
+        /// überprüft den Besitz der KleinFeld/des Kleinfelds
         /// </summary>
         /// <param name="position">eine Gemarkpostion mit validem Bezeichner</param>
-        /// <returns>wahr, wenn die übergebene Gemark/Kleinfeld zu der Nation/Nation des authentifizeriten Nutzers gehört</returns>
+        /// <returns>wahr, wenn die übergebene KleinFeld/Kleinfeld zu der Nation/Nation des authentifizeriten Nutzers gehört</returns>
         public static bool BelongsToUser(Spielfigur figur)
         {
             if (SharedData.Map == null)
@@ -58,11 +58,11 @@ namespace PhoenixModel.Program
         }
 
         /// <summary>
-        /// überprüft den Besitz der Gemark/des Kleinfelds
+        /// überprüft den Besitz der KleinFeld/des Kleinfelds
         /// </summary>
         /// <param name="position">eine Gemarkpostion mit validem Bezeichner</param>
-        /// <returns>wahr, wenn die übergebene Gemark/Kleinfeld zu der Nation/Nation des authentifizeriten Nutzers gehört</returns>
-        public static bool BelongsToUser( GemarkPosition position)
+        /// <returns>wahr, wenn die übergebene KleinFeld/Kleinfeld zu der Nation/Nation des authentifizeriten Nutzers gehört</returns>
+        public static bool BelongsToUser( KleinfeldPosition position)
         {
             if (SharedData.Map == null)
             {

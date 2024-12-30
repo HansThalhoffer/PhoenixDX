@@ -29,8 +29,8 @@ namespace PhoenixDX.Drawing
         static double _tick = 0;
         static double _animated = 0;
         static bool _toggle = false;
-        public static Kleinfeld Draw(SpriteBatch spriteBatch, Vektor scale, Vektor? mousePos, bool isMoving, float tileTransparancy, 
-            ref Dictionary<int, Provinz> provinzen, TimeSpan gameTime, Kleinfeld selected, Rectangle visibleScreen)
+        public static Gemark Draw(SpriteBatch spriteBatch, Vektor scale, Vektor? mousePos, bool isMoving, float tileTransparancy, 
+            ref Dictionary<int, Provinz> provinzen, TimeSpan gameTime, Gemark selected, Rectangle visibleScreen)
         {         
             Color colorTiles = Color.White * tileTransparancy;
             _animated += gameTime.TotalMilliseconds - _tick;
@@ -50,7 +50,7 @@ namespace PhoenixDX.Drawing
             {
                 mausPos = new Vektor(mousePos.Value.X, mousePos.Value.Y);
             }
-            Kleinfeld mouseover = null;
+            Gemark mouseover = null;
             // Draw the map with culling
             foreach (var province in provinzen.Values)
             {
@@ -66,7 +66,7 @@ namespace PhoenixDX.Drawing
                 foreach (var gemark in province.Felder.Values)
                 {
                     var posG = gemark.GetMapPosition(posP, scale); // aktualisiert die MapSize - Reihenfolge wichtig
-                    var sizeG = Kleinfeld.GetMapSize();
+                    var sizeG = Gemark.GetMapSize();
                     Rectangle rScreenG = new Rectangle(Convert.ToInt32(posG.X), Convert.ToInt32(posG.Y), Convert.ToInt32(sizeG.X), Convert.ToInt32(sizeG.Y));
                     bool inKleinfeld = isMoving == false && mouseover == null && gemark.InKleinfeld(mausPos);
                     if (inKleinfeld)
@@ -95,7 +95,7 @@ namespace PhoenixDX.Drawing
                 foreach (var gemark in province.Felder.Values)
                 {
                     var posG = gemark.GetMapPosition(posP, scale); // aktualisiert die MapSize - Reihenfolge wichtig
-                    var sizeG = Kleinfeld.GetMapSize();
+                    var sizeG = Gemark.GetMapSize();
                     Rectangle rScreenG = new Rectangle(Convert.ToInt32(posG.X), Convert.ToInt32(posG.Y), Convert.ToInt32(sizeG.X), Convert.ToInt32(sizeG.Y));
                     bool inKleinfeld = isMoving == false && mouseover == null && gemark.InKleinfeld(mausPos);
                     if (inKleinfeld)

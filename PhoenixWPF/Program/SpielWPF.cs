@@ -104,7 +104,7 @@ namespace PhoenixWPF.Program
             if (SharedData.Map != null && SharedData.Map.IsAddingCompleted)
             {
 
-                var bezeichner = GemarkPosition.CreateBezeichner(e.GF, e.KF);
+                var bezeichner = KleinfeldPosition.CreateBezeichner(e.GF, e.KF);
                 var gem = SharedData.Map[bezeichner];
                 Main.Instance.SelectionHistory.Current = gem;
             }

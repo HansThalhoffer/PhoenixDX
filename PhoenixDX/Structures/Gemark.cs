@@ -20,7 +20,7 @@ using PhoenixDX.Helper;
 
 namespace PhoenixDX.Structures
 {
-    public class Kleinfeld : Hex
+    public class Gemark : Hex
     {
 
         static Microsoft.Xna.Framework.Vector2 _mapCoords = new();
@@ -49,14 +49,14 @@ namespace PhoenixDX.Structures
 
         TerrainType _terrainType  = TerrainType.Default;
 
-        // Dictionary<string, KleinfeldAdorner> _layer_1 = [];
-        // public Dictionary<string, KleinfeldAdorner> Layer_0 { get { return _layer_1; } }
-        List<KleinfeldAdorner> _layer_0 = [];
-        List<KleinfeldAdorner> _layer_1 = [];
-        public List<KleinfeldAdorner> Layer_0 { get { return _layer_0; } }
-        public List<KleinfeldAdorner> Layer_1 { get { return _layer_1; } }
+        // Dictionary<string, GemarkAdorner> _layer_1 = [];
+        // public Dictionary<string, GemarkAdorner> Layer_0 { get { return _layer_1; } }
+        List<GemarkAdorner> _layer_0 = [];
+        List<GemarkAdorner> _layer_1 = [];
+        public List<GemarkAdorner> Layer_0 { get { return _layer_0; } }
+        public List<GemarkAdorner> Layer_1 { get { return _layer_1; } }
 
-        public Kleinfeld(int gf, int kf): base(Hex.RadiusGemark, true)
+        public Gemark(int gf, int kf): base(Hex.RadiusGemark, true)
         {
             Koordinaten = new KartenKoordinaten(gf, kf,0,0);
             _terrainType = TerrainType.Default;
@@ -98,9 +98,9 @@ namespace PhoenixDX.Structures
             return _mapCoords;
         }
 
-        // verwandelt die Daten aus der Gemark in ein visuelles Element
+        // verwandelt die Daten aus der KleinFeld in ein visuelles Element
         bool _isInitalized = false;
-        public bool Initialize(Gemark gem)
+        public bool Initialize(KleinFeld gem)
         {
             if (_isInitalized == true)
                 return false;
@@ -192,7 +192,7 @@ namespace PhoenixDX.Structures
                 {    Gelaende gel = GeländeTabelle.Terrains[(int)_terrainType] as Gelaende;
                     if (gel != null)
                         textures.Add(gel.GetTexture());
-                    foreach (KleinfeldAdorner adorner in Layer_0)
+                    foreach (GemarkAdorner adorner in Layer_0)
                     {
                         if (adorner.HasDirections)
                             textures.AddRange(adorner.GetTextures());
@@ -203,7 +203,7 @@ namespace PhoenixDX.Structures
                 }
                 case 1:
                 {
-                    foreach (KleinfeldAdorner adorner in Layer_1)
+                    foreach (GemarkAdorner adorner in Layer_1)
                     {
                         if (adorner.HasDirections)
                             textures.AddRange(adorner.GetTextures());
@@ -228,7 +228,7 @@ namespace PhoenixDX.Structures
             // Get all types in the current assembly that derive from the base type
             var derivedTypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes())
-                .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(KleinfeldAdorner)))
+                .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(GemarkAdorner)))
                 .ToList();
 
             var textureValues = new List<AdornerTexture>();

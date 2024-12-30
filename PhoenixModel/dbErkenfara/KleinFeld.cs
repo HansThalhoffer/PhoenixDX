@@ -1,4 +1,4 @@
-﻿// Gemark.cs
+﻿// KleinFeld.cs
 
 using PhoenixModel.dbCrossRef;
 using PhoenixModel.Database;
@@ -13,7 +13,7 @@ using PhoenixModel.dbPZE;
 
 namespace PhoenixModel.dbErkenfara
 {
-    public class Gemark : GemarkPosition, ISelectable, IDatabaseTable
+    public class KleinFeld : KleinfeldPosition, ISelectable, IDatabaseTable
     {
         #region Schnittstellen
         public const string TableName = "Karte";

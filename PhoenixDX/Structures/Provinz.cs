@@ -26,7 +26,7 @@ namespace PhoenixDX.Structures
             get { return _gf.ToString(); }
         }
 
-        public Dictionary<int, Kleinfeld> Felder { get; set; } = [];
+        public Dictionary<int, Gemark> Felder { get; set; } = [];
 
         public Provinz(int x, int y, int gf) : base(Hex.RadiusProvinz, false)
         {
@@ -59,18 +59,18 @@ namespace PhoenixDX.Structures
             return _mapSize;
         }
 
-        public Kleinfeld GetKleinfeld(int kf)
+        public Gemark GetKleinfeld(int kf)
         {
             if (Felder.ContainsKey(kf))
                 return Felder[kf];
             return null;
         }
 
-        public Kleinfeld GetOrCreateKleinfeld(int kf)
+        public Gemark GetOrCreateKleinfeld(int kf)
         {
             if (Felder.ContainsKey(kf))
                 return Felder[kf];
-            var p = new Kleinfeld(GF, kf);
+            var p = new Gemark(GF, kf);
             Felder.Add(kf, p);
             return p;
         }

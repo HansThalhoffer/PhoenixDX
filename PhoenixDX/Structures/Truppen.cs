@@ -14,7 +14,7 @@ using Vektor = Microsoft.Xna.Framework.Vector2;
 
 namespace PhoenixDX.Structures
 {
-    internal class Truppen : KleinfeldAdorner
+    internal class Truppen : GemarkAdorner
     {
 
         public class FigurImage

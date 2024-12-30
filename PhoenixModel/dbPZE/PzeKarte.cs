@@ -7,7 +7,7 @@ using PhoenixModel.Helper;
 
 namespace PhoenixModel.dbPZE
 {
-    public class PzeKarte : GemarkPosition, IDatabaseTable, IEigenschaftler
+    public class PzeKarte : KleinfeldPosition, IDatabaseTable, IEigenschaftler
     {
         public const string TableName = "Karte";
         string IDatabaseTable.TableName => TableName;

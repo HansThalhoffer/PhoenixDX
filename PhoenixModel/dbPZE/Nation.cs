@@ -21,7 +21,7 @@ namespace PhoenixModel.dbPZE
         public string Bezeichner { get => Reich ?? "Null"; }
 
         // IEigenschaftler
-        private static readonly string[] PropertiestoIgnore = { "Alias" };
+        private static readonly string[] PropertiestoIgnore = { "Alias", "DBname", "DBpass", "Farbe", "Nummer" };
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
         #endregion
 

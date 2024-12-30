@@ -10,7 +10,7 @@ namespace PhoenixModel.View
     public static class EinnahmenView
     {
     
-        public static int GetTerrainEinnahmen(Gemark gem)
+        public static int GetTerrainEinnahmen(KleinFeld gem)
         {
             if (gem.Terrain != null)
             {
@@ -26,7 +26,7 @@ namespace PhoenixModel.View
             return 0;
         }
 
-        public static int GetGebäudeEinnahmen(Gemark gem)
+        public static int GetGebäudeEinnahmen(KleinFeld gem)
         {
             Gebäude? gebäude = gem.Gebäude;
             if (gebäude != null)

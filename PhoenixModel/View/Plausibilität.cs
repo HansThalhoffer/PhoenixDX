@@ -12,10 +12,10 @@ namespace PhoenixModel.View
     {
         public static bool IsValid(Spielfigur spielfigur)
         {
-            return IsValid(spielfigur as GemarkPosition);
+            return IsValid(spielfigur as KleinfeldPosition);
         }
 
-        public static bool IsValid(GemarkPosition? position)
+        public static bool IsValid(KleinfeldPosition? position)
         {
             return position != null && position.gf > 0 && position.kf > 0 && position.kf <=48;
         }

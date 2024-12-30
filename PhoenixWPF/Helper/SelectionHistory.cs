@@ -26,7 +26,7 @@ namespace PhoenixWPF.Helper
         {
             if (selected != null)
             {
-                Main.Instance.PropertyDisplay?.Display(selected.Eigenschaften);
+                Main.Instance.PropertyDisplay?.Display(selected);
             }
             return selected;
         }

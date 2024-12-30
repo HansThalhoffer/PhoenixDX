@@ -14,7 +14,7 @@ using static PhoenixModel.ExternalTables.GeländeTabelle;
 
 namespace PhoenixDX.Structures
 {
-    public class Reich : KleinfeldAdorner
+    public class Reich : GemarkAdorner
     {
         public Color color;
         public string name;

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace PhoenixModel.dbZugdaten
 {
  
-    public abstract class Spielfigur: GemarkPosition, ISelectable
+    public abstract class Spielfigur: KleinfeldPosition, ISelectable
     {
         public abstract FigurType Typ { get; }
 

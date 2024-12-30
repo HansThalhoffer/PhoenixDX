@@ -42,8 +42,8 @@ namespace PhoenixDX.Program
         private SpriteBatch _spriteBatch;
 
         public Welt Weltkarte { get; private set; }
-        private Kleinfeld _selected = null;
-        private Kleinfeld _mouseOver = null;
+        private Gemark _selected = null;
+        private Gemark _mouseOver = null;
         private MappaMundi _wpfBridge;
 
         public void EnqueueAction(Action action)
@@ -150,11 +150,11 @@ namespace PhoenixDX.Program
         }
 
         // wenn sich die Daten geändert haben, werden die jeweiligen Gemarken neu gezeichnet
-        ConcurrentQueue<GemarkPosition> _updateQueue = [];
+        ConcurrentQueue<KleinfeldPosition> _updateQueue = [];
         public void OnUpdateEvent(MapEventArgs args)
         {
             
-            _updateQueue.Enqueue(new GemarkPosition(args.GF, args.KF));
+            _updateQueue.Enqueue(new KleinfeldPosition(args.GF, args.KF));
           
         }
 
@@ -191,7 +191,7 @@ namespace PhoenixDX.Program
 
         void _goto(int gf, int kf)
         {
-            Kleinfeld kleinfeld = Weltkarte.GetKleinfeld(gf, kf);
+            Gemark kleinfeld = Weltkarte.GetKleinfeld(gf, kf);
             if (kleinfeld == null)
                 return;
             Provinz provinz = Weltkarte.GetProviz(gf);
@@ -200,7 +200,7 @@ namespace PhoenixDX.Program
             // Vektor sizeP = provinz.GetMapSize();
             var gemark = provinz.GetKleinfeld(kf);
             var posG = gemark.GetMapPosition(posP, _scale); // aktualisiert die MapSize - Reihenfolge wichtig
-            // var sizeG = Kleinfeld.GetMapSize();
+            // var sizeG = Gemark.GetMapSize();
             posG *= -1;
             Vektor offset = new Vektor(_clientWidth / 2, _clientHeight / 2);
             posG += offset;

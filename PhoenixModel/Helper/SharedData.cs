@@ -69,7 +69,7 @@ namespace PhoenixModel.Helper
         }
 
         // Karte
-        public static BlockingDictionary<Gemark>? Map = null;
+        public static BlockingDictionary<KleinFeld>? Map = null;
         public static BlockingDictionary<Gebäude>? Gebäude = null; // bauwerkliste
 
         // PZE

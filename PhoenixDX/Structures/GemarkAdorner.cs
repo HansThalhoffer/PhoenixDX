@@ -34,9 +34,9 @@ namespace PhoenixDX.Structures
         }
     }
 
-    public abstract class KleinfeldAdorner
+    public abstract class GemarkAdorner
     {
-        public KleinfeldAdorner()
+        public GemarkAdorner()
         {
         }
 
@@ -44,7 +44,7 @@ namespace PhoenixDX.Structures
 
         int[] _value = {0,0,0,0,0,0};
 
-        public KleinfeldAdorner(int? NW, int? NO, int? O, int? SO, int? SW, int? W)
+        public GemarkAdorner(int? NW, int? NO, int? O, int? SO, int? SW, int? W)
         {
             _value[ (int)Direction.NW] = (int)NW;  
             _value[ (int)Direction.NO] = (int)NO;

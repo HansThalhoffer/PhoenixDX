@@ -4,7 +4,7 @@ namespace PhoenixWPF.Helper
 {
     public interface IPropertyDisplay
     {
-        public void Display(List<Eigenschaft> eigenschaften);
+        public void Display(IEigenschaftler eigenschaftler);
     }
 
     public interface IOptions

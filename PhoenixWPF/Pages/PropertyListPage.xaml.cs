@@ -31,7 +31,12 @@ namespace PhoenixWPF.Pages
 
         public void Display(List<Eigenschaft> eigenschaften)
         {
-            this.PropertyListBox.ItemsSource = eigenschaften;
+            this.PropertyDataGrid.ItemsSource = eigenschaften;
+        }
+
+        public void Display(IEigenschaftler eigenschaftler)
+        {
+            Display(eigenschaftler.Eigenschaften);
         }
     }
 }
