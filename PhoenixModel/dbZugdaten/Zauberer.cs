@@ -10,8 +10,6 @@ namespace PhoenixModel.dbZugdaten
     {
         public const string TableName = "Zauberer";
         string IDatabaseTable.TableName => TableName;
-        private static readonly string[] PropertiestoIgnore = [];
-        public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
         public override FigurType Typ
         {
             get
@@ -122,7 +120,7 @@ namespace PhoenixModel.dbZugdaten
             this.bp_max = DatabaseConverter.ToInt32(reader[(int)Felder.bp_max]);
         }
 
-        public void Save(DbCommand command)
+        public override void Save(DbCommand command)
         {
             command.CommandText = $@"
          UPDATE {TableName} SET
@@ -178,5 +176,9 @@ namespace PhoenixModel.dbZugdaten
             command.ExecuteNonQuery();
         }
 
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -28,5 +28,15 @@ namespace PhoenixModel.dbPZE
             this.item = DatabaseConverter.ToString(reader[(int)Felder.item]);
             this.fieldsize = DatabaseConverter.ToInt32(reader[(int)Felder.fieldsize]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -26,5 +26,15 @@ namespace PhoenixModel.dbCrossRef
             this.Feld = DatabaseConverter.ToString(reader[(int)Felder.Feld]);
             this.Art = DatabaseConverter.ToString(reader[(int)Felder.Art]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

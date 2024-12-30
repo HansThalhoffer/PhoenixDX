@@ -22,9 +22,9 @@ namespace PhoenixModel.Program
         private string _defaultValuesReiche = "_Data\\EinstellungenReiche.txt";
         private string _databaseLocationCrossRef = "_Data\\Crossreferenzen\\crossref.mdb";
         private string _passwordCrossRef = string.Empty ;
-
         private string _databaseLocationZugdaten = "_Data\\Zudaten\\reich.mdb";
         private string _passwordReich = string.Empty;
+        private string _databaseLocationFeinde = "Feindaufklaerung\\Feindaufklaerung.dat";
         private int _selectedReich = -1;
         private int _selectedZug = -1;
 

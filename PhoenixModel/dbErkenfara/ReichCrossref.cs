@@ -40,5 +40,15 @@ namespace PhoenixModel.dbErkenfara
             this.Kuestenrecht_von = DatabaseConverter.ToInt32(reader[(int)Felder.Kuestenrecht_von]);
             this.Flottenkey = DatabaseConverter.ToInt32(reader[(int)Felder.Flottenkey]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

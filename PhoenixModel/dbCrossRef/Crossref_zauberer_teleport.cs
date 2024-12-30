@@ -30,5 +30,15 @@ namespace PhoenixModel.dbCrossRef
             this.Teleport = DatabaseConverter.ToInt32(reader[(int)Felder.Teleport]);
             this.Regeneration_GP = DatabaseConverter.ToInt32(reader[(int)Felder.Regeneration_GP]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

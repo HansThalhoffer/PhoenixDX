@@ -40,5 +40,15 @@ namespace PhoenixModel.dbZugdaten
             this.Email = DatabaseConverter.ToString(reader[(int)Felder.Email]);
             this.ID = DatabaseConverter.ToString(reader[(int)Felder.id]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

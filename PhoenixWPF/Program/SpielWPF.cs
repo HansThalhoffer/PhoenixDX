@@ -106,7 +106,7 @@ namespace PhoenixWPF.Program
 
                 var bezeichner = GemarkPosition.CreateBezeichner(e.GF, e.KF);
                 var gem = SharedData.Map[bezeichner];
-                Main.Instance.PropertyDisplay?.Display(gem.Eigenschaften);
+                Main.Instance.SelectionHistory.Current = gem;
             }
         }
 

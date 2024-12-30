@@ -34,5 +34,15 @@ namespace PhoenixModel.dbPZE
             this.kf_nach = DatabaseConverter.ToInt32(reader[(int)Felder.kf_nach]);
             this.fusmit = DatabaseConverter.ToString(reader[(int)Felder.fusmit]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

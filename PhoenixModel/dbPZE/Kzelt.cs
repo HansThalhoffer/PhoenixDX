@@ -28,5 +28,15 @@ namespace PhoenixModel.dbPZE
             this.gf_von = DatabaseConverter.ToInt32(reader[(int)Felder.gf_von]);
             this.kf_von = DatabaseConverter.ToInt32(reader[(int)Felder.kf_von]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

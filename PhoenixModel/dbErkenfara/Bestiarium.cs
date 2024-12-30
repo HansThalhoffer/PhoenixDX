@@ -44,5 +44,15 @@ Kreaturenname, Beschreibung1, Beschreibung2, Beschreibung3, Beschreibung4, Waffe
         this.IMG = DatabaseConverter.ToString(reader[(int) Felder.IMG]);
         this.BP = DatabaseConverter.ToInt32(reader[(int) Felder.BP]);
     }
-}
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

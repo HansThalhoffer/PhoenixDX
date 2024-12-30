@@ -26,5 +26,15 @@ namespace PhoenixModel.dbCrossRef
             this.Feldtyp = DatabaseConverter.ToString(reader[(int)Felder.Feldtyp]);
             this.Nummer = DatabaseConverter.ToInt32(reader[(int)Felder.Nummer]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

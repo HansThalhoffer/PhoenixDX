@@ -32,5 +32,15 @@ namespace PhoenixModel.dbPZE
             this.dbname = DatabaseConverter.ToString(reader[(int)Felder.dbname]);
             this.dbpass = DatabaseConverter.ToString(reader[(int)Felder.dbpass]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

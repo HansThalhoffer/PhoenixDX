@@ -28,5 +28,15 @@ namespace PhoenixModel.dbCrossRef
             this.Unittype = DatabaseConverter.ToString(reader[(int)Felder.Unittype]);
             this.BP_max = DatabaseConverter.ToInt32(reader[(int)Felder.BP_max]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

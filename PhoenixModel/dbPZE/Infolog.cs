@@ -37,5 +37,15 @@ namespace PhoenixModel.dbPZE
             ReichID = DatabaseConverter.ToInt32(reader[(int)Felder.ReichID]);
             Monat = DatabaseConverter.ToString(reader[(int)Felder.Monat]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

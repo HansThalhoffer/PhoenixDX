@@ -44,5 +44,15 @@ namespace PhoenixModel.dbZugdaten
             this.Piratenflag = DatabaseConverter.ToInt32(reader[(int) Felder.Piratenflag]);
             this.Phase = DatabaseConverter.ToInt32(reader[(int) Felder.Phase]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -320,7 +320,6 @@ namespace PhoenixDX.Program
             // Process queued actions
             while (_actionQueue.TryDequeue(out var action))
                 action();
-
             while (_updateQueue.TryDequeue(out var gemarkPosition))
                 Weltkarte.UpdateGemark(gemarkPosition);
 

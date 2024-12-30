@@ -12,24 +12,22 @@ namespace PhoenixModel.dbZugdaten
         public const string TableName = "Schiffe";
         string IDatabaseTable.TableName => TableName;
         // IEigenschaftler
-        private static readonly string[] PropertiestoIgnore = [];
-        public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
         public override FigurType Typ
         {
             get
             {
                 // es sind piraten
-                if (this.Reich!= null && Reich.Nummer == ReichTabelle.Piraten)
+                if (this.Nation!= null && Nation.Nummer == ReichTabelle.Piraten)
                 {
                     if (SKP > 0)
                         return FigurType.PiratenSchweresKriegsschiff;
-                    if (SKP > 0)
+                    if (LKP > 0)
                         return FigurType.PiratenLeichtesKriegsschiff;
                     return FigurType.PiratenSchiff;
                 }
                 if (SKP > 0)
                     return FigurType.SchweresKriegsschiff;
-                if (SKP > 0)
+                if (LKP > 0)
                     return FigurType.LeichtesKriegsschiff;
                 return FigurType.Schiff;
             }
@@ -270,5 +268,9 @@ namespace PhoenixModel.dbZugdaten
             command.ExecuteNonQuery();
         }
 
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

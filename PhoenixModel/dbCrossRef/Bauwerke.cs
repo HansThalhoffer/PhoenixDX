@@ -53,6 +53,16 @@ namespace PhoenixModel.dbCrossRef
             Baupunkte = DatabaseConverter.ToInt32(reader[(int)Felder.Baupunkte]);
             Bauwerk = DatabaseConverter.ToString(reader[(int)Felder.Bauwerk]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     // referenzliste
@@ -67,6 +77,8 @@ namespace PhoenixModel.dbCrossRef
         public int? KapazitätHF { get; set; }
         public int? KapazitätZ { get; set; }
         public bool? canSieged { get; set; }
+
+        string IDatabaseTable.Bezeichner => throw new NotImplementedException();
 
         public enum Felder
         {
@@ -85,6 +97,21 @@ namespace PhoenixModel.dbCrossRef
             canSieged = DatabaseConverter.ToBool(reader[(int)Felder.canSieged]);
             if (Baupunkte > 0)
                 NachBaupunkten.Add(Baupunkte.Value, this);
+        }
+
+        void IDatabaseTable.Load(DbDataReader reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IDatabaseTable.Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IDatabaseTable.Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
         }
     }
 }

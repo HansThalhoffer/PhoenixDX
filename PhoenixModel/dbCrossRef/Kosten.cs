@@ -30,5 +30,15 @@ namespace PhoenixModel.dbCrossRef
             this.BauPunkte = DatabaseConverter.ToInt32(reader[(int)Felder.BauPunkte]);
             this.RP = DatabaseConverter.ToInt32(reader[(int)Felder.RP]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

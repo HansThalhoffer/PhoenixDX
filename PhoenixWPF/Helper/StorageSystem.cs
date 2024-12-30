@@ -88,7 +88,12 @@ namespace PhoenixWPF.Helper
 
             if (File.Exists(fullPath))
                 return fullPath;
-            else
+            //else
+            {
+                // todo root folder auswahl und zusammenbau der filenamen, wenn sie mit _data beginnen
+            }
+
+            if (File.Exists(fullPath) == false)
             {
                 string filter = "Any File (*.*)|*.*";
                 if (fileName.EndsWith(".mdb"))
@@ -104,9 +109,10 @@ namespace PhoenixWPF.Helper
 
                 if (result == true && !string.IsNullOrEmpty(openFileDialog.FileName))
                     return openFileDialog.FileName;
-                else
-                    return "";
+
+                throw new FileNotFoundException($"Datei {relativePath} konnte nicht lokalisiert werden");
             }
+            throw new FileNotFoundException($"Datei {relativePath} konnte nicht lokalisiert werden");
         }
 
         /// <summary>

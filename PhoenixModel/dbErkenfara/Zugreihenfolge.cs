@@ -32,5 +32,15 @@ namespace PhoenixModel.dbErkenfara
             this.Auftauchpunkt_A = DatabaseConverter.ToString(reader[(int)Felder.Auftauchpunkt_A]);
             this.ID = DatabaseConverter.ToInt32(reader[(int)Felder.id]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

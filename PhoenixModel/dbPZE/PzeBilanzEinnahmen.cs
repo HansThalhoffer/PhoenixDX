@@ -81,5 +81,15 @@ namespace PhoenixModel.dbPZE
             this.Sonstiges = DatabaseConverter.ToInt32(reader[(int)Felder.Sonstiges]);
             this.Reichsschatzneu = DatabaseConverter.ToInt32(reader[(int)Felder.Reichsschatzneu]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

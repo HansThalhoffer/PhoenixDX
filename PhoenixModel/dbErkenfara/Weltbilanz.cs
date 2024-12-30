@@ -9,7 +9,7 @@ namespace PhoenixModel.dbErkenfara
     {
         public const string TableName = "Weltbilanz";
         string IDatabaseTable.TableName => TableName;
-        public string Bezeichner => ReichId ?? "unbekanntes Reich";
+        public string Bezeichner => ReichId ?? "unbekanntes Nation";
         // IEigenschaftler
         private static readonly string[] PropertiestoIgnore = [];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
@@ -27,6 +27,16 @@ namespace PhoenixModel.dbErkenfara
             this.Reichname = DatabaseConverter.ToString(reader[(int)Felder.Reichname]);
             this.ReichId = DatabaseConverter.ToString(reader[(int)Felder.ReichId]);
             this.Einnahmen = DatabaseConverter.ToInt32(reader[(int)Felder.Einnahmen]);
+        }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -10,8 +10,6 @@ namespace PhoenixModel.dbZugdaten
     {
         public const string TableName = "Reiter";
         string IDatabaseTable.TableName => TableName;
-        private static readonly string[] PropertiestoIgnore = [];
-        public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
         public override FigurType Typ
         {
             get
@@ -171,6 +169,11 @@ namespace PhoenixModel.dbZugdaten
             this.y18 = DatabaseConverter.ToInt32(reader[(int)Felder.y18]);
             this.x19 = DatabaseConverter.ToInt32(reader[(int)Felder.x19]);
             this.y19 = DatabaseConverter.ToInt32(reader[(int)Felder.y19]);
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
         }
     }
 }

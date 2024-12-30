@@ -31,7 +31,7 @@ namespace PhoenixWPF.Program
         public SpielWPF? Spiel { get; set; }
         public IPropertyDisplay? PropertyDisplay { get; set; } = null;
         public IOptions? Options { get; set; } = null;
-        
+        public SelectionHistory SelectionHistory = [];
 
         static public Main Instance { get { return _instance; } }
 

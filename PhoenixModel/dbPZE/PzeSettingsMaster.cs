@@ -37,5 +37,15 @@ namespace PhoenixModel.dbPZE
             this.Invasorflag = DatabaseConverter.ToInt32(reader[(int)Felder.Invasorflag]);
             this.Audvacargeld = DatabaseConverter.ToInt32(reader[(int)Felder.Audvacargeld]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

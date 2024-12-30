@@ -9,6 +9,7 @@ using PhoenixModel.ExternalTables;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.View;
 using PhoenixModel.Program;
+using PhoenixModel.dbPZE;
 
 namespace PhoenixModel.dbErkenfara
 {
@@ -190,9 +191,14 @@ namespace PhoenixModel.dbErkenfara
             throw new NotImplementedException();
         }
 
-        public void Select()
+        public bool Select()
         {
-            
+            return true;
+        }
+
+        public bool Edit()
+        {
+            return ViewModel.BelongsToUser(this);
         }
 
         public GeländeTabelle Terrain
@@ -206,6 +212,16 @@ namespace PhoenixModel.dbErkenfara
                 if (SharedData.Nationen == null || Reich == null)
                     return string.Empty;
                 return SharedData.Nationen.ElementAt(Reich.Value).Reich ?? string.Empty; 
+            }
+        }
+
+        public Nation? Nation
+        {
+            get
+            {
+                if (SharedData.Nationen == null || Reich == null)
+                    return null;
+                return SharedData.Nationen.ElementAt(Reich.Value);
             }
         }
 

@@ -56,5 +56,9 @@ namespace PhoenixModel.dbZugdaten
             command.ExecuteNonQuery();
         }
 
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using PhoenixModel.dbErkenfara;
 using PhoenixModel.ExternalTables;
+using PhoenixModel.Helper;
 using PhoenixModel.Program;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 namespace PhoenixModel.dbZugdaten
 {
  
-    public abstract class Spielfigur: GemarkPosition
+    public abstract class Spielfigur: GemarkPosition, ISelectable
     {
         public abstract FigurType Typ { get; }
 
@@ -48,7 +49,7 @@ namespace PhoenixModel.dbZugdaten
 
         public int Nummer { get; set; }
         public string Bezeichner => $"{Typ.ToString()} {Nummer.ToString()}";
-        public dbPZE.Nation? Reich { get; set; } = null;
+        public dbPZE.Nation? Nation { get; set; } = null;
 
         public int gf_von { get; set; }
         public int kf_von { get; set; }
@@ -104,10 +105,30 @@ namespace PhoenixModel.dbZugdaten
         public void AssignToSelectedReich()
         {
             if (ViewModel.SelectedNation == null)
-                throw new InvalidOperationException("Zuext muss ein Reich ausgewählt sein");
-            this.Reich = ViewModel.SelectedNation;
+                throw new InvalidOperationException("Zuext muss ein Nation ausgewählt sein");
+            this.Nation = ViewModel.SelectedNation;
         }
+
+        public bool Select()
+        {
+            if (SharedData.Map == null)
+                return false;
+            if (ViewModel.SelectedNation == null || this.Nation == null)
+                return false;
+            // die Spielfigur gehört evtl. zum Nation des aktuellen Nutzers und kann daher ausgeählt werden
+            return ViewModel.SelectedNation == Nation;
+        }
+
+        public bool Edit()
+        {
+            return Select();
+        }
+
         // wird nicht benötigt
         public string? ph_xy { get; set; }
+
+        private static readonly string[] PropertiestoIgnore = [];
+        public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
+
     }
 }

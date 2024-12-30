@@ -33,7 +33,7 @@ namespace PhoenixDX.Structures
             }
             else
             {
-                _ = MessageBox.Show("Fehler", "Das Reich hat keine Farbe gefunden " + nation.Farbname, ["OK"]);
+                _ = MessageBox.Show("Fehler", "Das Nation hat keine Farbe gefunden " + nation.Farbname, ["OK"]);
             }
         }
 

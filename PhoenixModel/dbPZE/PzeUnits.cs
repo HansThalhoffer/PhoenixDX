@@ -180,6 +180,16 @@ namespace PhoenixModel.dbPZE
             Chars = DatabaseConverter.ToString(reader[(int)Felder.Chars]);
             bp_max = DatabaseConverter.ToInt32(reader[(int)Felder.bp_max]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 

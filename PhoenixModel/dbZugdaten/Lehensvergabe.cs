@@ -41,5 +41,15 @@ namespace PhoenixModel.dbZugdaten
             this.x = DatabaseConverter.ToInt32(reader[(int)Felder.x]);
             this.y = DatabaseConverter.ToInt32(reader[(int)Felder.y]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

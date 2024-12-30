@@ -36,5 +36,15 @@ namespace PhoenixModel.dbCrossRef
             this.Kapazitaet_Z = DatabaseConverter.ToInt32(reader[(int)Felder.Kapazitaet_Z]);
             this.canSieged = DatabaseConverter.ToBool(reader[(int)Felder.canSieged]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

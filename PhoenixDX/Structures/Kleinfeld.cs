@@ -38,7 +38,7 @@ namespace PhoenixDX.Structures
         public Reich Reich { get => _reich; 
             set {  
                 _reich = value;
-                //Layer_0.Add("Reich", value);
+                //Layer_0.Add("Nation", value);
                 Layer_0.Insert(0,value);
             }
         }
@@ -143,7 +143,7 @@ namespace PhoenixDX.Structures
                 List<Truppen.Figur> truppen = [];
                 foreach (var figur in spielfiguren)
                 {
-                    Microsoft.Xna.Framework.Color color = Kolor.Convert(figur.Reich.Farbe);
+                    Microsoft.Xna.Framework.Color color = Kolor.Convert(figur.Nation.Farbe);
                     truppen.Add(new Truppen.Figur(figur.Typ, color));
                 }
                 if (truppen.Count > 0) 

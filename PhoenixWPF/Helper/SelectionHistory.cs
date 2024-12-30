@@ -1,4 +1,5 @@
-﻿using PhoenixModel.Program;
+﻿using PhoenixModel.dbErkenfara;
+using PhoenixModel.Program;
 using PhoenixWPF.Program;
 using System;
 using System.Collections.Generic;
@@ -37,6 +38,10 @@ namespace PhoenixWPF.Helper
             return _OnSelectionChange(Current);
         }
 
+        /// <summary>
+        /// gibt das aktuell ausgewählte Objekt zurück
+        /// beim Setzen des Objektes wird die Queue abgeschnitten, wenn bereits zurück nagigiert wurde
+        /// </summary>
         public ISelectable? Current
         { 
             get
@@ -46,22 +51,16 @@ namespace PhoenixWPF.Helper
             }
             set
             {
-                if (Current != value)
+                if (value != null && value.Select() &&  Current != value)
                 {
                     if (_index >= 0)
                     {
-                        // stimmt die Rechnung?
+                        // hiser soll abgeschnitten werden bis zum aktuellen Eintrag, falls bereits zurücknavigiert wurde
                         while (this.Count > _index + 1)
                             this.RemoveAt(this.Count-1);
                     }
-                    if (value != null)
-                    {
-                        this.Add(value);
-                        NavigateForward();
-                    }
-                }
-                else
-                {
+                    this.Add(value);
+                    NavigateForward();
                     _OnSelectionChange(Current);
                 }
             }

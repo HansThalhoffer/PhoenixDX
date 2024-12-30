@@ -38,5 +38,15 @@ namespace PhoenixModel.dbZugdaten
             this.Verruestet = DatabaseConverter.ToInt32(reader[(int)Felder.Verruestet]);
             this.monat = DatabaseConverter.ToInt32(reader[(int)Felder.monat]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

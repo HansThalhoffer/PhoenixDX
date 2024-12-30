@@ -40,5 +40,16 @@ namespace PhoenixModel.dbCrossRef
             this.hoehenstufe = DatabaseConverter.ToInt32(reader[(int)Felder.hoehenstufe]);
         }
 
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+
     }
 }

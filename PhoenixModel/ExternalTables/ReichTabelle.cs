@@ -19,7 +19,7 @@ namespace PhoenixModel.ExternalTables
 
         public static ReichTabelle[] Vorbelegung =
         {
-                new ReichTabelle( new string[] { "Kein Reich", "keinreich",  "kein reich" }, "grau", "#808080"),
+                new ReichTabelle( new string[] { "Kein Nation", "keinreich",  "kein reich" }, "grau", "#808080"),
                 new ReichTabelle( new string[] { "Theostelos", "theostelos" }, "hellblau", "#04D9FF") ,
                 new ReichTabelle( new string[] { "Yaromo", "yaromo" }, "gelb", "#FFFF00") ,
                 new ReichTabelle( new string[] { "USA.", "variedat", "uk d.v.k", "u.s.a.", "unabhängige stämme asimilans" }, "orange","#FFA500") ,

@@ -151,5 +151,15 @@ namespace PhoenixModel.dbPZE
             this.Bauwerknamen = DatabaseConverter.ToString(reader[(int)Felder.Bauwerknamen]);
             this.lehensid = DatabaseConverter.ToInt32(reader[(int)Felder.lehensid]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

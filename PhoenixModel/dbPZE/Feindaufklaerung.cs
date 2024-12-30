@@ -41,5 +41,15 @@ namespace PhoenixModel.dbPZE
             KF = DatabaseConverter.ToInt32(reader[(int)Felder.KF]);
             Notiz = DatabaseConverter.ToString(reader[(int)Felder.Notiz]);
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

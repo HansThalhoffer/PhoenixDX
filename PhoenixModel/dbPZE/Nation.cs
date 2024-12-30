@@ -60,6 +60,16 @@ namespace PhoenixModel.dbPZE
                     break;
             }
         }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
 
     }

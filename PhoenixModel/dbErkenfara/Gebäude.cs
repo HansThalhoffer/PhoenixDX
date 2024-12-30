@@ -7,10 +7,11 @@ using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PhoenixModel.Program;
 
 namespace PhoenixModel.dbErkenfara
 {
-    public class Gebäude : GemarkPosition, IEigenschaftler, IDatabaseTable
+    public class Gebäude : GemarkPosition, IEigenschaftler, IDatabaseTable, ISelectable
     {
         // IDatabaseTable
         public const string TableName = "bauwerksliste";
@@ -39,6 +40,25 @@ namespace PhoenixModel.dbErkenfara
             kf = DatabaseConverter.ToInt32(reader[(int)Felder.kf]);
             Reich = DatabaseConverter.ToString(reader[(int)Felder.Reich]);
             Bauwerknamen = DatabaseConverter.ToString(reader[(int)Felder.Bauwerknamen]);
+        }
+
+        public void Save(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(DbCommand reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Select()
+        {
+            return ViewModel.BelongsToUser(this);
+        }
+        public bool Edit()
+        {
+            return Select();
         }
     }
 }
