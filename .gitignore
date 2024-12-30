@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/.vss/PhoenixDX/DesignTimeBuild
+/.vss/PhoenixDX/FileContentIndex
+/.vss/PhoenixDX/v17/TestStore/0
+/.vss/PhoenixDX/v17
+/.vss
