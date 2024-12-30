@@ -18,7 +18,7 @@ namespace PhoenixModel.dbErkenfara
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner { get => CreateBezeichner(); }
         // IEigenschaftler
-        private static readonly string[] PropertiestoIgnore = [];
+        private static readonly string[] PropertiestoIgnore = ["Key","gf","kf"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
       

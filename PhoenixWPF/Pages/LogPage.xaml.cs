@@ -42,20 +42,20 @@ namespace PhoenixWPF.Pages
         {
             if (LogListBox.SelectedItem != null)
             {
-                string? selectedText = LogListBox.SelectedItem.ToString();
-                ExtractAndGoTo(selectedText);
+                ExtractAndGoTo(LogListBox.SelectedItem);
             }
         }
 
         [GeneratedRegex(@"\[(\d+)/(\d+)\]")]
         public static partial Regex KoordinatenRegex();
-        private void ExtractAndGoTo(string? input)
+        private void ExtractAndGoTo(object? input)
         {
-            if (input == null)
+            var entry = input as LogEntry;
+            if (entry == null)
                 return;
             // Regex to match the pattern [number1/number2] 
             Regex regex = KoordinatenRegex();
-            Match match = regex.Match(input);
+            Match match = regex.Match(entry.Message);
 
             if (match.Success)
             {

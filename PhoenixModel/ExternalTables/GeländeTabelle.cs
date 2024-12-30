@@ -1,10 +1,12 @@
-﻿using System;
+﻿using PhoenixModel.dbPZE;
+using PhoenixModel.Helper;
+using System;
 using System.Collections.Generic;
 using static PhoenixModel.ExternalTables.GeländeTabelle;
 
 namespace PhoenixModel.ExternalTables
 {
-    public class GeländeTabelle
+    public class GeländeTabelle: IEigenschaftler
     {
         public enum TerrainType // entnommmen aus der Tabelle [crossref.mdb][Geleandetypen_crossref]
         {
@@ -23,6 +25,10 @@ namespace PhoenixModel.ExternalTables
             AuftauchpunktUnbekannt // den gibt es nicht in der Tabelle der Datenbank
         }
 
+        // IEigenschaftler
+        public string Bezeichner => Name;
+        private static readonly string[] PropertiestoIgnore = ["Farbe", "Name", "IsWasser"];
+        public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
         public TerrainType Typ { get; set; }
         public string Name { get; set; }
