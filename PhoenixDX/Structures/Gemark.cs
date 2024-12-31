@@ -137,7 +137,7 @@ namespace PhoenixDX.Structures
                 }
             }
 
-            var spielfiguren = gem.GetTruppen();
+            var spielfiguren = gem.Truppen;
             if (spielfiguren != null && spielfiguren.Count > 0)
             {
                 List<Truppen.Figur> truppen = [];

@@ -11,11 +11,74 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.View
 {
+    public class Armee : List<Spielfigur>, IEigenschaftler
+    {
+        public List<Eigenschaft> Eigenschaften
+        {
+            get
+            {
+                List<Eigenschaft> eigenschaften = [];
+                foreach (var figur in this)
+                {
+                    if (figur is Kreaturen)
+                    {
+                        var k = figur as Kreaturen;
+                        if (k != null)
+                        {
+                            string wert = $"{k.Bezeichner}";
+                            eigenschaften.Add(new Eigenschaft("Kreatur", wert, false));
+                        }
+                    }
+                    else if (figur is Krieger)
+                    {
+                        var k = figur as Krieger;
+                        if (k != null)
+                        {
+                            string wert = $"{k.Bezeichner}";
+                            eigenschaften.Add(new Eigenschaft("Krieger", wert, false));
+                        }
+                    }
+                    else if (figur is Reiter)
+                    {
+                        var k = figur as Reiter;
+                        if (k != null)
+                        {
+                            string wert = $"{k.Bezeichner}";
+                            eigenschaften.Add(new Eigenschaft("Reiter", wert, false));
+                        }
+                    }
+                    else if (figur is Schiffe)
+                    {
+                        var k = figur as Schiffe;
+                        if (k != null)
+                        {
+                            string wert = $"{k.Bezeichner}";
+                            eigenschaften.Add(new Eigenschaft("Schiff", wert, false));
+                        }
+                    }
+                    else if (figur is Zauberer)
+                    {
+                        var k = figur as Zauberer;
+                        if (k != null)
+                        {
+                            string wert = $"{k.Bezeichner}";
+                            eigenschaften.Add(new Eigenschaft("Zauberer", wert, false));
+                        }
+                    }
+
+                }
+                return eigenschaften;
+            }
+        }
+
+        public string Bezeichner => "Armee";
+    }
+
     public static class SpielfigurenView
     {
-        public static List<Spielfigur> GetSpielfiguren(KleinfeldPosition gem)
+        public static Armee GetSpielfiguren(KleinfeldPosition gem)
         {
-            List<Spielfigur> result = [];
+            Armee result = [];
             var kreaturen = SharedData.Kreaturen?.Where(s => s.gf == gem.gf && s.kf == gem.kf && Plausibilität.IsValid(s));
             if (kreaturen != null)
                 result.AddRange(kreaturen);

@@ -176,12 +176,7 @@ namespace PhoenixModel.dbErkenfara
             }
         }
 
-        public List<Spielfigur> GetTruppen()
-        {
-            return SpielfigurenView.GetSpielfiguren(this);
-        }
-
-        public List<Spielfigur> Truppen
+        public Armee Truppen
         {
             get { return SpielfigurenView.GetSpielfiguren(this); }
         }
