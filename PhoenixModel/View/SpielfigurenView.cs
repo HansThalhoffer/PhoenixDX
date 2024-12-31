@@ -34,7 +34,17 @@ namespace PhoenixModel.View
                         var k = figur as Krieger;
                         if (k != null)
                         {
-                            string wert = $"{k.Bezeichner}";
+                            string wert = $"{k.Bezeichner} Str {k.staerke.ToString("n0")} HF {k.hf}";
+                            if (k.Garde)
+                                wert += " Garde";
+                            if (k.GS > 0)
+                                wert += $" Gold {k.GS}";
+                            if (k.LKP > 0)
+                                wert += $" LKP {k.LKP}";
+                            if (k.SKP > 0)
+                                wert += $" SKP:{k.SKP}";
+                            if (k.Pferde > 0)
+                                wert += $" Pferde {k.Pferde}";
                             eigenschaften.Add(new Eigenschaft("Krieger", wert, false));
                         }
                     }
@@ -43,7 +53,17 @@ namespace PhoenixModel.View
                         var k = figur as Reiter;
                         if (k != null)
                         {
-                            string wert = $"{k.Bezeichner}";
+                            string wert = $"{k.Bezeichner} Str {k.staerke} HF {k.hf}";
+                            if (k.Garde)
+                                wert += " Garde";
+                            if (k.GS > 0)
+                                wert += $" Gold {k.GS}";
+                            if (k.LKP > 0)
+                                wert += $" LKP {k.LKP}";
+                            if (k.SKP > 0)
+                                wert += $" SKP {k.SKP}";
+                            if (k.Pferde > 0)
+                                wert += $" Pferde {k.Pferde}";
                             eigenschaften.Add(new Eigenschaft("Reiter", wert, false));
                         }
                     }
@@ -52,7 +72,17 @@ namespace PhoenixModel.View
                         var k = figur as Schiffe;
                         if (k != null)
                         {
-                            string wert = $"{k.Bezeichner}";
+                            string wert = $"{k.Bezeichner} Str {k.staerke}";
+                            if (k.Garde)
+                                wert += " G";
+                            if (k.GS > 0)
+                                wert += $" Gold {k.GS}";
+                            if (k.LKP > 0)
+                                wert += $" LKP {k.LKP}";
+                            if (k.SKP > 0)
+                                wert += $" SKP {k.SKP}";
+                            if (k.Pferde > 0)
+                                wert += $" Pferde {k.Pferde}";
                             eigenschaften.Add(new Eigenschaft("Schiff", wert, false));
                         }
                     }
@@ -61,7 +91,7 @@ namespace PhoenixModel.View
                         var k = figur as Zauberer;
                         if (k != null)
                         {
-                            string wert = $"{k.Bezeichner}";
+                            string wert = $"{k.Bezeichner} {k.Beschriftung} GP {k.GP_akt}";
                             eigenschaften.Add(new Eigenschaft("Zauberer", wert, false));
                         }
                     }
