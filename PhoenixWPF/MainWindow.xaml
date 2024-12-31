@@ -39,7 +39,7 @@
                 <!-- Left main window -->
                 <ColumnDefinition Width="5" />
                 <!-- Splitter -->
-                <ColumnDefinition Width="320" />
+                <ColumnDefinition Width="480" />
                 <!-- Right split -->
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>

@@ -18,7 +18,7 @@
         </StackPanel>
         <ListBox Grid.Row="1" Name="LogListBox" MinHeight="100"
          ItemsSource="{Binding FilteredLogEntries}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                 FontFamily="Consolas" FontSize="10" MouseDoubleClick="LogListBox_MouseDoubleClick">
+                 FontFamily="Consolas" FontSize="12" MouseDoubleClick="LogListBox_MouseDoubleClick">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                 <Border Background="{Binding Type, Converter={StaticResource LogTypeToColorConverter}}" Padding="0" Margin="0">

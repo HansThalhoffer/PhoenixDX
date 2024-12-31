@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PhoenixModel.View;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,6 +59,32 @@ namespace PhoenixModel.Helper
             return eigenschaften;
         }
 
+        private static string GetExpandedValue(string name, object? value)
+        {
+            if (value == null)
+                return string.Empty;
+
+            string? strVal = value.ToString();
+            if (value != null)
+            {
+                if (name.StartsWith("Ruestort") && value.GetType() == typeof(int))
+                {
+                    int val = (int)value;
+                    var rüstort = BauwerkeView.GetRuestortReferenz(val);
+                    strVal = $"{strVal} ({rüstort.Bauwerk})";
+                }
+                if (name.StartsWith("Baupunkte") && value.GetType() == typeof(int))
+                {
+                    int val = (int)value;
+                    var rüstort = BauwerkeView.GetRuestortNachBaupunkten(val);
+                    if (rüstort != null)
+                        strVal = $"{strVal} ({rüstort.Bauwerk})";
+                }
+
+            }
+            return string.IsNullOrEmpty(strVal) ? string.Empty : strVal;
+        }
+
         /// <summary>
         /// Appends a property to the result list as an <see cref="Eigenschaft"/>.
         /// </summary>
@@ -69,7 +96,8 @@ namespace PhoenixModel.Helper
         {
             if (value == null)
                 return;
-            
+           
+
             if (isEditable == false) // was nicht editierbar ist und empty oder 0 wird nicht angezeigt
             {
                 if (value is string && string.IsNullOrEmpty((string) value))
@@ -86,7 +114,9 @@ namespace PhoenixModel.Helper
                 }
             }
             else
-                result.Add(new Eigenschaft(name, value.ToString(), isEditable));
+            {
+                result.Add(new Eigenschaft(name, GetExpandedValue(name, value), isEditable));
+            }
         }
 
         /// <summary>

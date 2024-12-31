@@ -19,6 +19,26 @@ namespace PhoenixModel.View
             return SharedData.RüstortReferenz.ElementAt(nummer.Value-1);
         }
 
+        public static Rüstort? GetRuestortNachBaupunkten(int baupunkte)
+        {
+            if (baupunkte < 1 || SharedData.RüstortReferenz == null)
+                return null;
+            Rüstort? rnbp = null;
+            if (Rüstort.NachBaupunkten.ContainsKey(baupunkte))
+                rnbp = Rüstort.NachBaupunkten[baupunkte];
+            else
+            {
+                int bp = baupunkte - baupunkte % 250;
+                while (Rüstort.NachBaupunkten.ContainsKey(bp) == false && bp > 0)
+                    bp -= 250;
+                if (bp > 0)
+                {
+                    rnbp = Rüstort.NachBaupunkten[bp];
+                }
+            }
+            return rnbp;
+        }
+
         // die Funktion beseitigt Fehler in den Datenbanken
         public static Gebäude? GetGebäude(KleinFeld gemark)
         {

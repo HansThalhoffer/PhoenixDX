@@ -181,6 +181,11 @@ namespace PhoenixModel.dbErkenfara
             return SpielfigurenView.GetSpielfiguren(this);
         }
 
+        public List<Spielfigur> Truppen
+        {
+            get { return SpielfigurenView.GetSpielfiguren(this); }
+        }
+
         public void Save(DbCommand reader)
         {
             throw new NotImplementedException();

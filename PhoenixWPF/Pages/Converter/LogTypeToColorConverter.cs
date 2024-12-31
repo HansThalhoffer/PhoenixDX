@@ -17,7 +17,7 @@ namespace PhoenixWPF.Pages.Converter
                     case LogEntry.LogType.Error:
                         return Brushes.DarkRed;
                     case LogEntry.LogType.Warning:
-                        return Brushes.DarkCyan;
+                        return Brushes.DarkBlue;
                     default:
                         return Brushes.Transparent;
                 }
