@@ -11,6 +11,7 @@ namespace PhoenixModel.dbZugdaten
         string IDatabaseTable.TableName => TableName;   
         // IEigenschaftler
         public override FigurType Typ => FigurType.Charakter;
+        public override string Stärke { get { return GP_akt.ToString("n0"); } }
 
         public string? Beschriftung { get; set; }
         public int GP_ges { get; set; }

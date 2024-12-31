@@ -95,6 +95,15 @@ namespace PhoenixModel.View
                             eigenschaften.Add(new Eigenschaft("Zauberer", wert, false));
                         }
                     }
+                    else if (figur is Character)
+                    {
+                        var k = figur as Character;
+                        if (k != null)
+                        {
+                            string wert = $"{k.Bezeichner} {k.Beschriftung} GP {k.GP_akt}";
+                            eigenschaften.Add(new Eigenschaft("Charakter", wert, false));
+                        }
+                    }
 
                 }
                 return eigenschaften;

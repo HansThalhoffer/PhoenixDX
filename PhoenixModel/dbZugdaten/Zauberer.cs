@@ -21,13 +21,16 @@ namespace PhoenixModel.dbZugdaten
                 return FigurType.Zauberer;
             }
         }
-
+        public override string Stärke { get { return GP_akt.ToString("n0"); } }
+        [View.Editable]
         public string? Beschriftung { get; set; }
         public int GP_ges_alt { get; set; }
         public int GP_ges { get; set; }
         public int GP_akt_alt { get; set; }
         public int GP_akt { get; set; }
+        [View.Editable]        
         public string? charname { get; set; }
+        [View.Editable]
         public string? Spielername { get; set; }
         public int tp_alt { get; set; }
         public int tp { get; set; }

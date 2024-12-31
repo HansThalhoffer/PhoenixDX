@@ -32,7 +32,8 @@ namespace PhoenixModel.dbZugdaten
                 return FigurType.Schiff;
             }
         }
-        
+        public override string Stärke { get { return staerke.ToString("n0"); } }
+
 
         public int staerke_alt { get; set; }
         public int staerke { get; set; }
@@ -48,10 +49,6 @@ namespace PhoenixModel.dbZugdaten
         public string? Befehl_bew { get; set; }
         public string? Befehl_ang { get; set; }
         public string? Befehl_erobert { get; set; }
-        public int GS { get; set; }
-        public int GS_alt { get; set; }
-        public int Kampfeinnahmen { get; set; }
-        public int Kampfeinnahmen_alt { get; set; }
         public int x1 { get; set; }
         public int y1 { get; set; }
         public int x2 { get; set; }

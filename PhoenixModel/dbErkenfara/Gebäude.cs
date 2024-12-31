@@ -24,6 +24,7 @@ namespace PhoenixModel.dbErkenfara
       
         // Felder der Tabellen
         public string? Reich { get; set; }
+        [View.Editable]
         public string? Bauwerknamen { get; set; }
         public Rüstort? Rüstort { get; set; } = null;
         // falls kaputt oder noch nicht fertig aufgebaut

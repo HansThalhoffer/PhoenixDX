@@ -17,6 +17,12 @@ namespace PhoenixModel.dbZugdaten
     public abstract class Spielfigur: KleinfeldPosition, ISelectable
     {
         public abstract FigurType Typ { get; }
+        public abstract string Stärke { get; }
+
+        public int GS { get; set; }
+        public int GS_alt { get; set; }
+        public int Kampfeinnahmen { get; set; }
+        public int Kampfeinnahmen_alt { get; set; }
 
         // wenn die Spielfigur bewegt wurde, dann steht die aktuelle Position in gf/kf_nach
         public override int gf 
