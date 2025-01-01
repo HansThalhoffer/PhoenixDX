@@ -22,7 +22,7 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                 <Border Background="{Binding Type, Converter={StaticResource LogTypeToColorConverter}}" Padding="0" Margin="0">
-                        <TextBlock Text="{Binding Message}"/>
+                        <TextBlock Text="{Binding Titel}"/>
                     </Border>
                 </DataTemplate>
             </ListBox.ItemTemplate>

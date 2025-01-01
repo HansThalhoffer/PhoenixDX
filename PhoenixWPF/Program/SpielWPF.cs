@@ -35,7 +35,7 @@ namespace PhoenixWPF.Program
                         {
                             if (e.GF > 0 && e.KF > 0)
                             {
-                                e.LogEntry.Message = $"[{e.GF}/{e.KF}] {e.LogEntry.Message}";
+                                e.LogEntry.Titel = $"[{e.GF}/{e.KF}] {e.LogEntry.Titel}";
                             }
                             Log(e.LogEntry);
                         }
@@ -59,7 +59,7 @@ namespace PhoenixWPF.Program
                 {
                     if (e.GF > 0 && e.KF > 0)
                     {
-                        e.LogEntry.Message = $"[{e.GF}/{e.KF}] {e.LogEntry.Message}";
+                        e.LogEntry.Titel = $"[{e.GF}/{e.KF}] {e.LogEntry.Titel}";
                     }
                     Log(e.LogEntry);
                 }
@@ -84,20 +84,18 @@ namespace PhoenixWPF.Program
 
         public static void LogInfo(string titel, string message)
         {
-            LogPage.AddToLog(new LogEntry(LogType.Info, titel, message));
+            Log(new LogEntry(LogType.Info, titel, message));
         }
 
         public static void LogWarning(string titel, string message)
         {
-            LogPage.AddToLog(new LogEntry(LogType.Warning, titel, message));
+            Log(new LogEntry(LogType.Warning, titel, message));
         }
 
         public static void LogError(string titel, string message)
         {
-            LogPage.AddToLog(new LogEntry(LogType.Error, titel, message));
+            Log(new LogEntry(LogType.Error, titel, message));
         }
-
-
 
         public void SelectGemark(MapEventArgs e)
         {

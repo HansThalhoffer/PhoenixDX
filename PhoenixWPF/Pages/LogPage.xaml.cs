@@ -1,23 +1,11 @@
 ﻿using PhoenixModel.dbErkenfara;
 using PhoenixModel.Program;
-using System;
-using System.Collections.Generic;
+using PhoenixWPF.Dialogs;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using static PhoenixModel.Program.LogEntry;
 
 namespace PhoenixWPF.Pages
 {
@@ -80,7 +68,7 @@ namespace PhoenixWPF.Pages
             _logEntries.CollectionChanged += _logEntries_CollectionChanged;
             DataContext = this;
             FilteredLogEntries = new ObservableCollection<LogEntry>(_logEntries);
-
+            UpdateFilteredLogEntries();
         }
 
         private void _logEntries_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -90,19 +78,29 @@ namespace PhoenixWPF.Pages
 
         public static void AddToLog(LogEntry logentry)
         {
-            if (string.IsNullOrWhiteSpace(logentry.Message)) return;
+            if (string.IsNullOrWhiteSpace(logentry.Titel)) 
+                return;
 
             Application.Current.Dispatcher.Invoke(() =>
             {
-                logentry.Message = $"{logentry.Type} {logentry.Message}";
+                logentry.Titel = $"{logentry.Type} {logentry.Titel}";
                 _logEntries.Add(logentry);
             });
         }
+
         private void LogListBox_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (LogListBox.SelectedItem != null)
             {
                 ExtractAndGoTo(LogListBox.SelectedItem);
+            }
+            if (LogListBox.SelectedItem is LogEntry selectedLogEntry)
+            {
+                if (LogDetailDialog.Instance == null)
+                {
+                    var dialog = new LogDetailDialog(selectedLogEntry);
+                    dialog.ShowDialog();
+                }                
             }
         }
 
@@ -113,7 +111,7 @@ namespace PhoenixWPF.Pages
         {
             // Regex to match the pattern [number1/number2] 
             Regex regex = KoordinatenRegex();
-            Match match = regex.Match(entry.Message);
+            Match match = regex.Match(entry.Titel);
 
             if (match.Success)
             {

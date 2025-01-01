@@ -97,15 +97,15 @@ namespace PhoenixModel.Program
         }
         public static void LogError(KleinfeldPosition pos, string titel, string msg)
         {
-            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Error, titel, $"[{pos.CreateBezeichner()}] {msg}")));
+            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Error, $"[{pos.CreateBezeichner()}] {titel}", msg)));
         }
         public static void LogWarning(KleinfeldPosition pos, string titel, string msg)
         {
-            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Warning, titel, $"[{pos.CreateBezeichner()}] {msg}")));
+            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Warning, $"[{pos.CreateBezeichner()}] {titel}", msg)));
         }
         public static void LogInfo(KleinfeldPosition pos, string titel, string msg)
         {
-            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Info, titel, $"[{pos.CreateBezeichner()}] {msg}")));
+            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Info, $"[{pos.CreateBezeichner()}] {titel}", msg)));
         }
     }
 }

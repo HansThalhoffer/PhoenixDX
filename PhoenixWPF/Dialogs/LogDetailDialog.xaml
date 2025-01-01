@@ -1,0 +1,35 @@
+﻿<Window x:Class="PhoenixWPF.Dialogs.LogDetailDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PhoenixWPF.Dialogs"
+        mc:Ignorable="d"
+        Title="LogDetailDialog" Height="450" Width="800">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Column: Log Details -->
+            <Border Grid.Column="0" Padding="10" Margin="5">
+                
+            <StackPanel>
+                <TextBlock Text="Log Details" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
+                <TextBlock Text="Title:" FontWeight="Bold"/>
+                <TextBlock x:Name="Titel" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                <TextBlock Text="Message:" FontWeight="Bold"/>
+                <TextBlock Name="Mesage" TextWrapping="Wrap" Margin="0,0,0,10"/>
+                <TextBlock Text="Type:" FontWeight="Bold"/>
+                <TextBlock Name="LogType" Margin="0,0,0,10"/>
+            </StackPanel>
+        </Border>
+
+            <!-- Right Column: Log List -->
+            <Border Grid.Column="1" Padding="10">
+                <Frame Name="LogListFrame" Source="/Pages/LogPage.xaml" />
+        </Border>
+        </Grid>
+    
+</Window>
