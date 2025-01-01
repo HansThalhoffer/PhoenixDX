@@ -80,11 +80,20 @@ namespace PhoenixWPF.Pages
         {
             if (string.IsNullOrWhiteSpace(logentry.Titel)) 
                 return;
-
+            
             Application.Current.Dispatcher.Invoke(() =>
             {
                 logentry.Titel = $"{logentry.Type} {logentry.Titel}";
+                // es wird ein Fehler angezeigt, die weiteren Nachrichten kommen nicht mehr rein
                 _logEntries.Add(logentry);
+                if (logentry.Type == LogEntry.LogType.Error)
+                {
+                    if (LogDetailDialog.Instance == null)
+                    {
+                        var dialog = new LogDetailDialog(logentry, true);
+                        dialog.ShowDialog();
+                    }
+                }
             });
         }
 
@@ -101,6 +110,14 @@ namespace PhoenixWPF.Pages
                     var dialog = new LogDetailDialog(selectedLogEntry);
                     dialog.ShowDialog();
                 }                
+            }
+        }
+
+        private void LogListBox_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (LogListBox.SelectedItem != null)
+            {
+                ExtractAndGoTo(LogListBox.SelectedItem);
             }
         }
 
@@ -153,6 +170,8 @@ namespace PhoenixWPF.Pages
 
         protected void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        
     }
 
 

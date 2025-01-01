@@ -11,9 +11,12 @@ namespace PhoenixWPF.Dialogs
     public partial class LogDetailDialog : Window
     {
         public static LogDetailDialog? Instance { get; private set; }
-        
-        public LogDetailDialog(LogEntry selectedLogEntry)
+        bool _showErrorsOnly = false;
+
+
+        public LogDetailDialog(LogEntry selectedLogEntry, bool showErrorsOnly = false)
         {
+            _showErrorsOnly = showErrorsOnly;
             Instance = this;
             InitializeComponent();
             Owner = Application.Current.MainWindow; // Set the owner to the current window
@@ -34,6 +37,13 @@ namespace PhoenixWPF.Dialogs
             Pages.LogPage? page = e.Content as Pages.LogPage;
             if (page != null)
             {
+                if (_showErrorsOnly)
+                {
+                    page.FilterErrors = true;
+                    page.FilterInfos= false; 
+                    page.FilterWarnings = false;
+
+                }
                 page.LogListBox.SelectionChanged += LogListBox_SelectionChanged;
             }
         }
