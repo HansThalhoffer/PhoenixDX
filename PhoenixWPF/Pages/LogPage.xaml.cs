@@ -97,6 +97,11 @@ namespace PhoenixWPF.Pages
             });
         }
 
+        /// <summary>
+        /// Zeige den Fehlerdialog mit aktuell ausgewähltem Eintrag
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void LogListBox_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (LogListBox.SelectedItem != null)
@@ -112,7 +117,12 @@ namespace PhoenixWPF.Pages
                 }                
             }
         }
-
+         
+        /// <summary>
+        /// Bewege die Karte auf das Feld, sofern Koordinaten in dem Titel genannt sind
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void LogListBox_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (LogListBox.SelectedItem != null)
