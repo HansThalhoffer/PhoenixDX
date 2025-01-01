@@ -5,6 +5,7 @@ using PhoenixModel.Program;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -57,7 +58,7 @@ namespace PhoenixModel.View
                     // ergänzt die Datenbank falls notwendig
                     if (gebäude == null)
                     {
-                        ViewModel.LogWarning( gemark, $"Fehlendes Gebäude in der Bauwerktabelle mit dem Namen {gemark.Bauwerknamen}");    
+                        ViewModel.LogWarning( gemark, $"Fehlendes Gebäude in der Bauwerktabelle mit dem Namen {gemark.Bauwerknamen}", "Durch einen Datenbankfehler hat das Gebäude keinen Eintrag in der Referenztabelle");    
                         gebäude = new Gebäude();
                         gebäude.kf = gemark.kf;
                         gebäude.gf = gemark.gf;
@@ -85,8 +86,8 @@ namespace PhoenixModel.View
                                 gebäude.Zerstört = true;
                             }
                         }
-                        if (gebäude.Rüstort != rüstortLautKarte)
-                            ViewModel.LogWarning(gemark, $"Unterschiedliches Gebäude nach Baupunkten ({gemark.Baupunkte}):{gebäude.Rüstort?.Bezeichner} und Karte: {rüstortLautKarte?.Bezeichner}");
+                    if (gebäude.Rüstort != rüstortLautKarte)
+                            ViewModel.LogWarning(gemark, $"Unterschiedliches Gebäude nach Baupunkten ({gemark.Baupunkte}):{gebäude.Rüstort?.Bezeichner} und Karte: {rüstortLautKarte?.Bezeichner}", "Durch einen Datenbankfehler hat das Gebäude keinen oder fehlerhafte Einträg in den Tabellen. Diese sind nicht synchron.");
                     }
                     return gebäude;
                 }

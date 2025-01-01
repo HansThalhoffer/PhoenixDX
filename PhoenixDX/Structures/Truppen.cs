@@ -144,7 +144,7 @@ namespace PhoenixDX.Structures
             }
             catch (Exception ex)
             {
-                MappaMundi.Log(0, 0, ex);
+                MappaMundi.Log(0, 0, $"Bei der Erstellung der Textur für die Truppen auf {this.ToString()} kam es zu einem Fehler",ex);
             }
         }
 

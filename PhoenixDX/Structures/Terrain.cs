@@ -37,7 +37,7 @@ namespace PhoenixDX.Structures
             }
             catch (Exception ex)
             {
-                MappaMundi.Log(0, 0, ex);
+                MappaMundi.Log(0, 0, $"Die Textur für {source.Name} konnte nicht geladen werden", ex);
             }
         }
 

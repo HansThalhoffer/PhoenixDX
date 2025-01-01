@@ -91,7 +91,7 @@ namespace PhoenixModel.View
                         var k = figur as Zauberer;
                         if (k != null)
                         {
-                            string wert = $"{k.Bezeichner} {k.Beschriftung} GP {k.GP_akt}";
+                            string wert = $"{k.Bezeichner} {k.Beschriftung} {k.charname} GP {k.GP_akt}";
                             eigenschaften.Add(new Eigenschaft("Zauberer", wert, false));
                         }
                     }
@@ -100,7 +100,7 @@ namespace PhoenixModel.View
                         var k = figur as Character;
                         if (k != null)
                         {
-                            string wert = $"{k.Bezeichner} {k.Beschriftung} GP {k.GP_akt}";
+                            string wert = $"{k.Bezeichner} {k.Beschriftung} {k.Charname} GP {k.GP_akt}";
                             eigenschaften.Add(new Eigenschaft("Charakter", wert, false));
                         }
                     }

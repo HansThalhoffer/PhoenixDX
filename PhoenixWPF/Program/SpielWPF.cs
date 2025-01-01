@@ -82,19 +82,19 @@ namespace PhoenixWPF.Program
             LogPage.AddToLog(logentry);
         }
 
-        public static void LogInfo(string message)
+        public static void LogInfo(string titel, string message)
         {
-            LogPage.AddToLog(new LogEntry(LogType.Info, message));
+            LogPage.AddToLog(new LogEntry(LogType.Info, titel, message));
         }
 
-        public static void LogWarning(string message)
+        public static void LogWarning(string titel, string message)
         {
-            LogPage.AddToLog(new LogEntry(LogType.Warning, message));
+            LogPage.AddToLog(new LogEntry(LogType.Warning, titel, message));
         }
 
-        public static void LogError(string message)
+        public static void LogError(string titel, string message)
         {
-            LogPage.AddToLog(new LogEntry(LogType.Error,message));
+            LogPage.AddToLog(new LogEntry(LogType.Error, titel, message));
         }
 
 

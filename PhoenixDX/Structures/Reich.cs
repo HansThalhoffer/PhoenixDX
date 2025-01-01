@@ -59,7 +59,7 @@ namespace PhoenixDX.Structures
             }
             catch (Exception ex)
             {
-                MappaMundi.Log(0, 0, ex);
+                MappaMundi.Log(0, 0, "Die Textur für die Farben einer Nation konnte nicht geladen werden", ex);
             }
         }
 

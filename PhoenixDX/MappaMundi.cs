@@ -41,7 +41,7 @@ namespace PhoenixDX
             }
             catch (Exception ex)
             {
-                MappaMundi.Log(0, 0, ex);
+                MappaMundi.Log(0, 0, "Beim Start der DirectX Engine kam es zu einem Fehler",ex);
             }
         }
 
@@ -141,9 +141,9 @@ namespace PhoenixDX
         {
             _OnMapEvent(new MapEventArgs(gf,kf,logentry));
         }
-        public static void Log(int gf, int kf, Exception ex)
+        public static void Log(int gf, int kf, string titel, Exception ex)
         {
-            MappaMundi.Log(gf, kf, new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, ex.Message));
+            MappaMundi.Log(gf, kf, new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, titel, ex.Message));
         }
         #endregion
 

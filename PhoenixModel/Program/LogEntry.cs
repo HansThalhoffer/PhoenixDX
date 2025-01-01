@@ -14,16 +14,19 @@ namespace PhoenixModel.Program
             Warning,
             Error
         }
-        public LogType Type { get; set; } = LogType.Info;
-        public string Message { get; set; } = string.Empty;
-        public LogEntry(LogType type, string message)
+        public LogType Type = LogType.Info;
+        public string Titel  = string.Empty;
+        public string Message = string.Empty;
+        public LogEntry(LogType type, string titel, string message)
         {
             Type = type;
+            Titel = titel;
             Message = message;
         }
 
-        public LogEntry(string message)
+        public LogEntry(string titel, string message)
         {
+            Titel = titel;
             Message = message;
         }
 

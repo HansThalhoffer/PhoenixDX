@@ -25,9 +25,9 @@ namespace PhoenixModel.Program
             OnViewEvent(null, args);
         }
 
-        public static void LogError(int gf, int kf, string msg)
+        public static void LogError(int gf, int kf, string titel, string msg)
         {
-            _OnViewEvent(new ViewEventArgs(gf,kf, new LogEntry(LogEntry.LogType.Error,msg)));
+            _OnViewEvent(new ViewEventArgs(gf,kf, new LogEntry(LogEntry.LogType.Error,titel, msg)));
         }
 
         /// <summary>
@@ -39,17 +39,17 @@ namespace PhoenixModel.Program
         {
             if (SharedData.Map == null)
             {
-                ViewModel.LogError($"Die Kartendaten sind nicht geladen, daher kann ein Besitz einer Spielfigur nicht ermittelt werden");
+                ViewModel.LogError("Die Kartendaten sind nicht geladen"," Ohne Kartendaten kann ein Besitz einer Spielfigur nicht ermittelt werden");
                 return false;
             }            
             if (ViewModel.SelectedNation == null)
             {
-                ViewModel.LogError($"Ohne eine ausgewählte Nation kann kein Besitz einer Spielfigur ermittelt werden");
+                ViewModel.LogError("Keine Nation ausgewählt","Ohne eine ausgewählte Nation kann kein Besitz einer Spielfigur ermittelt werden");
                 return false;
             }
             if (figur.Nation == null)
             {
-                ViewModel.LogError($"Der Spielfigur {figur.Bezeichner} ist keine Nation zugeordnet, daher kann der Besitz nicht ermittelt werden");
+                ViewModel.LogError($"Spielfigur {figur.Bezeichner} ohne Nation", "Der Spielfigur {figur.Bezeichner} ist keine Nation zugeordnet, daher kann der Besitz nicht ermittelt werden");
                 return false;
             }
 
@@ -66,46 +66,46 @@ namespace PhoenixModel.Program
         {
             if (SharedData.Map == null)
             {
-                ViewModel.LogError($"Die Kartendaten sind nicht geladen, daher kann ein Besitz eines Kleinfeldes nicht ermittelt werden");
+                ViewModel.LogError("Die Kartendaten sind nicht geladen", "Die Kartendaten sind nicht geladen, daher kann ein Besitz eines Kleinfeldes nicht ermittelt werden");
                 return false;
             }
             if (SharedData.Map.ContainsKey(position.CreateBezeichner()) == false)
             {
-                ViewModel.LogError($"Die Position {position.CreateBezeichner()} befindet sich auf einem nicht existenten Kleinfeld");
+                ViewModel.LogError($"Unbekannte Position  Position {position.CreateBezeichner()}", $"Die Position {position.CreateBezeichner()} befindet sich auf einem nicht existenten Kleinfeld");
                 return false;
             }
             if (ViewModel.SelectedNation == null)
             {
-                ViewModel.LogError($"Ohne eine ausgewählte Nation kann kein Besitz eines Kleinfeldes ermittelt werden");
+                ViewModel.LogError("Keine Nation ausgewählt", "Ohne eine ausgewählte Nation kann kein Besitz eines Kleinfeldes ermittelt werden");
                 return false;
             }
             // das Kleinfeld des Rüstotes gehört evtl. zum Nation des aktuellen Nutzers und kann daher ausgeählt werden
             return ViewModel.SelectedNation == SharedData.Map[position.CreateBezeichner()].Nation;
         }
 
-        public static void LogError(string msg)
+        public static void LogError(string titel, string msg)
         {
-            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Error, msg)));
+            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Error, titel, msg)));
         }
-        public static void LogWarning(string msg)
+        public static void LogWarning(string titel, string msg)
         {
-            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Warning, msg)));
+            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Warning, titel, msg)));
         }
-        public static void LogInfo(string msg)
+        public static void LogInfo(string titel, string msg)
         {
-            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Info, msg)));
+            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Info, titel, msg)));
         }
-        public static void LogError(KleinfeldPosition pos, string msg)
+        public static void LogError(KleinfeldPosition pos, string titel, string msg)
         {
-            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Error, $"[{pos.CreateBezeichner()}] {msg}")));
+            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Error, titel, $"[{pos.CreateBezeichner()}] {msg}")));
         }
-        public static void LogWarning(KleinfeldPosition pos, string msg)
+        public static void LogWarning(KleinfeldPosition pos, string titel, string msg)
         {
-            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Warning, $"[{pos.CreateBezeichner()}] {msg}")));
+            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Warning, titel, $"[{pos.CreateBezeichner()}] {msg}")));
         }
-        public static void LogInfo(KleinfeldPosition pos, string msg)
+        public static void LogInfo(KleinfeldPosition pos, string titel, string msg)
         {
-            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Info, $"[{pos.CreateBezeichner()}] {msg}")));
+            _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Info, titel, $"[{pos.CreateBezeichner()}] {msg}")));
         }
     }
 }

@@ -62,11 +62,11 @@ namespace PhoenixWPF.Database
             }
             catch (Exception ex)
             {
-                SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, ($"Fehler beim Öffnen der {collection.GetType()} Datenbank: " + ex.Message +"\n\r"+query)));
+                SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Öffnen der {collection.GetType()} Datenbank:{tableName}", $"{query} führte zu folgendem Fehler \n\r{ex.Message}"));
             }
             collection.CompleteAdding();
             total = collection.Count();
-            SpielWPF.Log(new PhoenixModel.Program.LogEntry($"{total} {typeof(T).Name} geladen"));
+            SpielWPF.Log(new PhoenixModel.Program.LogEntry($"{total} {typeof(T).Name} geladen",$"Das Laden der Datenbanktabelle {tableName} war erfolgreich"));
         }
 
         // andere Collection - hier Dictionary
@@ -91,7 +91,7 @@ namespace PhoenixWPF.Database
             }
             collection.CompleteAdding();
             total = collection.Count();
-            SpielWPF.Log(new PhoenixModel.Program.LogEntry($"{total} {typeof(T).Name} geladen"));
+            SpielWPF.Log(new PhoenixModel.Program.LogEntry($"{total} {typeof(T).Name} geladen", $"Das Laden der Datenbanktabelle {tableName} war erfolgreich"));
         }
 
         protected abstract void LoadInBackground();
@@ -112,7 +112,7 @@ namespace PhoenixWPF.Database
         {
             if (e.Cancelled)
             {
-                SpielWPF.LogError("Das Laden im Hintergrund war nicht erfolgreich");
+                SpielWPF.LogError("Das Laden im Hintergrund war nicht erfolgreich", "Das Laden im Hintergrund wurde durch den Nutzer abgebrochen");
             }
             if (_loadCompletedDelegate != null && (this as ILoadableDatabase) != null)
                 _loadCompletedDelegate((ILoadableDatabase)this);
@@ -149,7 +149,7 @@ namespace PhoenixWPF.Database
             }
             catch (Exception ex)
             {
-                SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, ($"Fehler beim Öffnen der Tabelle {tableName}: " + ex.Message + "\n\r" + query)));
+                SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Öffnen der Tabelle {tableName}: ", $"{query} erzeugte den Fehler: /n/r{ex.Message}"));
             }
             return total;
         }
@@ -173,7 +173,7 @@ namespace PhoenixWPF.Database
             }
             catch (Exception ex)
             {
-                SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, ($"Fehler beim Öffnen der Tabelle {tableName}: " + ex.Message + "\n\r" + query)));
+                SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Öffnen der Tabelle {tableName}: ", $"{query} erzeugte den Fehler: /n/r{ex.Message}"));
             }
             return total;
         }

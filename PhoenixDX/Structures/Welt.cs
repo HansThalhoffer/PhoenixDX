@@ -70,7 +70,7 @@ namespace PhoenixDX.Structures
                 {
                     if (Provinzen.ContainsKey(gem.gf) == false)
                     {
-                        MappaMundi.Log(gem.gf, gem.kf, new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Großfeld {gem.gf} fehlt"));
+                        MappaMundi.Log(gem.gf, gem.kf, new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Großfeld {gem.gf} fehlt","In der Karte ist ein Großfeld eingetragen, das es rechnerisch nicht geben dürfte."));
                         continue;
                     }
                     var p = Provinzen[gem.gf];
@@ -85,7 +85,7 @@ namespace PhoenixDX.Structures
                         }
                         catch (Exception ex)
                         {
-                            MappaMundi.Log(gem.gf, gem.kf, ex);
+                            MappaMundi.Log(gem.gf, gem.kf,"Das Kleinfeld konnte nicht angelegt werden", ex);
                         }
                     }
                 }
@@ -111,7 +111,7 @@ namespace PhoenixDX.Structures
             }
             catch (Exception ex)
             {
-                MappaMundi.Log(0, 0, ex);
+                MappaMundi.Log(0, 0, $"Die Gemark {pos.gf}/{pos.kf} konnte nicht aktualisiert werden", ex);
             }
 
         }

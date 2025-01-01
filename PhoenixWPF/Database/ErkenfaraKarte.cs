@@ -63,7 +63,7 @@ namespace PhoenixWPF.Program
                 }
                 catch (Exception ex)
                 {
-                    SpielWPF.LogError("Fehler beim Laden der Erkenfare Datenbank: " + ex.Message);
+                    SpielWPF.LogError("Fehler beim Laden der Erkenfare Datenbank: " , ex.Message);
                 }
                 connector?.Close();
             }
