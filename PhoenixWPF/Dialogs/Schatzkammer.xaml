@@ -12,7 +12,7 @@
                 <Frame x:Name="HistorischeBilanzen"  Source="/Pages/ChartPage.xaml" Tag="Schatzkammer"/>
             </TabItem>
             <TabItem Header="Schenkungen">
-                <Frame x:Name="Schenkungen"  Source="/Pages/PropertyGridPage.xaml" Tag="Schenkungen"/>
+                <Frame x:Name="Schenkungen"  Source="/Pages/EigenschaftlerListGridPage.xaml" Tag="Schenkungen"/>
             </TabItem>
         </TabControl>
     </Grid>

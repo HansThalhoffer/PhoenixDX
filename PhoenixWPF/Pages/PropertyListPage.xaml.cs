@@ -19,7 +19,7 @@ using System.Windows.Shapes;
 namespace PhoenixWPF.Pages
 {
     /// <summary>
-    /// Interaktionslogik für PropertyListPage.xaml
+    /// Zeigt alle Properties eines IEigenschaftler an
     /// </summary>
     public partial class PropertyListPage : Page, IPropertyDisplay
     {

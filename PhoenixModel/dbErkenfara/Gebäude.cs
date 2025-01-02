@@ -8,6 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PhoenixModel.Program;
+using PhoenixModel.dbPZE;
+using PhoenixModel.ExternalTables;
+using PhoenixModel.View;
 
 namespace PhoenixModel.dbErkenfara
 {
@@ -24,6 +27,17 @@ namespace PhoenixModel.dbErkenfara
       
         // Felder der Tabellen
         public string? Reich { get; set; }
+        private Nation? _nation = null;
+        public Nation? Nation {  get
+            {
+                if (_nation == null && Reich != null)
+                {
+                    _nation = NationenView.GetNationFromString(Reich);
+                }
+                return _nation;
+            } 
+        }
+
         [View.Editable]
         public string? Bauwerknamen { get; set; }
         public Rüstort? Rüstort { get; set; } = null;

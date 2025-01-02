@@ -1,5 +1,6 @@
 ﻿using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbErkenfara;
+using PhoenixModel.dbPZE;
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
 using System;
@@ -38,6 +39,13 @@ namespace PhoenixModel.View
                 }
             }
             return rnbp;
+        }
+
+        public static IEnumerable<Gebäude>? GetGebäude(Nation nation)
+        {
+            if (SharedData.Gebäude != null)
+                return SharedData.Gebäude.Values?.Where(s => s.Nation == nation);
+            return null;
         }
 
         // die Funktion beseitigt Fehler in den Datenbanken

@@ -126,7 +126,7 @@ namespace PhoenixWPF.Program
                 //this.Map?.OnUpdateEvent(new MapEventArgs(MapEventType.UpdateAll));
             }*/
 
-            // fülle die UpdateQueue mit gemarken, die Truppen erhalten haben
+            // fülle die UpdateQueue mit Kleinfeldern, die Truppen erhalten haben
             if (database is Zugdaten && SharedData.Map != null)
             {
                 foreach (var gem in SharedData.Map.Values)
@@ -137,8 +137,9 @@ namespace PhoenixWPF.Program
                         this.Map?.OnUpdateEvent(new MapEventArgs(gem, MapEventType.UpdateGemark));
                     }
                 }
-                //this.Map?.OnUpdateEvent(new MapEventArgs(MapEventType.UpdateAll));
+                ViewModel.UpdateData();
             }
+
         }
 
         public void Load(ref string databaseLocation, ref string encryptedPassword, LoadableDatabase dbCreator,string databaseName, LoadCompleted? loadCompletedDelegate = null) 

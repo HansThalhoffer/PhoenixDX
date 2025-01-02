@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic.FileIO;
+using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbPZE;
 using PhoenixModel.dbZugdaten;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static PhoenixModel.Helper.ViewEventArgs;
 
 namespace PhoenixModel.Program
 {
@@ -28,6 +30,19 @@ namespace PhoenixModel.Program
         public static void LogError(int gf, int kf, string titel, string msg)
         {
             _OnViewEvent(new ViewEventArgs(gf,kf, new LogEntry(LogEntry.LogType.Error,titel, msg)));
+        }
+
+        public static void UpdateData(Gebäude gebäude)
+        {
+            _OnViewEvent(new ViewEventArgs(gebäude));
+        }
+        public static void UpdateData(Spielfigur figur)
+        {
+            _OnViewEvent(new ViewEventArgs(figur));
+        }
+        public static void UpdateData()
+        {
+            _OnViewEvent(new ViewEventArgs(ViewEventType.UpdateEverything));
         }
 
         /// <summary>

@@ -4,13 +4,12 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:PhoenixWPF.Pages"
+      xmlns:converter="clr-namespace:PhoenixWPF.Pages.Converter"
       mc:Ignorable="d" 
+      Loaded="Page_Loaded"
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="SelectRüstortPage">
-
+      Title="Rüstorte">
     <Grid>
-        <TextBlock Text="Auswahl von eigenen Rüstorten" Margin="10" />
-        <ListBox Name="SelectionListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-    FontFamily="Consolas" FontSize="10" />
+        <DataGrid Name="EigenschaftlerDataGrid" AutoGenerateColumns="False" />
     </Grid>
 </Page>
