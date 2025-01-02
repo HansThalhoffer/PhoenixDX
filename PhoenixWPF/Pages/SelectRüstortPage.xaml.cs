@@ -47,9 +47,9 @@ namespace PhoenixWPF.Pages
 
             if (EigenschaftlerList == null || EigenschaftlerList.Count == 0)
                 return;
-            string[] toIgnore = { "Nation", "Reich", "Nation.Farbname", "Nation.Reich"};
+            string[] toIgnore = { "Nation", "Reich", "Nation.Farbname", "Nation.Reich", "Rüstort.Bauwerk", "Rüstort.Nummer"};
             List<Eigenschaft> eigList = EigenschaftlerList[0].Eigenschaften;
-            eigList = eigList.Where(prop => !toIgnore.Contains(prop.Name)).ToList();
+            List<Eigenschaft> columns = eigList.Where(prop => !toIgnore.Contains(prop.Name)).ToList();
 
 
             EigenschaftlerDataGrid.Columns.Clear();
@@ -63,14 +63,15 @@ namespace PhoenixWPF.Pages
             EigenschaftlerDataGrid.Columns.Add(bezeichnerColumn);
 
             // Add dynamic columns for Eigenschaften
-            for (int i = 0; i < eigList.Count; i++)
+            foreach (var eig in columns)
             {
-                var eig = eigList[i];
                 string name = eig.Name;
+                int index = eigList.IndexOf(eig);
                 DataGridTextColumn column = new DataGridTextColumn
                 {
                     Header = name,
-                    Binding = new System.Windows.Data.Binding($"Eigenschaften[{i}].Wert")
+                    Binding = new System.Windows.Data.Binding($"Eigenschaften[{index}].Wert"),
+                    IsReadOnly = name != "Bauwerknamen"
                 };
                 EigenschaftlerDataGrid.Columns.Add(column);
             }

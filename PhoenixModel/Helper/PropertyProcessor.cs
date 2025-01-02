@@ -73,7 +73,7 @@ namespace PhoenixModel.Helper
                     var rüstort = BauwerkeView.GetRuestortReferenz(val);
                     strVal = $"{strVal} ({rüstort?.Bauwerk})";
                 }
-                else if (name.StartsWith("Baupunkte") && value.GetType() == typeof(int))
+                else if (name == "Baupunkte" && value.GetType() == typeof(int))
                 {
                     int val = (int)value;
                     var rüstort = BauwerkeView.GetRuestortNachBaupunkten(val);

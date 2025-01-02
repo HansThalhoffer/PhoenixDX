@@ -48,6 +48,36 @@ namespace PhoenixModel.View
             return null;
         }
 
+        public static int? GetBaupunkteNachKarte(KleinfeldPosition pos)
+        {
+            if (SharedData.Map == null)
+                return null;
+            try
+            {
+                return SharedData.Map[pos.CreateBezeichner()].Baupunkte;
+            }
+            catch (Exception ex) 
+            {
+                ViewModel.LogError(pos, "Kleinfeld existiert nicht", ex.Message);
+                return null; 
+            }
+        }
+
+        public static int? GetRüstortNachKarte(KleinfeldPosition pos)
+        {
+            if (SharedData.Map == null)
+                return null;
+            try
+            {
+                return SharedData.Map[pos.CreateBezeichner()].Ruestort;
+            }
+            catch (Exception ex)
+            {
+                ViewModel.LogError(pos, "Kleinfeld existiert nicht", ex.Message);
+                return null;
+            }
+        }
+
         // die Funktion beseitigt Fehler in den Datenbanken
         public static Gebäude? GetGebäude(KleinFeld gemark)
         {

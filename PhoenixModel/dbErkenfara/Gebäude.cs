@@ -37,6 +37,19 @@ namespace PhoenixModel.dbErkenfara
                 return _nation;
             } 
         }
+        public int BaupunkteNachKarte
+        {
+            get { 
+                return BauwerkeView.GetBaupunkteNachKarte(this) ?? 0;
+            }
+        }
+        public int RuestortNachKarte
+        {
+            get
+            {
+                return BauwerkeView.GetRüstortNachKarte(this) ?? 0;
+            }
+        }
 
         [View.Editable]
         public string? Bauwerknamen { get; set; }
