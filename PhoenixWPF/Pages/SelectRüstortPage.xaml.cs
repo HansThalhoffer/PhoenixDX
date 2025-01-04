@@ -1,5 +1,6 @@
 ﻿using PhoenixModel.Helper;
 using PhoenixModel.Program;
+using PhoenixModel.View;
 using SharpDX.Direct2D1;
 using System;
 using System.Collections.Generic;
@@ -34,8 +35,9 @@ namespace PhoenixWPF.Pages
         {
             if (e.EventType == ViewEventArgs.ViewEventType.UpdateEverything && SharedData.Gebäude != null && ViewModel.SelectedNation != null)
             {
-                var list = SharedData.Gebäude.Values.Where(geb => geb.Nation == ViewModel.SelectedNation);
-                EigenschaftlerList.AddRange(list);
+                var list = BauwerkeView.GetGebäude(ViewModel.SelectedNation);
+                if (list != null) 
+                    EigenschaftlerList.AddRange(list);
             }
         }
 

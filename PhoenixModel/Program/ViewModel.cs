@@ -32,14 +32,18 @@ namespace PhoenixModel.Program
             _OnViewEvent(new ViewEventArgs(gf,kf, new LogEntry(LogEntry.LogType.Error,titel, msg)));
         }
 
+        /*YAGNI
+        
         public static void UpdateData(Gebäude gebäude)
         {
             _OnViewEvent(new ViewEventArgs(gebäude));
         }
+
         public static void UpdateData(Spielfigur figur)
         {
             _OnViewEvent(new ViewEventArgs(figur));
-        }
+        }*/
+
         public static void UpdateData()
         {
             _OnViewEvent(new ViewEventArgs(ViewEventType.UpdateEverything));

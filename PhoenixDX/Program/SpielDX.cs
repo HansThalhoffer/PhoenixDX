@@ -21,6 +21,7 @@ using System.Threading;
 using Vektor = Microsoft.Xna.Framework.Vector2;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.Database;
+using System.ComponentModel;
 
 namespace PhoenixDX.Program
 {
@@ -31,7 +32,7 @@ namespace PhoenixDX.Program
 
         private CancellationToken _cancellationToken;
         private nint _windowHandle;
-        private readonly ConcurrentQueue<Action> _actionQueue = new ConcurrentQueue<Action>();
+        private readonly ConcurrentQueue<Action> _actionQueue = new();
 
         Position _cameraPosition = new Position(0, 0);
         const int _virtualWidth = 3840;
@@ -41,10 +42,11 @@ namespace PhoenixDX.Program
         Vektor _scale = Vektor.Zero;
         private SpriteBatch _spriteBatch;
 
-        public Welt Weltkarte { get; private set; }
+        public Welt Weltkarte;
         private Gemark _selected = null;
         private Gemark _mouseOver = null;
         private MappaMundi _wpfBridge;
+        private BackgroundUpdater _backgroundUpdater = null;
 
         public void EnqueueAction(Action action)
         {
@@ -307,10 +309,12 @@ namespace PhoenixDX.Program
                     Weltkarte.AddNationen(SharedData.Nationen);
                 // sobald minimal alles initialisiert, die Funktion auf HandleInput umstellen
                 if (Weltkarte.ReicheInitalized)
+                {
                     _updateFunction = HandleInput;
+                    _backgroundUpdater = new BackgroundUpdater(ref Weltkarte, ref _updateQueue);   
+                }
             }
         }
-
 
         protected override void Update(GameTime gameTime)
         {
@@ -320,9 +324,9 @@ namespace PhoenixDX.Program
             // Process queued actions
             while (_actionQueue.TryDequeue(out var action))
                 action();
-            while (_updateQueue.TryDequeue(out var gemarkPosition))
-                Weltkarte.UpdateGemark(gemarkPosition);
-
+            /*while (_updateQueue.TryDequeue(out var gemarkPosition))
+                Weltkarte.UpdateGemark(gemarkPosition);*/
+            _backgroundUpdater?.Update();
             // entweder DoInitialization oder HandleInput
             _updateFunction();
 

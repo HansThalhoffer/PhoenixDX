@@ -10,6 +10,7 @@ namespace PhoenixModel.Program
 
     /// <summary>
     /// die Settings werden automatisch gespeichert, wenn Änderungen stattfinden.
+    /// Die Klasse kann einfach erweitert werden. Einfach ein neues Property mit Backing Field hinzufügen und den Change Event aufrufen. Fertig.
     /// wenn alles neu gemacht werden soll, dann müssen die Settings gelöscht werden im
     /// Roaming App Data des Benutzers
     /// </summary>
@@ -47,6 +48,7 @@ namespace PhoenixModel.Program
                 }
             }
         }
+
         #region AccessDatabase
         public string DatabaseLocationCrossRef
         {
