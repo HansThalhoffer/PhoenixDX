@@ -18,11 +18,14 @@ using PhoenixModel.ExternalTables;
 using SharpDX.XAudio2;
 using PhoenixDX.Helper;
 using PhoenixModel.View;
+using System.Diagnostics;
 
-namespace PhoenixDX.Structures
-{
-    public class Gemark : Hex
-    {
+namespace PhoenixDX.Structures {
+    [DebuggerDisplay("{DebuggerDisplay()}")]
+    public class Gemark : Hex {
+        public string DebuggerDisplay() {
+            return $"Gemark {Koordinaten.gf}/{Koordinaten.kf} {_terrainType} [{Reich.name}]";
+        }
 
         static Microsoft.Xna.Framework.Vector2 _mapCoords = new();
         static Microsoft.Xna.Framework.Vector2 _mapSize = new();
@@ -36,11 +39,9 @@ namespace PhoenixDX.Structures
         public int ReichID { get; private set; }
 
         private Reich _reich = null;
-        public Reich Reich
-        {
+        public Reich Reich {
             get => _reich;
-            set
-            {
+            set {
                 _reich = value;
                 //Layer_0.Add("Nation", value);
                 Layer_0.Insert(0, value);
@@ -60,8 +61,7 @@ namespace PhoenixDX.Structures
         public List<GemarkAdorner> Layer_0 { get { return _layer_0; } }
         public List<GemarkAdorner> Layer_1 { get { return _layer_1; } }
 
-        public Gemark(int gf, int kf) : base(Hex.RadiusGemark, true)
-        {
+        public Gemark(int gf, int kf) : base(Hex.RadiusGemark, true) {
             Koordinaten = new KartenKoordinaten(gf, kf, 0, 0);
             _terrainType = TerrainType.Default;
             var pos = Koordinaten.GetPositionInProvinz();
@@ -70,15 +70,12 @@ namespace PhoenixDX.Structures
             Bezeichner = kf.ToString();
         }
 
-        public static Vektor GetMapSize()
-        {
+        public static Vektor GetMapSize() {
             return _mapSize;
         }
 
-        public Vektor GetMapPosition(Microsoft.Xna.Framework.Vector2 provinzCoords, Vektor scale)
-        {
-            if (scale.X != _scale.X || scale.X != _scale.Y)
-            {
+        public Vektor GetMapPosition(Microsoft.Xna.Framework.Vector2 provinzCoords, Vektor scale) {
+            if (scale.X != _scale.X || scale.X != _scale.Y) {
                 _mapSize = new Microsoft.Xna.Framework.Vector2(Height * scale.X, Width * scale.Y);
                 _scale.X = scale.X;
                 _scale.Y = scale.Y;
@@ -104,8 +101,7 @@ namespace PhoenixDX.Structures
 
         // verwandelt die Daten aus der KleinFeld in ein visuelles Element
         bool _isInitalized = false;
-        public bool Initialize(KleinFeld gem)
-        {
+        public bool Initialize(KleinFeld gem) {
             if (_isInitalized == true)
                 return false;
             _isInitalized = true;
@@ -122,45 +118,37 @@ namespace PhoenixDX.Structures
             Layer_0.Add(new Strasse(gem));
             Layer_0.Add(new Wall(gem));
 
-            if (gem.Gebäude != null)
-            {
-                if (gem.Gebäude.InBau)
-                {
+            if (gem.Gebäude != null) {
+                if (gem.Gebäude.InBau) {
                     MappaMundi.Log(this.Koordinaten.gf, this.Koordinaten.kf, new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Warning,
                         $"Gebäude in Bau {gem.Gebäude.Bauwerknamen} von {gem.Gebäude.Reich}",
                         $"Die Anzahl der Baupunkte {gem.Baupunkte} stimmt nicht mit den Anforderungen überein, die laut Tabelle dem Gebäude zugeordnet sind {BauwerkeView.GetRuestortReferenz(gem.Ruestort).Baupunkte}")
                     );
                 }
-                if (gem.Gebäude.Zerstört)
-                {
+                if (gem.Gebäude.Zerstört) {
                     MappaMundi.Log(this.Koordinaten.gf, this.Koordinaten.kf, new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Warning,
                         $"Gebäude zerstört {gem.Gebäude.Bauwerknamen} von {gem.Gebäude.Reich}",
                         $"Die Anzahl der Baupunkte {gem.Baupunkte} stimmt nicht mit den Anforderungen überein, die laut Tabelle dem Gebäude zugeordnet sind {BauwerkeView.GetRuestortReferenz(gem.Ruestort).Baupunkte}")
                      );
                 }
                 string name = gem.Gebäude.Rüstort.Bauwerk;
-                if (RuestortSymbol.Ruestorte.ContainsKey(name))
-                {
+                if (RuestortSymbol.Ruestorte.ContainsKey(name)) {
                     // Layer_0.Add("Rüstort", RuestortSymbol.Ruestorte[name]);
                     Layer_0.Add(RuestortSymbol.Ruestorte[name]);
                 }
-                else
-                {
-                    MappaMundi.Log(this.Koordinaten.gf, this.Koordinaten.kf, new PhoenixModel.Program.LogEntry($"Unbekanntes Gebäude {name}",$"Die Bezeichnung des Gebäudes {name} findet sich nicht in der Referenztabelle für Bauwerke"));
+                else {
+                    MappaMundi.Log(this.Koordinaten.gf, this.Koordinaten.kf, new PhoenixModel.Program.LogEntry($"Unbekanntes Gebäude {name}", $"Die Bezeichnung des Gebäudes {name} findet sich nicht in der Referenztabelle für Bauwerke"));
                 }
             }
 
             var spielfiguren = gem.Truppen;
-            if (spielfiguren != null && spielfiguren.Count > 0)
-            {
+            if (spielfiguren != null && spielfiguren.Count > 0) {
                 List<Truppen.Figur> truppen = [];
-                foreach (var figur in spielfiguren)
-                {
+                foreach (var figur in spielfiguren) {
                     Microsoft.Xna.Framework.Color color = Kolor.Convert(figur.Nation.Farbe);
                     truppen.Add(new Truppen.Figur(figur.Typ, color));
                 }
-                if (truppen.Count > 0)
-                {
+                if (truppen.Count > 0) {
                     Layer_1.Add(new Truppen(truppen));
                 }
             }
@@ -169,8 +157,7 @@ namespace PhoenixDX.Structures
 
         #region Selection
 
-        public bool InKleinfeld(Microsoft.Xna.Framework.Vector2 mousePos)
-        {
+        public bool InKleinfeld(Microsoft.Xna.Framework.Vector2 mousePos) {
             if (mousePos == Vector2.Zero)
                 return false;
             if (_mapCoords.X > mousePos.X || _mapCoords.Y > mousePos.Y)
@@ -196,18 +183,14 @@ namespace PhoenixDX.Structures
 
         #region Content
 
-        public List<Texture2D> GetTextures(int layer)
-        {
+        public List<Texture2D> GetTextures(int layer) {
             List<Texture2D> textures = new List<Texture2D>();
-            switch (layer)
-            {
-                case 0:
-                    {
+            switch (layer) {
+                case 0: {
                         Gelaende gel = GeländeTabelle.Terrains[(int)_terrainType] as Gelaende;
                         if (gel != null)
                             textures.Add(gel.GetTexture());
-                        foreach (GemarkAdorner adorner in Layer_0)
-                        {
+                        foreach (GemarkAdorner adorner in Layer_0) {
                             if (adorner.HasDirections)
                                 textures.AddRange(adorner.GetTextures());
                             else
@@ -215,10 +198,8 @@ namespace PhoenixDX.Structures
                         }
                         break;
                     }
-                case 1:
-                    {
-                        foreach (GemarkAdorner adorner in Layer_1)
-                        {
+                case 1: {
+                        foreach (GemarkAdorner adorner in Layer_1) {
                             if (adorner.HasDirections)
                                 textures.AddRange(adorner.GetTextures());
                             else
@@ -237,8 +218,7 @@ namespace PhoenixDX.Structures
         static bool _isLoaded = false;
         public static bool IsLoaded { get { return _isLoaded; } }
 
-        public static void LoadContent(ContentManager contentManager)
-        {
+        public static void LoadContent(ContentManager contentManager) {
             // Get all types in the current assembly that derive from the base type
             var derivedTypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes())
@@ -246,32 +226,25 @@ namespace PhoenixDX.Structures
                 .ToList();
 
             var textureValues = new List<AdornerTexture>();
-            foreach (var type in derivedTypes)
-            {
+            foreach (var type in derivedTypes) {
                 var textureField = type.GetField("Texture", BindingFlags.Public | BindingFlags.Static);
-                if (textureField != null && textureField.FieldType == typeof(AdornerTexture))
-                {
+                if (textureField != null && textureField.FieldType == typeof(AdornerTexture)) {
                     var fieldValue = textureField.GetValue(null) as AdornerTexture;
-                    if (fieldValue != null)
-                    {
+                    if (fieldValue != null) {
                         textureValues.Add(fieldValue);
                     }
                 }
             }
 
             const string folder = "Images/TilesetV/";
-            foreach (var adornerTexture in textureValues)
-            {
+            foreach (var adornerTexture in textureValues) {
                 List<Texture2D> textures = new List<Texture2D>();
-                foreach (string name in Enum.GetNames(typeof(Direction)))
-                {
+                foreach (string name in Enum.GetNames(typeof(Direction))) {
                     string fileName = folder + adornerTexture.ImageStartsWith + name;
-                    try
-                    {
+                    try {
                         textures.Add(contentManager.Load<Texture2D>(fileName));
                     }
-                    catch (Exception ex)
-                    {
+                    catch (Exception ex) {
                         MappaMundi.Log(0, 0, $"Fehler bei der Laden von Texturem von {name}", ex);
                     }
                 }
