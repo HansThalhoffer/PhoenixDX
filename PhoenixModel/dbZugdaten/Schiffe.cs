@@ -14,13 +14,10 @@ namespace PhoenixModel.dbZugdaten
         public const string TableName = "Schiffe";
         string IDatabaseTable.TableName => TableName;
         // IEigenschaftler
-        public override FigurType Typ
-        {
-            get
-            {
+        public override FigurType Typ {
+            get {
                 // es sind piraten
-                if (this.Nation!= null && Nation.Nummer == ReichTabelle.Piraten)
-                {
+                if (this.Nation != null && Nation.Nummer == ReichTabelle.Piraten) {
                     if (SKP > 0)
                         return FigurType.PiratenSchweresKriegsschiff;
                     if (LKP > 0)
@@ -42,11 +39,24 @@ namespace PhoenixModel.dbZugdaten
         public int hf_alt { get; set; }
         public int hf { get; set; }
         public int lkp_alt { get; set; }
+        /// <summary>
+        /// Leichte Katapulte
+        /// </summary>
         public int LKP { get; set; }
         public int skp_alt { get; set; }
+
+        /// <summary>
+        /// Schwere Katapulte
+        /// </summary>
         public int SKP { get; set; }
         public int pferde_alt { get; set; }
+        /// <summary>
+        /// Anzahl Pferde
+        /// </summary>
         public int Pferde { get; set; }
+        /// <summary>
+        /// Anzahl Gardisten
+        /// </summary>
         public bool Garde { get; set; }
         public string? Befehl_bew { get; set; }
         public string? Befehl_ang { get; set; }
@@ -99,14 +109,12 @@ namespace PhoenixModel.dbZugdaten
         public int x19 { get; set; }
         public int y19 { get; set; }
 
-        public enum Felder
-        {
+        public enum Felder {
             nummer, staerke_alt, staerke, hf_alt, hf, lkp_alt, LKP, skp_alt, SKP, pferde_alt, Pferde, gf_von, kf_von, gf_nach, kf_nach, rp, bp, ph_xy, Garde, Befehl_bew, Befehl_ang, Befehl_erobert, GS, GS_alt, Kampfeinnahmen, Kampfeinnahmen_alt, x1, y1, x2, y2, x3,
             y3, x4, y4, x5, y5, x6, y6, x7, y7, x8, y8, x9, y9, hoehenstufen, schritt, auf_Flotte, Sonstiges, spaltetab, fusmit, chars, bp_max, isbanned, x10, y10, x11, y11, x12, y12, x13, y13, x14, y14, x15, y15, x16, y16, x17, y17, x18, y18, x19, y19,
         }
 
-        public override void Load(DbDataReader reader)
-        {
+        public override void Load(DbDataReader reader) {
             base.Load(reader);
             this.Nummer = DatabaseConverter.ToInt32(reader[(int)Felder.nummer]);
             this.staerke_alt = DatabaseConverter.ToInt32(reader[(int)Felder.staerke_alt]);
@@ -183,8 +191,7 @@ namespace PhoenixModel.dbZugdaten
             this.y19 = DatabaseConverter.ToInt32(reader[(int)Felder.y19]);
         }
 
-        public override void Save(DbCommand command)
-        {
+        public override void Save(DbCommand command) {
             base.Save(command);
 
             command.CommandText = $@"
@@ -267,8 +274,7 @@ namespace PhoenixModel.dbZugdaten
             command.ExecuteNonQuery();
         }
 
-        public void Insert(DbCommand reader)
-        {
+        public void Insert(DbCommand reader) {
             throw new NotImplementedException();
         }
     }
