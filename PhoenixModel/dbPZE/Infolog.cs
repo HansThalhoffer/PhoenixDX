@@ -16,7 +16,7 @@ namespace PhoenixModel.dbPZE
         public const string TableName = "Infolog";
         string IDatabaseTable.TableName => TableName;
         // IEigenschaftler
-        private static readonly string[] PropertiestoIgnore = [];
+        private static readonly string[] PropertiestoIgnore = ["DatabaseName"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
         public int ID { get; set; } = 0;

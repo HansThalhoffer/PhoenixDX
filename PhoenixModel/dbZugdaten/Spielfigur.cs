@@ -133,7 +133,7 @@ namespace PhoenixModel.dbZugdaten
         // wird nicht benötigt
         public string? ph_xy { get; set; }
 
-        private static readonly string[] PropertiestoIgnore = [];
+        private static readonly string[] PropertiestoIgnore = ["DatabaseName"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
     }

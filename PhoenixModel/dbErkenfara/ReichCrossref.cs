@@ -14,7 +14,7 @@ namespace PhoenixModel.dbErkenfara
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => Nummer.ToString();
         // IEigenschaftler
-        private static readonly string[] PropertiestoIgnore = [];
+        private static readonly string[] PropertiestoIgnore = ["DatabaseName"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
         public int Nummer { get; set; }
         public string? Reich { get; set; }

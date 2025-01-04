@@ -28,7 +28,7 @@ namespace PhoenixModel.dbErkenfara
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner { get => CreateBezeichner(); }
         // IEigenschaftler
-        private static readonly string[] PropertiestoIgnore = ["Key","gf","kf"];
+        private static readonly string[] PropertiestoIgnore = ["DatabaseName", "Key","gf","kf"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
       
@@ -64,6 +64,7 @@ namespace PhoenixModel.dbErkenfara
         // falls kaputt oder noch nicht fertig aufgebaut
         public bool InBau { get; set; } = false;
         public bool Zerstört { get; set; } = false;
+        public bool IsNew { get; set; } = true;
 
         public enum Felder
         {
@@ -76,10 +77,14 @@ namespace PhoenixModel.dbErkenfara
             kf = DatabaseConverter.ToInt32(reader[(int)Felder.kf]);
             Reich = DatabaseConverter.ToString(reader[(int)Felder.Reich]);
             Bauwerknamen = DatabaseConverter.ToString(reader[(int)Felder.Bauwerknamen]);
+            IsNew = false;
         }
 
         public void Save(DbCommand command)
         {
+            if (IsNew)
+                Insert(command);
+
             command.CommandText = $@"
                 UPDATE {TableName} SET
                     Reich = '{DatabaseConverter.EscapeString(this.Reich)}',
@@ -87,11 +92,8 @@ namespace PhoenixModel.dbErkenfara
                 WHERE gf = {this.gf} AND kf = {this.kf} ";
 
             // Execute the command
-            int changedRows = command.ExecuteNonQuery();
-            if (changedRows == 0 )
-            {
+            if (command.ExecuteNonQuery() == 0 )
                 Insert(command);
-            }
         }
 
         public void Insert(DbCommand command)

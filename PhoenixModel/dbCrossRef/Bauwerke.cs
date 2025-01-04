@@ -24,7 +24,7 @@ namespace PhoenixModel.dbCrossRef
         public int? Baupunkte { get; set; }
         public string? Bauwerk { get; set; }
 
-        private static readonly string[] PropertiestoIgnore = [];
+        private static readonly string[] PropertiestoIgnore = ["DatabaseName"];
         public virtual List<Eigenschaft> Eigenschaften
         {
             get

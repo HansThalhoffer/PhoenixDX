@@ -27,7 +27,7 @@ namespace PhoenixModel.ExternalTables
 
         // IEigenschaftler
         public string Bezeichner => Name;
-        private static readonly string[] PropertiestoIgnore = ["Farbe", "Name", "IsWasser"];
+        private static readonly string[] PropertiestoIgnore = ["DatabaseName", "Farbe", "Name", "IsWasser"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
         public TerrainType Typ { get; set; }

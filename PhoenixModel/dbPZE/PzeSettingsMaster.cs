@@ -14,7 +14,7 @@ namespace PhoenixModel.dbPZE
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => $"{this.Monat} {this.Reich}";
         // IEigenschaftler
-        private static readonly string[] PropertiestoIgnore = [];
+        private static readonly string[] PropertiestoIgnore = ["DatabaseName"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
         public int Monat { get; set; }
         public int Reich { get; set; }

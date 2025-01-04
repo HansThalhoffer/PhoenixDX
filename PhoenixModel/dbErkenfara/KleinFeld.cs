@@ -21,7 +21,7 @@ namespace PhoenixModel.dbErkenfara
         public const string TableName = "Karte";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner { get => CreateBezeichner(); }
-        private static readonly string[] PropertiestoIgnore = { "x", "y", "Rand", "db_xy", "ph_xy", "krieger_text", "TerrainType", "Key", "Reich", "Gelaendetyp" };
+        private static readonly string[] PropertiestoIgnore = { "DatabaseName", "x", "y", "Rand", "db_xy", "ph_xy", "krieger_text", "TerrainType", "Key", "Reich", "Gelaendetyp" };
         public List<Eigenschaft> Eigenschaften => PropertyProcessor.CreateProperties(this, PropertiestoIgnore);
         #endregion
 

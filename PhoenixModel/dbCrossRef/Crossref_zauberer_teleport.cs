@@ -13,7 +13,7 @@ namespace PhoenixModel.dbCrossRef
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => $"{GP} {ZX} {Teleport}";
         // IEigenschaftler
-        private static readonly string[] PropertiestoIgnore = [];
+        private static readonly string[] PropertiestoIgnore = ["DatabaseName"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
         public int GP { get; set; }
         public string? ZX { get; set; }

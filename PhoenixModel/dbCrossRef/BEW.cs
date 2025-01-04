@@ -13,7 +13,7 @@ namespace PhoenixModel.dbCrossRef
     {
         public string Bezeichner => Gelaende.ToString();
         // IEigenschaftler
-        private static readonly string[] PropertiestoIgnore = [];
+        private static readonly string[] PropertiestoIgnore = ["DatabaseName"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
         public int Gelaende { get; set; }

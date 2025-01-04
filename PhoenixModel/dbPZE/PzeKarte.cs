@@ -15,7 +15,7 @@ namespace PhoenixModel.dbPZE
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner { get => CreateBezeichner(); }
         // IEigenschaftler
-        private static readonly string[] PropertiestoIgnore = [];
+        private static readonly string[] PropertiestoIgnore = ["DatabaseName"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
         
         public string? ph_xy { get; set; }

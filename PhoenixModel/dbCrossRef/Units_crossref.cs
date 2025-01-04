@@ -13,7 +13,7 @@ namespace PhoenixModel.dbCrossRef
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => ID.ToString();
         // IEigenschaftler
-        private static readonly string[] PropertiestoIgnore = [];
+        private static readonly string[] PropertiestoIgnore = ["DatabaseName"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
         public int ID { get; set; }
         public string? Unittype { get; set; }

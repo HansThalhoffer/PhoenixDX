@@ -13,7 +13,7 @@ namespace PhoenixModel.dbErkenfara
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => ReichId ?? "unbekanntes Nation";
         // IEigenschaftler
-        private static readonly string[] PropertiestoIgnore = [];
+        private static readonly string[] PropertiestoIgnore = ["DatabaseName"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
         public string? Reichname { get; set; }
         public string? ReichId { get; set; }
