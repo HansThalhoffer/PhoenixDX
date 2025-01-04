@@ -102,8 +102,6 @@ namespace PhoenixWPF.Program
                             db.Save(data);
                         }
                     }
-
-                    //data.Save();
                 }
             }
             catch (Exception ex)

@@ -96,7 +96,7 @@ namespace PhoenixModel.View
                     // ergänzt die Datenbank falls notwendig
                     if (gebäude == null)
                     {
-                        ViewModel.LogWarning( gemark, $"Fehlendes Gebäude in der Bauwerktabelle mit dem Namen {gemark.Bauwerknamen}", "Durch einen Datenbankfehler hat das Gebäude keinen Eintrag in der Referenztabelle");    
+                        ViewModel.LogWarning( gemark, $"Fehlendes Gebäude in der Bauwerktabelle mit dem Namen {gemark.Bauwerknamen}", "Durch einen Datenbankfehler hat das Gebäude keinen Eintrag in der Tabelle [bauwerkliste] in der Datenbank Ekrenfarakarte.mdb");    
                         gebäude = new Gebäude();
                         gebäude.kf = gemark.kf;
                         gebäude.gf = gemark.gf;

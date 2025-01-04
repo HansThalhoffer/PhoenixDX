@@ -17,7 +17,11 @@ namespace PhoenixModel.dbErkenfara
     public class Gebäude : KleinfeldPosition, IEigenschaftler, IDatabaseTable, ISelectable
     {
         private static string _datebaseName = string.Empty;
-        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
+        public string DatabaseName { get { return _datebaseName; } 
+            set { 
+                _datebaseName = value; 
+            } 
+        }
 
         // IDatabaseTable
         public const string TableName = "bauwerksliste";
@@ -80,10 +84,14 @@ namespace PhoenixModel.dbErkenfara
                 UPDATE {TableName} SET
                     Reich = '{DatabaseConverter.EscapeString(this.Reich)}',
                     Bauwerknamen = '{DatabaseConverter.EscapeString(this.Bauwerknamen)}'
-                WHERE gf = {this.gf} AND kf = {this.gf} ";
+                WHERE gf = {this.gf} AND kf = {this.kf} ";
 
             // Execute the command
-            command.ExecuteNonQuery();
+            int changedRows = command.ExecuteNonQuery();
+            if (changedRows == 0 )
+            {
+                Insert(command);
+            }
         }
 
         public void Insert(DbCommand command)
@@ -91,6 +99,10 @@ namespace PhoenixModel.dbErkenfara
             command.CommandText = $@"
                  INSERT INTO {TableName} (gf, kf, Reich, Bauwerknamen)
                 VALUES ({this.gf}, {this.kf}, '{DatabaseConverter.EscapeString(this.Reich)}', '{DatabaseConverter.EscapeString(this.Bauwerknamen)}')";
+
+            // Execute the command
+            int changedRows = command.ExecuteNonQuery();
+
         }
 
         public bool Select()

@@ -40,7 +40,7 @@ namespace PhoenixWPF.Program
             {
                 if (connector?.Open() == false)
                     return;
-                  Load<KleinFeld>(connector, ref SharedData.Map, Enum.GetNames(typeof(KleinFeld.Felder)));
+                Load<KleinFeld>(connector, ref SharedData.Map, Enum.GetNames(typeof(KleinFeld.Felder)));
                 Load<Gebäude>(connector, ref SharedData.Gebäude, Enum.GetNames(typeof(Gebäude.Felder)));
                 connector?.Close();
                 return;

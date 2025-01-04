@@ -39,6 +39,24 @@ namespace PhoenixWPF.Database
 
         protected delegate T LoadObject<T>(DbDataReader reader);
 
+        private void SetDatabaseName<T>(T obj, AccessDatabase? connector)
+        {
+            if (obj is IDatabaseTable table)
+            {
+                if (connector != null)
+                    table.DatabaseName = connector.DatabaseName;
+            }
+        }
+
+        /// <summary>
+        /// Lädt die objekte in eine Collection
+        /// leider zwingt C# durch die ref parameterübergabe hier zwei identische Load Funktionen zu haben, eventuell wäre es eine
+        /// Lösung die Colletion außerhalb zu erzeugen und das Laden in eine Funktion zu packen, wäre was zum Aufräumen
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="connector"></param>
+        /// <param name="collection"></param>
+        /// <param name="felder"></param>
         protected void Load<T>(AccessDatabase? connector, ref BlockingCollection<T>? collection, string[] felder) where T : IDatabaseTable, new()
         {
             if (connector != null)
@@ -55,11 +73,7 @@ namespace PhoenixWPF.Database
                         while (reader != null && reader.Read())
                         {
                             T obj = new T();
-                            if (obj is IDatabaseTable table)
-                            {
-                                if (connector != null)
-                                    table.DatabaseName = connector.DatabaseName;
-                            }
+                            SetDatabaseName(obj, connector);
                             typeof(T).GetMethod("Load")?.Invoke(obj, [reader]);
                             collection.Add(obj);
                         }
@@ -90,6 +104,7 @@ namespace PhoenixWPF.Database
                 while (reader != null && reader.Read())
                 {
                     obj = new T();
+                    SetDatabaseName(obj, connector);
                     typeof(T).GetMethod("Load")?.Invoke(obj, [reader]);
                     string key = PropertyProcessor.GetPropertyValue(obj, "Bezeichner");
                     collection.Add(key, obj);
