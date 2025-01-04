@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.dbPZE
 {
-    internal class Monat : IDatabaseTable, IEigenschaftler
+    internal class Monat :  IDatabaseTable, IEigenschaftler
     {
+        private static string _datebaseName = string.Empty;
+        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "Monat";
         string IDatabaseTable.TableName => TableName;
         // IEigenschaftler

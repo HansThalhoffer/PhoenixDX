@@ -16,6 +16,9 @@ namespace PhoenixModel.dbErkenfara
 {
     public class Gebäude : KleinfeldPosition, IEigenschaftler, IDatabaseTable, ISelectable
     {
+        private static string _datebaseName = string.Empty;
+        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
+
         // IDatabaseTable
         public const string TableName = "bauwerksliste";
         string IDatabaseTable.TableName => TableName;
@@ -62,6 +65,7 @@ namespace PhoenixModel.dbErkenfara
         {
             gf, kf, Reich, Bauwerknamen
         }
+
         public void Load(DbDataReader reader)
         {
             gf = DatabaseConverter.ToInt32(reader[(int)Felder.gf]);
@@ -70,14 +74,23 @@ namespace PhoenixModel.dbErkenfara
             Bauwerknamen = DatabaseConverter.ToString(reader[(int)Felder.Bauwerknamen]);
         }
 
-        public void Save(DbCommand reader)
+        public void Save(DbCommand command)
         {
-            throw new NotImplementedException();
+            command.CommandText = $@"
+                UPDATE {TableName} SET
+                    Reich = '{DatabaseConverter.EscapeString(this.Reich)}',
+                    Bauwerknamen = '{DatabaseConverter.EscapeString(this.Bauwerknamen)}'
+                WHERE gf = {this.gf} AND kf = {this.gf} ";
+
+            // Execute the command
+            command.ExecuteNonQuery();
         }
 
-        public void Insert(DbCommand reader)
+        public void Insert(DbCommand command)
         {
-            throw new NotImplementedException();
+            command.CommandText = $@"
+                 INSERT INTO {TableName} (gf, kf, Reich, Bauwerknamen)
+                VALUES ({this.gf}, {this.kf}, '{DatabaseConverter.EscapeString(this.Reich)}', '{DatabaseConverter.EscapeString(this.Bauwerknamen)}')";
         }
 
         public bool Select()

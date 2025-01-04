@@ -11,17 +11,19 @@ namespace PhoenixModel.Helper
     /// </summary>
     public class Eigenschaft
     {
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="Eigenschaft"/> class with a name, value, and editable state.
         /// </summary>
         /// <param name="name">The name of the property.</param>
         /// <param name="wert">The value of the property. Can be null.</param>
         /// <param name="editable">Indicates whether the property is editable.</param>
-        public Eigenschaft(string name, string? wert, bool editable)
+        public Eigenschaft(string name, string? wert, bool editable, IEigenschaftler? source)
         {
             Name = name;
             _wert = wert;
             IsEditable = editable;
+            Source = source;
         }
 
         /// <summary>
@@ -29,11 +31,14 @@ namespace PhoenixModel.Helper
         /// </summary>
         /// <param name="name">The name of the property.</param>
         /// <param name="liste">The list of sub-properties.</param>
-        public Eigenschaft(string name, List<Eigenschaft> liste)
+        public Eigenschaft(string name, List<Eigenschaft> liste, IEigenschaftler? source)
         {
             Name = name;
             Eigenschaften = liste;
+            Source = source;
         }
+
+        public IEigenschaftler? Source { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the property.

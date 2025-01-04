@@ -1,4 +1,5 @@
-﻿using PhoenixModel.dbCrossRef;
+﻿using PhoenixModel.Database;
+using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbPZE;
 using PhoenixModel.dbZugdaten;
@@ -67,6 +68,13 @@ namespace PhoenixModel.Helper
             // Elemente haben sich geändert
             public bool IsUpdated { get => _isUpdated; set => _isUpdated = value; }
         }
+
+        /// <summary>
+        /// In dieser Queue werden die Objekte abgelegt, die in der Datenbank gespeichert werden sollen. Das geschieht asynchron
+        /// </summary>
+        public static ConcurrentQueue<IDatabaseTable> StoreQueue = [];
+
+
 
         // Karte
         public static BlockingDictionary<KleinFeld>? Map = null;

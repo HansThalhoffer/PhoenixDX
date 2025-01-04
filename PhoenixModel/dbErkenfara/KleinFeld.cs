@@ -16,6 +16,8 @@ namespace PhoenixModel.dbErkenfara
     public class KleinFeld : KleinfeldPosition, ISelectable, IDatabaseTable
     {
         #region Schnittstellen
+        private static string _datebaseName = string.Empty;
+        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "Karte";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner { get => CreateBezeichner(); }

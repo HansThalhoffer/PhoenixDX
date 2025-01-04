@@ -11,7 +11,8 @@
         <converter:EditableToBackgroundConverter x:Key="EditableToBackgroundConverter"/>
     </Page.Resources>
     <Grid>
-        <DataGrid Name="PropertyDataGrid" AutoGenerateColumns="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsReadOnly="False">
+        <DataGrid Name="PropertyDataGrid" AutoGenerateColumns="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsReadOnly="False"
+                  CellEditEnding="PropertyDataGrid_CellEditEnding" >
             <DataGrid.Columns>
                 <!-- Name Column -->
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True" Width="150" />

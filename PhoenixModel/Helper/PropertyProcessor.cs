@@ -1,4 +1,6 @@
-﻿using PhoenixModel.View;
+﻿using PhoenixModel.Database;
+using PhoenixModel.Program;
+using PhoenixModel.View;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -92,16 +94,16 @@ namespace PhoenixModel.Helper
         /// <param name="name">The name of the property.</param>
         /// <param name="value">The value of the property.</param>
         /// <param name="isEditable">Indicates whether the property is editable.</param>
-        static void AppendProperty(ref List<Eigenschaft> result, string name, object? value, bool isEditable)
+        static void AppendProperty(ref List<Eigenschaft> result, string name, object? value, bool isEditable, IEigenschaftler? source)
         {
             if (value == null)
                 return;
-           
+
 
             if (isEditable == false) // was nicht editierbar ist und empty oder 0 wird nicht angezeigt
             {
-                if (value is string && string.IsNullOrEmpty((string) value))
-                return;
+                if (value is string && string.IsNullOrEmpty((string)value))
+                    return;
                 if (value is int && (int)value == 0)
                     return;
             }
@@ -115,7 +117,7 @@ namespace PhoenixModel.Helper
             }
             else
             {
-                result.Add(new Eigenschaft(name, GetExpandedValue(name, value), isEditable));
+                result.Add(new Eigenschaft(name, GetExpandedValue(name, value), isEditable, source));
             }
         }
 
@@ -128,6 +130,7 @@ namespace PhoenixModel.Helper
         /// <param name="toIgnore">An array of property names to ignore during processing.</param>
         static void AppendProperties<T>(T data, ref List<Eigenschaft> result, string[] toIgnore)
         {
+            IEigenschaftler? source = data as IEigenschaftler;
             // Get all properties of the Data class
             var ar = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
             var safeproperties = ar.Where(p => p.Name != "Bezeichner" && p.Name != "Eigenschaften").ToArray();
@@ -140,7 +143,7 @@ namespace PhoenixModel.Helper
             foreach (var property in editableProperties)
             {
                 properties.Remove(property);
-                AppendProperty(ref result, property.Name, property.GetValue(data), true);
+                AppendProperty(ref result, property.Name, property.GetValue(data), true, source);
             }
 
             // Group properties by their prefix (e.g., Fluss, Wall, etc.)
@@ -171,15 +174,79 @@ namespace PhoenixModel.Helper
 
                 if (directionList.Any())
                 {
-                    result.Add(new Eigenschaft(key, string.Join(" ", directionList), false));
+                    result.Add(new Eigenschaft(key, string.Join(" ", directionList), false, source));
                 }
             }
 
             // Append remaining properties
             foreach (var property in properties)
             {
-                AppendProperty(ref result, property.Name, property.GetValue(data), false);
+                AppendProperty(ref result, property.Name, property.GetValue(data), false, source);
             }
+        }
+
+        /// <summary>
+        /// aktualisert das Objekt mit dem Wert der Eigenschaft, sofern die Eigenschaft das Attribut Editable hat
+        /// wird zum Speichern von Daten verwendet, die der Benutzer ändern darf
+        /// Die geänderten Objekte werden dann in der Queue zum Speichern abgelegt, wo sie dann on Idle abgeholt werden
+        /// </summary>
+        /// <param name="changed"></param>
+        public static void UpdateSource(Eigenschaft changed)
+        {
+            if (changed.Source == null)
+            {
+                ViewModel.LogError($"Eigenschaft {changed.Name} ohne Quelle kann nicht aktualisiert werden", "Es wurde das Aktualisieren einer Eigenschaft aufgerufen, die keine Quelle enthält. Das funktioniert nicht.");
+                return;
+            }
+            if (changed.IsEditable == false)
+            {
+                ViewModel.LogError($"Eigenschaft {changed.Name} ist nicht aktualisierbar", "Es wurde das Aktualisieren einer Eigenschaft aufgerufen, die nicht bearbeitet werden darf");
+                return;
+            }
+            if (changed.IsChanged == false)
+            {
+                ViewModel.LogError($"Eigenschaft {changed.Name} ist nicht geändert", "Es wurde das Aktualisieren einer Eigenschaft aufgerufen, die nicht geändert wurde");
+                return;
+            }
+
+            string name = changed.Name;
+            if (name.Contains('.'))
+                name = name.Substring(name.IndexOf(".") + 1);
+
+            // Collect editable properties
+            var editableProperties = changed.Source.GetType().GetProperties()
+               .Where(prop => Attribute.IsDefined(prop, typeof(View.Editable)))
+               .ToList();
+            foreach (var property in editableProperties)
+            {
+                if (property.Name == name)
+                {
+                    try
+                    {
+                        if (property.PropertyType == typeof(string))
+                            property.SetValue(changed.Source, changed.Wert);
+                        else if (property.PropertyType == typeof(int))
+                        {
+                            var i = Convert.ToInt32(changed.Wert);
+                            property.SetValue(changed.Source, i);
+                        }
+                        else
+                            ViewModel.LogError($"Eigenschaft mit Typ {property.DeclaringType} nicht aktualisierbar", "Es wurde das Aktualisieren einer Eigenschaft aufgerufen, deren Typ nicht bekannt ist");
+                        if (changed.Source is IDatabaseTable table)
+                        {
+                            SharedData.StoreQueue.Enqueue(table);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ViewModel.LogError($"Eigenschaft {changed.Name} konnte wegen einem Fehler nicht aktualisiert werden", ex.Message);
+                    }
+
+                    
+                    return;
+                }
+            }
+            ViewModel.LogError($"Eigenschaft {changed.Name} wurde nicht als bearbeitbar im Objekt markiert", "Es wurde das Aktualisieren einer Eigenschaft aufgerufen, die das Attribut [[Editable]] nicht besitzt");
         }
     }
 

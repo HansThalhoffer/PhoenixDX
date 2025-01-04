@@ -39,34 +39,40 @@ namespace PhoenixWPF.Database
 
         protected delegate T LoadObject<T>(DbDataReader reader);
 
-        protected void Load<T> (AccessDatabase? connector, ref BlockingCollection<T>? collection, string[] felder) where T : IDatabaseTable, new()
+        protected void Load<T>(AccessDatabase? connector, ref BlockingCollection<T>? collection, string[] felder) where T : IDatabaseTable, new()
         {
-            if (connector == null)
-                return;
-            int total = 0;
-            collection = new BlockingCollection<T>();
-            string felderListe = string.Join(", ", felder);
-            string tableName = PropertyProcessor.GetConstValue<T>("TableName");
-            string query = $"SELECT {felderListe} FROM {tableName} ORDER BY {felder[0]}";
-            try
+            if (connector != null)
             {
-                using (DbDataReader? reader = connector?.OpenReader(query))
+                int total = 0;
+                collection = new BlockingCollection<T>();
+                string felderListe = string.Join(", ", felder);
+                string tableName = PropertyProcessor.GetConstValue<T>("TableName");
+                string query = $"SELECT {felderListe} FROM {tableName} ORDER BY {felder[0]}";
+                try
                 {
-                    while (reader != null && reader.Read())
+                    using (DbDataReader? reader = connector?.OpenReader(query))
                     {
-                        T obj = new T();
-                        typeof(T).GetMethod("Load")?.Invoke(obj,[reader]);
-                        collection.Add(obj);
+                        while (reader != null && reader.Read())
+                        {
+                            T obj = new T();
+                            if (obj is IDatabaseTable table)
+                            {
+                                if (connector != null)
+                                    table.DatabaseName = connector.DatabaseName;
+                            }
+                            typeof(T).GetMethod("Load")?.Invoke(obj, [reader]);
+                            collection.Add(obj);
+                        }
                     }
                 }
+                catch (Exception ex)
+                {
+                    SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Öffnen der {collection.GetType()} Datenbank:{tableName}", $"{query} führte zu folgendem Fehler \n\r{ex.Message}"));
+                }
+                collection.CompleteAdding();
+                total = collection.Count();
+                SpielWPF.Log(new PhoenixModel.Program.LogEntry($"{total} {typeof(T).Name} geladen", $"Das Laden der Datenbanktabelle {tableName} war erfolgreich"));
             }
-            catch (Exception ex)
-            {
-                SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Öffnen der {collection.GetType()} Datenbank:{tableName}", $"{query} führte zu folgendem Fehler \n\r{ex.Message}"));
-            }
-            collection.CompleteAdding();
-            total = collection.Count();
-            SpielWPF.Log(new PhoenixModel.Program.LogEntry($"{total} {typeof(T).Name} geladen",$"Das Laden der Datenbanktabelle {tableName} war erfolgreich"));
         }
 
         // andere Collection - hier Dictionary
@@ -121,9 +127,9 @@ namespace PhoenixWPF.Database
         LoadCompleted? _loadCompletedDelegate = null;
         public void BackgroundLoad(LoadCompleted loadCompletedDelegate)
         {
-            using (var worker = new BackgroundWorker { WorkerReportsProgress = true, WorkerSupportsCancellation = true})
+            using (var worker = new BackgroundWorker { WorkerReportsProgress = true, WorkerSupportsCancellation = true })
             {
-                _loadCompletedDelegate = loadCompletedDelegate; 
+                _loadCompletedDelegate = loadCompletedDelegate;
                 worker.DoWork += Worker_DoWork;
                 worker.ProgressChanged += Worker_ProgressChanged;
                 worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
@@ -160,7 +166,7 @@ namespace PhoenixWPF.Database
             if (connector == null)
                 return -1;
             int total = 0;
-            string query = string.IsNullOrEmpty(filter) ? $"SELECT count(*) FROM {tableName}": $"SELECT count(*) FROM {tableName} WHERE {filter}";
+            string query = string.IsNullOrEmpty(filter) ? $"SELECT count(*) FROM {tableName}" : $"SELECT count(*) FROM {tableName} WHERE {filter}";
             try
             {
                 using (DbDataReader? reader = connector?.OpenReader(query))

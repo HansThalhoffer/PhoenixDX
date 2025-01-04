@@ -32,15 +32,16 @@ namespace PhoenixWPF.Program
         public IPropertyDisplay? PropertyDisplay { get; set; } = null;
         public IOptions? Options { get; set; } = null;
         public SelectionHistory SelectionHistory = [];
+        private DispatcherTimer? _backgroundSave = null;
 
         static public Main Instance { get { return _instance; } }
 
 
-        public void InitInstance() 
+        public void InitInstance()
         {
             Settings.InitializeSettings();
             LoadCrossRef(); // die referenzen vor der Karte laden, auch wenn es dann weniger zu sehen gibt - insgesamt geht das schneller
-            LoadKarte();            
+            LoadKarte();
             LoadPZE();
             // die Anteile laden, die im Hintergrund geladen werden können
             LoadCrossRef(true);
@@ -51,7 +52,63 @@ namespace PhoenixWPF.Program
             }
             else
             {
-                Application.Current.Shutdown();         
+                Application.Current.Shutdown();
+            }
+
+            _backgroundSave = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+            _backgroundSave.Tick += PerformSave;
+        }
+
+        /// <summary>
+        /// Hier wird geschaut, ob in der Queue zum Speichern etwas liegt. Falls ja, wird es gespeichert
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PerformSave(object? sender, EventArgs e)
+        {
+            try
+            {
+                while (SharedData.StoreQueue.Count > 0)
+                {
+                    SharedData.StoreQueue.TryDequeue(out var data);
+                    if (data != null)
+                    {
+                        ILoadableDatabase? db = null;
+                        if (data.DatabaseName == Settings.UserSettings.DatabaseLocationCrossRef)
+                        {
+                            db = CreateCrossRef(data.DatabaseName, Settings.UserSettings.PasswordCrossRef);
+                        }
+                        else if (data.DatabaseName == Settings.UserSettings.DatabaseLocationKarte)
+                        {
+                            db = CreateKarte(data.DatabaseName, Settings.UserSettings.PasswordKarte);
+                        }
+                        else if (data.DatabaseName == Settings.UserSettings.DatabaseLocationZugdaten)
+                        {
+                            db = CreateZugdaten(data.DatabaseName, Settings.UserSettings.PasswordReich);
+                        }
+                        else if (data.DatabaseName == Settings.UserSettings.DatabaseLocationPZE)
+                        {
+                            db = CreatePZE(data.DatabaseName, Settings.UserSettings.PasswordPZE);
+                        }
+                        else
+                        {
+                            SpielWPF.LogError($"Die Datenbank {data.DatabaseName} ist unbenkannt", $"Die daten können nicht in der Tabelle {data.TableName} gespeichert werden, wenn die Datenbank nicht bekannt ist");
+                        }
+                        if (db != null)
+                        {
+                            db.Save(data);
+                        }
+                    }
+
+                    //data.Save();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during save: {ex.Message}");
             }
         }
 
@@ -109,6 +166,16 @@ namespace PhoenixWPF.Program
 
 
         #region Daten Laden
+        /// <summary>
+        /// wenn alles datenbanken geladen sind, und das Programm soweit aktiv sein darf, wird die Funktion ausgeführt
+        /// </summary>
+        private void EverythingLoaded()
+        {
+            ViewModel.UpdateData();
+            _backgroundSave?.Start();
+        }
+
+
         public delegate ILoadableDatabase LoadableDatabase(string databaseLocation, string encryptedPassword);
         private void OnLoadCompleted(ILoadableDatabase database)
         {
@@ -137,7 +204,7 @@ namespace PhoenixWPF.Program
                         this.Map?.OnUpdateEvent(new MapEventArgs(gem, MapEventType.UpdateGemark));
                     }
                 }
-                ViewModel.UpdateData();
+                EverythingLoaded();
             }
 
         }
@@ -231,7 +298,9 @@ namespace PhoenixWPF.Program
         public void Dispose()
         {
             if (Settings != null) 
-                Settings.Dispose(); 
+                Settings.Dispose();
+            _backgroundSave?.Stop();
+            PerformSave(null, new EventArgs());
         }
     }
 }

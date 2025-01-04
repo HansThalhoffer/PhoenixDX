@@ -64,9 +64,19 @@ namespace PhoenixWPF.Database
 
         }
 
-        public bool IsConnected()
+        public bool IsConnected
         {
-            return _connection != null && _connection.State == ConnectionState.Open;
+            get { return _connection != null && _connection.State == ConnectionState.Open; }
+        }
+
+        public string DatabaseName
+        {
+            get 
+            {
+                if (IsConnected == false)
+                    return string.Empty;
+                return _connection.DataSource;
+            }
         }
 
         /// <summary>
@@ -127,6 +137,16 @@ namespace PhoenixWPF.Database
 
             using var command = new OleDbCommand(query, _connection);
             return command.ExecuteReader();
+        }
+
+        /// <summary>
+        /// Executes a query that returns a reader.
+        /// </summary>
+        /// <param name="query">The SQL query to execute.</param>
+        /// <returns>A DataTable containing the result set.</returns>
+        public DbCommand OpenDBCommand()
+        {
+            return _connection.CreateCommand();
         }
 
         /// <summary>

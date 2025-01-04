@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.dbCrossRef
 {
-    public class BauwerkBasis 
+    public class BauwerkBasis
     {
         static Dictionary<string, BauwerkBasis> Bauwerke = [];
         static BauwerkBasis? GetBauwerk(string name)
@@ -40,6 +40,8 @@ namespace PhoenixModel.dbCrossRef
     // kosten von Wall etc
     public class Bauwerk : BauwerkBasis, IDatabaseTable, IEigenschaftler
     {
+        private static string _datebaseName = string.Empty;
+        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "Bauwerke_crossref";
         string IDatabaseTable.TableName => TableName;
 
@@ -68,6 +70,8 @@ namespace PhoenixModel.dbCrossRef
     // referenzliste
     public class Rüstort : BauwerkBasis, IDatabaseTable, IEigenschaftler
     {
+        private static string _datebaseName = string.Empty;
+        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "ruestort_crossref";
         string IDatabaseTable.TableName => TableName;
         public static Dictionary<int, Rüstort> NachBaupunkten = [];

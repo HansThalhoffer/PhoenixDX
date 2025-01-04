@@ -5,8 +5,11 @@ using PhoenixModel.Helper;
 
 namespace PhoenixModel.dbErkenfara
 {
-    public class Bestiarium : IDatabaseTable, IEigenschaftler
+    public class Bestiarium :  IDatabaseTable, IEigenschaftler
     {
+        private static string _datebaseName = string.Empty;
+        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
+        
         public const string TableName = "bestiarium";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => Kreaturenname ?? "unbekannte Kreatur";

@@ -8,6 +8,8 @@ namespace PhoenixModel.dbZugdaten
 {
     public class Zauberer : Spielfigur, IDatabaseTable, IEigenschaftler
     {
+        private static string _datebaseName = string.Empty;
+        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "Zauberer";
         string IDatabaseTable.TableName => TableName;
         public override FigurType Typ

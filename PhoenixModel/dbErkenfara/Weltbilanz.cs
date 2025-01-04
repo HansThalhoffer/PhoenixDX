@@ -5,8 +5,10 @@ using PhoenixModel.Helper;
 
 namespace PhoenixModel.dbErkenfara
 {
-    public class Weltbilanz : IDatabaseTable, IEigenschaftler
+    public class Weltbilanz :  IDatabaseTable, IEigenschaftler
     {
+        private static string _datebaseName = string.Empty;
+        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "Weltbilanz";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => ReichId ?? "unbekanntes Nation";

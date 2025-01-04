@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.dbPZE
 {
-    public class Infolog : IDatabaseTable, IEigenschaftler
+    public class Infolog :  IDatabaseTable, IEigenschaftler
     {
+        private static string _datebaseName = string.Empty;
+        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "Infolog";
         string IDatabaseTable.TableName => TableName;
         // IEigenschaftler

@@ -5,8 +5,10 @@ using PhoenixModel.Helper;
 
 namespace PhoenixModel.dbPZE
 {
-    public class Kzelt : IDatabaseTable, IEigenschaftler
+    public class Kzelt :  IDatabaseTable, IEigenschaftler
     {
+        private static string _datebaseName = string.Empty;
+        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "kzelt";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => Nummer.ToString();

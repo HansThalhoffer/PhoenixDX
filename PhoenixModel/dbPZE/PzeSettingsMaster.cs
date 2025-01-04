@@ -6,8 +6,10 @@ using PhoenixModel.Helper;
 
 namespace PhoenixModel.dbPZE
 {
-    public class PzeSettingsMaster : IDatabaseTable, IEigenschaftler
+    public class PzeSettingsMaster :  IDatabaseTable, IEigenschaftler
     {
+        private static string _datebaseName = string.Empty;
+        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "Settings_Master";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => $"{this.Monat} {this.Reich}";

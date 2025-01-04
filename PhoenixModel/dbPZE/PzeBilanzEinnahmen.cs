@@ -5,8 +5,10 @@ using PhoenixModel.Helper;
 
 namespace PhoenixModel.dbPZE
 {
-    public class PzeBilanzEinnahmen : IDatabaseTable, IEigenschaftler
+    public class PzeBilanzEinnahmen :  IDatabaseTable, IEigenschaftler
     {
+        private static string _datebaseName = string.Empty;
+        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "Bilanz_einnahmen";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => monat.ToString();

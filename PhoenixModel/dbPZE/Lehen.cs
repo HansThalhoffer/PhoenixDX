@@ -5,8 +5,10 @@ using PhoenixModel.Helper;
 
 namespace PhoenixModel.dbPZE
 {
-    public class Lehen : IDatabaseTable, IEigenschaftler
+    public class Lehen :  IDatabaseTable, IEigenschaftler
     {
+        private static string _datebaseName = string.Empty;
+        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "Lehen";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => ID.ToString();

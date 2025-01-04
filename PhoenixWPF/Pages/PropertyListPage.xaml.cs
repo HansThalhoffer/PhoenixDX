@@ -38,5 +38,16 @@ namespace PhoenixWPF.Pages
         {
             Display(eigenschaftler.Eigenschaften);
         }
+
+        private void PropertyDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            if (e.EditAction == DataGridEditAction.Commit)
+            {
+                if (e.Row.DataContext is Eigenschaft eigenschaft)
+                {
+                    PropertyProcessor.UpdateSource(eigenschaft);
+                }
+            }
+        }
     }
 }

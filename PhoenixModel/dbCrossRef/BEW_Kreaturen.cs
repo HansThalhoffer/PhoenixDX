@@ -7,6 +7,8 @@ namespace PhoenixModel.dbCrossRef
 {
     public class BEW_Kreaturen : BEW, IDatabaseTable, IEigenschaftler
     {
+        private static string _datebaseName = string.Empty;
+        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "BEW_Kreaturen";
         string IDatabaseTable.TableName => TableName;
     }

@@ -11,6 +11,8 @@ namespace PhoenixModel.dbPZE
 {
     internal class EinfuegeFehler : IDatabaseTable, IEigenschaftler
     {
+        private static string _datebaseName = string.Empty;
+        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "Einfuegefehler";
         string IDatabaseTable.TableName => TableName;
         // IEigenschaftler

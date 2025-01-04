@@ -5,8 +5,10 @@ using PhoenixModel.Helper;
 
 namespace PhoenixModel.dbZugdaten
 {
-    public class ZugdatenSettings: IDatabaseTable, IEigenschaftler
+    public class ZugdatenSettings:  IDatabaseTable, IEigenschaftler
     {
+        private static string _datebaseName = string.Empty;
+        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "settings";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => id.ToString();

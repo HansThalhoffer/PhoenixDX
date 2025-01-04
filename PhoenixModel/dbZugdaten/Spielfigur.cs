@@ -18,7 +18,7 @@ namespace PhoenixModel.dbZugdaten
     {
         public abstract FigurType Typ { get; }
         public abstract string Stärke { get; }
-
+        
         public int GS { get; set; }
         public int GS_alt { get; set; }
         public int Kampfeinnahmen { get; set; }

@@ -5,8 +5,10 @@ using PhoenixModel.Helper;
 
 namespace PhoenixModel.dbCrossRef
 {
-    public class Teleportpunkte : IDatabaseTable, IEigenschaftler
+    public class Teleportpunkte :  IDatabaseTable, IEigenschaftler
     {
+        private static string _datebaseName = string.Empty;
+        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "Teleportpunkte";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => Feld ?? "unbekannter Teleportpunkt";
