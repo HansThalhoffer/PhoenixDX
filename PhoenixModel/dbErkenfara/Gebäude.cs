@@ -31,9 +31,13 @@ namespace PhoenixModel.dbErkenfara
         private static readonly string[] PropertiestoIgnore = ["DatabaseName", "Key","gf","kf"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
-      
+
         // Felder der Tabellen
-        public string? Reich { get; set; }
+        string? _reich = string.Empty;
+        public string? Reich { 
+                get { return _reich; }
+                set { _reich = value; _nation = null; } 
+        }
         private Nation? _nation = null;
         public Nation? Nation {  get
             {
@@ -60,11 +64,11 @@ namespace PhoenixModel.dbErkenfara
 
         [View.Editable]
         public string? Bauwerknamen { get; set; }
-        public Rüstort? Rüstort { get; set; } = null;
         // falls kaputt oder noch nicht fertig aufgebaut
         public bool InBau { get; set; } = false;
         public bool Zerstört { get; set; } = false;
         public bool IsNew { get; set; } = true;
+        public Rüstort? Rüstort { get; set; } = null;
 
         public enum Felder
         {

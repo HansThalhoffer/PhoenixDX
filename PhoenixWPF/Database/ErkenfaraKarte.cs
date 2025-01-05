@@ -43,7 +43,28 @@ namespace PhoenixWPF.Program
                 Load<KleinFeld>(connector, ref SharedData.Map, Enum.GetNames(typeof(KleinFeld.Felder)));
                 Load<Gebäude>(connector, ref SharedData.Gebäude, Enum.GetNames(typeof(Gebäude.Felder)));
                 connector?.Close();
+                RepairGebäude();
                 return;
+            }
+        }
+
+        /// <summary>
+        /// Die Bauwerkliste ist kaputt
+        /// </summary>
+        private void RepairGebäude()
+        {
+            if (SharedData.Map != null && SharedData.Gebäude != null)
+            {
+                foreach (var gebäude in SharedData.Gebäude.Values)
+                {
+                    var gemark = SharedData.Map[gebäude.Bezeichner];
+                    if (gemark.Nation!= null && gemark.Nation != gebäude.Nation)
+                    {
+                        gebäude.Reich = gemark.Nation.Reich;
+                    }
+                    if (gemark.Baupunkte == 0)
+                        gebäude.Zerstört = true;
+                }
             }
         }
 

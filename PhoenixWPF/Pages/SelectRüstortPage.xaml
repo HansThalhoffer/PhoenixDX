@@ -10,6 +10,7 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Rüstorte">
     <Grid>
-        <DataGrid Name="EigenschaftlerDataGrid" AutoGenerateColumns="False" />
+        <DataGrid Name="EigenschaftlerDataGrid" AutoGenerateColumns="False"
+                  CellEditEnding="EigenschaftlerDataGrid_CellEditEnding" MouseRightButtonDown="EigenschaftlerDataGrid_MouseRightButtonDown"/>
     </Grid>
 </Page>

@@ -100,13 +100,13 @@ namespace PhoenixModel.Helper
                 return;
 
 
-            if (isEditable == false) // was nicht editierbar ist und empty oder 0 wird nicht angezeigt
+            /*if (isEditable == false) // was nicht editierbar ist und empty oder 0 wird nicht angezeigt
             {
                 if (value is string && string.IsNullOrEmpty((string)value))
                     return;
                 if (value is int && (int)value == 0)
                     return;
-            }
+            }*/
             if (value is IEigenschaftler)
             {
                 foreach (var eigenschaft in ((IEigenschaftler)value).Eigenschaften)

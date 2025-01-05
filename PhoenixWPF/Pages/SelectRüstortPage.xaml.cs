@@ -1,4 +1,5 @@
-﻿using PhoenixModel.Helper;
+﻿using PhoenixModel.dbErkenfara;
+using PhoenixModel.Helper;
 using PhoenixModel.Program;
 using PhoenixModel.View;
 using SharpDX.Direct2D1;
@@ -84,6 +85,61 @@ namespace PhoenixWPF.Pages
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             LoadEigenschaftler();
+        }
+
+        private void EigenschaftlerDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            if (e.EditAction == DataGridEditAction.Commit)
+            {
+                if (e.Row.DataContext is Eigenschaft eigenschaft)
+                {
+                    PropertyProcessor.UpdateSource(eigenschaft);
+                }
+            }
+        }
+
+        /*private void EigenschaftlerDataGrid_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (EigenschaftlerDataGrid.SelectedIndex > -1 && EigenschaftlerDataGrid.SelectedItem != null)
+            {
+                if (EigenschaftlerDataGrid.SelectedItem is IEigenschaftler eigenschaftler)
+                {
+
+                }
+            }
+            
+        }*/
+
+        private void EigenschaftlerDataGrid_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            // Get the position of the mouse relative to the DataGrid
+            Point mousePosition = e.GetPosition(EigenschaftlerDataGrid);
+
+            // Hit test to get the element under the mouse
+            HitTestResult hitTestResult = VisualTreeHelper.HitTest(EigenschaftlerDataGrid, mousePosition);
+
+            if (hitTestResult != null)
+            {
+                // Check if the hit test result is a DataGridRow
+                DataGridRow? row = GetParentDataGridRow(hitTestResult.VisualHit);
+                if (row != null && row.Item != null && row.Item is Gebäude gebäude)
+                {
+                    // Get the data item corresponding to the row
+                    Program.Main.Instance.Map?.Goto(gebäude);
+
+                }
+            }
+        }
+
+        // Helper method to find the DataGridRow from a Visual element
+        private DataGridRow? GetParentDataGridRow(DependencyObject visual)
+        {
+            // Traverse up the visual tree to find the DataGridRow
+            while (visual != null && !(visual is DataGridRow))
+            {
+                visual = VisualTreeHelper.GetParent(visual);
+            }
+            return visual as DataGridRow;
         }
     }
 }
