@@ -5,18 +5,27 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static PhoenixModel.ExternalTables.GeländeTabelle;
 
-namespace PhoenixModel.dbErkenfara
-{
-    public struct KartenKoordinaten
-    {
+namespace PhoenixModel.dbErkenfara {
+    public struct KartenKoordinaten {
+        /// <summary>
+        ///  Provinz
+        /// </summary>
         public int gf;
+
+        /// <summary>
+        ///  Gemark
+        /// </summary>
         public int kf;
         public int dbx;
         public int dby;
 
-        public KartenKoordinaten(int gf, int kf, int dbx, int dby)
-        {
+        public string DebuggerDisplay() {
+            return $"KartenKoordinaten {gf}/{kf} {dbx}/{dby}";
+        }
+
+        public KartenKoordinaten(int gf, int kf, int dbx, int dby) {
             this.gf = gf;
             this.kf = kf;
             this.dbx = dbx;
@@ -24,8 +33,7 @@ namespace PhoenixModel.dbErkenfara
         }
 
         // gibt Spalte und Reihe in der Provinz zurück
-        public Position GetPositionInProvinz()
-        {
+        public Position GetPositionInProvinz() {
             if (kf > 48)
                 return new Position(0, 0);
 
@@ -112,11 +120,9 @@ namespace PhoenixModel.dbErkenfara
             { 48, new KleinfeldPosition[] { new (0, 42), new (0, 43), new (0, 43), new (101, 16), new (101, 23), new (0, 47) } },
         };
 
-        public static IEnumerable<KleinfeldPosition> GetKleinfeldNachbarn(KleinfeldPosition pos)
-        {
+        public static IEnumerable<KleinfeldPosition> GetKleinfeldNachbarn(KleinfeldPosition pos) {
             List<KleinfeldPosition> list = [];
-            foreach (KleinfeldPosition p in _nachbarn[pos.gf])
-            {
+            foreach (KleinfeldPosition p in _nachbarn[pos.gf]) {
                 p.gf += pos.gf;
                 if (SharedData.Map != null && SharedData.Map.ContainsKey(p.CreateBezeichner()))
                     list.Add(p);

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhoenixModel.dbErkenfara
-{
+namespace PhoenixModel.dbErkenfara {
     /*  wird aktuell noch nicht gebraucht, Figuren haben eigenes Verzeichnis
     public class Verzeichnis : Dictionary<int, KleinfeldPosition>
     {
@@ -26,9 +26,16 @@ namespace PhoenixModel.dbErkenfara
         }
     }*/
 
+    [DebuggerDisplay("{CreateBezeichner()}")]
     public class KleinfeldPosition
     {
+        /// <summary>
+        ///  Provinz
+        /// </summary>
         public virtual int gf { get; set; } = 0;
+        /// <summary>
+        ///  Gemark
+        /// </summary>
         public virtual int kf { get; set; } = 0;
 
         public KleinfeldPosition()
