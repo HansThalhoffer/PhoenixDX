@@ -83,13 +83,13 @@ namespace PhoenixDX.Structures
         // hier werden die Figuren in eine Texture zusammengestellt
         public void CreateTexture()
         {
-            if (SpielDX.Graphics == null)
+            if (SpielDX.Instance.Graphics == null)
                 return;
 
-            var graphicsDevice = SpielDX.Graphics.GraphicsDevice;
+            var graphicsDevice = SpielDX.Instance.Graphics.GraphicsDevice;
             float faktor = _truppen.Count > 1 ? 1.2f :0.8f;
-             int figurHeight = Convert.ToInt32(719f / faktor);
-             int figurWidth = Convert.ToInt32(670f / faktor);
+            int figurHeight = Convert.ToInt32(719f / faktor);
+            int figurWidth = Convert.ToInt32(670f / faktor);
             const int height = 138 *2;
             const int width = 160 *2;
 
@@ -146,6 +146,7 @@ namespace PhoenixDX.Structures
             {
                 MappaMundi.Log(0, 0, $"Bei der Erstellung der Textur für die Truppen auf {this.ToString()} kam es zu einem Fehler",ex);
             }
+           
         }
 
 
@@ -161,7 +162,7 @@ namespace PhoenixDX.Structures
 
         public override Texture2D GetTexture()
         {
-            if (_texture == null)
+           if (_texture == null)
                 CreateTexture();
             return _texture;
         }

@@ -27,8 +27,10 @@ namespace PhoenixDX.Program
 {
     public class SpielDX : Game
     {
-        private static GraphicsDeviceManager _graphics;
-        public static GraphicsDeviceManager Graphics { get => _graphics; private set => _graphics = value; }
+        public static SpielDX Instance;
+
+        private GraphicsDeviceManager _graphics;
+        public GraphicsDeviceManager Graphics { get => _graphics; private set => _graphics = value; }
 
         private CancellationToken _cancellationToken;
         private nint _windowHandle;
@@ -55,6 +57,7 @@ namespace PhoenixDX.Program
 
         public SpielDX(nint windowHandle, CancellationToken token, MappaMundi bridge)
         {
+            Instance = this;
             _wpfBridge = bridge;
             _clientWidth = 10;
             _clientHeight = 10;
