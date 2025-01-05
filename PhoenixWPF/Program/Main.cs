@@ -23,7 +23,7 @@ using static PhoenixWPF.Program.ErkenfaraKarte;
 
 namespace PhoenixWPF.Program
 {
-    public class Main :IDisposable
+    public class Main : IDisposable
     {
         private static Main _instance = new Main();
         public AppSettings Settings { get; } = new AppSettings("Settings.jpk");
@@ -197,7 +197,7 @@ namespace PhoenixWPF.Program
                 foreach (var gem in SharedData.Map.Values)
                 {
                     var figuren = SpielfigurenView.GetSpielfiguren(gem);
-                    if ( figuren != null && figuren.Count > 0)
+                    if (figuren != null && figuren.Count > 0)
                     {
                         this.Map?.OnUpdateEvent(new MapEventArgs(gem, MapEventType.UpdateGemark));
                     }
@@ -207,7 +207,7 @@ namespace PhoenixWPF.Program
 
         }
 
-        public void Load(ref string databaseLocation, ref string encryptedPassword, LoadableDatabase dbCreator,string databaseName, LoadCompleted? loadCompletedDelegate = null) 
+        public void Load(ref string databaseLocation, ref string encryptedPassword, LoadableDatabase dbCreator, string databaseName, LoadCompleted? loadCompletedDelegate = null)
         {
             if (Settings == null)
                 return;
@@ -235,12 +235,12 @@ namespace PhoenixWPF.Program
                 return;
             string databaseLocation = Settings.UserSettings.DatabaseLocationCrossRef;
             string encryptedPassword = Settings.UserSettings.PasswordCrossRef;
-            Load(ref databaseLocation,ref encryptedPassword, CreateCrossRef, "dbCrossRef", inBackground? OnLoadCompleted: null);
+            Load(ref databaseLocation, ref encryptedPassword, CreateCrossRef, "dbCrossRef", inBackground ? OnLoadCompleted : null);
             Settings.UserSettings.DatabaseLocationCrossRef = databaseLocation;
-            Settings.UserSettings.PasswordCrossRef =encryptedPassword;
+            Settings.UserSettings.PasswordCrossRef = encryptedPassword;
         }
 
-     
+
 
         private ILoadableDatabase CreateKarte(string databaseLocation, string encryptedPassword)
         {
@@ -253,7 +253,7 @@ namespace PhoenixWPF.Program
                 return;
             string databaseLocation = Settings.UserSettings.DatabaseLocationKarte;
             string encryptedPassword = Settings.UserSettings.PasswordKarte;
-            Load(ref databaseLocation, ref encryptedPassword, CreateKarte,"ErkenfaraKarte", inBackground ? OnLoadCompleted : null);
+            Load(ref databaseLocation, ref encryptedPassword, CreateKarte, "ErkenfaraKarte", inBackground ? OnLoadCompleted : null);
             Settings.UserSettings.DatabaseLocationKarte = databaseLocation;
             Settings.UserSettings.PasswordKarte = encryptedPassword;
         }
@@ -270,7 +270,7 @@ namespace PhoenixWPF.Program
                 return;
             string databaseLocation = Settings.UserSettings.DatabaseLocationPZE;
             string encryptedPassword = Settings.UserSettings.PasswordPZE;
-            Load(ref databaseLocation, ref encryptedPassword, CreatePZE,"PZ", inBackground ? OnLoadCompleted : null);
+            Load(ref databaseLocation, ref encryptedPassword, CreatePZE, "PZ", inBackground ? OnLoadCompleted : null);
             Settings.UserSettings.DatabaseLocationPZE = databaseLocation;
             Settings.UserSettings.PasswordPZE = encryptedPassword;
         }
@@ -282,7 +282,7 @@ namespace PhoenixWPF.Program
 
         public void LoadZugdaten(bool inBackground = false)
         {
-            if (Settings == null || SharedData.Nationen == null|| Settings.UserSettings.SelectedReich < 0)
+            if (Settings == null || SharedData.Nationen == null || Settings.UserSettings.SelectedReich < 0)
                 return;
             string databaseLocation = Settings.UserSettings.DatabaseLocationZugdaten;
             string encryptedPassword = Settings.UserSettings.PasswordReich;
@@ -295,7 +295,7 @@ namespace PhoenixWPF.Program
 
         public void Dispose()
         {
-            if (Settings != null) 
+            if (Settings != null)
                 Settings.Dispose();
             _backgroundSave?.Stop();
             PerformSave(null, new EventArgs());
