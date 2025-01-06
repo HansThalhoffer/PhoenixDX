@@ -6,26 +6,14 @@ using PhoenixModel.Helper;
 
 namespace PhoenixModel.dbZugdaten
 {
-    public class Kreaturen : Spielfigur, IDatabaseTable, IEigenschaftler
+    public class Kreaturen : TruppenSpielfigur, IDatabaseTable, IEigenschaftler
     {
         private static string _datebaseName = string.Empty;
         public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "Kreaturen";
         string IDatabaseTable.TableName => TableName;
         public override FigurType Typ => FigurType.Kreatur;
-        public override string Stärke { get { return staerke.ToString("n0"); } }
-
-        public int staerke_alt { get; set; }
-        public int staerke { get; set; }
-        public int hf_alt { get; set; }
-        public int hf { get; set; }
-        public int lkp_alt { get; set; }
-        public int LKP { get; set; }
-        public int skp_alt { get; set; }
-        public int SKP { get; set; }
-        public int pferde_alt { get; set; }
-        public int Pferde { get; set; }
-        public bool Garde { get; set; }
+      
         public string? Befehl_bew { get; set; }
         public string? Befehl_ang { get; set; }
         public string? Befehl_erobert { get; set; }

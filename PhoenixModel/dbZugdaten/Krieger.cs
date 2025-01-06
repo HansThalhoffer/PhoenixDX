@@ -7,14 +7,13 @@ using System.Data.Common;
 
 namespace PhoenixModel.dbZugdaten
 {
-    public class Krieger : Spielfigur, IDatabaseTable, IEigenschaftler
+    public class Krieger : TruppenSpielfigur, IDatabaseTable, IEigenschaftler
     {
         private static string _datebaseName = string.Empty;
         public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "Krieger";
         string IDatabaseTable.TableName => TableName;
-        public override string Stärke { get { return staerke.ToString("n0"); } }
-
+      
         public override FigurType Typ
         {
             get
@@ -27,17 +26,6 @@ namespace PhoenixModel.dbZugdaten
             }
         }
 
-        public int staerke_alt { get; set; }
-        public int staerke { get; set; }
-        public int hf_alt { get; set; }
-        public int hf { get; set; }
-        public int LKP_alt { get; set; }
-        public int LKP { get; set; }
-        public int SKP_alt { get; set; }
-        public int SKP { get; set; }
-        public int pferde_alt { get; set; }
-        public int Pferde { get; set; }
-        public bool Garde { get; set; }
         public string? Befehl_bew { get; set; }
         public string? Befehl_ang { get; set; }
         public string? Befehl_erobert { get; set; }

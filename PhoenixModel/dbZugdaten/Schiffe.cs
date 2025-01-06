@@ -7,7 +7,7 @@ using PhoenixModel.Program;
 
 namespace PhoenixModel.dbZugdaten
 {
-    public class Schiffe : Spielfigur, IDatabaseTable, IEigenschaftler
+    public class Schiffe : TruppenSpielfigur, IDatabaseTable, IEigenschaftler
     {
         private static string _datebaseName = string.Empty;
         public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
@@ -31,33 +31,7 @@ namespace PhoenixModel.dbZugdaten
                 return FigurType.Schiff;
             }
         }
-        public override string Stärke { get { return staerke.ToString("n0"); } }
-
-
-        public int staerke_alt { get; set; }
-        public int staerke { get; set; }
-        public int hf_alt { get; set; }
-        public int hf { get; set; }
-        public int lkp_alt { get; set; }
-        /// <summary>
-        /// Leichte Katapulte
-        /// </summary>
-        public int LKP { get; set; }
-        public int skp_alt { get; set; }
-
-        /// <summary>
-        /// Schwere Katapulte
-        /// </summary>
-        public int SKP { get; set; }
-        public int pferde_alt { get; set; }
-        /// <summary>
-        /// Anzahl Pferde
-        /// </summary>
-        public int Pferde { get; set; }
-        /// <summary>
-        /// Anzahl Gardisten
-        /// </summary>
-        public bool Garde { get; set; }
+        
         public string? Befehl_bew { get; set; }
         public string? Befehl_ang { get; set; }
         public string? Befehl_erobert { get; set; }

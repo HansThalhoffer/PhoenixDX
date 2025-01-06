@@ -30,6 +30,7 @@ namespace PhoenixWPF.Pages
                 var list = BauwerkeView.GetGebäude(ViewModel.SelectedNation);
                 if (list != null) 
                     EigenschaftlerList.AddRange(list);
+                LoadEigenschaftler();
             }
         }
 

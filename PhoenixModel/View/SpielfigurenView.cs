@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.dbErkenfara;
+using PhoenixModel.dbPZE;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
@@ -13,6 +14,9 @@ namespace PhoenixModel.View
 {
     public class Armee : List<Spielfigur>, IEigenschaftler
     {
+        /// <summary>
+        ///  dieses Property wird für die Anzeige in den Eigenschaften eines Kleinfeldes genutzt, die Darstellung in der Truppenliste wird in der Page selbst erzeugt
+        /// </summary>
         public List<Eigenschaft> Eigenschaften
         {
             get
@@ -137,6 +141,33 @@ namespace PhoenixModel.View
             if (charaktere != null)
                 result.AddRange(charaktere);
             var zauberer = SharedData.Zauberer?.Where(s => s.gf == gem.gf && s.kf == gem.kf && Plausibilität.IsValid(s));
+            if (zauberer != null)
+                result.AddRange(zauberer);
+            return result;
+        }
+
+        public static Armee GetSpielfiguren(Nation nation)
+        {
+            Armee result = [];
+            var kreaturen = SharedData.Kreaturen?.Where(s => s.Nation == nation && Plausibilität.IsValid(s));
+            if (kreaturen != null)
+                result.AddRange(kreaturen);
+
+            var krieger = SharedData.Krieger?.Where(s => s.Nation == nation && Plausibilität.IsValid(s));
+            if (krieger != null)
+                result.AddRange(krieger);
+
+            var reiter = SharedData.Reiter?.Where(s => s.Nation == nation && Plausibilität.IsValid(s));
+            if (reiter != null)
+                result.AddRange(reiter);
+
+            var schiffe = SharedData.Schiffe?.Where(s => s.Nation == nation && Plausibilität.IsValid(s));
+            if (schiffe != null)
+                result.AddRange(schiffe);
+            var charaktere = SharedData.Character?.Where(s => s.Nation == nation && Plausibilität.IsValid(s));
+            if (charaktere != null)
+                result.AddRange(charaktere);
+            var zauberer = SharedData.Zauberer?.Where(s => s.Nation == nation && Plausibilität.IsValid(s));
             if (zauberer != null)
                 result.AddRange(zauberer);
             return result;

@@ -195,6 +195,36 @@ namespace PhoenixModel.Helper
         }
 
         /// <summary>
+        /// holt einen int val aus einem Objekt, wenn er in der übergebenen Liste als Property vorhanden ist
+        /// wird in den Spielfiguren benutzt, um die verschiedenen Werte in eine Liste zu bringen
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="propertyNames"></param>
+        /// <returns></returns>
+        public static int GetIntValueIfExists(object obj, string[] propertyNames)
+        {
+            if (obj == null || propertyNames == null || !propertyNames.Any())
+            {
+                return 0;
+            }
+
+            foreach (var propertyName in propertyNames)
+            {
+                var property = obj.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
+                if (property != null && property.PropertyType == typeof(int))
+                {
+                    var value = property.GetValue(obj);
+                    if (value is int intValue)
+                    {
+                        return intValue;
+                    }
+                }
+            }
+
+            return 0;
+        }
+
+        /// <summary>
         /// aktualisert das Objekt mit dem Wert der Eigenschaft, sofern die Eigenschaft das Attribut Editable hat
         /// wird zum Speichern von Daten verwendet, die der Benutzer ändern darf
         /// Die geänderten Objekte werden dann in der Queue zum Speichern abgelegt, wo sie dann on Idle abgeholt werden

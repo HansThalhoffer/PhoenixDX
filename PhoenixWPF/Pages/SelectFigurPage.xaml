@@ -9,8 +9,7 @@
       Title="SelectionPage">
 
     <Grid>
-        <TextBlock Text="Auswahl von eigenen Figuren" Margin="10" />
-        <ListBox Name="SelectionListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-            FontFamily="Consolas" FontSize="10" />
+        <DataGrid Name="EigenschaftlerDataGrid" AutoGenerateColumns="False"
+          CellEditEnding="EigenschaftlerDataGrid_CellEditEnding" MouseRightButtonDown="EigenschaftlerDataGrid_MouseRightButtonDown"/>
     </Grid>
 </Page>
