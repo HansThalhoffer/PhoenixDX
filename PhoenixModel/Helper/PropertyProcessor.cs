@@ -130,58 +130,67 @@ namespace PhoenixModel.Helper
         /// <param name="toIgnore">An array of property names to ignore during processing.</param>
         static void AppendProperties<T>(T data, ref List<Eigenschaft> result, string[] toIgnore)
         {
-            IEigenschaftler? source = data as IEigenschaftler;
-            // Get all properties of the Data class
-            var ar = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            var safeproperties = ar.Where(p => p.Name != "Bezeichner" && p.Name != "Eigenschaften").ToArray();
-            var properties = safeproperties.Where(prop => !toIgnore.Contains(prop.Name)).ToList();
-
-            // Collect editable properties
-            var editableProperties = typeof(T).GetProperties()
-               .Where(prop => Attribute.IsDefined(prop, typeof(View.Editable)))
-               .ToList();
-            foreach (var property in editableProperties)
+            try
             {
-                properties.Remove(property);
-                AppendProperty(ref result, property.Name, property.GetValue(data), true, source);
-            }
+                IEigenschaftler? source = data as IEigenschaftler;
+                // Get all properties of the Data class
+                var ar = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+                var safeproperties = ar.Where(p => p.Name != "Bezeichner" && p.Name != "Eigenschaften").ToArray();
+                var properties = safeproperties.Where(prop => !toIgnore.Contains(prop.Name)).ToList();
 
-            // Group properties by their prefix (e.g., Fluss, Wall, etc.)
-            var groupedProperties = properties
-                .Where(prop => prop.PropertyType == typeof(int?))
-                .GroupBy(prop => prop.Name.Split('_')[0]);
-
-            // Iterate through each group (Fluss, Wall, etc.)
-            foreach (var group in groupedProperties)
-            {
-                var key = group.Key; // e.g., Fluss, Wall, etc.
-                var directionList = new List<string>();
-
-                foreach (var direction in Directions)
+                // Collect editable properties
+                var editableProperties = typeof(T).GetProperties()
+                   .Where(prop => Attribute.IsDefined(prop, typeof(View.Editable)))
+                   .ToList();
+                foreach (var property in editableProperties)
                 {
-                    var propertyName = $"{key}_{direction}";
-                    var property = group.FirstOrDefault(p => p.Name == propertyName);
-                    if (property != null)
+                    properties.Remove(property);
+                    IDatabaseTable? table = data as IDatabaseTable;
+                    bool canChange = table != null? Autorisation.IsAllowedToChange(table, property.Name) : false;
+                    AppendProperty(ref result, property.Name, property.GetValue(data), canChange, source);
+                }
+
+                // Group properties by their prefix (e.g., Fluss, Wall, etc.)
+                var groupedProperties = properties
+                    .Where(prop => prop.PropertyType == typeof(int?))
+                    .GroupBy(prop => prop.Name.Split('_')[0]);
+
+                // Iterate through each group (Fluss, Wall, etc.)
+                foreach (var group in groupedProperties)
+                {
+                    var key = group.Key; // e.g., Fluss, Wall, etc.
+                    var directionList = new List<string>();
+
+                    foreach (var direction in Directions)
                     {
-                        var value = property.GetValue(data) as int?;
-                        properties.Remove(property);
-                        if (value.HasValue && value.Value > 0)
+                        var propertyName = $"{key}_{direction}";
+                        var property = group.FirstOrDefault(p => p.Name == propertyName);
+                        if (property != null)
                         {
-                            directionList.Add(direction);
+                            var value = property.GetValue(data) as int?;
+                            properties.Remove(property);
+                            if (value.HasValue && value.Value > 0)
+                            {
+                                directionList.Add(direction);
+                            }
                         }
+                    }
+
+                    if (directionList.Any())
+                    {
+                        result.Add(new Eigenschaft(key, string.Join(" ", directionList), false, source));
                     }
                 }
 
-                if (directionList.Any())
+                // Append remaining properties
+                foreach (var property in properties)
                 {
-                    result.Add(new Eigenschaft(key, string.Join(" ", directionList), false, source));
+                    AppendProperty(ref result, property.Name, property.GetValue(data), false, source);
                 }
             }
-
-            // Append remaining properties
-            foreach (var property in properties)
+            catch (Exception ex)
             {
-                AppendProperty(ref result, property.Name, property.GetValue(data), false, source);
+                ViewModel.LogError($"Beim Erstellen der Eigenschaften zu {data} ist ein Fehler passiert", ex.Message);
             }
         }
 

@@ -85,10 +85,11 @@ namespace PhoenixModel.dbErkenfara
         public int? kreatur_feind { get; set; }
         public int? kreatur_freund { get; set; }
         public int Baupunkte { get; set; } = 0;
+        [View.Editable]
         public string? Bauwerknamen { get; set; }
         public int? lehensid { get; set; }
 
-       
+
         public enum Felder
         {
             gf, kf, ph_xy, x, y, db_xy, Rand, Index, Gelaendetyp, Ruestort,
@@ -182,11 +183,78 @@ namespace PhoenixModel.dbErkenfara
         {
             get { return SpielfigurenView.GetSpielfiguren(this); }
         }
-
-        public void Save(DbCommand reader)
+       
+        public void Save(DbCommand command)
         {
-            throw new NotImplementedException();
+            command.CommandText = $@"UPDATE {TableName} SET
+            ph_xy = '{DatabaseConverter.EscapeString(this.ph_xy)}',
+            x = {this.x},
+            y = {this.y},
+            db_xy = '{DatabaseConverter.EscapeString(this.db_xy)}',
+            Rand = {this.Rand},
+            Gelaendetyp = {this.Gelaendetyp},
+            Ruestort = {this.Ruestort},
+            Fluss_NW = {this.Fluss_NW},
+            Fluss_NO = {this.Fluss_NO},
+            Fluss_O = {this.Fluss_O},
+            Fluss_SO = {this.Fluss_SO},
+            Fluss_SW = {this.Fluss_SW},
+            Fluss_W = {this.Fluss_W},
+            Wall_NW = {this.Wall_NW},
+            Wall_NO = {this.Wall_NO},
+            Wall_O = {this.Wall_O},
+            Wall_SO = {this.Wall_SO},
+            Wall_SW = {this.Wall_SW},
+            Wall_W = {this.Wall_W},
+            Kai_NW = {this.Kai_NW},
+            Kai_NO = {this.Kai_NO},
+            Kai_O = {this.Kai_O},
+            Kai_SO = {this.Kai_SO},
+            Kai_SW = {this.Kai_SW},
+            Kai_W = {this.Kai_W},
+            Strasse_NW = {this.Strasse_NW},
+            Strasse_NO = {this.Strasse_NO},
+            Strasse_O = {this.Strasse_O},
+            Strasse_SO = {this.Strasse_SO},
+            Strasse_SW = {this.Strasse_SW},
+            Strasse_W = {this.Strasse_W},
+            Bruecke_NW = {this.Bruecke_NW},
+            Bruecke_NO = {this.Bruecke_NO},
+            Bruecke_O = {this.Bruecke_O},
+            Bruecke_SO = {this.Bruecke_SO},
+            Bruecke_SW = {this.Bruecke_SW},
+            Bruecke_W = {this.Bruecke_W},
+            Reich = {this.Reich},
+            Krieger_eigen = {this.Krieger_eigen},
+            Krieger_feind = {this.Krieger_feind},
+            Krieger_freund = {this.Krieger_freund},
+            Reiter_eigene = {this.Reiter_eigene},
+            Reiter_feind = {this.Reiter_feind},
+            Reiter_freund = {this.Reiter_freund},
+            Schiffe_eigene = {this.Schiffe_eigene},
+            schiffe_feind = {this.schiffe_feind},
+            Schiffe_freund = {this.Schiffe_freund},
+            Zauberer_eigene = {this.Zauberer_eigene},
+            Zauberer_feind = {this.Zauberer_feind},
+            Zauberer_freund = {this.Zauberer_freund},
+            Char_eigene = {this.Char_eigene},
+            Char_feind = {this.Char_feind},
+            Char_freund = {this.Char_freund},
+            krieger_text = '{DatabaseConverter.EscapeString(this.krieger_text)}',
+            kreatur_eigen = {this.kreatur_eigen},
+            kreatur_feind = {this.kreatur_feind},
+            kreatur_freund = {this.kreatur_freund},
+            Baupunkte = {this.Baupunkte},
+            Bauwerknamen = '{DatabaseConverter.EscapeString(this.Bauwerknamen)}',
+            lehensid = {this.lehensid}
+             WHERE gf = {this.gf} AND kf = {this.kf} ";
+
+            // Execute the command
+            command.ExecuteNonQuery();
+
+            ViewModel.Update(ViewEventArgs.ViewEventType.UpdateGebäude);
         }
+
 
         public void Insert(DbCommand reader)
         {
@@ -208,12 +276,13 @@ namespace PhoenixModel.dbErkenfara
             get { return Terrains[(int)TerrainType]; }
         }
 
-        public string ReichZugehörigkeit {
+        public string ReichZugehörigkeit
+        {
             get
             {
                 if (SharedData.Nationen == null || Reich == null)
                     return string.Empty;
-                return SharedData.Nationen.ElementAt(Reich.Value).Reich ?? string.Empty; 
+                return SharedData.Nationen.ElementAt(Reich.Value).Reich ?? string.Empty;
             }
         }
 
@@ -237,8 +306,8 @@ namespace PhoenixModel.dbErkenfara
         }
 
 
-      
-        
-        
+
+
+
     }
 }

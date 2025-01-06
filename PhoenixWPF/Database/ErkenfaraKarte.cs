@@ -1,25 +1,10 @@
-﻿using PhoenixDX.Structures;
-using PhoenixModel.Database;
-using PhoenixModel.Helper;
+﻿using PhoenixModel.Database;
 using PhoenixModel.dbErkenfara;
-using PhoenixWPF.Database;
-using PhoenixWPF.Dialogs;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
-using System.Data.OleDb;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Tasks;
-using static PhoenixModel.Database.PasswordHolder;
-using PhoenixModel.dbPZE;
-using static PhoenixModel.Helper.SharedData;
+using PhoenixModel.Helper;
 using PhoenixModel.Program;
-using PhoenixModel.dbCrossRef;
-using PhoenixModel.View;
+using PhoenixWPF.Database;
+using System.Data;
+using static PhoenixModel.Database.PasswordHolder;
 
 namespace PhoenixWPF.Program
 {

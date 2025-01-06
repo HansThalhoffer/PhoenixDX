@@ -28,8 +28,12 @@
                     </DataGridTemplateColumn.CellTemplate>
                     <DataGridTemplateColumn.CellEditingTemplate>
                         <DataTemplate>
-                            <TextBox Text="{Binding Wert, UpdateSourceTrigger=PropertyChanged}" 
+                            <Border Background="{Binding IsEditable, Converter={StaticResource EditableToBackgroundConverter}}">
+                                <TextBox Text="{Binding Wert, UpdateSourceTrigger=PropertyChanged}" Margin="5" VerticalAlignment="Center"
+                                         BorderBrush="Transparent" BorderThickness="0"
+                                         Background="{Binding IsEditable, Converter={StaticResource EditableToBackgroundConverter}}"
                                      IsEnabled="{Binding IsEditable}" />
+                            </Border>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>

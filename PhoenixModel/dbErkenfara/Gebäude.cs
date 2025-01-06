@@ -61,7 +61,6 @@ namespace PhoenixModel.dbErkenfara
             }
         }
     
-        [View.Editable]
         public string? Bauwerknamen { get; set; }
         // falls kaputt oder noch nicht fertig aufgebaut
         public bool Zerstört { get; set; } = false;

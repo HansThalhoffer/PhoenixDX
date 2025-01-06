@@ -69,7 +69,7 @@ namespace PhoenixModel.Helper
         /// <summary>
         /// Gets or sets a value indicating whether the property is editable.
         /// </summary>
-        public bool IsEditable { get; set; } = false;
+        public bool IsEditable { get; } = false;
 
         /// <summary>
         /// Gets a value indicating whether the property has been changed.
