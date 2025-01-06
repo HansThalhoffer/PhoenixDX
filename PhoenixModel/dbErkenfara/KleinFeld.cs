@@ -21,7 +21,7 @@ namespace PhoenixModel.dbErkenfara
         public const string TableName = "Karte";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner { get => CreateBezeichner(); }
-        private static readonly string[] PropertiestoIgnore = { "DatabaseName", "x", "y", "Rand", "db_xy", "ph_xy", "krieger_text", "TerrainType", "Key", "Reich", "Gelaendetyp" };
+        private static readonly string[] PropertiestoIgnore = { "Gebäude", "Index", "DatabaseName", "x", "y", "Rand", "db_xy", "ph_xy", "krieger_text", "TerrainType", "Key", "Reich", "Gelaendetyp" };
         public List<Eigenschaft> Eigenschaften => PropertyProcessor.CreateProperties(this, PropertiestoIgnore);
         #endregion
 
@@ -251,8 +251,23 @@ namespace PhoenixModel.dbErkenfara
 
             // Execute the command
             command.ExecuteNonQuery();
+            SynchToOtherTables(command);
 
             ViewModel.Update(ViewEventArgs.ViewEventType.UpdateGebäude);
+        }
+
+        /// <summary>
+        /// da manche werte doppelt gehalten werden, erfolgt hier die Synchronisation
+        /// </summary>
+        private void SynchToOtherTables(DbCommand command)
+        {
+            // synchronisation
+            if (this.Gebäude != null)
+            {
+                this.Gebäude.Bauwerknamen = this.Bauwerknamen;
+               // gebäude müssen nicht gespeichert werden, da sie aus den Karten immer wieder aktualisiert werden.
+               // this.Gebäude.Save(command);
+            }
         }
 
 
@@ -273,10 +288,12 @@ namespace PhoenixModel.dbErkenfara
 
         public GeländeTabelle Terrain
         {
-            get { return Terrains[(int)TerrainType]; }
+            get {
+                return GeländeTabelle.Terrains[Gelaendetyp != null ? (int)Gelaendetyp : 0]; 
+            }
         }
 
-        public string ReichZugehörigkeit
+        /*public string ReichZugehörigkeit
         {
             get
             {
@@ -284,7 +301,7 @@ namespace PhoenixModel.dbErkenfara
                     return string.Empty;
                 return SharedData.Nationen.ElementAt(Reich.Value).Reich ?? string.Empty;
             }
-        }
+        }*/
 
         public Nation? Nation
         {

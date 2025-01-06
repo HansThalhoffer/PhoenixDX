@@ -66,10 +66,10 @@ namespace PhoenixDX.Structures
             Terrains[(int)TerrainType.Bergland] = new Gelaende(Terrains[(int)TerrainType.Bergland], "highland", contentManager);
             Terrains[(int)TerrainType.Gebirge] = new Gelaende(Terrains[(int)TerrainType.Gebirge], "mountain", contentManager);
             Terrains[(int)TerrainType.Tiefsee] = new Gelaende(Terrains[(int)TerrainType.Tiefsee], "deepsea", contentManager);
-            Terrains[(int)TerrainType.Tiefland] = new Gelaende(Terrains[(int)TerrainType.Default], "tiefland", contentManager);
-            Terrains[(int)TerrainType.Auftauchpunkt] = new Gelaende(Terrains[(int)TerrainType.Default], "auftauchpunkt_ocean", contentManager);
-            Terrains[(int)TerrainType.Tiefseeeinbahnpunkt] = new Gelaende(Terrains[(int)TerrainType.Default], "deepseapoint", contentManager);
-            Terrains[(int)TerrainType.AuftauchpunktUnbekannt] = new Gelaende(Terrains[(int)TerrainType.Default], "auftauchpunkt_unbekannt", contentManager);
+            Terrains[(int)TerrainType.Tiefland] = new Gelaende(Terrains[(int)TerrainType.Tiefland], "tiefland", contentManager);
+            Terrains[(int)TerrainType.Auftauchpunkt] = new Gelaende(Terrains[(int)TerrainType.Auftauchpunkt], "auftauchpunkt_ocean", contentManager);
+            Terrains[(int)TerrainType.Tiefseeeinbahnpunkt] = new Gelaende(Terrains[(int)TerrainType.Tiefseeeinbahnpunkt], "deepseapoint", contentManager);
+            Terrains[(int)TerrainType.AuftauchpunktUnbekannt] = new Gelaende(Terrains[(int)TerrainType.AuftauchpunktUnbekannt], "auftauchpunkt_unbekannt", contentManager);
             _isLoaded = true;
         }
 

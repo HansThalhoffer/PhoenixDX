@@ -56,7 +56,7 @@ namespace PhoenixModel.ExternalTables
             return $"{Typ}: {Name}, Höhe: {Höhe}, Einwohner: {Einwohner}, EinnahmenView: {Einnahmen}, Farbe: {Farbe}, Ist Wasser: {IsWasser}";
         }
 
-        public static GeländeTabelle[] Terrains =
+        public static readonly GeländeTabelle[] Terrains =
         {
             new GeländeTabelle(TerrainType.Default, "Default", 0, 0, 0, "#cf216c", true),
             new GeländeTabelle(TerrainType.Wasser, "Wasser", 0, 0, 0, "#7eb8ec", true),
