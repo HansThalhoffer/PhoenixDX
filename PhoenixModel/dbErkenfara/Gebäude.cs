@@ -62,8 +62,9 @@ namespace PhoenixModel.dbErkenfara
         }
     
         public string? Bauwerknamen { get; set; }
-        // falls kaputt oder noch nicht fertig aufgebaut
+        // hat 0 Baupunkte in der Karte
         public bool Zerstört { get; set; } = false;
+        // existiert nicht in der Bauwerkliste, aber in der Karte
         public bool IsNew { get; set; } = true;
         public Rüstort? Rüstort {
             get { return BauwerkeView.GetRüstortNachKarte(this); }

@@ -2,22 +2,11 @@
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
 using PhoenixModel.View;
-using SharpDX.Direct2D1;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace PhoenixWPF.Pages
 {
@@ -52,7 +41,7 @@ namespace PhoenixWPF.Pages
 
             if (EigenschaftlerList == null || EigenschaftlerList.Count == 0)
                 return;
-            string[] toIgnore = { "Nation", "Reich", "Nation.Farbname", "Nation.Reich", "Rüstort.Bauwerk", "Rüstort.Nummer"};
+            string[] toIgnore = { "Nation", "Reich", "Nation.Farbname", "Nation.Reich", "Rüstort.Bauwerk", "Rüstort.Nummer", "Zerstört" , "InBau", "IsNew"};
             // string[] toIgnore = { };
             List<Eigenschaft> eigList = EigenschaftlerList[0].Eigenschaften;
             List<Eigenschaft> columns = eigList.Where(prop => !toIgnore.Contains(prop.Name)).ToList();
@@ -79,39 +68,55 @@ namespace PhoenixWPF.Pages
                     Binding = new System.Windows.Data.Binding($"Eigenschaften[{index}].Wert"),
                     IsReadOnly = name != "Bauwerknamen"
                 };
-                EigenschaftlerDataGrid.Columns.Add(column);
+                if (name == "Bauwerknamen")
+                {
+                    _BauwerkNamenBindingPath = $"Eigenschaften[{index}].Wert";
+                }
+               EigenschaftlerDataGrid.Columns.Add(column);
             }
 
             EigenschaftlerDataGrid.ItemsSource = EigenschaftlerList;
         }
+
+        private string _BauwerkNamenBindingPath = string.Empty;
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             LoadEigenschaftler();
         }
 
+        private void SaveBauwerknamen( Gebäude gebäude, string neuerNamen)
+        {
+            gebäude.Bauwerknamen = neuerNamen;
+            if (SharedData.Map != null)
+            {
+                var gemark = SharedData.Map[gebäude.Bezeichner];
+                gemark.Bauwerknamen = neuerNamen;
+                SharedData.StoreQueue.Enqueue(gebäude);
+                SharedData.StoreQueue.Enqueue(gemark);
+            }
+        }
+
         private void EigenschaftlerDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             if (e.EditAction == DataGridEditAction.Commit)
             {
-                if (e.Row.DataContext is Eigenschaft eigenschaft)
+                if (e.Row.DataContext is Gebäude gebäude)
                 {
-                    PropertyProcessor.UpdateSource(eigenschaft);
+                    // Get the binding path of the edited column
+                    if (e.Column is DataGridBoundColumn boundColumn && boundColumn.Binding is Binding binding)
+                    {
+                        string propertyName = binding.Path.Path;
+                        if (propertyName == _BauwerkNamenBindingPath)
+                        {
+                            if (e.EditingElement is TextBox tb) {
+                                SaveBauwerknamen(gebäude, tb.Text);
+                            }
+                        }
+                    }
                 }
             }
         }
-
-        /*private void EigenschaftlerDataGrid_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (EigenschaftlerDataGrid.SelectedIndex > -1 && EigenschaftlerDataGrid.SelectedItem != null)
-            {
-                if (EigenschaftlerDataGrid.SelectedItem is IEigenschaftler eigenschaftler)
-                {
-
-                }
-            }
-            
-        }*/
 
         private void EigenschaftlerDataGrid_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
