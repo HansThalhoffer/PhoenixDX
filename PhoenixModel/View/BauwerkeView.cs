@@ -63,7 +63,7 @@ namespace PhoenixModel.View
             }
         }
 
-        public static int? GetRüstortNachKarte(KleinfeldPosition pos)
+        /*public static int? GetRüstortNachKarte(KleinfeldPosition pos)
         {
             if (SharedData.Map == null)
                 return null;
@@ -76,9 +76,33 @@ namespace PhoenixModel.View
                 ViewModel.LogError(pos, "Kleinfeld existiert nicht", ex.Message);
                 return null;
             }
+        }*/
+
+        public static Rüstort? GetRüstortNachKarte(KleinfeldPosition pos)
+        {
+            if (SharedData.Map == null)
+                return null; 
+            var gemark = SharedData.Map[pos.CreateBezeichner()];
+
+            Rüstort? rüstortLautKarte = BauwerkeView.GetRuestortReferenz(gemark.Ruestort);
+            if (rüstortLautKarte != null)
+                return rüstortLautKarte;
+            
+            if (Rüstort.NachBaupunkten.ContainsKey(gemark.Baupunkte))
+                return Rüstort.NachBaupunkten[gemark.Baupunkte];
+            else
+            {
+                int bp = gemark.Baupunkte - gemark.Baupunkte % 250;
+                while (Rüstort.NachBaupunkten.ContainsKey(bp) == false && bp > 0)
+                    bp -= 250;
+                if (bp > 0)
+                {
+                    return Rüstort.NachBaupunkten[bp];
+                }
+                return null;
+            }
         }
 
-        // die Funktion beseitigt Fehler in den Datenbanken
         public static Gebäude? GetGebäude(KleinFeld gemark)
         {
                 if (SharedData.Gebäude == null)
@@ -96,36 +120,7 @@ namespace PhoenixModel.View
                     // ergänzt die Datenbank falls notwendig
                     if (gebäude == null)
                     {
-                        ViewModel.LogWarning( gemark, $"Fehlendes Gebäude in der Bauwerktabelle mit dem Namen {gemark.Bauwerknamen}", "Durch einen Datenbankfehler hat das Gebäude keinen Eintrag in der Tabelle [bauwerkliste] in der Datenbank Ekrenfarakarte.mdb");    
-                        gebäude = new Gebäude();
-                        gebäude.kf = gemark.kf;
-                        gebäude.gf = gemark.gf;
-                        gebäude.Bauwerknamen = gemark.Bauwerknamen;
-                        SharedData.Gebäude.Add(gebäude.Bezeichner, gebäude);
-                    }
-                    // findt und bereinigt den Eintrag zum Rüstort im Gebäude
-                    if (gebäude.Rüstort == null)
-                    {
-                        Rüstort? rüstortLautKarte = GetRuestortReferenz(gemark.Ruestort);
-                        if (Rüstort.NachBaupunkten.ContainsKey(gemark.Baupunkte))
-                            gebäude.Rüstort = Rüstort.NachBaupunkten[gemark.Baupunkte];
-                        else
-                        {
-                            int bp = gemark.Baupunkte - gemark.Baupunkte % 250;
-                            while (Rüstort.NachBaupunkten.ContainsKey(bp) == false && bp > 0)
-                                bp -= 250;
-                            if (bp > 0)
-                            {
-                                gebäude.InBau = true;
-                                gebäude.Rüstort = Rüstort.NachBaupunkten[bp];
-                            }
-                            else
-                            {
-                                gebäude.Zerstört = true;
-                            }
-                        }
-                    if (gebäude.Rüstort != rüstortLautKarte)
-                            ViewModel.LogWarning(gemark, $"Unterschiedliches Gebäude nach Baupunkten ({gemark.Baupunkte}):{gebäude.Rüstort?.Bezeichner} und Karte: {rüstortLautKarte?.Bezeichner}", "Durch einen Datenbankfehler hat das Gebäude keinen oder fehlerhafte Einträg in den Tabellen. Diese sind nicht synchron.");
+                        ViewModel.LogError( gemark, $"Fehlendes Gebäude in der Bauwerktabelle mit dem Namen {gemark.Bauwerknamen}", "Durch einen Datenbankfehler hat das Gebäude keinen Eintrag in der Tabelle [bauwerkliste] in der Datenbank Ekrenfarakarte.mdb");    
                     }
                     return gebäude;
                 }

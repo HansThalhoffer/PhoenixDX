@@ -36,7 +36,13 @@ namespace PhoenixModel.dbErkenfara
         string? _reich = string.Empty;
         public string? Reich { 
                 get { return _reich; }
-                set { _reich = value; _nation = null; } 
+                set {
+                if (value != null)
+                {
+                    _reich = value;
+                    _nation = NationenView.GetNationFromString(_reich);
+                }
+            } 
         }
         private Nation? _nation = null;
         public Nation? Nation {  get
@@ -48,27 +54,21 @@ namespace PhoenixModel.dbErkenfara
                 return _nation;
             } 
         }
-        public int BaupunkteNachKarte
+        public int Baupunkte
         {
             get { 
                 return BauwerkeView.GetBaupunkteNachKarte(this) ?? 0;
             }
         }
-        public int RuestortNachKarte
-        {
-            get
-            {
-                return BauwerkeView.GetRüstortNachKarte(this) ?? 0;
-            }
-        }
-
+    
         [View.Editable]
         public string? Bauwerknamen { get; set; }
         // falls kaputt oder noch nicht fertig aufgebaut
-        public bool InBau { get; set; } = false;
         public bool Zerstört { get; set; } = false;
         public bool IsNew { get; set; } = true;
-        public Rüstort? Rüstort { get; set; } = null;
+        public Rüstort? Rüstort {
+            get { return BauwerkeView.GetRüstortNachKarte(this); }
+        }
 
         public enum Felder
         {

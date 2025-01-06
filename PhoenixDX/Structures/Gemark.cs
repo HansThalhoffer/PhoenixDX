@@ -119,18 +119,6 @@ namespace PhoenixDX.Structures {
             Layer_0.Add(new Wall(gem));
 
             if (gem.Gebäude != null) {
-                if (gem.Gebäude.InBau) {
-                    MappaMundi.Log(this.Koordinaten.gf, this.Koordinaten.kf, new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Warning,
-                        $"Gebäude in Bau {gem.Gebäude.Bauwerknamen} von {gem.Gebäude.Reich}",
-                        $"Die Anzahl der Baupunkte {gem.Baupunkte} stimmt nicht mit den Anforderungen überein, die laut Tabelle dem Gebäude zugeordnet sind {BauwerkeView.GetRuestortReferenz(gem.Ruestort).Baupunkte}")
-                    );
-                }
-                if (gem.Gebäude.Zerstört) {
-                    MappaMundi.Log(this.Koordinaten.gf, this.Koordinaten.kf, new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Warning,
-                        $"Gebäude zerstört {gem.Gebäude.Bauwerknamen} von {gem.Gebäude.Reich}",
-                        $"Die Anzahl der Baupunkte {gem.Baupunkte} stimmt nicht mit den Anforderungen überein, die laut Tabelle dem Gebäude zugeordnet sind {BauwerkeView.GetRuestortReferenz(gem.Ruestort).Baupunkte}")
-                     );
-                }
                 string name = gem.Gebäude.Rüstort.Bauwerk;
                 if (RuestortSymbol.Ruestorte.ContainsKey(name)) {
                     // Layer_0.Add("Rüstort", RuestortSymbol.Ruestorte[name]);

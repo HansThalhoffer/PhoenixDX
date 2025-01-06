@@ -15,7 +15,7 @@ namespace PhoenixModel.Helper
     {
         public enum ViewEventType
         {
-            None, Log, UpdateGebäude, UpdateSpielfigur, UpdateEverything
+            None, Log, UpdateGebäude, UpdateSpielfigur, UpdateEverything, EverythingLoaded
         }
 
         public int GF = 0, KF = 0;

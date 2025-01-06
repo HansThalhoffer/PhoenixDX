@@ -169,7 +169,7 @@ namespace PhoenixWPF.Program
         /// </summary>
         private void EverythingLoaded()
         {
-            ViewModel.UpdateData();
+            ViewModel.DataLoadingCompleted();
             _backgroundSave?.Start();
         }
 

@@ -34,8 +34,10 @@ namespace PhoenixWPF.Pages
 
         private void ViewModel_OnViewEvent(object? sender, ViewEventArgs e)
         {
-            if (e.EventType == ViewEventArgs.ViewEventType.UpdateEverything && SharedData.Gebäude != null && ViewModel.SelectedNation != null)
+            if (SharedData.Gebäude != null && ViewModel.SelectedNation != null && 
+                (e.EventType == ViewEventArgs.ViewEventType.EverythingLoaded || e.EventType == ViewEventArgs.ViewEventType.UpdateGebäude ))
             {
+                EigenschaftlerList.Clear();
                 var list = BauwerkeView.GetGebäude(ViewModel.SelectedNation);
                 if (list != null) 
                     EigenschaftlerList.AddRange(list);
@@ -51,6 +53,7 @@ namespace PhoenixWPF.Pages
             if (EigenschaftlerList == null || EigenschaftlerList.Count == 0)
                 return;
             string[] toIgnore = { "Nation", "Reich", "Nation.Farbname", "Nation.Reich", "Rüstort.Bauwerk", "Rüstort.Nummer"};
+            // string[] toIgnore = { };
             List<Eigenschaft> eigList = EigenschaftlerList[0].Eigenschaften;
             List<Eigenschaft> columns = eigList.Where(prop => !toIgnore.Contains(prop.Name)).ToList();
 

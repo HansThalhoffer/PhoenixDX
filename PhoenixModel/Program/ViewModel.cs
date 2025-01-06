@@ -44,10 +44,16 @@ namespace PhoenixModel.Program
             _OnViewEvent(new ViewEventArgs(figur));
         }*/
 
-        public static void UpdateData()
+        public static void Update(ViewEventType what)
         {
-            _OnViewEvent(new ViewEventArgs(ViewEventType.UpdateEverything));
+            _OnViewEvent(new ViewEventArgs(what));
         }
+
+        public static void DataLoadingCompleted()
+        {
+            _OnViewEvent(new ViewEventArgs(ViewEventType.EverythingLoaded));
+        }
+
 
         /// <summary>
         /// überprüft den Besitz der KleinFeld/des Kleinfelds

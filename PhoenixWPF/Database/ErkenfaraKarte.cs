@@ -17,6 +17,9 @@ using System.Threading.Tasks;
 using static PhoenixModel.Database.PasswordHolder;
 using PhoenixModel.dbPZE;
 using static PhoenixModel.Helper.SharedData;
+using PhoenixModel.Program;
+using PhoenixModel.dbCrossRef;
+using PhoenixModel.View;
 
 namespace PhoenixWPF.Program
 {
@@ -40,32 +43,73 @@ namespace PhoenixWPF.Program
             {
                 if (connector?.Open() == false)
                     return;
-                Load<KleinFeld>(connector, ref SharedData.Map, Enum.GetNames(typeof(KleinFeld.Felder)));
                 Load<Gebäude>(connector, ref SharedData.Gebäude, Enum.GetNames(typeof(Gebäude.Felder)));
+                Load<KleinFeld>(connector, ref SharedData.Map, Enum.GetNames(typeof(KleinFeld.Felder)));
                 connector?.Close();
-                RepairGebäude();
+                RepairBauwerklistePhase1();
+                ViewModel.OnViewEvent += ViewModel_OnViewEvent;
                 return;
             }
         }
 
+        private void ViewModel_OnViewEvent(object? sender, ViewEventArgs e)
+        {
+            if (e.EventType == ViewEventArgs.ViewEventType.EverythingLoaded && SharedData.Gebäude != null && ViewModel.SelectedNation != null)
+            {
+                RepairBauwerklistePhase2();
+            }
+        }
+
         /// <summary>
-        /// Die Bauwerkliste ist kaputt
+        /// Die Bauwerkliste ist kaputt in der Datenbank. Die Karte ist die gepflegte Mastertabelle und mit dieser Wird die Bauwerkliste korrigiert
         /// </summary>
-        private void RepairGebäude()
+        private void RepairBauwerklistePhase1()
+        {
+            if (SharedData.Map != null && SharedData.Gebäude != null)
+            {
+                var gebäudeInKarte = SharedData.Map.Values.Where(gemark => gemark.Baupunkte > 0);
+                foreach (var gemark in gebäudeInKarte)
+                {
+                    Gebäude? gebäude = null;
+                    // lookup in Bauwerktabelle
+                    if (SharedData.Gebäude.ContainsKey(gemark.Bezeichner))
+                        gebäude = SharedData.Gebäude[gemark.Bezeichner];
+                    // ergänzt die Datenbank falls notwendig
+                    if (gebäude == null)
+                    {
+                        ViewModel.LogWarning(gemark, $"Fehlendes Gebäude in der Bauwerktabelle mit dem Namen {gemark.Bauwerknamen}", $"Durch einen Datenbankfehler hat das Gebäude auf {gemark.Bezeichner} keinen Eintrag in der Tabelle [bauwerkliste] in der Datenbank Ekrenfarakarte.mdb.\r\rDieser Fehler wurde automatisch korrigiert");
+                        gebäude = new Gebäude();
+                        gebäude.kf = gemark.kf;
+                        gebäude.gf = gemark.gf;
+                        SharedData.Gebäude.Add(gebäude.Bezeichner, gebäude);
+                    }
+                    gebäude.Bauwerknamen = gemark.Bauwerknamen;
+                }
+            }
+            ViewModel.Update(ViewEventArgs.ViewEventType.UpdateGebäude);
+        }
+
+        /// <summary>
+        /// Die Bauwerkliste ist kaputt in der Datenbank. In Phase 2 sind alle Daten geladen, somit können die Nationen in der Liste repariert werden
+        /// </summary>
+        private void RepairBauwerklistePhase2()
         {
             if (SharedData.Map != null && SharedData.Gebäude != null)
             {
                 foreach (var gebäude in SharedData.Gebäude.Values)
                 {
                     var gemark = SharedData.Map[gebäude.Bezeichner];
-                    if (gemark.Nation!= null && gemark.Nation != gebäude.Nation)
-                    {
+                    
+                    if (gemark.Nation != null)
                         gebäude.Reich = gemark.Nation.Reich;
-                    }
                     if (gemark.Baupunkte == 0)
+                    {
+                        ViewModel.LogWarning(gemark, $"Zerstörtes Gebäude in der Bauwerktabelle mit dem Namen {gebäude.Bauwerknamen}", $"Durch einen Datenbankfehler existiert das zerstörte Gebäude auf {gebäude.Bezeichner} noch in der Tabelle [bauwerkliste] in der Datenbank Ekrenfarakarte.mdb.\r\rDieser Fehler wurde automatisch korrigiert");
                         gebäude.Zerstört = true;
+                    }
                 }
             }
+            ViewModel.Update(ViewEventArgs.ViewEventType.UpdateGebäude);
         }
 
         public void Save(IDatabaseTable table)
