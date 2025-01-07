@@ -271,6 +271,9 @@ namespace PhoenixModel.dbZugdaten
                 list.Add(new Eigenschaft("Stärke", str, false, this));
                 list.Add(new Eigenschaft("Katapulte", katapult, false, this));
                 list.Add(new Eigenschaft("Koordinaten", this.CreateBezeichner(), false, this));
+                list.Add(new Eigenschaft(NamensSpielfigur.HeaderBeschriftung, Titel, true, this));
+                list.Add(new Eigenschaft(NamensSpielfigur.HeaderCharakterName, CharakterName, true, this));
+                list.Add(new Eigenschaft(NamensSpielfigur.HeaderSpielerName, SpielerName, true, this));
                 return list;
             }
         }
@@ -292,6 +295,10 @@ namespace PhoenixModel.dbZugdaten
         internal string charname { get => _charname; set { if (value != null) _charname = value; } }
         internal string Spielername { get; set; } = string.Empty;
 
+        public static string HeaderBeschriftung = "Beschriftung";
+        public static string HeaderCharakterName = "Charaktername";
+        public static string HeaderSpielerName = "Spielername";
+
         public override List<Eigenschaft> Eigenschaften
         {
             get
@@ -304,6 +311,9 @@ namespace PhoenixModel.dbZugdaten
                 list.Add(new Eigenschaft("Stärke", str, false, this));
                 list.Add(new Eigenschaft("Katapulte", string.Empty, false, this));
                 list.Add(new Eigenschaft("Koordinaten", this.CreateBezeichner(), false, this));
+                list.Add(new Eigenschaft(HeaderBeschriftung, Titel, true, this));
+                list.Add(new Eigenschaft(HeaderCharakterName, CharakterName, true, this));
+                list.Add(new Eigenschaft(HeaderSpielerName, SpielerName, true, this));
                 return list;
             }
         }

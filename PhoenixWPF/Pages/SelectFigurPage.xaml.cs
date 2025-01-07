@@ -58,7 +58,7 @@ namespace PhoenixWPF.Pages
                     {
                         Header = name,
                         Binding = new System.Windows.Data.Binding($"Eigenschaften[{dex}].Wert"),
-                        IsReadOnly = Array.Exists(new string[] { "Spielername", "Charaktername", "Titel" }, s => s == name),
+                        IsReadOnly = !eig.IsEditable
                     };
                 }
                 else
@@ -67,35 +67,15 @@ namespace PhoenixWPF.Pages
                     {
                         Header = name,
                         Binding = new System.Windows.Data.Binding($"Eigenschaften[{dex}].Wert"),
-                        IsReadOnly = Array.Exists(new string[] { "Spielername", "Charaktername", "Titel" }, s => s == name),
+                        IsReadOnly = !eig.IsEditable,
                         SortMemberPath = $"Eigenschaften[{dex}].SortValue" 
                     };
-                }
-
-                // binding path merken, um dann später safe das Property korrekt zu setzen
-                // der header kann später mal umbetitelt werden, daher ist das hier häßlich aber zuverlässig
-                if (name == "CharakterName")
-                {
-                    _SpielfigurCharakterNamenBindingPath = $"Eigenschaften[{dex}].Wert";
-                }
-                else if (name == "SpielerName")
-                {
-                    _SpielfigurSpielerNamenBindingPath = $"Eigenschaften[{dex}].Wert";
-                }
-                else if (name == "Titel")
-                {
-                    _SpielfigurTitelBindingPath = $"Eigenschaften[{dex}].Wert";
-                }
+                }                
                 EigenschaftlerDataGrid.Columns.Add(column);
-                
             }
 
             EigenschaftlerDataGrid.ItemsSource = EigenschaftlerList;
-        }
-
-        private string _SpielfigurCharakterNamenBindingPath = string.Empty;
-        private string _SpielfigurSpielerNamenBindingPath = string.Empty;
-        private string _SpielfigurTitelBindingPath = string.Empty;
+        }       
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
@@ -116,7 +96,8 @@ namespace PhoenixWPF.Pages
                 SharedData.StoreQueue.Enqueue(schiff);
             else if (figur is PhoenixModel.dbZugdaten.Zauberer zauberer)
                 SharedData.StoreQueue.Enqueue(zauberer);
-            throw new NotImplementedException();
+            else
+                throw new NotImplementedException();
         }
 
         private void SaveSpielfigurCharakterNamen(Spielfigur figur, string neuerNamen)
@@ -159,13 +140,13 @@ namespace PhoenixWPF.Pages
                         if (e.EditingElement is TextBox tb)
                         {
                             string wert = tb.Text;
-                            string propertyName = binding.Path.Path;
+                            string? propertyName = (e.Column != null && e.Column.Header!= null) ? e.Column.Header.ToString():string.Empty;
 
-                            if (propertyName == _SpielfigurCharakterNamenBindingPath)
+                            if (propertyName == NamensSpielfigur.HeaderCharakterName)
                                 SaveSpielfigurCharakterNamen(figur, tb.Text);
-                            else if (propertyName == _SpielfigurSpielerNamenBindingPath)
+                            else if (propertyName == NamensSpielfigur.HeaderSpielerName)
                                 SaveSpielfigurSpielerNamen(figur, tb.Text);
-                            else if (propertyName == _SpielfigurTitelBindingPath)
+                            else if (propertyName == NamensSpielfigur.HeaderBeschriftung)
                                 SaveSpielfigurTitel(figur, tb.Text);
                         }
                     }
