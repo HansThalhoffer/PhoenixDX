@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
 
-namespace PhoenixWPF.Database
+namespace PhoenixWPF.Database.Generatoren
 {
     // generiert die datenbankklassen für das Model 1:1 aus der Access Tabelle
     // usage ModelGenerator.Start("Zugdaten\\167\\Theostelos.mdb", "", "chars", "dbZugdaten");
@@ -17,7 +17,7 @@ namespace PhoenixWPF.Database
     {
         public static void Start(string databasePath, string password, string tableName, string nspace)
         {
-            string className = tableName.Substring(0,1).ToUpper() + tableName.Substring(1);
+            string className = tableName.Substring(0, 1).ToUpper() + tableName.Substring(1);
             string outputPath = className + ".cs";
             string connectionString = $"Provider = Microsoft.ACE.OLEDB.16.0; Data Source = E:\\PZE.NET\\_Data\\{databasePath}; Persist Security Info = False;";
             if (string.IsNullOrEmpty(password) == false)
@@ -50,7 +50,7 @@ namespace PhoenixWPF.Database
                 writer.WriteLine("using PhoenixModel.Helper;");
                 writer.WriteLine();
                 writer.WriteLine($"namespace PhoenixModel.{nspace}");
-                writer.WriteLine("{"); 
+                writer.WriteLine("{");
                 writer.WriteLine($"public class {className}: IDatabaseTable, IEigenschaftler");
                 writer.WriteLine("{");
 

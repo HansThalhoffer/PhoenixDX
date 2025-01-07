@@ -165,8 +165,6 @@ namespace PhoenixModel.dbZugdaten
 
         public override void Save(DbCommand command)
         {
-            base.Save(command);
-
             command.CommandText = $@"
         UPDATE {TableName} SET
             staerke_alt = {this.staerke_alt},
@@ -247,9 +245,44 @@ namespace PhoenixModel.dbZugdaten
             command.ExecuteNonQuery();
         }
 
-        public void Insert(DbCommand reader)
+        public void Insert(DbCommand command)
         {
-            throw new NotImplementedException();
+            command.CommandText = $@"
+        INSERT INTO {TableName} (
+            staerke_alt, staerke, hf_alt, hf, LKP_alt, LKP, SKP_alt, SKP, 
+            pferde_alt, Pferde, gf_von, kf_von, gf_nach, kf_nach, rp, bp, 
+            ph_xy, Garde, Befehl_bew, Befehl_ang, Befehl_erobert, GS, GS_alt, 
+            Kampfeinnahmen, Kampfeinnahmen_alt, x1, y1, x2, y2, x3, y3, 
+            hoehenstufen, schritt, x4, y4, x5, y5, x6, y6, x7, y7, x8, y8, x9, y9, 
+            auf_Flotte, Sonstiges, spaltetab, fusmit, Chars, bp_max, isbanned, 
+            x10, y10, x11, y11, x12, y12, x13, y13, x14, y14, x15, y15, 
+            x16, y16, x17, y17, x18, y18, x19, y19
+        ) VALUES (
+            {this.staerke_alt}, {this.staerke}, {this.hf_alt}, {this.hf}, 
+            {this.LKP_alt}, {this.LKP}, {this.SKP_alt}, {this.SKP}, 
+            {this.pferde_alt}, {this.Pferde}, {this.gf_von}, {this.kf_von}, 
+            {this.gf_nach}, {this.kf_nach}, {this.rp}, {this.bp}, 
+            '{DatabaseConverter.EscapeString(this.ph_xy)}', {(this.Garde ? 1 : 0)}, 
+            '{DatabaseConverter.EscapeString(this.Befehl_bew)}', 
+            '{DatabaseConverter.EscapeString(this.Befehl_ang)}', 
+            '{DatabaseConverter.EscapeString(this.Befehl_erobert)}', 
+            {this.GS}, {this.GS_alt}, {this.Kampfeinnahmen}, {this.Kampfeinnahmen_alt}, 
+            {this.x1}, {this.y1}, {this.x2}, {this.y2}, {this.x3}, {this.y3}, 
+            {this.hoehenstufen}, {this.schritt}, {this.x4}, {this.y4}, {this.x5}, {this.y5}, 
+            {this.x6}, {this.y6}, {this.x7}, {this.y7}, {this.x8}, {this.y8}, 
+            {this.x9}, {this.y9}, '{DatabaseConverter.EscapeString(this.auf_Flotte)}', 
+            '{DatabaseConverter.EscapeString(this.Sonstiges)}', 
+            '{DatabaseConverter.EscapeString(this.spaltetab)}', 
+            '{DatabaseConverter.EscapeString(this.fusmit)}', 
+            '{DatabaseConverter.EscapeString(this.Chars)}', {this.bp_max}, {this.isbanned}, 
+            {this.x10}, {this.y10}, {this.x11}, {this.y11}, {this.x12}, {this.y12}, 
+            {this.x13}, {this.y13}, {this.x14}, {this.y14}, {this.x15}, {this.y15}, 
+            {this.x16}, {this.y16}, {this.x17}, {this.y17}, {this.x18}, {this.y18}, 
+            {this.x19}, {this.y19}
+        )";
+
+            // Execute the command
+            command.ExecuteNonQuery();
         }
     }
 }

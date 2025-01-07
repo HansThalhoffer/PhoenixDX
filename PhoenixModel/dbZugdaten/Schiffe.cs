@@ -167,8 +167,6 @@ namespace PhoenixModel.dbZugdaten
         }
 
         public override void Save(DbCommand command) {
-            base.Save(command);
-
             command.CommandText = $@"
         UPDATE {TableName} SET
             staerke_alt = {this.staerke_alt},
