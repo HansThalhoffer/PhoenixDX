@@ -14,11 +14,11 @@ namespace PhoenixModel.dbErkenfara
         string IDatabaseTable.TableName => ReichCrossref.TableName;
         public string Bezeichner => $"{Referenzreich}/{Reich}";
         // IEigenschaftler
-        private static readonly string[] PropertiestoIgnore = ["DatabaseName"];
+        private static readonly string[] PropertiestoIgnore = ["DBname", "Nummer"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
         public int Nummer { get; set; }
-        public string? Reich { get; set; }
         public string? Referenzreich { get; set; }
+        public string? Reich { get; set; }
         public int Wegerecht { get; set; }
         public int Wegerecht_von { get; set; }
         public string? DBname { get; set; }

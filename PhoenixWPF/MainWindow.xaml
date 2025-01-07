@@ -68,6 +68,9 @@
 
                 <!-- Top TabControl -->
                 <TabControl Grid.Row="0" Margin="5" Name="TopTabControl">
+                    <TabItem Header="Diplomatie" Name="Diplomatie">
+                        <Frame Source="Pages/DiplomatiePage.xaml" />
+                    </TabItem>
                     <TabItem Header="Rüsten" Name="BuildPage">
                         <Frame Source="Pages/BuildPage.xaml" />
                     </TabItem>
@@ -80,6 +83,7 @@
                     <TabItem Header="Optionen" Name="Optionen">
                         <Frame Source="Pages/OptionsPage.xaml" />
                     </TabItem>
+                    
                 </TabControl>
 
                 <!-- Selection Navigator -->
