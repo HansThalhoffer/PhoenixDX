@@ -17,7 +17,13 @@ namespace PhoenixModel.dbErkenfara
         private static readonly string[] PropertiestoIgnore = ["DBname", "Nummer", "DatabaseName", "Flottenkey"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
         public int Nummer { get; set; }
+        /// <summary>
+        ///  das eigene Reich bzw. das Reich, das dem anderen die Rechte gibt
+        /// </summary>
         public string? Referenzreich { get; set; }
+        /// <summary>
+        /// Das Reich, das die Rechte empfängt
+        /// </summary>
         public string? Reich { get; set; }
         public int Wegerecht { get; set; }
         public int Wegerecht_von { get; set; }
