@@ -14,6 +14,7 @@ namespace PhoenixModel.dbZugdaten
         public const string TableName = "Schiffe";
         string IDatabaseTable.TableName => TableName;
         // IEigenschaftler
+        public override FigurType BaseTyp => FigurType.Schiff;
         public override FigurType Typ {
             get {
                 // es sind piraten

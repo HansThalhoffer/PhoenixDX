@@ -17,6 +17,7 @@ namespace PhoenixModel.dbZugdaten
     public abstract class Spielfigur : KleinfeldPosition, ISelectable
     {
         public abstract FigurType Typ { get; }
+        public abstract FigurType BaseTyp { get; }
         public abstract string Stärke { get; }
 
         public int GS { get; set; } = 0;
@@ -63,16 +64,6 @@ namespace PhoenixModel.dbZugdaten
                 kf_nach = value;
             }
         }
-
-        /* als string Stärke schon gelöst
-         * public int Strength
-        {
-            get
-            {
-                return PropertyProcessor.GetIntValueIfExists(this, new string[] { "staerke", "GP_aktuell" });
-            }
-        }*/
-
         public int Heerführer
         {
             get
@@ -219,7 +210,7 @@ namespace PhoenixModel.dbZugdaten
         public string? ph_xy { get; set; }
 
         private static readonly string[] PropertiestoIgnore = ["DatabaseName", "Bezeichner", "Nation", "GS_alt", "Kampfeinnahmen_alt", "Nummer", "gf_von", "kf_von", "gf", "kf", "gf_nach", "kf_nach", "ph_xy", "Key"];
-        public List<Eigenschaft> Eigenschaften
+        public virtual List<Eigenschaft> Eigenschaften
         {
             get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore);
         }
@@ -253,6 +244,36 @@ namespace PhoenixModel.dbZugdaten
         public int pferde_alt { get; set; }
         public int Pferde { get; set; }
         public bool Garde { get; set; }
+
+        public override List<Eigenschaft> Eigenschaften
+        {
+            get {
+                List<Eigenschaft> list = [];
+
+                list.Add(new Eigenschaft("ID", this.Nummer.ToString(), false, this));
+                string typ = BaseTyp.ToString();
+                string str = Stärke;
+                string katapult = string.Empty;
+                int lineCount = 1;
+                if (LKP > 0)
+                {
+                    typ += (BaseTyp == FigurType.Schiff) ? $"\r+ Leichte Kriegsschiffe" : $"\r+ Leichte Katapulte";
+                    katapult += $"\r+ {LKP} LK";
+                    lineCount++;
+                }    
+                if (SKP > 0)
+                {
+                    typ += (BaseTyp == FigurType.Schiff) ? $"\r+ Schwere Kriegsschiffe" : $"\r+ Schwere Katapulte";
+                    katapult += $"\r+ {SKP} SK";
+                    lineCount++;
+                }
+                list.Add(new Eigenschaft("Typ", typ, false, this));
+                list.Add(new Eigenschaft("Stärke", str, false, this));
+                list.Add(new Eigenschaft("Katapulte", katapult, false, this));
+                list.Add(new Eigenschaft("Koordinaten", this.CreateBezeichner(), false, this));
+                return list;
+            }
+        }
     }
 
     public abstract class NamensSpielfigur : Spielfigur
@@ -270,5 +291,21 @@ namespace PhoenixModel.dbZugdaten
         internal string Charname { get => _charname; set { if (value != null) _charname = value; } }
         internal string charname { get => _charname; set { if (value != null) _charname = value; } }
         internal string Spielername { get; set; } = string.Empty;
+
+        public override List<Eigenschaft> Eigenschaften
+        {
+            get
+            {
+                List<Eigenschaft> list = [];
+                list.Add(new Eigenschaft("ID", this.Nummer.ToString(), false, this));
+                string typ = Typ.ToString();
+                string str = Stärke;
+                list.Add(new Eigenschaft("Typ", typ, false, this));
+                list.Add(new Eigenschaft("Stärke", str, false, this));
+                list.Add(new Eigenschaft("Katapulte", string.Empty, false, this));
+                list.Add(new Eigenschaft("Koordinaten", this.CreateBezeichner(), false, this));
+                return list;
+            }
+        }
     }
 }

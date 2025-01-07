@@ -13,6 +13,7 @@ namespace PhoenixModel.dbZugdaten
         string IDatabaseTable.TableName => TableName;   
         // IEigenschaftler
         public override FigurType Typ => FigurType.Charakter;
+        public override FigurType BaseTyp => FigurType.Charakter;
 
         public int tp_alt { get; set; }
         public int tp { get; set; }

@@ -12,6 +12,8 @@ namespace PhoenixModel.dbZugdaten
         public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "Zauberer";
         string IDatabaseTable.TableName => TableName;
+        public override FigurType BaseTyp => FigurType.Zauberer;
+
         public override FigurType Typ
         {
             get

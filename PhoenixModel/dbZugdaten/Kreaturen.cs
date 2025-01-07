@@ -13,7 +13,8 @@ namespace PhoenixModel.dbZugdaten
         public const string TableName = "Kreaturen";
         string IDatabaseTable.TableName => TableName;
         public override FigurType Typ => FigurType.Kreatur;
-      
+        public override FigurType BaseTyp => FigurType.Kreatur;
+
         public string? Befehl_bew { get; set; }
         public string? Befehl_ang { get; set; }
         public string? Befehl_erobert { get; set; }

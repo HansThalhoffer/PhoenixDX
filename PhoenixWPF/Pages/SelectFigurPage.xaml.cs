@@ -47,31 +47,47 @@ namespace PhoenixWPF.Pages
             EigenschaftlerDataGrid.Columns.Clear();
 
             // Add dynamic columns for Eigenschaften
-            foreach (var eig in columns)
+            for (int dex = 0; dex < columns.Count; ++dex)
             {
+                var eig = columns[dex];
                 string name = eig.Name;
-                int index = eigList.IndexOf(eig);
-                DataGridTextColumn column = new DataGridTextColumn
+                DataGridTextColumn column;
+                if (eig.SortValue == int.MinValue)
                 {
-                    Header = name,
-                    Binding = new System.Windows.Data.Binding($"Eigenschaften[{index}].Wert"),
-                    IsReadOnly = Array.Exists( new string[] { "SpielerName", "CharakterName", "Titel" }, s => s == name)
-                };
+                    column = new DataGridTextColumn
+                    {
+                        Header = name,
+                        Binding = new System.Windows.Data.Binding($"Eigenschaften[{dex}].Wert"),
+                        IsReadOnly = Array.Exists(new string[] { "Spielername", "Charaktername", "Titel" }, s => s == name),
+                    };
+                }
+                else
+                {
+                    column = new DataGridTextColumn
+                    {
+                        Header = name,
+                        Binding = new System.Windows.Data.Binding($"Eigenschaften[{dex}].Wert"),
+                        IsReadOnly = Array.Exists(new string[] { "Spielername", "Charaktername", "Titel" }, s => s == name),
+                        SortMemberPath = $"Eigenschaften[{dex}].SortValue" 
+                    };
+                }
+
                 // binding path merken, um dann später safe das Property korrekt zu setzen
                 // der header kann später mal umbetitelt werden, daher ist das hier häßlich aber zuverlässig
                 if (name == "CharakterName")
                 {
-                    _SpielfigurCharakterNamenBindingPath = $"Eigenschaften[{index}].Wert";
+                    _SpielfigurCharakterNamenBindingPath = $"Eigenschaften[{dex}].Wert";
                 }
                 else if (name == "SpielerName")
                 {
-                    _SpielfigurSpielerNamenBindingPath= $"Eigenschaften[{index}].Wert";
+                    _SpielfigurSpielerNamenBindingPath = $"Eigenschaften[{dex}].Wert";
                 }
                 else if (name == "Titel")
                 {
-                    _SpielfigurTitelBindingPath = $"Eigenschaften[{index}].Wert";
+                    _SpielfigurTitelBindingPath = $"Eigenschaften[{dex}].Wert";
                 }
                 EigenschaftlerDataGrid.Columns.Add(column);
+                
             }
 
             EigenschaftlerDataGrid.ItemsSource = EigenschaftlerList;

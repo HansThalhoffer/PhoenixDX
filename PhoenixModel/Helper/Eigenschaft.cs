@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static PhoenixModel.ExternalTables.EinwohnerUndEinnahmenTabelle;
 
 namespace PhoenixModel.Helper
 {
@@ -65,6 +66,34 @@ namespace PhoenixModel.Helper
                 }
             }
         }
+
+        public Int64? SortValue
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(_wert))
+                    return int.MinValue; // Handle null or empty strings.
+
+                // Regular expression to extract leading numeric part
+                var match = System.Text.RegularExpressions.Regex.Match(_wert, @"^[\d.,]+");
+
+                if (match.Success)
+                {
+                    string numericPart = match.Value;
+
+                    // Parse the numeric part considering culture-specific formats
+                    if (decimal.TryParse(numericPart,
+                                          System.Globalization.NumberStyles.Number,
+                                          System.Globalization.CultureInfo.CurrentCulture,
+                                          out decimal result))
+                    {
+                        return (int)Math.Floor(result); // Convert to integer if needed
+                    }
+                }
+                return int.MinValue; 
+            }
+        }
+
 
         /// <summary>
         /// Gets or sets a value indicating whether the property is editable.
