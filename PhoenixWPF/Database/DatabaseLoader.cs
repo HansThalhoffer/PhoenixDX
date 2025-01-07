@@ -65,6 +65,7 @@ namespace PhoenixWPF.Database
                 collection = new BlockingCollection<T>();
                 string felderListe = string.Join(", ", felder);
                 string tableName = PropertyProcessor.GetConstValue<T>("TableName");
+                
                 string query = $"SELECT {felderListe} FROM {tableName} ORDER BY {felder[0]}";
                 try
                 {

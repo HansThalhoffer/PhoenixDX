@@ -8,11 +8,11 @@ namespace PhoenixModel.dbErkenfara
     public class ReichCrossref :  IDatabaseTable, IEigenschaftler
     {
         private static string _datebaseName = string.Empty;
-        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
+        public virtual string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         
-        public const string TableName = "ReichCrossref";
-        string IDatabaseTable.TableName => TableName;
-        public string Bezeichner => Nummer.ToString();
+        public const string TableName = "Reich_crossref";
+        string IDatabaseTable.TableName => ReichCrossref.TableName;
+        public string Bezeichner => $"{Referenzreich}/{Reich}";
         // IEigenschaftler
         private static readonly string[] PropertiestoIgnore = ["DatabaseName"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }

@@ -132,6 +132,8 @@ namespace PhoenixWPF.Program
                     return;
                 try
                 {
+                    Load<ReichCrossref>(connector, ref SharedData.Diplomatie, Enum.GetNames(typeof(ReichCrossref.Felder)));
+
                 }
                 catch (Exception ex)
                 {
