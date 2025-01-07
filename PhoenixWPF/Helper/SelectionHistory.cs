@@ -1,15 +1,10 @@
-﻿using PhoenixModel.dbErkenfara;
-using PhoenixModel.Program;
+﻿using PhoenixModel.Program;
 using PhoenixWPF.Program;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace PhoenixWPF.Helper
 {
-    
+
     public class SelectionHistory: List<ISelectable>
     {
         int _index = -1;
@@ -26,6 +21,8 @@ namespace PhoenixWPF.Helper
         {
             if (selected != null)
             {
+                OnPropertyChanged(nameof(Current)); 
+                OnPropertyChanged(nameof(CurrentDisplay));
                 Main.Instance.PropertyDisplay?.Display(selected);
             }
             return selected;
@@ -36,6 +33,35 @@ namespace PhoenixWPF.Helper
             if (_index < this.Count-1)
                 _index++;
             return _OnSelectionChange(Current);
+        }
+
+        public string CurrentDisplay
+        {
+            get
+            {
+                var current = Current;
+                if (current != null)
+                {
+                    return $"{current.GetType().Name}: {current.Bezeichner}";
+                }
+                return "No selection";
+            }
+        }
+
+        public bool CanNavigateBack()
+        {
+            return Current != null && _index > 0;
+        }
+
+        public bool CanNavigateForward()
+        {
+            return Current != null && _index < this.Count - 1;
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         /// <summary>

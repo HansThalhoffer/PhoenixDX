@@ -55,12 +55,15 @@
             <!-- Right Grid -->
             <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
+                    <!-- Top TabControl -->
                     <RowDefinition Height="1*" />
-                    <!-- Top section -->
+                    <!-- Selection Navigator -->
+                    <RowDefinition Height="20" />
+                    <!-- Splitter  -->
                     <RowDefinition Height="5" />
-                    <!-- Splitter -->
+                    <!-- Bottom TabControl -->
                     <RowDefinition Height="1*" />
-                    <!-- Bottom section -->
+                    
                 </Grid.RowDefinitions>
 
                 <!-- Top TabControl -->
@@ -79,11 +82,14 @@
                     </TabItem>
                 </TabControl>
 
-                <!-- Splitter -->
-                <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+                <!-- Selection Navigator -->
+                <Frame Grid.Row="1" Height="20" Source="Pages/SelectionNavigatorPage.xaml" />
 
+                <!-- Splitter -->
+                <GridSplitter Grid.Row="2" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+              
                 <!-- Bottom TabControl -->
-                <TabControl Grid.Row="2" Margin="5" Name="BottomTabControl">
+                <TabControl Grid.Row="3" Margin="5" Name="BottomTabControl">
                     <TabItem Header="Eigenschaften" Name="Eigenschaften">
                         <Frame Source="Pages/PropertyListPage.xaml" />
                     </TabItem>
