@@ -1,4 +1,5 @@
-﻿using PhoenixModel.dbErkenfara;
+﻿using LiveCharts.Wpf;
+using PhoenixModel.dbErkenfara;
 using PhoenixModel.Program;
 using PhoenixWPF.Dialogs;
 using System.Collections.ObjectModel;
@@ -157,9 +158,10 @@ namespace PhoenixWPF.Pages
             if (entry == null)
                 return;
             KleinfeldPosition? pos = ExtractPosition(entry);
-            if (pos != null)
+            if (pos != null && PhoenixModel.Helper.SharedData.Map != null && PhoenixModel.Helper.SharedData.Map.ContainsKey(pos.CreateBezeichner()))
             {
-               Program.Main.Instance.Map?.Goto(pos);
+                var kleinfeld = PhoenixModel.Helper.SharedData.Map[pos.CreateBezeichner()];
+                Program.Main.Instance.Spiel?.SelectGemark(kleinfeld);
             }
         }
 

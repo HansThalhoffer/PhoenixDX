@@ -2,6 +2,7 @@
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
 using PhoenixModel.View;
+using PhoenixWPF.Program;
 using System.Security.Cryptography.Xml;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,6 +22,27 @@ namespace PhoenixWPF.Pages
         {
             InitializeComponent();
             ViewModel.OnViewEvent += ViewModel_OnViewEvent;
+            Main.Instance.SelectionHistory.PropertyChanged += SelectionHistory_PropertyChanged;
+        }
+
+        // zuerst erfolgt die Auswahl des Kleinfeldes und dann einer Figur
+        private void SelectionHistory_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            SynchSelected();
+        }
+
+        // zuerst erfolgt die Auswahl des Kleinfeldes und dann einer Figur
+        private void SynchSelected()
+        {
+            var selected = Main.Instance.SelectionHistory.Current;
+            if (selected != null && selected is Spielfigur figur)
+            {
+                if (EigenschaftlerList.Contains(figur))
+                {
+                    EigenschaftlerDataGrid.SelectedItem = figur;
+                    EigenschaftlerDataGrid.ScrollIntoView(figur);
+                }
+            }
         }
 
         private void ViewModel_OnViewEvent(object? sender, ViewEventArgs e)
@@ -80,6 +102,7 @@ namespace PhoenixWPF.Pages
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             LoadEigenschaftler();
+            SynchSelected();
         }
 
         private void SaveSpielfigur(Spielfigur figur)
@@ -169,7 +192,7 @@ namespace PhoenixWPF.Pages
                 if (row != null && row.Item != null && row.Item is Spielfigur figur)
                 {
                     // auch die Spielfigur ist eine Kleinfeldposition
-                    Program.Main.Instance.Map?.Goto(figur);
+                    Program.Main.Instance.Spiel?.SelectGemark(figur);
                 }
             }
         }

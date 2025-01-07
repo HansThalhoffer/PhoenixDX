@@ -211,7 +211,7 @@ namespace PhoenixDX.Program
             posG += offset;
             _cameraPosition.SetFromVector2(posG);
             _selected = kleinfeld;
-            _wpfBridge.SelectKleinfeld(_selected.Koordinaten.gf, _selected.Koordinaten.kf, MausEventArgs.MouseEventType.None);
+            //_wpfBridge.SelectKleinfeld(_selected.Koordinaten.gf, _selected.Koordinaten.kf, MausEventArgs.MouseEventType.None);
         }
 
         public void Goto(KleinfeldPosition pos)

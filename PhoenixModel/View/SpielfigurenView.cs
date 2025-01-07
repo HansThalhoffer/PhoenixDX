@@ -117,6 +117,9 @@ namespace PhoenixModel.View
         public string Bezeichner => "Armee";
     }
 
+    /// <summary>
+    /// Vereinfacht die Nutzung von Truppensammlungen, die aus verschiedenen Klassen bestehen
+    /// </summary>
     public static class SpielfigurenView
     {
         public static Armee GetSpielfiguren(KleinfeldPosition gem)

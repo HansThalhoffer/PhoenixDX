@@ -1,7 +1,9 @@
 ﻿using PhoenixModel.dbErkenfara;
+using PhoenixModel.dbZugdaten;
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
 using PhoenixModel.View;
+using PhoenixWPF.Program;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -19,6 +21,26 @@ namespace PhoenixWPF.Pages
         {
             InitializeComponent();
             ViewModel.OnViewEvent += ViewModel_OnViewEvent;
+            Main.Instance.SelectionHistory.PropertyChanged += SelectionHistory_PropertyChanged;
+        }
+
+        // zuerst erfolgt die Auswahl des Kleinfeldes und dann einer Figur
+        private void SelectionHistory_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            SynchSelected();
+        }
+
+        private void SynchSelected()
+        {
+            var selected = Main.Instance.SelectionHistory.Current;
+            if (selected != null && selected is Gebäude gebäude)
+            {
+                if (EigenschaftlerList.Contains(gebäude))
+                {
+                    EigenschaftlerDataGrid.SelectedItem = gebäude;
+                    EigenschaftlerDataGrid.ScrollIntoView(gebäude);
+                }
+            }
         }
 
         private void ViewModel_OnViewEvent(object? sender, ViewEventArgs e)
@@ -84,6 +106,7 @@ namespace PhoenixWPF.Pages
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             LoadEigenschaftler();
+            SynchSelected();
         }
 
         private void SaveBauwerknamen( Gebäude gebäude, string neuerNamen)
@@ -134,7 +157,7 @@ namespace PhoenixWPF.Pages
                 if (row != null && row.Item != null && row.Item is Gebäude gebäude)
                 {
                     // Get the data item corresponding to the row
-                    Program.Main.Instance.Map?.Goto(gebäude);
+                    Program.Main.Instance.Spiel?.SelectGemark(gebäude);
 
                 }
             }

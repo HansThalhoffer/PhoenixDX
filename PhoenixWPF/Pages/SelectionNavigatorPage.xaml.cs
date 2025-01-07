@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.dbErkenfara;
+using PhoenixModel.dbZugdaten;
 using PhoenixWPF.Helper;
 using PhoenixWPF.Program;
 using System;
@@ -40,14 +41,14 @@ namespace PhoenixWPF.Pages
         {
             Main.Instance.SelectionHistory.NavigateBack();
             if (Main.Instance.SelectionHistory.Current is KleinfeldPosition pos)
-                Program.Main.Instance.Map?.Goto(pos);
+                Program.Main.Instance.Spiel?.SelectGemark(pos);
         }
 
         private void ForwardButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             Main.Instance.SelectionHistory.NavigateForward();
             if (Main.Instance.SelectionHistory.Current is KleinfeldPosition pos)
-                Program.Main.Instance.Map?.Goto(pos);
+                Program.Main.Instance.Spiel?.SelectGemark(pos);
         }
     }
 }

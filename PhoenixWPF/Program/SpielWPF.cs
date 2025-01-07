@@ -108,6 +108,24 @@ namespace PhoenixWPF.Program
             }
         }
 
+        public void SelectGemark(KleinfeldPosition pos)
+        {
+            if (SharedData.Map != null && SharedData.Map.IsAddingCompleted)
+            {
+                Main.Instance.Map?.Goto(pos);
+                if (pos is ISelectable select)
+                    Main.Instance.SelectionHistory.Current = select;
+            }
+        }
+
+
+        public void Goto(KleinfeldPosition pos)
+        {
+            SelectGemark(pos);
+        }
+
+
+
         public void Dispose()
         {  }
     }
