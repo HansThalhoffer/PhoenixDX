@@ -27,7 +27,7 @@
                    Foreground="BlanchedAlmond"
                    HorizontalAlignment="Center" 
                    VerticalAlignment="Center"
-                   FontSize="12" />
+                   FontSize="15" />
 
         <Button x:Name="Forward" Content="&gt;&gt;"
                 Click="ForwardButton_Click"

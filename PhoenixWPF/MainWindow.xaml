@@ -5,7 +5,7 @@
         Title="Phoenix WPF App" Height="1080" Width="1920">
     <Window.Resources>
         <ResourceDictionary>
-            
+
         </ResourceDictionary>
     </Window.Resources>
 
@@ -51,7 +51,7 @@
             </Grid.RowDefinitions>
 
             <!-- Left Main Window -->
-                <Frame Grid.Column="0" Grid.Row="0"  Source="Erkenfara.xaml"/>
+            <Frame Grid.Column="0" Grid.Row="0"  Source="Erkenfara.xaml"/>
             <!-- Left-to-Right Splitter -->
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
 
@@ -60,13 +60,11 @@
                 <Grid.RowDefinitions>
                     <!-- Top TabControl -->
                     <RowDefinition Height="1*" />
-                    <!-- Selection Navigator -->
-                    <RowDefinition Height="20" />
                     <!-- Splitter  -->
                     <RowDefinition Height="5" />
                     <!-- Bottom TabControl -->
                     <RowDefinition Height="1*" />
-                    
+
                 </Grid.RowDefinitions>
 
                 <!-- Top TabControl -->
@@ -86,30 +84,31 @@
                     <TabItem Header="Optionen" Name="Optionen">
                         <Frame Source="Pages/OptionsPage.xaml" />
                     </TabItem>
-                    
                 </TabControl>
-
-                <!-- Selection Navigator -->
-                <Frame Grid.Row="1" Height="20" Source="Pages/SelectionNavigatorPage.xaml" />
 
                 <!-- Splitter -->
-                <GridSplitter Grid.Row="2" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
-              
-                <!-- Bottom TabControl -->
-                <TabControl Grid.Row="3" Margin="5" Name="BottomTabControl">
-                    <TabItem Header="Eigenschaften" Name="Eigenschaften">
-                        <Frame Source="Pages/PropertyListPage.xaml" />
-                    </TabItem>
-                    <TabItem Header="Infos" Name="Informationen">
-                        <Frame Source="Pages/LogPage.xaml" />
-                    </TabItem>
-                    <TabItem Header="Figuren" Name="FigurenAuswahl">
-                        <Frame Source="Pages/SelectFigurPage.xaml" />
-                    </TabItem>
-                    <TabItem Header="Rüstorte" Name="RüstortAuswahl">
-                        <Frame Source="Pages/SelectRüstortPage.xaml" />
-                    </TabItem>
-                </TabControl>
+                <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+
+                <StackPanel Grid.Row="2" Orientation="Vertical">
+                    <!-- Selection Navigator -->
+                    <Frame Grid.Row="1" Height="20" Source="Pages/SelectionNavigatorPage.xaml" />
+
+                    <!-- Bottom TabControl -->
+                    <TabControl Grid.Row="3" Margin="5" Name="BottomTabControl">
+                        <TabItem Header="Eigenschaften" Name="Eigenschaften">
+                            <Frame Source="Pages/PropertyListPage.xaml" />
+                        </TabItem>
+                        <TabItem Header="Infos" Name="Informationen">
+                            <Frame Source="Pages/LogPage.xaml" />
+                        </TabItem>
+                        <TabItem Header="Figuren" Name="FigurenAuswahl">
+                            <Frame Source="Pages/SelectFigurPage.xaml" />
+                        </TabItem>
+                        <TabItem Header="Rüstorte" Name="RüstortAuswahl">
+                            <Frame Source="Pages/SelectRüstortPage.xaml" />
+                        </TabItem>
+                    </TabControl>
+                </StackPanel>
             </Grid>
         </Grid>
     </DockPanel>
