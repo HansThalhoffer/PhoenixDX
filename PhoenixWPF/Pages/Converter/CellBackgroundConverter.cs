@@ -15,7 +15,7 @@ namespace PhoenixWPF.Pages.Converter
 {
     public class CellBackgroundConverter : IMultiValueConverter
     {
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        public object? Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values.Length < 2 || values[0] == null | values[1] == null )
                 return Brushes.Transparent;
@@ -41,7 +41,14 @@ namespace PhoenixWPF.Pages.Converter
                     {
                         return Brushes.Black;
                     }
-                }               
+                }
+                if (values[0] is Gebäude gebäude)
+                {
+                    if (cell.Column != null && cell.Column.Header != null && cell.Column.Header.ToString() == "Bauwerknamen")
+                    {
+                        return Brushes.Black;
+                    }
+                }
             }
 
             return Brushes.Transparent; // Default background

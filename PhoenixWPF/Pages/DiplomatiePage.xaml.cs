@@ -66,8 +66,7 @@ namespace PhoenixWPF.Pages
                 string name = eig.Name;
                 int index = eigList.IndexOf(eig);
                 DataGridColumn? column = null;
-                if (name.EndsWith("recht") )//|| name.EndsWith("recht_von"))
-                
+                if (name.EndsWith("recht") || name.EndsWith("recht_von"))
                 {
                      var templColumn = new DataGridTemplateColumn
                      {

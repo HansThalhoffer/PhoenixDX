@@ -27,6 +27,28 @@
                             </MultiBinding>
                         </Setter.Value>
                     </Setter>
+                    <!-- Trigger for selected state -->
+                    <Style.Triggers>
+                        <!-- Selected and Focused -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="True" />
+                                <Condition Property="IsKeyboardFocusWithin" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+                        </MultiTrigger>
+
+                        <!-- Selected but Not Focused -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="True" />
+                                <Condition Property="IsKeyboardFocusWithin" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
+                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+                        </MultiTrigger>
+                    </Style.Triggers>
                 </Style>
             </DataGrid.CellStyle>
         </DataGrid>
