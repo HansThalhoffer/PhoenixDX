@@ -2,6 +2,7 @@
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
 using PhoenixModel.View;
+using PhoenixWPF.Pages.Converter;
 using PhoenixWPF.Program;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,6 @@ namespace PhoenixWPF.Pages
     {
         public DiplomatiePage()
         {
-            InitializeComponent();
             InitializeComponent();
             ViewModel.OnViewEvent += ViewModel_OnViewEvent;
         }
@@ -65,14 +65,41 @@ namespace PhoenixWPF.Pages
             {
                 string name = eig.Name;
                 int index = eigList.IndexOf(eig);
-                DataGridTextColumn column = new DataGridTextColumn
+                DataGridColumn column = null;
+                if (name.EndsWith("recht") || name.EndsWith("recht_von"))
+                
                 {
-                    Header = name,
-                    Binding = new System.Windows.Data.Binding($"Eigenschaften[{index}].Wert"),
-                    IsReadOnly = true
-                };
-               
-                EigenschaftlerDataGrid.Columns.Add(column);
+                     var templColumn = new DataGridTemplateColumn
+                     {
+                        Header = name,
+                        IsReadOnly = false
+                    };
+                    column = templColumn;
+                    var cellTemplate = new DataTemplate();
+                    var checkBoxFactory = new FrameworkElementFactory(typeof(CheckBox));
+                    checkBoxFactory.SetBinding(CheckBox.IsCheckedProperty, new Binding(name) //  new Binding($"Eigenschaften[{index}].Wert") 
+                    { 
+                        Converter = new IntToBoolConverter() 
+                    });
+                    checkBoxFactory.SetValue(CheckBox.HorizontalAlignmentProperty, HorizontalAlignment.Center);
+                    checkBoxFactory.SetBinding(CheckBox.IsEnabledProperty, new Binding(".") 
+                    {
+                        Converter = new AutorizedConverter()
+                    });
+                    cellTemplate.VisualTree = checkBoxFactory;
+                    templColumn.CellTemplate = cellTemplate;
+                }
+                else
+                {
+                    column = new DataGridTextColumn
+                    {
+                        Header = name,
+                        Binding = new System.Windows.Data.Binding($"Eigenschaften[{index}].Wert"),
+                        IsReadOnly = true
+                    };
+                }
+                if (column != null) 
+                    EigenschaftlerDataGrid.Columns.Add(column);
             }
 
             EigenschaftlerDataGrid.ItemsSource = EigenschaftlerList;

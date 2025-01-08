@@ -1,7 +1,10 @@
 ﻿using Microsoft.Win32;
 using PhoenixModel.Database;
+using PhoenixWPF.Database;
 using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace PhoenixWPF.Helper
 {
@@ -9,7 +12,7 @@ namespace PhoenixWPF.Helper
     {
         // Vorbereitung, um auf einem bestimmten USB Stick die verschlüsselten Datenbank Passwörter für den Install abzulegen
         // wenn die Passwörter auf dem Stick mit der USB ID verschlüsselt wären, ist eine ausreichende Sicherheit gegeben
-        public static IEnumerable<string>? CheckForPassKeyFile()
+        public static string? CheckForPassKeyFile()
         {
             var drives = DriveInfo.GetDrives();
             foreach (var drive in drives )
@@ -17,31 +20,51 @@ namespace PhoenixWPF.Helper
                 if (drive.DriveType == DriveType.Removable && drive.IsReady)
                 {
                     // Check for a specific file in the root directory
-                    string fileNameToSearch = "phoenix_install.jpk"; // Replace with your file name
-                    string filePath = Path.Combine(drive.RootDirectory.FullName, fileNameToSearch);
-
+                    string filePath = GetInstallFileName(drive);
                     if (File.Exists(filePath))
                     {
-                        var lines = File.ReadAllLines(filePath);
-                        List<string> result = new List<string>();
-                        string? passkey =$"{drive.VolumeLabel}{drive.DriveFormat}{drive.TotalFreeSpace}";
+                        string passkey = CreatePassKey(drive);
                         if (string.IsNullOrEmpty(passkey) == false)
                         {
-                            foreach (var line in lines)
-                            {
-                                var dec = PasswordHolder.Decrypt(line, passkey);
-                                if (dec != null)
-                                    result.Add(dec);
-                            }
+                            // Read bytes from file
+                            string content = File.ReadAllText(filePath);
+
+                            // Convert bytes back to string
+                            string dec = Decrypt(content, passkey);
+                            return dec;
                         }
-                        return result.Count > 0 ? result:null;
                     }
                 }
             }
             return null;
         }
 
-        public static bool WritePassKeyFile(IEnumerable<string> lines)
+        // die Totalsize ist bei fast jedem USB Stick unterschiedlich genug für die Menge an Sicherheit für diese Passwörter
+        // der Aufwand die Passwörter per Tool aus den AccessDB oder der alten Executable zu holen ist viel geringer
+        private static string CreatePassKey(DriveInfo drive)
+        {
+            return $"{drive.VolumeLabel}{drive.DriveFormat}{drive.TotalSize}";
+        }
+
+        #region crypt
+        public static string Encrypt(string plainText, string passkey)
+        {
+            return PasswordHolder.Encrypt(plainText, passkey);
+        }
+
+        public static string Decrypt(string cipherText, string passkey)
+        {
+            return PasswordHolder.Decrypt(cipherText, passkey);
+        }
+        #endregion
+
+        private static string GetInstallFileName(DriveInfo drive)
+        {
+            string fileNameToSearch = "phoenix_install.jpk"; // Replace with your file name
+            return Path.Combine(drive.RootDirectory.FullName, fileNameToSearch);
+        }
+
+        public static bool WritePassKeyFile(string content)
         {
             var drives = DriveInfo.GetDrives();
             foreach (var drive in drives)
@@ -49,23 +72,17 @@ namespace PhoenixWPF.Helper
                 if (drive.DriveType == DriveType.Removable && drive.IsReady)
                 {
                     // Check for a specific file in the root directory
-                    string fileNameToSearch = "phoenix_install.jpk"; // Replace with your file name
-                    string filePath = Path.Combine(drive.RootDirectory.FullName, fileNameToSearch);
+                    string filePath = GetInstallFileName(drive);
 
                     if (File.Exists(filePath))
                         File.Delete(filePath);
 
-                    List<string> result = [];
-                    string? passkey = $"{drive.VolumeLabel}{drive.DriveFormat}{drive.TotalFreeSpace}";
+                    string passkey = CreatePassKey(drive);
                     if (string.IsNullOrEmpty(passkey) == false)
                     {
-                        foreach (var line in lines)
-                        {
-                            var dec = PasswordHolder.Encrypt(passkey, line);
-                            if (dec != null)
-                                result.Add(dec);
-                        }
-                        File.WriteAllLines(filePath, result);
+                        string enc = Encrypt(content, passkey);
+                        // Write bytes to file
+                        File.WriteAllText(filePath, enc);
                         return true;
                     }
                 }

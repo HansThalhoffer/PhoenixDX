@@ -3,13 +3,33 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:converter="clr-namespace:PhoenixWPF.Pages.Converter"
       xmlns:local="clr-namespace:PhoenixWPF.Pages"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="DiplomatiePage">
-
+    <Page.Resources>
+        <!-- Register the converter -->
+        <converter:CellBackgroundConverter x:Key="CellBackgroundConverter"/>
+        <converter:IntToBoolConverter x:Key="IntToBoolConverter" />
+    </Page.Resources>
     <Grid>
         <DataGrid Name="EigenschaftlerDataGrid" AutoGenerateColumns="False"
-           CellEditEnding="EigenschaftlerDataGrid_CellEditEnding" />
+           CellEditEnding="EigenschaftlerDataGrid_CellEditEnding" >
+            <DataGrid.CellStyle>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <MultiBinding Converter="{StaticResource CellBackgroundConverter}">
+                                <!-- Bind the entire row data object -->
+                                <Binding Path="." />
+                                <!-- Bind the column header -->
+                                <Binding Path="." RelativeSource="{RelativeSource Self}" />
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </DataGrid.CellStyle>
+        </DataGrid>
     </Grid>
 </Page>

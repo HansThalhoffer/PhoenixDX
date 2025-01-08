@@ -16,6 +16,7 @@ using PhoenixModel.View;
 using PhoenixWPF.Database;
 using PhoenixWPF.Dialogs;
 using PhoenixWPF.Helper;
+using SharpDX;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrayNotify;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using static PhoenixModel.Database.PasswordHolder;
@@ -39,19 +40,51 @@ namespace PhoenixWPF.Program
 
         public void CreateInstallUbStick()
         {
-            List<PasswortProvider.Passwort> pwList = [];
-            pwList.Add(new PasswortProvider.Passwort(dbCrossRef,Settings.UserSettings.PasswordCrossRef));
-            pwList.Add(new PasswortProvider.Passwort(ErkenfaraKarte, Settings.UserSettings.PasswordKarte));
-            pwList.Add(new PasswortProvider.Passwort(PZE, Settings.UserSettings.PasswordPZE));
-            if (PasswortProvider.WritePasswordsToUSB(pwList) == false)
+            var store = new ObjectStore();
+            var userSettings = new UserSettings
             {
-                SpielWPF.LogError("Speichern auf einem USB Stick fehlgeschlagen", "Es war kein USB Stick vorhanden oder er wurde nicht erkannt. Bitte erneut probieren");
+                PasswordCrossRef = new PasswordHolder((EncryptedString)Settings.UserSettings.PasswordCrossRef).DecryptedPassword,
+                PasswordKarte = new PasswordHolder((EncryptedString)Settings.UserSettings.PasswordKarte).DecryptedPassword,
+                PasswordPZE = new PasswordHolder((EncryptedString)Settings.UserSettings.PasswordPZE).DecryptedPassword,    
+            };
+
+            store.Add(userSettings);
+
+            // Serialize the store to a JSON string
+            string jsonString = store.Serialize();
+            StorageSystem.WritePassKeyFile(jsonString);
+        }
+
+        public void TryLoadFromUSBStick()
+        {
+            if (string.IsNullOrEmpty(Settings.UserSettings.PasswordCrossRef) == false)
+            {
+                try
+                {
+                    var jsonString = StorageSystem.CheckForPassKeyFile();
+                    if (string.IsNullOrEmpty(jsonString) == false)
+                    {
+                        // Serialize the store to a JSON string
+                        // Deserialize the store from the JSON string
+                        var newStore = new ObjectStore();
+                        newStore.Deserialize(jsonString);
+
+                        // Retrieve the UserSettings from the new store
+                        var loadedSettings = newStore.Get<UserSettings>();
+                        Settings.UserSettings.PasswordCrossRef = new PasswordHolder((string)loadedSettings.PasswordCrossRef).EncryptedPasswordBase64;
+                        Settings.UserSettings.PasswordKarte = new PasswordHolder((string)loadedSettings.PasswordKarte).EncryptedPasswordBase64;
+                        Settings.UserSettings.PasswordPZE = new PasswordHolder((string)loadedSettings.PasswordPZE).EncryptedPasswordBase64;
+                    }
+                }
+                catch { } // wenn das mit den Passwötern im USB Stick nicht klappt, dann sind wir schön schweigsam
             }
         }
+
 
         public void InitInstance()
         {
             Settings.InitializeSettings();
+            TryLoadFromUSBStick();
             LoadCrossRef(); // die referenzen vor der Karte laden, auch wenn es dann weniger zu sehen gibt - insgesamt geht das schneller
             LoadKarte();
             LoadPZE();
