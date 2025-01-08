@@ -24,7 +24,7 @@ namespace PhoenixWPF.Program
         public void Load()
         {
             PasswordHolder holder = new (_encryptedpassword);
-            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptPassword()))
+            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptedPassword))
             {
                 if (connector?.Open() == false)
                     return;
@@ -100,7 +100,7 @@ namespace PhoenixWPF.Program
         public void Save(IDatabaseTable table)
         {
             PasswordHolder holder = new(_encryptedpassword);
-            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptPassword()))
+            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptedPassword))
             {
                 if (connector?.Open() == false)
                     return;
@@ -126,14 +126,12 @@ namespace PhoenixWPF.Program
         protected override void LoadInBackground()
         {
             PasswordHolder holder = new(_encryptedpassword);
-            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptPassword()))
+            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptedPassword))
             {
                 if (connector?.Open() == false)
                     return;
                 try
                 {
-                    Load<ReichCrossref>(connector, ref SharedData.Diplomatie, Enum.GetNames(typeof(ReichCrossref.Felder)));
-
                 }
                 catch (Exception ex)
                 {

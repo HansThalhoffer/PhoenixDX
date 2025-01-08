@@ -47,6 +47,7 @@ namespace PhoenixWPF
             }
         }
 
+        
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             if (sender is MenuItem menuItem)
@@ -61,6 +62,9 @@ namespace PhoenixWPF
                         break;
                     case "Truppen":
                         new TruppenEntwicklungDialog().Show();
+                        break;
+                    case "InstallUSB":
+                        Main.Instance.CreateInstallUbStick();
                         break;
                 }
             }

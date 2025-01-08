@@ -48,7 +48,7 @@ namespace PhoenixWPF.Database
         public void Save(IDatabaseTable table)
         {
             PasswordHolder holder = new(_encryptedpassword);
-            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptPassword()))
+            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptedPassword))
             {
                 if (connector?.Open() == false)
                     return;
@@ -71,7 +71,7 @@ namespace PhoenixWPF.Database
         public void Load()
         {
             PasswordHolder holder = new(_encryptedpassword);
-            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptPassword()))
+            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptedPassword))
             {
                 if (connector?.Open() == false)
                     return;
@@ -94,7 +94,7 @@ namespace PhoenixWPF.Database
         protected override void LoadInBackground()
         {
             PasswordHolder holder = new(_encryptedpassword);
-            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptPassword()))
+            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptedPassword))
             {
                 if (connector?.Open() == false)
                     return;
@@ -143,7 +143,7 @@ namespace PhoenixWPF.Database
             { 
                 string aktuellesDatenbank= System.IO.Path.Combine(zugdatenPath, alteZugdaten);
                 aktuellesDatenbank = System.IO.Path.Combine(aktuellesDatenbank, databaseFileName);
-                using (AccessDatabase connector = new(databaseLocation, holder.DecryptPassword()))
+                using (AccessDatabase connector = new(databaseLocation, holder.DecryptedPassword))
                 {
                     if (connector?.Open() == false)
                         return result;
@@ -207,7 +207,7 @@ namespace PhoenixWPF.Database
                 aktuelleDatenbank = System.IO.Path.Combine(aktuelleDatenbank, databaseFileName);
                 try
                 {
-                    using (AccessDatabase connector = new(aktuelleDatenbank, holder.DecryptPassword()))
+                    using (AccessDatabase connector = new(aktuelleDatenbank, holder.DecryptedPassword))
                     {
                         if (connector?.Open() == false)
                             return result;

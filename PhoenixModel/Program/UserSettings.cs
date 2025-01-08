@@ -16,16 +16,16 @@ namespace PhoenixModel.Program
     /// </summary>
     public class UserSettings : INotifyPropertyChanged
     {
-        private string _databaseLocationKarte = "_Data\\Kartendaten\\Erkenfarakarte.mdb";
+        private string _databaseLocationKarte = string.Empty;
         private string _passwordKarte = string.Empty; 
-        private string _databaseLocationPZE = "_Data\\Database\\PZE.mdb";
+        private string _databaseLocationPZE = string.Empty;
         private string _passwordPZE = string.Empty;
-        private string _defaultValuesReiche = "_Data\\EinstellungenReiche.txt";
-        private string _databaseLocationCrossRef = "_Data\\Crossreferenzen\\crossref.mdb";
+        private string _defaultValuesReiche = string.Empty;
+        private string _databaseLocationCrossRef = string.Empty;
         private string _passwordCrossRef = string.Empty ;
-        private string _databaseLocationZugdaten = "_Data\\Zudaten\\reich.mdb";
+        private string _databaseLocationZugdaten = string.Empty;
         private string _passwordReich = string.Empty;
-        private string _databaseLocationFeinde = "Feindaufklaerung\\Feindaufklaerung.dat";
+        private string _databaseLocationFeinde = string.Empty;
         private int _selectedReich = -1;
         private int _selectedZug = -1;
 

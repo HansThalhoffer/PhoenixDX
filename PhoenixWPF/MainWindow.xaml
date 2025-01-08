@@ -30,6 +30,9 @@
             <MenuItem Header="Analysen">
                 <MenuItem Header="Truppenentwicklung" IsCheckable="False"  Click="MenuItem_Click" Tag="Truppen" />
             </MenuItem>
+            <MenuItem Header="Extras">
+                <MenuItem Header="Erstelle USB Stick für Installation" IsCheckable="False"  Click="MenuItem_Click" Tag="InstallUSB" />
+            </MenuItem>
         </Menu>
 
         <!-- Main Grid -->

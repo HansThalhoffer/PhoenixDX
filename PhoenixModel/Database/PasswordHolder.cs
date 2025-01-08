@@ -10,20 +10,31 @@ namespace PhoenixModel.Database
         public class EncryptedString
         {
             [JsonInclude] 
-            protected string _value;
+            protected string _value = string.Empty;
             
             public EncryptedString() { _value = string.Empty; }
 
-            public EncryptedString(string value)
+            public EncryptedString(string? value)
             {
-                this._value = value;
+                if (value!= null)
+                    this._value = value;
             }
-            public static implicit operator string(EncryptedString d)
+            /// <summary>
+            /// konvertierung von EncryptedString zu string
+            /// erlaubt die Benutzung wie ein normaler String zb bei string.IsNullOrEmpty
+            /// </summary>
+            /// <param name="d"></param>
+            public static implicit operator string(EncryptedString? d)
             {
+                if (d == null) 
+                    return string.Empty;
                 return d._value;
             }
-
-            public static implicit operator EncryptedString(string d)
+            /// <summary>
+            /// konvertierung von string zu EncryptedString
+            /// </summary>
+            /// <param name="d"></param>
+            public static implicit operator EncryptedString(string? d)
             {
                 return new EncryptedString(d);
             }
@@ -35,19 +46,19 @@ namespace PhoenixModel.Database
         }
 
         [JsonIgnore] 
-        private EncryptedString encryptedPasswordBase64;
+        private EncryptedString _encryptedPasswordBase64;
 
         public PasswordHolder()
-        { encryptedPasswordBase64 = string.Empty; }
+        { _encryptedPasswordBase64 = string.Empty; }
 
         public PasswordHolder(string plainPassword)
         { 
-            encryptedPasswordBase64 = EncryptPassword(plainPassword); 
+            _encryptedPasswordBase64 = EncryptPassword(plainPassword); 
         }
 
         public PasswordHolder(EncryptedString password)
         {
-            encryptedPasswordBase64 = password;
+            _encryptedPasswordBase64 = password;
         }
 
         // Constructor that accepts a password
@@ -58,22 +69,18 @@ namespace PhoenixModel.Database
                 // Show dialog to enter password
                 password = provider.Password;
                 // Encrypt the password using the computer name
-                encryptedPasswordBase64 = EncryptPassword(password);
+                _encryptedPasswordBase64 = EncryptPassword(password);
             }
             else
             {
-                encryptedPasswordBase64 = password;
+                _encryptedPasswordBase64 = password;
             }
         }
 
-        // Method to encrypt password using computer name
-        private string EncryptPassword(string password)
+        public static string Encrypt(string password, string passkey)
         {
-            // Get computer name
-            string computerName = Environment.MachineName;
-
             // Derive key from computer name
-            byte[] key = DeriveKeyFromString(computerName);
+            byte[] key = DeriveKeyFromString(passkey);
 
             // Encrypt password
             using (Aes aes = Aes.Create())
@@ -107,16 +114,30 @@ namespace PhoenixModel.Database
             }
         }
 
+        // Method to encrypt password using computer name
+        private string EncryptPassword(string password)
+        {
+            // Get computer name
+            return Encrypt(password, Environment.MachineName);
+        }
+
+
+        public string DecryptedPassword
+        {
+            get
+            { // Get computer name
+                return Decrypt(_encryptedPasswordBase64, Environment.MachineName);
+            }
+        }
+            
         // Method to decrypt password
-        public string? DecryptPassword()
+        public static string Decrypt(string encryptedPasswordBase64, string passkey)
         {
             try
             {
-                // Get computer name
-                string computerName = Environment.MachineName;
-
+              
                 // Derive key from computer name
-                byte[] key = DeriveKeyFromString(computerName);
+                byte[] key = DeriveKeyFromString(passkey);
 
                 // Convert encrypted password from base64
                 byte[] encryptedPasswordBytes = Convert.FromBase64String(encryptedPasswordBase64);
@@ -149,13 +170,13 @@ namespace PhoenixModel.Database
             catch (Exception ex)
             {
                 Console.WriteLine("Error decrypting password: " + ex.Message);
-                return null;
+                return string.Empty;
             }
         }
 
         
         // Method to derive key from string
-        private byte[] DeriveKeyFromString(string input)
+        private static byte[] DeriveKeyFromString(string input)
         {
             // Use a fixed salt value (consider using a unique salt in production)
             byte[] salt = Encoding.UTF8.GetBytes("Theostelos");
@@ -175,8 +196,8 @@ namespace PhoenixModel.Database
         [JsonInclude]
         public EncryptedString EncryptedPasswordBase64
         {
-            get { return encryptedPasswordBase64; }
-            set { encryptedPasswordBase64 = value; }
+            get { return _encryptedPasswordBase64; }
+            set { _encryptedPasswordBase64 = value; }
         }
     }
 }

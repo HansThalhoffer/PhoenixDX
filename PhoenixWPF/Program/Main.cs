@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,6 +37,17 @@ namespace PhoenixWPF.Program
 
         static public Main Instance { get { return _instance; } }
 
+        public void CreateInstallUbStick()
+        {
+            List<PasswortProvider.Passwort> pwList = [];
+            pwList.Add(new PasswortProvider.Passwort(dbCrossRef,Settings.UserSettings.PasswordCrossRef));
+            pwList.Add(new PasswortProvider.Passwort(ErkenfaraKarte, Settings.UserSettings.PasswordKarte));
+            pwList.Add(new PasswortProvider.Passwort(PZE, Settings.UserSettings.PasswordPZE));
+            if (PasswortProvider.WritePasswordsToUSB(pwList) == false)
+            {
+                SpielWPF.LogError("Speichern auf einem USB Stick fehlgeschlagen", "Es war kein USB Stick vorhanden oder er wurde nicht erkannt. Bitte erneut probieren");
+            }
+        }
 
         public void InitInstance()
         {
@@ -120,7 +132,7 @@ namespace PhoenixWPF.Program
                     int r = Settings.UserSettings.SelectedReich;
                     EncryptedString encrypted = Settings.UserSettings.PasswordReich;
                     PasswordHolder holder = new(encrypted);
-                    var pw = holder.DecryptPassword();
+                    var pw = holder.DecryptedPassword;
                     string zugdatenPath = Helper.StorageSystem.ExtractBasePath(Settings.UserSettings.DatabaseLocationCrossRef, "_Data");
                     zugdatenPath = System.IO.Path.Combine(zugdatenPath, "Zugdaten");
                     StartDialog dialog = new StartDialog(nationen, r, pw, zugdatenPath);
@@ -213,7 +225,7 @@ namespace PhoenixWPF.Program
                 return;
 
             databaseLocation = StorageSystem.LocateFile(databaseLocation);
-            PasswordHolder pwdHolder = new PasswordHolder(encryptedPassword, new DatabaseLoader.PasswortProvider(databaseName));
+            PasswordHolder pwdHolder = new PasswordHolder(encryptedPassword, new PasswortProvider(databaseName));
             encryptedPassword = pwdHolder.EncryptedPasswordBase64;
             using (ILoadableDatabase db = dbCreator(databaseLocation, encryptedPassword))
             {
@@ -229,13 +241,16 @@ namespace PhoenixWPF.Program
             return new CrossRef(databaseLocation, encryptedPassword);
         }
 
+        private const string dbCrossRef = "dbCrossRef";
         public void LoadCrossRef(bool inBackground = false)
         {
             if (Settings == null)
                 return;
             string databaseLocation = Settings.UserSettings.DatabaseLocationCrossRef;
+            if (string.IsNullOrEmpty(databaseLocation) && string.IsNullOrEmpty(Settings.DataRootPath) == false)
+                databaseLocation = Path.Combine(Settings.DataRootPath, AppSettings.DatabaseLocationCrossRef);
             string encryptedPassword = Settings.UserSettings.PasswordCrossRef;
-            Load(ref databaseLocation, ref encryptedPassword, CreateCrossRef, "dbCrossRef", inBackground ? OnLoadCompleted : null);
+            Load(ref databaseLocation, ref encryptedPassword, CreateCrossRef, dbCrossRef, inBackground ? OnLoadCompleted : null);
             Settings.UserSettings.DatabaseLocationCrossRef = databaseLocation;
             Settings.UserSettings.PasswordCrossRef = encryptedPassword;
         }
@@ -246,14 +261,16 @@ namespace PhoenixWPF.Program
         {
             return new ErkenfaraKarte(databaseLocation, encryptedPassword);
         }
-
+        private const string ErkenfaraKarte = "ErkenfaraKarte";
         public void LoadKarte(bool inBackground = false)
         {
             if (Settings == null)
                 return;
             string databaseLocation = Settings.UserSettings.DatabaseLocationKarte;
+            if (string.IsNullOrEmpty(databaseLocation) && string.IsNullOrEmpty(Settings.DataRootPath) == false)
+                databaseLocation = Path.Combine(Settings.DataRootPath, AppSettings.DatabaseLocationKarte);
             string encryptedPassword = Settings.UserSettings.PasswordKarte;
-            Load(ref databaseLocation, ref encryptedPassword, CreateKarte, "ErkenfaraKarte", inBackground ? OnLoadCompleted : null);
+            Load(ref databaseLocation, ref encryptedPassword, CreateKarte, ErkenfaraKarte, inBackground ? OnLoadCompleted : null);
             Settings.UserSettings.DatabaseLocationKarte = databaseLocation;
             Settings.UserSettings.PasswordKarte = encryptedPassword;
         }
@@ -263,14 +280,16 @@ namespace PhoenixWPF.Program
         {
             return new PZE(databaseLocation, encryptedPassword);
         }
-
+        private const string PZE = "PZE";
         public void LoadPZE(bool inBackground = false)
         {
             if (Settings == null)
                 return;
             string databaseLocation = Settings.UserSettings.DatabaseLocationPZE;
+            if (string.IsNullOrEmpty(databaseLocation) && string.IsNullOrEmpty(Settings.DataRootPath) == false)
+                databaseLocation = Path.Combine(Settings.DataRootPath, AppSettings.DatabaseLocationPZE);
             string encryptedPassword = Settings.UserSettings.PasswordPZE;
-            Load(ref databaseLocation, ref encryptedPassword, CreatePZE, "PZ", inBackground ? OnLoadCompleted : null);
+            Load(ref databaseLocation, ref encryptedPassword, CreatePZE, PZE, inBackground ? OnLoadCompleted : null);
             Settings.UserSettings.DatabaseLocationPZE = databaseLocation;
             Settings.UserSettings.PasswordPZE = encryptedPassword;
         }
@@ -286,7 +305,12 @@ namespace PhoenixWPF.Program
                 return;
             string databaseLocation = Settings.UserSettings.DatabaseLocationZugdaten;
             string encryptedPassword = Settings.UserSettings.PasswordReich;
-            var reich = SharedData.Nationen.ElementAt(Settings.UserSettings.SelectedReich);
+            var reich = ViewModel.SelectedNation;
+            if (reich == null)
+            {
+                SpielWPF.LogError("Zugdaten: Es wurde kein Reich ausgewählt", "Beim Laden ist ein Fehler aufgetregten, da kein Reich ausgewählt wurde. Daher ist der Ordner für die Zugdaten unbekannt.");
+                return;
+            }
             Load(ref databaseLocation, ref encryptedPassword, CreateZugdaten, $"{reich.DBname}", inBackground ? OnLoadCompleted : null);
             Settings.UserSettings.DatabaseLocationZugdaten = databaseLocation;
             Settings.UserSettings.PasswordReich = encryptedPassword;

@@ -1,55 +1,78 @@
-﻿using System;
-using System.IO;
-using Microsoft.Win32;
-using System.Management;
+﻿using Microsoft.Win32;
 using PhoenixModel.Database;
+using System.IO;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace PhoenixWPF.Helper
 {
     public class StorageSystem
     {
-        //  Einen USB Port überwachen, um festzustellen, ob der PASSWORT Key darin liegt oder reingesteckt wurde
-        public static void WatchForUsbChanges()
-        {
-            var watcher = new ManagementEventWatcher();
-            var query = new WqlEventQuery("SELECT * FROM Win32_DeviceChangeEvent WHERE EventType = 2"); // EventType 2 = Device arrival
-            watcher.EventArrived += new EventArrivedEventHandler(DeviceInserted);
-            watcher.Query = query;
-            watcher.Start();
-        }
-
         // Vorbereitung, um auf einem bestimmten USB Stick die verschlüsselten Datenbank Passwörter für den Install abzulegen
         // wenn die Passwörter auf dem Stick mit der USB ID verschlüsselt wären, ist eine ausreichende Sicherheit gegeben
-        public static void CheckForPassKey()
+        public static IEnumerable<string>? CheckForPassKeyFile()
         {
-            Console.WriteLine("Device inserted. Checking for USB drives...");
-            foreach (var drive in DriveInfo.GetDrives())
+            var drives = DriveInfo.GetDrives();
+            foreach (var drive in drives )
             {
                 if (drive.DriveType == DriveType.Removable && drive.IsReady)
                 {
-                    Console.WriteLine($"Found USB Drive: {drive.Name}");
-                    Console.WriteLine($"Drive Label: {drive.VolumeLabel}");
-
                     // Check for a specific file in the root directory
-                    string fileNameToSearch = "example.txt"; // Replace with your file name
+                    string fileNameToSearch = "phoenix_install.jpk"; // Replace with your file name
                     string filePath = Path.Combine(drive.RootDirectory.FullName, fileNameToSearch);
 
                     if (File.Exists(filePath))
                     {
-                        Console.WriteLine($"File '{fileNameToSearch}' found on the USB drive!");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"File '{fileNameToSearch}' not found on the USB drive.");
+                        var lines = File.ReadAllLines(filePath);
+                        List<string> result = new List<string>();
+                        string? passkey =$"{drive.VolumeLabel}{drive.DriveFormat}{drive.TotalFreeSpace}";
+                        if (string.IsNullOrEmpty(passkey) == false)
+                        {
+                            foreach (var line in lines)
+                            {
+                                var dec = PasswordHolder.Decrypt(line, passkey);
+                                if (dec != null)
+                                    result.Add(dec);
+                            }
+                        }
+                        return result.Count > 0 ? result:null;
                     }
                 }
             }
+            return null;
         }
 
-        private static void DeviceInserted(object sender, EventArrivedEventArgs e)
+        public static bool WritePassKeyFile(IEnumerable<string> lines)
         {
-            CheckForPassKey();
+            var drives = DriveInfo.GetDrives();
+            foreach (var drive in drives)
+            {
+                if (drive.DriveType == DriveType.Removable && drive.IsReady)
+                {
+                    // Check for a specific file in the root directory
+                    string fileNameToSearch = "phoenix_install.jpk"; // Replace with your file name
+                    string filePath = Path.Combine(drive.RootDirectory.FullName, fileNameToSearch);
+
+                    if (File.Exists(filePath))
+                        File.Delete(filePath);
+
+                    List<string> result = [];
+                    string? passkey = $"{drive.VolumeLabel}{drive.DriveFormat}{drive.TotalFreeSpace}";
+                    if (string.IsNullOrEmpty(passkey) == false)
+                    {
+                        foreach (var line in lines)
+                        {
+                            var dec = PasswordHolder.Encrypt(passkey, line);
+                            if (dec != null)
+                                result.Add(dec);
+                        }
+                        File.WriteAllLines(filePath, result);
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
+
 
         public static string AppSettingsFile(string fileName)
         {

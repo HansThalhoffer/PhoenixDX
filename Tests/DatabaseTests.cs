@@ -69,7 +69,7 @@ namespace Tests
             // Arrange
             PasswordHolder pwdHolder = new PasswordHolder(settings.UserSettings.PasswordKarte, new PasswortProvider());
             settings.UserSettings.PasswordKarte = pwdHolder.EncryptedPasswordBase64;
-            string? databasePassword = pwdHolder.DecryptPassword();
+            string? databasePassword = pwdHolder.DecryptedPassword;
             Assert.NotNull(databasePassword);
             Assert.NotEmpty(databasePassword);
 
@@ -89,7 +89,7 @@ namespace Tests
             EncryptedString expected = "MySecurePassword123!";
             PasswordHolder pwdHolder = new PasswordHolder(expected);
 
-            string? actual  = pwdHolder.DecryptPassword();
+            string? actual  = pwdHolder.DecryptedPassword;
 
             // Assert
             Assert.Equal(expected, actual);
@@ -97,7 +97,7 @@ namespace Tests
             string json = System.Text.Json.JsonSerializer.Serialize(pwdHolder);
             PasswordHolder? deserializedPwdHolder = System.Text.Json.JsonSerializer.Deserialize<PasswordHolder>(json);
 
-            actual = deserializedPwdHolder?.DecryptPassword();
+            actual = deserializedPwdHolder?.DecryptedPassword;
             Assert.Equal(expected, actual);
         }
 

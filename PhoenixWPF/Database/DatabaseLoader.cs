@@ -2,6 +2,7 @@
 using PhoenixModel.dbPZE;
 using PhoenixModel.Helper;
 using PhoenixWPF.Dialogs;
+using PhoenixWPF.Helper;
 using PhoenixWPF.Program;
 using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
@@ -21,22 +22,7 @@ namespace PhoenixWPF.Database
 {
     public abstract class DatabaseLoader
     {
-        public class PasswortProvider : PasswordHolder.IPasswordProvider
-        {
-            string _databaseName = string.Empty;
-            public PasswortProvider(string databaseName)
-            { _databaseName = databaseName; }
-            public EncryptedString Password
-            {
-                get
-                {
-                    PasswordDialog dialog = new PasswordDialog($"Das Passwort für die Datenbank {_databaseName} bitte eingeben");
-                    dialog.ShowDialog();
-                    return dialog.ProvidePassword();
-                }
-            }
-        }
-
+      
         protected delegate T LoadObject<T>(DbDataReader reader);
 
         private void SetDatabaseName<T>(T obj, AccessDatabase? connector)
