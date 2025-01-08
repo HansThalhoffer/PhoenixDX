@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.dbErkenfara;
+using PhoenixModel.dbZugdaten;
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
 using PhoenixModel.View;
@@ -7,10 +8,12 @@ using PhoenixWPF.Program;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -34,11 +37,11 @@ namespace PhoenixWPF.Pages
 
         private void ViewModel_OnViewEvent(object? sender, ViewEventArgs e)
         {
-            if (SharedData.Diplomatie != null && ViewModel.SelectedNation != null &&
-                (e.EventType == ViewEventArgs.ViewEventType.EverythingLoaded ))
+            if (SharedData.Diplomatiechange != null && ViewModel.SelectedNation != null &&
+                (e.EventType == ViewEventArgs.ViewEventType.EverythingLoaded))
             {
                 EigenschaftlerList.Clear();
-                var list = SharedData.Diplomatie.Values;
+                var list = SharedData.Diplomatiechange;
                 if (list != null)
                     EigenschaftlerList.AddRange(list);
                 LoadEigenschaftler();
@@ -52,14 +55,12 @@ namespace PhoenixWPF.Pages
 
             if (EigenschaftlerList == null || EigenschaftlerList.Count == 0)
                 return;
-            string[] toIgnore = {  };
+            string[] toIgnore = { };
             // string[] toIgnore = { };
             List<Eigenschaft> eigList = EigenschaftlerList[0].Eigenschaften;
             List<Eigenschaft> columns = eigList.Where(prop => !toIgnore.Contains(prop.Name)).ToList();
 
-
             EigenschaftlerDataGrid.Columns.Clear();
-
             // Add dynamic columns for Eigenschaften
             foreach (var eig in columns)
             {
@@ -68,20 +69,27 @@ namespace PhoenixWPF.Pages
                 DataGridColumn? column = null;
                 if (name.EndsWith("recht") || name.EndsWith("recht_von"))
                 {
-                     var templColumn = new DataGridTemplateColumn
-                     {
+                    var templColumn = new DataGridTemplateColumn
+                    {
                         Header = name,
                         IsReadOnly = false
                     };
                     column = templColumn;
+
+                    // hier wird ein Datatemplate mit einer Checkbox per Factory gestrickt
                     var cellTemplate = new DataTemplate();
                     var checkBoxFactory = new FrameworkElementFactory(typeof(CheckBox));
                     checkBoxFactory.SetBinding(CheckBox.IsCheckedProperty, new Binding(name) //  new Binding($"Eigenschaften[{index}].Wert") 
-                    { 
-                        Converter = new IntToBoolConverter() 
+                    {
+                        Converter = new IntToBoolConverter(),
+                        Mode = BindingMode.TwoWay,
                     });
+                    checkBoxFactory.AddHandler(CheckBox.CheckedEvent, new RoutedEventHandler(CheckBox_UnChecked));
+                    checkBoxFactory.AddHandler(CheckBox.UncheckedEvent, new RoutedEventHandler(CheckBox_UnChecked));
+                    checkBoxFactory.SetValue(CheckBox.IsEnabledProperty, false);
+                    checkBoxFactory.SetValue(CheckBox.TagProperty, name); // wird nicht verwendet, ist für Debug aber nützlich
                     checkBoxFactory.SetValue(CheckBox.HorizontalAlignmentProperty, HorizontalAlignment.Center);
-                    checkBoxFactory.SetBinding(CheckBox.IsEnabledProperty, new Binding(".") 
+                    checkBoxFactory.SetBinding(CheckBox.IsEnabledProperty, new Binding(".")
                     {
                         Converter = new AutorizedConverter()
                     });
@@ -97,19 +105,71 @@ namespace PhoenixWPF.Pages
                         IsReadOnly = true
                     };
                 }
-                if (column != null) 
+                if (column != null)
                     EigenschaftlerDataGrid.Columns.Add(column);
             }
-
+            // jetzt noch die Datenquelle setzen und los geht's
             EigenschaftlerDataGrid.ItemsSource = EigenschaftlerList;
         }
 
+
+        private void SaveDiplomatieChange(ReichCrossref crossref)
+        {
+            if (crossref != null && crossref is Diplomatiechange change)
+            {
+                SharedData.StoreQueue.Enqueue(change);
+            }
+            else
+                SpielWPF.LogError("Die Diplomatie-Änderung konnte nicht gespeichert werden", $"Mit dem Parameter {crossref} stimmte etwas nicht.");
+        }
+
+        /// <summary>
+        /// hier werden die checked und unchecked Events der checkboxen gefangen
+        /// erhaltene Rechte dürfen nicht geändert werden, der ursprüngliche wert kommt wieder in die Checkbox
+        /// Werte des eigenen Reichs darf man vergeben und die werden dann gespeichert
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CheckBox_UnChecked(object sender, RoutedEventArgs e)
+        {
+            if (sender is CheckBox checkBox)
+            {
+                var bindingExpression = checkBox.GetBindingExpression(CheckBox.IsCheckedProperty);
+
+                // Access the DataContext of the CheckBox (e.g., the row's data item)
+                if (checkBox.DataContext is ReichCrossref crossref && bindingExpression != null)
+                {
+                    var propertyName = bindingExpression.ParentBinding.Path.Path;
+                    if (string.IsNullOrEmpty(propertyName) == false)
+                    {
+                        bool oldValue = PropertyProcessor.GetIntValueIfExists(crossref, propertyName) > 0;
+                        bool newValue = ! e.RoutedEvent.Name.ToLower().StartsWith("un");
+                        if (oldValue == newValue) // nothing to do here
+                            return;
+                        if (propertyName.EndsWith("von"))
+                        {
+                            checkBox.IsChecked = oldValue;
+                        }
+                        else
+                        {
+                            var property = crossref.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
+                            if (property != null && property.PropertyType == typeof(int))
+                            {
+                                property.SetValue(crossref, newValue ? 1 : 0);
+                                SaveDiplomatieChange(crossref);
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
 
         private void EigenschaftlerDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             if (e.EditAction == DataGridEditAction.Commit)
             {
-                if (e.Row.DataContext is Gebäude gebäude)
+                if (e.Row.DataContext is ReichCrossref vertrag)
                 {
                     // Get the binding path of the edited column
                     if (e.Column is DataGridBoundColumn boundColumn && boundColumn.Binding is Binding binding)

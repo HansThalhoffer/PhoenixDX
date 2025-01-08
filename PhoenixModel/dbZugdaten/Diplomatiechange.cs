@@ -11,5 +11,29 @@ namespace PhoenixModel.dbZugdaten
         private static string _datebaseName = string.Empty;
         public override string DatabaseName { get { return Diplomatiechange._datebaseName; } set { Diplomatiechange._datebaseName = value; } }
         public new const string TableName = "Diplomatiechange";
+        protected override string GetTableName() { return TableName; }
+
+        public Diplomatiechange():base()
+        { }
+        
+        /// <summary>
+        /// der copy constructor wird für das Speichern benötigt
+        /// </summary>
+        /// <param name="baseObject"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public Diplomatiechange(ReichCrossref baseObject) : base() 
+        {
+            if (baseObject == null)
+                throw new ArgumentNullException(nameof(baseObject));
+
+            // Copy properties from base class
+            Wegerecht = baseObject.Wegerecht;
+            Kuestenrecht = baseObject.Kuestenrecht;
+            Reich = baseObject.Reich;
+            Wegerecht_von = baseObject.Wegerecht_von;
+            DBname = baseObject.DBname;
+            Kuestenrecht_von = baseObject.Kuestenrecht_von;
+            Flottenkey = baseObject.Flottenkey;
+        }
     }
 }

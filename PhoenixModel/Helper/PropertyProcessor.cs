@@ -146,7 +146,7 @@ namespace PhoenixModel.Helper
                 {
                     properties.Remove(property);
                     IDatabaseTable? table = data as IDatabaseTable;
-                    bool canChange = table != null? Autorisation.IsAllowedToChange(table, property.Name) : false;
+                    bool canChange = table != null ? Autorisation.IsAllowedToChange(table, property.Name) : false;
                     AppendProperty(ref result, property.Name, property.GetValue(data), canChange, source);
                 }
 
@@ -224,6 +224,34 @@ namespace PhoenixModel.Helper
             return 0;
         }
 
+
+        /// <summary>
+        /// holt einen int val aus einem Objekt, wenn er in der übergebenen Liste als Property vorhanden ist
+        /// wird in den Spielfiguren benutzt, um die verschiedenen Werte in eine Liste zu bringen
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
+        public static int GetIntValueIfExists(object obj, string propertyName)
+        {
+            if (obj == null || string.IsNullOrEmpty(propertyName))
+            {
+                return 0;
+            }
+
+            var property = obj.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
+            if (property != null && property.PropertyType == typeof(int))
+            {
+                var value = property.GetValue(obj);
+                if (value is int intValue)
+                {
+                    return intValue;
+                }
+            }
+
+            return 0;
+        }
+
         /// <summary>
         /// aktualisert das Objekt mit dem Wert der Eigenschaft, sofern die Eigenschaft das Attribut Editable hat
         /// wird zum Speichern von Daten verwendet, die der Benutzer ändern darf
@@ -281,7 +309,7 @@ namespace PhoenixModel.Helper
                         ViewModel.LogError($"Eigenschaft {changed.Name} konnte wegen einem Fehler nicht aktualisiert werden", ex.Message);
                     }
 
-                    
+
                     return;
                 }
             }
