@@ -24,11 +24,11 @@ namespace PhoenixModel.dbErkenfara
         /// <summary>
         /// Das Reich, das die Rechte empfängt
         /// </summary>
-        public string? Reich { get; set; }
         public int Wegerecht { get; set; }
+        public int Kuestenrecht { get; set; }
+        public string? Reich { get; set; }
         public int Wegerecht_von { get; set; }
         public string? DBname { get; set; }
-        public int Kuestenrecht { get; set; }
         public int Kuestenrecht_von { get; set; }
         public int Flottenkey { get; set; }
 

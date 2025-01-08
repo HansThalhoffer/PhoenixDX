@@ -22,6 +22,12 @@ namespace PhoenixWPF.Pages.Converter
 
             if (values[1] is DataGridCell cell)
             {
+                // If the cell is selected, return null to let the style trigger handle the background
+                if (cell.IsSelected)
+                {
+                    return null;
+                }
+
                 if (values[0] is NamensSpielfigur data)
                 {
                     if (cell.Column.Header != null && (cell.Column.Header.ToString() == "Spielername" || cell.Column.Header.ToString() == "Charaktername" || cell.Column.Header.ToString() == "Beschriftung"))
@@ -31,15 +37,11 @@ namespace PhoenixWPF.Pages.Converter
                 }
                 if (values[0] is ReichCrossref diplomatie)
                 {
-                    if (cell.Column is DataGridTemplateColumn templateColumn)
-                    {
-                        var a = templateColumn;
-                    }
                     if (ViewModel.SelectedNation != null && diplomatie.Referenzreich == ViewModel.SelectedNation.Reich)
                     {
                         return Brushes.Black;
                     }
-                }
+                }               
             }
 
             return Brushes.Transparent; // Default background

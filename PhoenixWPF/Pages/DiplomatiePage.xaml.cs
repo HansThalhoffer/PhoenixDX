@@ -65,8 +65,8 @@ namespace PhoenixWPF.Pages
             {
                 string name = eig.Name;
                 int index = eigList.IndexOf(eig);
-                DataGridColumn column = null;
-                if (name.EndsWith("recht") || name.EndsWith("recht_von"))
+                DataGridColumn? column = null;
+                if (name.EndsWith("recht") )//|| name.EndsWith("recht_von"))
                 
                 {
                      var templColumn = new DataGridTemplateColumn
@@ -94,7 +94,7 @@ namespace PhoenixWPF.Pages
                     column = new DataGridTextColumn
                     {
                         Header = name,
-                        Binding = new System.Windows.Data.Binding($"Eigenschaften[{index}].Wert"),
+                        Binding = new System.Windows.Data.Binding(name),
                         IsReadOnly = true
                     };
                 }
