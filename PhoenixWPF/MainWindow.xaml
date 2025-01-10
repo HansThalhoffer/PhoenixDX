@@ -32,6 +32,7 @@
             </MenuItem>
             <MenuItem Header="Extras">
                 <MenuItem Header="Erstelle USB Stick für Installation" IsCheckable="False"  Click="MenuItem_Click" Tag="InstallUSB" />
+                <MenuItem Header="Erstelle Testdaten (Zug 999)" IsCheckable="False"  Click="MenuItem_Click" Tag="Zug 999 (Testdaten)" />
             </MenuItem>
         </Menu>
 
