@@ -33,23 +33,6 @@ namespace PhoenixWPF.Database
             _encryptedpassword = encryptedpassword;
         }
 
-        public void UpdateKarte()
-        {
-            Task.Run(() => { _UpdateKarte(); });
-        }
-
-        public void _UpdateKarte()
-        {
-            while (SharedData.Map == null || SharedData.Map.IsBlocked == true || SharedData.Map.IsAddingCompleted == false)
-            {
-                Thread.Sleep(100);
-            }
-            using (SharedData.BlockGuard guard = new(SharedData.Map))
-            {
-
-            }
-        }
-
         public void Load()
         {
             PasswordHolder holder = new(_encryptedpassword);

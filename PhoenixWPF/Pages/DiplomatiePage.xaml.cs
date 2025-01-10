@@ -38,7 +38,7 @@ namespace PhoenixWPF.Pages
         private void ViewModel_OnViewEvent(object? sender, ViewEventArgs e)
         {
             if (SharedData.Diplomatiechange != null && ViewModel.SelectedNation != null &&
-                (e.EventType == ViewEventArgs.ViewEventType.EverythingLoaded))
+                (e.EventType == ViewEventArgs.ViewEventType.UpdateDiplomatie))
             {
                 EigenschaftlerList.Clear();
                 var list = SharedData.Diplomatiechange;

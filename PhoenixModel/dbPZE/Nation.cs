@@ -1,6 +1,7 @@
 ﻿using PhoenixModel.Database;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
+using PhoenixModel.Program;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -14,26 +15,30 @@ namespace PhoenixModel.dbPZE
 {
     public class Nation :  IDatabaseTable, IEigenschaftler
     {
+        public Nation() { }
+        public Nation(string name) { Reich = name; }
+        
         #region InterfaceFelder
         // IDatabaseTable
         private static string _datebaseName = string.Empty;
         public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "DBhandle";
         string IDatabaseTable.TableName => TableName;
-        public string Bezeichner { get => Reich ?? "Null"; }
+        public string Bezeichner { get => Reich; }
 
         // IEigenschaftler
-        private static readonly string[] PropertiestoIgnore = { "DatabaseName", "Alias", "DBname", "DBpass", "Farbe", "Nummer" };
+        private static readonly string[] PropertiestoIgnore = { "DatabaseName", "Alias", "DBname", "DBpass", "Farbe", "Nummer", "Name" };
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
         #endregion
 
         #region DatenbankFelder
-        public string[]? Alias { get; set; }
+        public HashSet<string>? Alias { get; set; }
         public string? Farbname { get; set; }
         public Color? Farbe { get; set; }
 
         public int? Nummer { get; set; }
-        public string? Reich { get; set; }
+        public string Reich { get; set; } = string.Empty;
+        public string Name => Reich;
         public string? DBname { get; set; }
         public string? DBpass { get; set; }
 
@@ -46,21 +51,25 @@ namespace PhoenixModel.dbPZE
             Reich = DatabaseConverter.ToString(reader[(int)Nation.Felder.Reich]);
             DBname = DatabaseConverter.ToString(reader[(int)Nation.Felder.DBname]);
             DBpass = DatabaseConverter.ToString(reader[(int)Nation.Felder.DBpass]);
-            foreach (var defData in ReichTabelle.Vorbelegung)
+            var defData = ReichTabelle.Find(Reich);
+            if (defData != null)
             {
-                foreach (var name in defData.Alias)
+                Alias = defData.Alias;
+                Farbname = defData.Farbname;
+                try
                 {
-                    if (name.ToUpper() == Reich.ToUpper())
-                    {
-                        Alias = defData.Alias;
-                        Farbname = defData.Farbname;
-                        Farbe = System.Drawing.ColorTranslator.FromHtml(defData.FarbeHex);
-                        break;
-                    }
+                    Farbe = System.Drawing.ColorTranslator.FromHtml(defData.FarbeHex);
                 }
-                if (Farbname != null)
-                    break;
+                catch (Exception ex)
+                {
+                    ViewModel.LogError($"Fehler bei der Farbkonvertierung {Farbe}", ex.Message);
+                }
             }
+            else
+            {
+                ViewModel.LogError($"Die Nation {Reich} wurde nicht in der Vorbelegung gefunden", "Eventuell ist es eine fehlerhafte Schreibweise");
+            }
+            
         }
 
         public void Save(DbCommand reader)

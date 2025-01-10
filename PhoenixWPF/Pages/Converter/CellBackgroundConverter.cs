@@ -37,7 +37,7 @@ namespace PhoenixWPF.Pages.Converter
                 }
                 if (values[0] is ReichCrossref diplomatie)
                 {
-                    if (ViewModel.SelectedNation != null && diplomatie.Referenzreich == ViewModel.SelectedNation.Reich)
+                    if (ViewModel.SelectedNation != null && diplomatie.Nation == ViewModel.SelectedNation)
                     {
                         return Brushes.Black;
                     }

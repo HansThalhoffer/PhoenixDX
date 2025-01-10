@@ -4,6 +4,7 @@ using PhoenixModel.Helper;
 using PhoenixModel.Program;
 using PhoenixWPF.Database;
 using System.Data;
+using System.Windows;
 using static PhoenixModel.Database.PasswordHolder;
 
 namespace PhoenixWPF.Program
@@ -31,7 +32,7 @@ namespace PhoenixWPF.Program
                 Load<Gebäude>(connector, ref SharedData.Gebäude, Enum.GetNames(typeof(Gebäude.Felder)));
                 Load<KleinFeld>(connector, ref SharedData.Map, Enum.GetNames(typeof(KleinFeld.Felder)));
                 connector?.Close();
-                RepairBauwerklistePhase1();
+                Task.Run(() => RepairBauwerklistePhase1());
                 ViewModel.OnViewEvent += ViewModel_OnViewEvent;
                 return;
             }
@@ -41,7 +42,8 @@ namespace PhoenixWPF.Program
         {
             if (e.EventType == ViewEventArgs.ViewEventType.EverythingLoaded && SharedData.Gebäude != null && ViewModel.SelectedNation != null)
             {
-                RepairBauwerklistePhase2();
+                Task.Run(() => RepairBauwerklistePhase2());
+                ViewModel.OnViewEvent -= ViewModel_OnViewEvent;
             }
         }
 
@@ -71,7 +73,10 @@ namespace PhoenixWPF.Program
                     gebäude.Bauwerknamen = gemark.Bauwerknamen;
                 }
             }
-            ViewModel.Update(ViewEventArgs.ViewEventType.UpdateGebäude);
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                ViewModel.Update(ViewEventArgs.ViewEventType.UpdateGebäude);
+            }));
         }
 
         /// <summary>
@@ -94,7 +99,10 @@ namespace PhoenixWPF.Program
                     }
                 }
             }
-            ViewModel.Update(ViewEventArgs.ViewEventType.UpdateGebäude);
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                ViewModel.Update(ViewEventArgs.ViewEventType.UpdateGebäude);
+            }));
         }
 
         public void Save(IDatabaseTable table)

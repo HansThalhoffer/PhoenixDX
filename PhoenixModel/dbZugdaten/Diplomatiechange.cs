@@ -16,20 +16,16 @@ namespace PhoenixModel.dbZugdaten
         public Diplomatiechange():base()
         { }
         
-        /// <summary>
-        /// der copy constructor wird für das Speichern benötigt
-        /// </summary>
-        /// <param name="baseObject"></param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public Diplomatiechange(ReichCrossref baseObject) : base() 
+        public void CopyValues(ReichCrossref baseObject) 
         {
             if (baseObject == null)
                 throw new ArgumentNullException(nameof(baseObject));
 
             // Copy properties from base class
+            Referenzreich = baseObject.ReferenzNation.Name;
             Wegerecht = baseObject.Wegerecht;
             Kuestenrecht = baseObject.Kuestenrecht;
-            Reich = baseObject.Reich;
+            Reich = baseObject.Nation.Reich;
             Wegerecht_von = baseObject.Wegerecht_von;
             DBname = baseObject.DBname;
             Kuestenrecht_von = baseObject.Kuestenrecht_von;

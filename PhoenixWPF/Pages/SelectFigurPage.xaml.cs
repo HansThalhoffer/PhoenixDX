@@ -48,7 +48,7 @@ namespace PhoenixWPF.Pages
         private void ViewModel_OnViewEvent(object? sender, ViewEventArgs e)
         {
             if (SharedData.Gebäude != null && ViewModel.SelectedNation != null &&
-                (e.EventType == ViewEventArgs.ViewEventType.EverythingLoaded || e.EventType == ViewEventArgs.ViewEventType.UpdateSpielfigur))
+                (e.EventType == ViewEventArgs.ViewEventType.EverythingLoaded || e.EventType == ViewEventArgs.ViewEventType.UpdateSpielfiguren))
             {
                 EigenschaftlerList.Clear();
                 var list = SpielfigurenView.GetSpielfiguren(ViewModel.SelectedNation);

@@ -44,16 +44,21 @@ namespace PhoenixModel.Program
             _OnViewEvent(new ViewEventArgs(figur));
         }*/
 
+        /// <summary>
+        /// wird gefeuert, wenn Daten im größeren Umfange geändert wurden und sich somit eine komplette Initialiserung der abhängigen Klassen lohnt
+        /// </summary>
         public static void Update(ViewEventType what)
         {
             _OnViewEvent(new ViewEventArgs(what));
         }
 
+        /// <summary>
+        /// wird gefeuert, wenn alle Daten geladen wurden. 
+        /// </summary>
         public static void DataLoadingCompleted()
         {
             _OnViewEvent(new ViewEventArgs(ViewEventType.EverythingLoaded));
         }
-
 
         /// <summary>
         /// überprüft den Besitz der KleinFeld/des Kleinfelds

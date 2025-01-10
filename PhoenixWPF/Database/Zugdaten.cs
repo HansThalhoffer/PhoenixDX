@@ -2,10 +2,12 @@
 using PhoenixModel.dbPZE;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.Helper;
+using PhoenixModel.Program;
 using PhoenixWPF.Dialogs;
 using PhoenixWPF.Program;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Windows;
 using static PhoenixModel.Database.PasswordHolder;
 
 namespace PhoenixWPF.Database
@@ -25,24 +27,50 @@ namespace PhoenixWPF.Database
             _encryptedpassword = encryptedpassword;
         }
 
-        public void UpdateKarte()
+        private void ViewModel_OnViewEvent(object? sender, ViewEventArgs e)
         {
-            Task.Run(() => { _UpdateKarte(); });
+            if (e.EventType == ViewEventArgs.ViewEventType.EverythingLoaded && SharedData.Diplomatie != null && SharedData.Diplomatiechange != null
+                && ViewModel.SelectedNation != null)
+            {
+                Task.Run(() => RepairDiplomatieChange());
+                ViewModel.OnViewEvent -= ViewModel_OnViewEvent;
+            }
         }
 
-        public void _UpdateKarte()
+        private void RepairDiplomatieChange()
         {
-            while (SharedData.Map == null || SharedData.Map.IsBlocked == true || SharedData.Map.IsAddingCompleted == false)
+            if (SharedData.Diplomatie != null && SharedData.Diplomatiechange != null)
             {
-                Thread.Sleep(100);
-            }
-            using (SharedData.BlockGuard guard = new(SharedData.Map))
-            {
-                foreach (var gem in SharedData.Map)
+                if (SharedData.Diplomatiechange.IsAddingCompleted == false)
+                    SpielWPF.LogError("Daten noch nicht vollständig geladen", "Die Tabelle Diplomatiechange aus den Zugdaten fehlt");
+                if (SharedData.Diplomatie.IsAddingCompleted == false)
+                    SpielWPF.LogError("Daten noch nicht vollständig geladen", "Die Tabelle Reich_crossref aus der Erkenfarakarte fehlt");
+                var keys = SharedData.Diplomatie.Keys.OrderBy(str => str).ToList();
+
+
+                foreach (var diplo in SharedData.Diplomatiechange)
                 {
 
+
+                    if (diplo.Nation != ViewModel.SelectedNation )
+                    {
+                        string key = diplo.Bezeichner;
+                        if (keys.Contains(key) == false)
+                            SpielWPF.LogWarning($"Die Kombination {diplo.Bezeichner} wurde nicht in der Reich_crossref gefunden", "Die Datenbanken der Erkenfarakarte und der Zugdaten sind auseinander gelaufen. Bitte die Spielleitung informieren");
+                        if (SharedData.Diplomatie.ContainsKey(key))
+                        {
+                            diplo.CopyValues(SharedData.Diplomatie[key]);
+                        }
+                        else
+                            SpielWPF.LogWarning($"Die Kombination {diplo.Bezeichner} wurde nicht in der Reich_crossref gefunden", "Die Datenbanken der Erkenfarakarte und der Zugdaten sind auseinander gelaufen. Bitte die Spielleitung informieren");
+                    }
                 }
             }
+            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                ViewModel.Update(ViewEventArgs.ViewEventType.UpdateDiplomatie);
+            }));
+
         }
 
         public void Save(IDatabaseTable table)
@@ -115,7 +143,7 @@ namespace PhoenixWPF.Database
                     Load<Schiffe>(connector, ref SharedData.Schiffe, Enum.GetNames(typeof(Schiffe.Felder)));
                     Load<Units>(connector, ref SharedData.Units_Zugdaten, Enum.GetNames(typeof(Units.Felder)));
                     Load<Zauberer>(connector, ref SharedData.Zauberer, Enum.GetNames(typeof(Zauberer.Felder)));
-
+                    ViewModel.OnViewEvent += ViewModel_OnViewEvent;
                 }
                 catch (Exception ex)
                 {

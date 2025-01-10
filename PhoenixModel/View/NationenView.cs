@@ -11,24 +11,21 @@ namespace PhoenixModel.View
 {
     public static class NationenView
     {
-        public static Nation? GetNationFromString(string name)
+        private static Nation _default = new Nation("DEFAULT");
+
+        public static Nation GetNationFromString(string name)
         {
-            if (SharedData.Nationen == null)
-                return null;
+            if (SharedData.Nationen == null || string.IsNullOrEmpty(name))
+                return _default;
+            name = name.ToLower();
             foreach (var nation in SharedData.Nationen)
             {
                 if (nation.Alias == null)
                     continue;
-                foreach (var alias  in nation.Alias)
-                {
-                    if (name.ToUpper() == alias.ToUpper())
-                    {
-                        return nation;
-                    }
-                }
-
+                if (nation.Alias.Contains(name))
+                    return nation;
             }
-            return null;
+            return _default;
         }
     }
 }

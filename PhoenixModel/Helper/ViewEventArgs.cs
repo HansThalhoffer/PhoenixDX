@@ -15,7 +15,7 @@ namespace PhoenixModel.Helper
     {
         public enum ViewEventType
         {
-            None, Log, UpdateGebäude, UpdateSpielfigur, UpdateEverything, EverythingLoaded
+            None, Log, UpdateGebäude, UpdateSpielfiguren, UpdateDiplomatie, UpdateEverything, EverythingLoaded
         }
 
         public int GF = 0, KF = 0;
@@ -48,7 +48,7 @@ namespace PhoenixModel.Helper
         {
             GF = value.gf;
             KF = value.kf;
-            EventType = ViewEventType.UpdateSpielfigur;
+            EventType = ViewEventType.UpdateSpielfiguren;
             Data = value;
         }
     }

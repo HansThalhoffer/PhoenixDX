@@ -1,7 +1,9 @@
 using System;
 using System.Data.Common;
 using PhoenixModel.Database;
+using PhoenixModel.dbPZE;
 using PhoenixModel.Helper;
+using PhoenixModel.View;
 
 namespace PhoenixModel.dbErkenfara
 {
@@ -12,28 +14,39 @@ namespace PhoenixModel.dbErkenfara
 
         public const string TableName = "Reich_crossref";
         string IDatabaseTable.TableName => ReichCrossref.TableName;
-        public string Bezeichner => $"{Referenzreich}/{Reich}";
+        public string Bezeichner => $"{ReferenzNation.Bezeichner}=>{Nation.Bezeichner}";
 
         protected virtual string GetTableName () { return TableName; }
 
         // IEigenschaftler
-        private static readonly string[] PropertiestoIgnore = ["DBname", "Nummer", "DatabaseName", "Flottenkey"];
+        private static readonly string[] PropertiestoIgnore = ["DBname", "Nummer", "DatabaseName", "Flottenkey", "ReferenzNation", "Nation"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
         public int Nummer { get; set; }
-        /// <summary>
-        ///  das eigene Reich bzw. das Reich, das dem anderen die Rechte gibt
-        /// </summary>
-        public string? Referenzreich { get; set; }
-        /// <summary>
-        /// Das Reich, das die Rechte empfängt
-        /// </summary>
+        public string Geber { get => ReferenzNation.Reich; }
         public int Wegerecht { get; set; }
         public int Kuestenrecht { get; set; }
-        public string? Reich { get; set; }
+        public string Empfänger { get => Nation.Reich; }
         public int Wegerecht_von { get; set; }
         public string? DBname { get; set; }
         public int Kuestenrecht_von { get; set; }
         public int Flottenkey { get; set; }
+
+
+        /// <summary>
+        ///  das eigene Reich bzw. das Reich, das dem anderen die Rechte gibt
+        ///  da hier viele Namensirrungen existieren, sollte ReferenzNation verwendet werden
+        /// </summary>
+        protected string Referenzreich { get; set; } = string.Empty;
+        /// <summary>
+        /// Das Reich, das die Rechte empfängt
+        ///  da hier viele Namensirrungen existieren, sollte Nation verwendet werden
+        /// </summary>
+        protected string Reich { get; set; } = string.Empty;
+
+        Nation? _ReferenzNation = null;
+        public Nation ReferenzNation { get => _ReferenzNation ??= NationenView.GetNationFromString(Referenzreich); }
+        Nation? _Nation = null;
+        public Nation Nation { get => _Nation ??= NationenView.GetNationFromString(Reich); }
 
         public enum Felder
         {

@@ -89,7 +89,13 @@
                 <!-- Splitter -->
                 <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
 
-                <StackPanel Grid.Row="2" Orientation="Vertical">
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <!-- Selection History -->
+                        <RowDefinition Height="20" />
+                        <!-- Bottom TabControl -->
+                        <RowDefinition Height="1*" />
+                    </Grid.RowDefinitions>
                     <!-- Selection Navigator -->
                     <Frame Grid.Row="1" Height="20" Source="Pages/SelectionNavigatorPage.xaml" />
 
@@ -108,7 +114,7 @@
                             <Frame Source="Pages/SelectRüstortPage.xaml" />
                         </TabItem>
                     </TabControl>
-                </StackPanel>
+                </Grid>
             </Grid>
         </Grid>
     </DockPanel>
