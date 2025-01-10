@@ -26,64 +26,12 @@ namespace PhoenixModel.dbZugdaten
                 return FigurType.Krieger;
             }
         }
-        
-        public string? Befehl_bew { get; set; }
-        public string? Befehl_ang { get; set; }
-        public string? Befehl_erobert { get; set; }
-        public int x1 { get; set; }
-        public int y1 { get; set; }
-        public int x2 { get; set; }
-        public int y2 { get; set; }
-        public int x3 { get; set; }
-        public int y3 { get; set; }
-        public int hoehenstufen { get; set; }
-        public int schritt { get; set; }
-        public int x4 { get; set; }
-        public int y4 { get; set; }
-        public int x5 { get; set; }
-        public int y5 { get; set; }
-        public int x6 { get; set; }
-        public int y6 { get; set; }
-        public int x7 { get; set; }
-        public int y7 { get; set; }
-        public int x8 { get; set; }
-        public int y8 { get; set; }
-        public int x9 { get; set; }
-        public int y9 { get; set; }
-        public string? auf_Flotte { get; set; }
-        public string? Sonstiges { get; set; }
-        public string? spaltetab { get; set; }
-        public string? fusmit { get; set; }
-        public string? Chars { get; set; }
-        public int bp_max { get; set; }
-        public int isbanned { get; set; }
-        public int x10 { get; set; }
-        public int y10 { get; set; }
-        public int x11 { get; set; }
-        public int y11 { get; set; }
-        public int x12 { get; set; }
-        public int y12 { get; set; }
-        public int x13 { get; set; }
-        public int y13 { get; set; }
-        public int x14 { get; set; }
-        public int y14 { get; set; }
-        public int x15 { get; set; }
-        public int y15 { get; set; }
-        public int x16 { get; set; }
-        public int y16 { get; set; }
-        public int x17 { get; set; }
-        public int y17 { get; set; }
-        public int x18 { get; set; }
-        public int y18 { get; set; }
-        public int x19 { get; set; }
-        public int y19 { get; set; }
 
         public enum Felder
         {
             nummer, staerke_alt, staerke, hf_alt, hf, LKP_alt, LKP, SKP_alt, SKP, pferde_alt, Pferde, gf_von, kf_von, gf_nach, kf_nach, rp, bp, ph_xy, Garde, Befehl_bew, Befehl_ang, Befehl_erobert, GS, GS_alt, Kampfeinnahmen, Kampfeinnahmen_alt, x1, y1, x2, y2, x3,
             y3, hoehenstufen, schritt, x4, y4, x5, y5, x6, y6, x7, y7, x8, y8, x9, y9, auf_Flotte, Sonstiges, spaltetab, fusmit, Chars, bp_max, isbanned, x10, y10, x11, y11, x12, y12, x13, y13, x14, y14, x15, y15, x16, y16, x17, y17, x18, y18, x19, y19,
         }
-
 
         public override void Load(DbDataReader reader)
         {
