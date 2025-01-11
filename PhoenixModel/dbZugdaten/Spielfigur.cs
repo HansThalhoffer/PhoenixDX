@@ -36,7 +36,7 @@ namespace PhoenixModel.dbZugdaten
 
         private int _gfNach;
         private int _kfNach;
-
+        public int Kosten { get; set; } = 0;
 
         public int x1 { get; set; }
         public int y1 { get; set; }

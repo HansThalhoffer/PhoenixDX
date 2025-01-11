@@ -70,6 +70,7 @@ namespace PhoenixDX.Structures
             Terrains[(int)TerrainType.Auftauchpunkt] = new Gelaende(Terrains[(int)TerrainType.Auftauchpunkt], "auftauchpunkt_ocean", contentManager);
             Terrains[(int)TerrainType.Tiefseeeinbahnpunkt] = new Gelaende(Terrains[(int)TerrainType.Tiefseeeinbahnpunkt], "deepseapoint", contentManager);
             Terrains[(int)TerrainType.AuftauchpunktUnbekannt] = new Gelaende(Terrains[(int)TerrainType.AuftauchpunktUnbekannt], "auftauchpunkt_unbekannt", contentManager);
+            Terrains[(int)TerrainType.Küste] = new Gelaende(Terrains[(int)TerrainType.Küste], "coast", contentManager);
             _isLoaded = true;
         }
 
