@@ -13,6 +13,11 @@ using PhoenixModel.dbPZE;
 
 namespace PhoenixModel.dbErkenfara
 {
+    public enum MarkerType
+    {
+        None, Info, Warning, Fatality
+    }
+
     public class KleinFeld : KleinfeldPosition, ISelectable, IDatabaseTable
     {
         #region Schnittstellen
@@ -113,103 +118,105 @@ namespace PhoenixModel.dbErkenfara
             }
         }
 
-    public enum Felder
-    {
-        gf, kf, ph_xy, x, y, db_xy, Rand, Index, Gelaendetyp, Ruestort,
-        Fluss_NW, Fluss_NO, Fluss_O, Fluss_SO, Fluss_SW, Fluss_W, Wall_NW, Wall_NO, Wall_O, Wall_SO,
-        Wall_SW, Wall_W, Kai_NW, Kai_NO, Kai_O, Kai_SO, Kai_SW, Kai_W, Strasse_NW, Strasse_NO,
-        Strasse_O, Strasse_SO, Strasse_SW, Strasse_W, Bruecke_NW, Bruecke_NO, Bruecke_O, Bruecke_SO, Bruecke_SW, Bruecke_W,
-        Reich, Krieger_eigen, Krieger_feind, Krieger_freund, Reiter_eigene, Reiter_feind, Reiter_freund, Schiffe_eigene, schiffe_feind, Schiffe_freund,
-        Zauberer_eigene, Zauberer_feind, Zauberer_freund, Char_eigene, Char_feind, Char_freund, krieger_text, kreatur_eigen, kreatur_feind, kreatur_freund,
-        Baupunkte, Bauwerknamen, lehensid
-    }
+        public MarkerType Mark { get; set; }
 
-    public void Load(DbDataReader reader)
-    {
-        gf = DatabaseConverter.ToInt32(reader[(int)Felder.gf]);
-        kf = DatabaseConverter.ToInt32(reader[(int)Felder.kf]);
-        ph_xy = DatabaseConverter.ToString(reader[(int)Felder.ph_xy]);
-        x = DatabaseConverter.ToInt32(reader[(int)Felder.x]);
-        y = DatabaseConverter.ToInt32(reader[(int)Felder.y]);
-        db_xy = DatabaseConverter.ToString(reader[(int)Felder.db_xy]);
-        Rand = DatabaseConverter.ToInt32(reader[(int)Felder.Rand]);
-        Index = DatabaseConverter.ToInt32(reader[(int)Felder.Index]);
-        Gelaendetyp = DatabaseConverter.ToInt32(reader[(int)Felder.Gelaendetyp]);
-        Ruestort = DatabaseConverter.ToInt32(reader[(int)Felder.Ruestort]);
-        Fluss_NW = DatabaseConverter.ToInt32(reader[(int)Felder.Fluss_NW]);
-        Fluss_NO = DatabaseConverter.ToInt32(reader[(int)Felder.Fluss_NO]);
-        Fluss_O = DatabaseConverter.ToInt32(reader[(int)Felder.Fluss_O]);
-        Fluss_SO = DatabaseConverter.ToInt32(reader[(int)Felder.Fluss_SO]);
-        Fluss_SW = DatabaseConverter.ToInt32(reader[(int)Felder.Fluss_SW]);
-        Fluss_W = DatabaseConverter.ToInt32(reader[(int)Felder.Fluss_W]);
-        Wall_NW = DatabaseConverter.ToInt32(reader[(int)Felder.Wall_NW]);
-        Wall_NO = DatabaseConverter.ToInt32(reader[(int)Felder.Wall_NO]);
-        Wall_O = DatabaseConverter.ToInt32(reader[(int)Felder.Wall_O]);
-        Wall_SO = DatabaseConverter.ToInt32(reader[(int)Felder.Wall_SO]);
-        Wall_SW = DatabaseConverter.ToInt32(reader[(int)Felder.Wall_SW]);
-        Wall_W = DatabaseConverter.ToInt32(reader[(int)Felder.Wall_W]);
-        Kai_NW = DatabaseConverter.ToInt32(reader[(int)Felder.Kai_NW]);
-        Kai_NO = DatabaseConverter.ToInt32(reader[(int)Felder.Kai_NO]);
-        Kai_O = DatabaseConverter.ToInt32(reader[(int)Felder.Kai_O]);
-        Kai_SO = DatabaseConverter.ToInt32(reader[(int)Felder.Kai_SO]);
-        Kai_SW = DatabaseConverter.ToInt32(reader[(int)Felder.Kai_SW]);
-        Kai_W = DatabaseConverter.ToInt32(reader[(int)Felder.Kai_W]);
-        Strasse_NW = DatabaseConverter.ToInt32(reader[(int)Felder.Strasse_NW]);
-        Strasse_NO = DatabaseConverter.ToInt32(reader[(int)Felder.Strasse_NO]);
-        Strasse_O = DatabaseConverter.ToInt32(reader[(int)Felder.Strasse_O]);
-        Strasse_SO = DatabaseConverter.ToInt32(reader[(int)Felder.Strasse_SO]);
-        Strasse_SW = DatabaseConverter.ToInt32(reader[(int)Felder.Strasse_SW]);
-        Strasse_W = DatabaseConverter.ToInt32(reader[(int)Felder.Strasse_W]);
-        Bruecke_NW = DatabaseConverter.ToInt32(reader[(int)Felder.Bruecke_NW]);
-        Bruecke_NO = DatabaseConverter.ToInt32(reader[(int)Felder.Bruecke_NO]);
-        Bruecke_O = DatabaseConverter.ToInt32(reader[(int)Felder.Bruecke_O]);
-        Bruecke_SO = DatabaseConverter.ToInt32(reader[(int)Felder.Bruecke_SO]);
-        Bruecke_SW = DatabaseConverter.ToInt32(reader[(int)Felder.Bruecke_SW]);
-        Bruecke_W = DatabaseConverter.ToInt32(reader[(int)Felder.Bruecke_W]);
-        Reich = DatabaseConverter.ToInt32(reader[(int)Felder.Reich]);
-        Krieger_eigen = DatabaseConverter.ToInt32(reader[(int)Felder.Krieger_eigen]);
-        Krieger_feind = DatabaseConverter.ToInt32(reader[(int)Felder.Krieger_feind]);
-        Krieger_freund = DatabaseConverter.ToInt32(reader[(int)Felder.Krieger_freund]);
-        Reiter_eigene = DatabaseConverter.ToInt32(reader[(int)Felder.Reiter_eigene]);
-        Reiter_feind = DatabaseConverter.ToInt32(reader[(int)Felder.Reiter_feind]);
-        Reiter_freund = DatabaseConverter.ToInt32(reader[(int)Felder.Reiter_freund]);
-        Schiffe_eigene = DatabaseConverter.ToInt32(reader[(int)Felder.Schiffe_eigene]);
-        schiffe_feind = DatabaseConverter.ToInt32(reader[(int)Felder.schiffe_feind]);
-        Schiffe_freund = DatabaseConverter.ToInt32(reader[(int)Felder.Schiffe_freund]);
-        Zauberer_eigene = DatabaseConverter.ToInt32(reader[(int)Felder.Zauberer_eigene]);
-        Zauberer_feind = DatabaseConverter.ToInt32(reader[(int)Felder.Zauberer_feind]);
-        Zauberer_freund = DatabaseConverter.ToInt32(reader[(int)Felder.Zauberer_freund]);
-        Char_eigene = DatabaseConverter.ToInt32(reader[(int)Felder.Char_eigene]);
-        Char_feind = DatabaseConverter.ToInt32(reader[(int)Felder.Char_feind]);
-        Char_freund = DatabaseConverter.ToInt32(reader[(int)Felder.Char_freund]);
-        krieger_text = DatabaseConverter.ToString(reader[(int)Felder.krieger_text]);
-        kreatur_eigen = DatabaseConverter.ToInt32(reader[(int)Felder.kreatur_eigen]);
-        kreatur_feind = DatabaseConverter.ToInt32(reader[(int)Felder.kreatur_feind]);
-        kreatur_freund = DatabaseConverter.ToInt32(reader[(int)Felder.kreatur_freund]);
-        Baupunkte = DatabaseConverter.ToInt32(reader[(int)Felder.Baupunkte]);
-        Bauwerknamen = reader.GetString((int)Felder.Bauwerknamen);
-        lehensid = DatabaseConverter.ToInt32(reader[(int)Felder.lehensid]);
-    }
-    #endregion
-
-    public TerrainType TerrainType
-    {
-        get
+        public enum Felder
         {
-            if (Gelaendetyp <= (int)TerrainType.AuftauchpunktUnbekannt)
-                return (TerrainType)Gelaendetyp;
-            return TerrainType.Default;
+            gf, kf, ph_xy, x, y, db_xy, Rand, Index, Gelaendetyp, Ruestort,
+            Fluss_NW, Fluss_NO, Fluss_O, Fluss_SO, Fluss_SW, Fluss_W, Wall_NW, Wall_NO, Wall_O, Wall_SO,
+            Wall_SW, Wall_W, Kai_NW, Kai_NO, Kai_O, Kai_SO, Kai_SW, Kai_W, Strasse_NW, Strasse_NO,
+            Strasse_O, Strasse_SO, Strasse_SW, Strasse_W, Bruecke_NW, Bruecke_NO, Bruecke_O, Bruecke_SO, Bruecke_SW, Bruecke_W,
+            Reich, Krieger_eigen, Krieger_feind, Krieger_freund, Reiter_eigene, Reiter_feind, Reiter_freund, Schiffe_eigene, schiffe_feind, Schiffe_freund,
+            Zauberer_eigene, Zauberer_feind, Zauberer_freund, Char_eigene, Char_feind, Char_freund, krieger_text, kreatur_eigen, kreatur_feind, kreatur_freund,
+            Baupunkte, Bauwerknamen, lehensid
         }
-    }
 
-    public Armee Truppen
-    {
-        get { return SpielfigurenView.GetSpielfiguren(this); }
-    }
+        public void Load(DbDataReader reader)
+        {
+            gf = DatabaseConverter.ToInt32(reader[(int)Felder.gf]);
+            kf = DatabaseConverter.ToInt32(reader[(int)Felder.kf]);
+            ph_xy = DatabaseConverter.ToString(reader[(int)Felder.ph_xy]);
+            x = DatabaseConverter.ToInt32(reader[(int)Felder.x]);
+            y = DatabaseConverter.ToInt32(reader[(int)Felder.y]);
+            db_xy = DatabaseConverter.ToString(reader[(int)Felder.db_xy]);
+            Rand = DatabaseConverter.ToInt32(reader[(int)Felder.Rand]);
+            Index = DatabaseConverter.ToInt32(reader[(int)Felder.Index]);
+            Gelaendetyp = DatabaseConverter.ToInt32(reader[(int)Felder.Gelaendetyp]);
+            Ruestort = DatabaseConverter.ToInt32(reader[(int)Felder.Ruestort]);
+            Fluss_NW = DatabaseConverter.ToInt32(reader[(int)Felder.Fluss_NW]);
+            Fluss_NO = DatabaseConverter.ToInt32(reader[(int)Felder.Fluss_NO]);
+            Fluss_O = DatabaseConverter.ToInt32(reader[(int)Felder.Fluss_O]);
+            Fluss_SO = DatabaseConverter.ToInt32(reader[(int)Felder.Fluss_SO]);
+            Fluss_SW = DatabaseConverter.ToInt32(reader[(int)Felder.Fluss_SW]);
+            Fluss_W = DatabaseConverter.ToInt32(reader[(int)Felder.Fluss_W]);
+            Wall_NW = DatabaseConverter.ToInt32(reader[(int)Felder.Wall_NW]);
+            Wall_NO = DatabaseConverter.ToInt32(reader[(int)Felder.Wall_NO]);
+            Wall_O = DatabaseConverter.ToInt32(reader[(int)Felder.Wall_O]);
+            Wall_SO = DatabaseConverter.ToInt32(reader[(int)Felder.Wall_SO]);
+            Wall_SW = DatabaseConverter.ToInt32(reader[(int)Felder.Wall_SW]);
+            Wall_W = DatabaseConverter.ToInt32(reader[(int)Felder.Wall_W]);
+            Kai_NW = DatabaseConverter.ToInt32(reader[(int)Felder.Kai_NW]);
+            Kai_NO = DatabaseConverter.ToInt32(reader[(int)Felder.Kai_NO]);
+            Kai_O = DatabaseConverter.ToInt32(reader[(int)Felder.Kai_O]);
+            Kai_SO = DatabaseConverter.ToInt32(reader[(int)Felder.Kai_SO]);
+            Kai_SW = DatabaseConverter.ToInt32(reader[(int)Felder.Kai_SW]);
+            Kai_W = DatabaseConverter.ToInt32(reader[(int)Felder.Kai_W]);
+            Strasse_NW = DatabaseConverter.ToInt32(reader[(int)Felder.Strasse_NW]);
+            Strasse_NO = DatabaseConverter.ToInt32(reader[(int)Felder.Strasse_NO]);
+            Strasse_O = DatabaseConverter.ToInt32(reader[(int)Felder.Strasse_O]);
+            Strasse_SO = DatabaseConverter.ToInt32(reader[(int)Felder.Strasse_SO]);
+            Strasse_SW = DatabaseConverter.ToInt32(reader[(int)Felder.Strasse_SW]);
+            Strasse_W = DatabaseConverter.ToInt32(reader[(int)Felder.Strasse_W]);
+            Bruecke_NW = DatabaseConverter.ToInt32(reader[(int)Felder.Bruecke_NW]);
+            Bruecke_NO = DatabaseConverter.ToInt32(reader[(int)Felder.Bruecke_NO]);
+            Bruecke_O = DatabaseConverter.ToInt32(reader[(int)Felder.Bruecke_O]);
+            Bruecke_SO = DatabaseConverter.ToInt32(reader[(int)Felder.Bruecke_SO]);
+            Bruecke_SW = DatabaseConverter.ToInt32(reader[(int)Felder.Bruecke_SW]);
+            Bruecke_W = DatabaseConverter.ToInt32(reader[(int)Felder.Bruecke_W]);
+            Reich = DatabaseConverter.ToInt32(reader[(int)Felder.Reich]);
+            Krieger_eigen = DatabaseConverter.ToInt32(reader[(int)Felder.Krieger_eigen]);
+            Krieger_feind = DatabaseConverter.ToInt32(reader[(int)Felder.Krieger_feind]);
+            Krieger_freund = DatabaseConverter.ToInt32(reader[(int)Felder.Krieger_freund]);
+            Reiter_eigene = DatabaseConverter.ToInt32(reader[(int)Felder.Reiter_eigene]);
+            Reiter_feind = DatabaseConverter.ToInt32(reader[(int)Felder.Reiter_feind]);
+            Reiter_freund = DatabaseConverter.ToInt32(reader[(int)Felder.Reiter_freund]);
+            Schiffe_eigene = DatabaseConverter.ToInt32(reader[(int)Felder.Schiffe_eigene]);
+            schiffe_feind = DatabaseConverter.ToInt32(reader[(int)Felder.schiffe_feind]);
+            Schiffe_freund = DatabaseConverter.ToInt32(reader[(int)Felder.Schiffe_freund]);
+            Zauberer_eigene = DatabaseConverter.ToInt32(reader[(int)Felder.Zauberer_eigene]);
+            Zauberer_feind = DatabaseConverter.ToInt32(reader[(int)Felder.Zauberer_feind]);
+            Zauberer_freund = DatabaseConverter.ToInt32(reader[(int)Felder.Zauberer_freund]);
+            Char_eigene = DatabaseConverter.ToInt32(reader[(int)Felder.Char_eigene]);
+            Char_feind = DatabaseConverter.ToInt32(reader[(int)Felder.Char_feind]);
+            Char_freund = DatabaseConverter.ToInt32(reader[(int)Felder.Char_freund]);
+            krieger_text = DatabaseConverter.ToString(reader[(int)Felder.krieger_text]);
+            kreatur_eigen = DatabaseConverter.ToInt32(reader[(int)Felder.kreatur_eigen]);
+            kreatur_feind = DatabaseConverter.ToInt32(reader[(int)Felder.kreatur_feind]);
+            kreatur_freund = DatabaseConverter.ToInt32(reader[(int)Felder.kreatur_freund]);
+            Baupunkte = DatabaseConverter.ToInt32(reader[(int)Felder.Baupunkte]);
+            Bauwerknamen = reader.GetString((int)Felder.Bauwerknamen);
+            lehensid = DatabaseConverter.ToInt32(reader[(int)Felder.lehensid]);
+        }
+        #endregion
 
-    public void Save(DbCommand command)
-    {
-        command.CommandText = $@"UPDATE {TableName} SET
+        public TerrainType TerrainType
+        {
+            get
+            {
+                if (Gelaendetyp <= (int)TerrainType.AuftauchpunktUnbekannt)
+                    return (TerrainType)Gelaendetyp;
+                return TerrainType.Default;
+            }
+        }
+
+        public Armee Truppen
+        {
+            get { return SpielfigurenView.GetSpielfiguren(this); }
+        }
+
+        public void Save(DbCommand command)
+        {
+            command.CommandText = $@"UPDATE {TableName} SET
             ph_xy = '{DatabaseConverter.EscapeString(this.ph_xy)}',
             x = {this.x},
             y = {this.y},
@@ -272,83 +279,83 @@ namespace PhoenixModel.dbErkenfara
             lehensid = {this.lehensid}
              WHERE gf = {this.gf} AND kf = {this.kf} ";
 
-        // Execute the command
-        command.ExecuteNonQuery();
-        SynchToOtherTables(command);
+            // Execute the command
+            command.ExecuteNonQuery();
+            SynchToOtherTables(command);
 
-        ViewModel.Update(ViewEventArgs.ViewEventType.UpdateGebäude);
-    }
-
-    /// <summary>
-    /// da manche werte doppelt gehalten werden, erfolgt hier die Synchronisation
-    /// </summary>
-    private void SynchToOtherTables(DbCommand command)
-    {
-        // synchronisation
-        if (this.Gebäude != null)
-        {
-            this.Gebäude.Bauwerknamen = this.Bauwerknamen;
-            // gebäude müssen nicht gespeichert werden, da sie aus den Karten immer wieder aktualisiert werden.
-            // this.Gebäude.Save(command);
+            ViewModel.Update(ViewEventArgs.ViewEventType.UpdateGebäude);
         }
-    }
 
-
-    public void Insert(DbCommand reader)
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool Select()
-    {
-        return true;
-    }
-
-    public bool Edit()
-    {
-        return ViewModel.BelongsToUser(this);
-    }
-
-    public GeländeTabelle Terrain
-    {
-        get
+        /// <summary>
+        /// da manche werte doppelt gehalten werden, erfolgt hier die Synchronisation
+        /// </summary>
+        private void SynchToOtherTables(DbCommand command)
         {
-            return GeländeTabelle.Terrains[Gelaendetyp != null ? (int)Gelaendetyp : 0];
+            // synchronisation
+            if (this.Gebäude != null)
+            {
+                this.Gebäude.Bauwerknamen = this.Bauwerknamen;
+                // gebäude müssen nicht gespeichert werden, da sie aus den Karten immer wieder aktualisiert werden.
+                // this.Gebäude.Save(command);
+            }
         }
-    }
 
-    /*public string ReichZugehörigkeit
-    {
-        get
+
+        public void Insert(DbCommand reader)
         {
-            if (SharedData.Nationen == null || Reich == null)
-                return string.Empty;
-            return SharedData.Nationen.ElementAt(Reich.Value).Reich ?? string.Empty;
+            throw new NotImplementedException();
         }
-    }*/
 
-    public Nation? Nation
-    {
-        get
+        public bool Select()
         {
-            if (SharedData.Nationen == null || Reich == null)
-                return null;
-            return SharedData.Nationen.ElementAt(Reich.Value);
+            return true;
         }
-    }
 
-    // aktuell wird die Update Queue für Gebäude nicht verwendet, da die Gebäude sehr statisch sind
-    public Gebäude? Gebäude
-    {
-        get
+        public bool Edit()
         {
-            return PhoenixModel.View.BauwerkeView.GetGebäude(this);
+            return ViewModel.BelongsToUser(this);
         }
+
+        public GeländeTabelle Terrain
+        {
+            get
+            {
+                return GeländeTabelle.Terrains[Gelaendetyp != null ? (int)Gelaendetyp : 0];
+            }
+        }
+
+        /*public string ReichZugehörigkeit
+        {
+            get
+            {
+                if (SharedData.Nationen == null || Reich == null)
+                    return string.Empty;
+                return SharedData.Nationen.ElementAt(Reich.Value).Reich ?? string.Empty;
+            }
+        }*/
+
+        public Nation? Nation
+        {
+            get
+            {
+                if (SharedData.Nationen == null || Reich == null)
+                    return null;
+                return SharedData.Nationen.ElementAt(Reich.Value);
+            }
+        }
+
+        // aktuell wird die Update Queue für Gebäude nicht verwendet, da die Gebäude sehr statisch sind
+        public Gebäude? Gebäude
+        {
+            get
+            {
+                return PhoenixModel.View.BauwerkeView.GetGebäude(this);
+            }
+        }
+
+
+
+
+
     }
-
-
-
-
-
-}
 }
