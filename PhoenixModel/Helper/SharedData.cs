@@ -11,47 +11,7 @@ namespace PhoenixModel.Helper
 {
     public static class SharedData
     {
-        public interface IBlockable
-        {
-            bool IsBlocked { get; set; }
-        }
-
-
-        public class BlockGuard : IDisposable
-        {
-            IBlockable? dictionary = null;
-            public BlockGuard(IBlockable dic) { 
-                dictionary = dic; 
-                dictionary.IsBlocked = true;
-            }
-            public void Dispose() 
-            {
-                if (dictionary != null) 
-                    dictionary.IsBlocked = false;
-            }
-        }
-
-        public interface IUpdatable
-        {
-            bool IsUpdated { get; set; }
-        }
-
-
-        public class UpdateGuard : IDisposable
-        {
-            IUpdatable? dictionary = null;
-            public UpdateGuard(IUpdatable dic)
-            {
-                dictionary = dic;
-            }
-            public void Dispose()
-            {
-                if (dictionary != null)
-                    dictionary.IsUpdated = true;
-            }
-        }
-
-        public class BlockingDictionary<Tvalue> : ConcurrentDictionary<string, Tvalue>, IBlockable 
+        public class BlockingDictionary<Tvalue> : ConcurrentDictionary<string, Tvalue> 
         {
             public BlockingDictionary(int access, int capacity): base(access, capacity) { }
 
@@ -73,8 +33,6 @@ namespace PhoenixModel.Helper
         /// In dieser Queue werden die Objekte abgelegt, die in der Datenbank gespeichert werden sollen. Das geschieht asynchron
         /// </summary>
         public static ConcurrentQueue<IDatabaseTable> StoreQueue = [];
-
-
 
         // Karte
         public static BlockingDictionary<KleinFeld>? Map = null;
