@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Helper;
 using PhoenixDX.Structures;
+using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 
@@ -72,12 +73,15 @@ namespace PhoenixDX.Drawing
                         mouseover = gemark;                  
 
                     var listTexture = gemark.GetTextures(0);
-                    foreach (var hexTexture in listTexture)
+                    foreach (var baseTexture in listTexture)
                     {
-                        // spriteBatch.Draw(hexTexture, posP, null, Color.Transparent);
-                        spriteBatch.Draw(hexTexture, rScreenG, null, inKleinfeld ? Color.Plum : Color.White);
+                        if (baseTexture is ColoredTexture colored)
+                            spriteBatch.Draw(baseTexture.Texture, rScreenG, null, inKleinfeld ? Color.Plum : colored.Color);
+                        else
+                            spriteBatch.Draw(baseTexture.Texture, rScreenG, null, inKleinfeld ? Color.Plum : Color.White);
+
                     }
-                    
+
                 }
             }
             foreach (var province in provinzen.Values)
@@ -100,11 +104,13 @@ namespace PhoenixDX.Drawing
                     if (inKleinfeld)
                         mouseover = gemark;
 
-                    var listTexture = gemark.GetColoredTextures(1);
-                    foreach (var hexTexture in listTexture)
+                    var listTexture = gemark.GetTextures(1);
+                    foreach (var baseTexture in listTexture)
                     {
-                        // spriteBatch.Draw(hexTexture, posP, null, Color.Transparent);
-                        spriteBatch.Draw(hexTexture, rScreenG, null, inKleinfeld ? Color.Plum : Color.White);
+                        if (baseTexture is ColoredTexture colored)
+                            spriteBatch.Draw(baseTexture.Texture, rScreenG, null, inKleinfeld ? Color.Plum : colored.Color);
+                        else
+                            spriteBatch.Draw(baseTexture.Texture, rScreenG, null, inKleinfeld ? Color.Plum : Color.White);
                     }
 
                     if (ShowReichOverlay == true && gemark.ReichID > 0 && gemark.Reich != null)

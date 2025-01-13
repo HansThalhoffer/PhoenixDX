@@ -1,34 +1,31 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using PhoenixDX.Helper;
-using PhoenixModel.dbPZE;
 using System;
-using System.Collections.Generic;
 using PhoenixModel.dbErkenfara;
+using PhoenixDX.Drawing;
 
 namespace PhoenixDX.Structures
 {
-    public class Marker : GemarkAdorner
+    public class Marker :ColorAdorner
     {
-      
-        static Dictionary<MarkerType, Texture2D> textures = [];
-        Texture2D hexTexture = null;
+        static Texture2D _hexTexture = null;
+        MarkerType MarkerType { get; set; }
+        static ColoredTexture[] coloredTextures = new ColoredTexture[Enum.GetNames(typeof(MarkerType)).Length] ;
 
         public Marker(MarkerType mark)
         {
-            HasDirections = false;
-            hexTexture = textures[mark];
+            MarkerType = mark;
         }
 
         public static void LoadContent(ContentManager contentManager)
         {
             try
             {
-                textures.Add(MarkerType.Info, contentManager.Load<Texture2D>("Images/TilesetV/Info"));
-                textures.Add(MarkerType.Warning, contentManager.Load<Texture2D>("Images/TilesetV/Warning"));
-                textures.Add(MarkerType.Fatality, contentManager.Load<Texture2D>("Images/TilesetV/Fatality"));
+                _hexTexture = contentManager.Load<Texture2D>("Images/TilesetV/Info");
+                coloredTextures[0] = new ColoredTexture(_hexTexture, Color.White);
+                coloredTextures[1] = new ColoredTexture(_hexTexture, Color.Orange);
+                coloredTextures[2] = new ColoredTexture(_hexTexture, Color.Red);
             }
             catch (Exception ex)
             {
@@ -36,19 +33,20 @@ namespace PhoenixDX.Structures
             }
         }
 
-        protected override Drawing.DirectionTexture GetDirectionTexture()
+        public override ColoredTexture CreateTexture()
         {
-            return null;
-        }
-
-        public override List<Texture2D> GetTextures()
-        {
-            return new List<Texture2D>() { hexTexture };
-        }
-
-        public override Texture2D GetTexture()
-        {
-            return hexTexture;
+            switch (MarkerType)
+            {
+                case MarkerType.None:
+                    return null;
+                case MarkerType.Info:
+                    return coloredTextures[0];
+                case MarkerType.Warning:
+                    return coloredTextures[1];
+                case MarkerType.Fatality:
+                    return coloredTextures[2];
+                default: return null;
+            }
         }
     }
 }

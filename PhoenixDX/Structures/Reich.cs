@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using PhoenixDX.Drawing;
 using PhoenixDX.Helper;
 using PhoenixModel.dbPZE;
 using System;
@@ -9,22 +10,23 @@ using System.Collections.Generic;
 
 namespace PhoenixDX.Structures
 {
+    /// <summary>
+    /// Der Reich Adorner lässt sich in Zukunft einfacher, mit weniger Texturen als ColorAdorner abbilden
+    /// </summary>
     public class Reich : GemarkAdorner
     {
         public Color color;
         public string name;
-        static Dictionary<string, Texture2D> reichsFarben = [];
-        Texture2D hexTexture = null;
-    
+        static Dictionary<string, SimpleTexture> reichsFarben = [];
+        private SimpleTexture _hexTexture = null;
+
         public Reich(Nation nation)
         {
-            HasDirections = false;
-
             color = Kolor.Convert(nation.Farbe);
             name = nation.Reich;
             if (reichsFarben.ContainsKey(nation.Farbname))
             {
-                hexTexture = reichsFarben[nation.Farbname];
+                _hexTexture = reichsFarben[nation.Farbname];
             }
             else
             {
@@ -37,20 +39,20 @@ namespace PhoenixDX.Structures
 
             try
             {
-                reichsFarben.Add("blau",contentManager.Load<Texture2D>("Images/Reichsfarben/reich_blau"));
-                reichsFarben.Add("braun", contentManager.Load<Texture2D>("Images/Reichsfarben/reich_braun"));
-                reichsFarben.Add("gelb", contentManager.Load<Texture2D>("Images/Reichsfarben/reich_gelb"));
-                reichsFarben.Add("grau", contentManager.Load<Texture2D>("Images/Reichsfarben/reich_grau"));
-                reichsFarben.Add("dunkelgrün", contentManager.Load<Texture2D>("Images/Reichsfarben/reich_gruen"));
-                reichsFarben.Add("hellgrün", contentManager.Load<Texture2D>("Images/Reichsfarben/reich_hellgruen"));
-                reichsFarben.Add("hellblau", contentManager.Load<Texture2D>("Images/Reichsfarben/reich_hellblau"));
-                reichsFarben.Add("lila", contentManager.Load<Texture2D>("Images/Reichsfarben/reich_lila"));
-                reichsFarben.Add("orange", contentManager.Load<Texture2D>("Images/Reichsfarben/reich_orange"));
-                reichsFarben.Add("rot", contentManager.Load<Texture2D>("Images/Reichsfarben/reich_rot"));
-                reichsFarben.Add("schwarz", contentManager.Load<Texture2D>("Images/Reichsfarben/reich_schwarz"));
-                reichsFarben.Add("spielleitung", contentManager.Load<Texture2D>("Images/Reichsfarben/reich_spielleitung"));
-                reichsFarben.Add("türkis", contentManager.Load<Texture2D>("Images/Reichsfarben/reich_tuerkis"));
-                reichsFarben.Add("weiß", contentManager.Load<Texture2D>("Images/Reichsfarben/reich_weiss"));
+                reichsFarben.Add("blau",new SimpleTexture(contentManager.Load<Texture2D>("Images/Reichsfarben/reich_blau")));
+                reichsFarben.Add("braun", new SimpleTexture(contentManager.Load<Texture2D>("Images/Reichsfarben/reich_braun")));
+                reichsFarben.Add("gelb", new SimpleTexture(contentManager.Load<Texture2D>("Images/Reichsfarben/reich_gelb")));
+                reichsFarben.Add("grau", new SimpleTexture(contentManager.Load<Texture2D>("Images/Reichsfarben/reich_grau")));
+                reichsFarben.Add("dunkelgrün", new SimpleTexture(contentManager.Load<Texture2D>("Images/Reichsfarben/reich_gruen")));
+                reichsFarben.Add("hellgrün", new SimpleTexture(contentManager.Load<Texture2D>("Images/Reichsfarben/reich_hellgruen")));
+                reichsFarben.Add("hellblau", new SimpleTexture(contentManager.Load<Texture2D>("Images/Reichsfarben/reich_hellblau")));
+                reichsFarben.Add("lila", new SimpleTexture(contentManager.Load<Texture2D>("Images/Reichsfarben/reich_lila")));
+                reichsFarben.Add("orange", new SimpleTexture(contentManager.Load<Texture2D>("Images/Reichsfarben/reich_orange")));
+                reichsFarben.Add("rot", new SimpleTexture(contentManager.Load<Texture2D>("Images/Reichsfarben/reich_rot")));
+                reichsFarben.Add("schwarz", new SimpleTexture(contentManager.Load<Texture2D>("Images/Reichsfarben/reich_schwarz")));
+                reichsFarben.Add("spielleitung", new SimpleTexture(contentManager.Load<Texture2D>("Images/Reichsfarben/reich_spielleitung")));
+                reichsFarben.Add("türkis", new SimpleTexture(contentManager.Load<Texture2D>("Images/Reichsfarben/reich_tuerkis")));
+                reichsFarben.Add("weiß", new SimpleTexture(contentManager.Load<Texture2D>("Images/Reichsfarben/reich_weiss")));
             }
             catch (Exception ex)
             {
@@ -58,21 +60,9 @@ namespace PhoenixDX.Structures
             }
         }
 
-        protected override Drawing.DirectionTexture GetDirectionTexture()
+        public override BaseTexture GetTexture()
         {
-            return null;
+            return _hexTexture;
         }
-
-        public override List<Texture2D> GetTextures()
-        {
-            return new List<Texture2D>() { hexTexture };
-        }
-
-        public override Texture2D GetTexture()
-        {
-            return hexTexture;
-        }
-
-
     }
 }

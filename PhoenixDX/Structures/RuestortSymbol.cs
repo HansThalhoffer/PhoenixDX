@@ -1,12 +1,13 @@
 ﻿using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using PhoenixDX.Drawing;
 using System.Collections.Generic;
 
 namespace PhoenixDX.Structures
 {
     internal class RuestortSymbol : GemarkAdorner
     {
-        public static Dictionary<string, RuestortSymbol> Ruestorte = new Dictionary<string, RuestortSymbol>
+           public static Dictionary<string, RuestortSymbol> Ruestorte = new Dictionary<string, RuestortSymbol>
         {
             {"Burg-I", new RuestortSymbol(11, "Burg-I","Burg-I")},
             {"Burg-II",new RuestortSymbol(12, "Burg-II", "Burg-II") },
@@ -26,7 +27,7 @@ namespace PhoenixDX.Structures
             {"Dorf-III",new RuestortSymbol(10, "Dorf-III", "Dorf-III") }
         };
 
-        Texture2D hexTexture = null;
+        SimpleTexture _hexTexture = null;
         int _nummer;
         string _name;
         string _image;
@@ -35,32 +36,19 @@ namespace PhoenixDX.Structures
             this._nummer = Nummer;
             this._name = Name;
             this._image = Image;
-            HasDirections = false;
         }
 
         public static void LoadContent(ContentManager contentManager)
         {
             foreach (var item in Ruestorte.Values)
             {
-                item.hexTexture = contentManager.Load<Texture2D>($"Images/Symbol/{item._image}");
+                item._hexTexture =new SimpleTexture(contentManager.Load<Texture2D>($"Images/Symbol/{item._image}"));
             }
         }
 
-        protected override Drawing.DirectionTexture GetDirectionTexture()
+        public override BaseTexture GetTexture()
         {
-            return null;
+            return _hexTexture;
         }
-
-        public override List<Texture2D> GetTextures()
-        {
-            return new List<Texture2D>() { hexTexture };
-        }
-
-        public override Texture2D GetTexture()
-        {
-            return hexTexture;
-        }
-
-
     }
 }

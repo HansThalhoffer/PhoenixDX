@@ -1,7 +1,9 @@
 ﻿
+using PhoenixDX.Drawing;
+
 namespace PhoenixDX.Structures
 {
-    public class Wall : GemarkAdorner
+    public class Wall : DirectionAdorner
     {
         public static Drawing.DirectionTexture Texture = new("wand_");
         protected override Drawing.DirectionTexture GetDirectionTexture() { return Texture; }

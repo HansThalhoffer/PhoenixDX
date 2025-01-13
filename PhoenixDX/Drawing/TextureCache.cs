@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -10,23 +11,24 @@ using System.Windows.Forms.Design;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Drawing;
+using PhoenixDX.Program;
 using PhoenixDX.Structures;
 
 namespace PhoenixModel.Helper
 {
-    internal class TextureCache: Dictionary<string, ColoredTexture>
+    internal class TextureCache: Dictionary<string, BaseTexture>
     {
         private static TextureCache _instance = [];
         public static TextureCache Instance => _instance;
-
+     
         public static bool Contains(string key)
         {
             return _instance.ContainsKey(key);
         }
 
-        public static ColoredTexture Get(string key)
+        public static BaseTexture Get(string key)
         {
-            return _instance[key];
+             return _instance[key];
         }
 
         public static void Set(string key, Texture2D item, Color farbe)
@@ -34,7 +36,12 @@ namespace PhoenixModel.Helper
             _instance[key] = new ColoredTexture(item, farbe);
         }
 
-        public static void Set(string key, ColoredTexture item)
+        public static void Set(string key, Texture2D item)
+        {
+            _instance[key] = new SimpleTexture(item);
+        }
+
+        public static void Set(string key, BaseTexture item)
         {
             _instance[key] = item;
         }
@@ -45,11 +52,14 @@ namespace PhoenixModel.Helper
         /// <param name="graphicsDevice">The GraphicsDevice used for rendering.</param>
         /// <param name="textures">The list of Texture2D to be merged.</param>
         /// <returns>A new Texture2D containing the merged content of the input textures.</returns>
-        public static ColoredTexture MergeTextures(GraphicsDevice graphicsDevice, List<Texture2D> textures, int width, int height)
+        public static SimpleTexture MergeTextures(List<Texture2D> textures)
         {
-            if (textures == null || textures.Count == 0)
-                throw new System.ArgumentException("The textures list must not be null or empty.");
+            if (SpielDX.Instance.Graphics == null || textures == null || textures.Count == 0)
+                return null;
 
+            var graphicsDevice = SpielDX.Instance.Graphics.GraphicsDevice;
+            int width = textures[0].Width;
+            int height = textures[0].Height;
             // Create a new RenderTarget2D where we will draw all the layers
             RenderTarget2D renderTarget = new RenderTarget2D(graphicsDevice, width, height);
 
@@ -83,7 +93,7 @@ namespace PhoenixModel.Helper
             // Dispose of the render target as it is no longer needed
             renderTarget.Dispose();
 
-            return new ColoredTexture(mergedTexture);
+            return new SimpleTexture(mergedTexture);
         }
 
         /// <summary>

@@ -10,9 +10,11 @@ using System.Collections.Generic;
 
 namespace PhoenixDX.Structures
 {
-    internal class Truppen : GemarkAdorner
+    /// <summary>
+    /// Truppen sind spezielle Adorner, die Figuren zusammenstellen, so dass sie auf ein Kleinfeld passen
+    /// </summary>
+    internal class Truppen : ColorAdorner
     {
-
         public class FigurImage
         {
             public FigurType Typ = FigurType.NaN;
@@ -59,13 +61,11 @@ namespace PhoenixDX.Structures
         }
 
 
-        ColoredTexture _gameTexture = null;
         List<Figur> _truppen = null;
 
         public Truppen(List<Figur> truppen)
         {
             _truppen = truppen;
-            this.HasDirections = false;
         }
 
         public static void LoadContent(ContentManager contentManager)
@@ -76,8 +76,13 @@ namespace PhoenixDX.Structures
             }
         }
 
+        public override ColoredTexture CreateTexture()
+        {
+            return CreateTexture(_truppen);
+        }
+
         // hier werden die Figuren in eine Texture zusammengestellt
-        public static ColoredTexture CreateTexture(List<Figur> truppen)
+        private static ColoredTexture CreateTexture(List<Figur> truppen)
         {
             if (SpielDX.Instance.Graphics == null || truppen.Count == 0)
                 return null;
@@ -90,7 +95,7 @@ namespace PhoenixDX.Structures
             }
 
             if (TextureCache.Contains(cacheKey))
-                return TextureCache.Get(cacheKey);
+                return TextureCache.Get(cacheKey) as ColoredTexture;
 
             var graphicsDevice = SpielDX.Instance.Graphics.GraphicsDevice;
             float faktor = truppen.Count > 1 ? 1.2f :0.8f;
@@ -156,22 +161,6 @@ namespace PhoenixDX.Structures
             return null;
         }
 
-
-        protected override DirectionTexture GetDirectionTexture()
-        {
-            return null;
-        }
-
-        public override List<Texture2D> GetTextures()
-        {
-            return new List<Texture2D>() { GetTexture() };
-        }
-
-        public override Texture2D GetTexture()
-        {
-           if (_gameTexture == null)
-                _gameTexture = CreateTexture(_truppen);
-            return _gameTexture.Texture;
-        }
+        
     }
 }

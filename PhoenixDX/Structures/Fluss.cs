@@ -1,6 +1,8 @@
-﻿namespace PhoenixDX.Structures
+﻿using PhoenixDX.Drawing;
+
+namespace PhoenixDX.Structures
 {
-    public class Fluss : GemarkAdorner
+    public class Fluss : DirectionAdorner
     {
         public static Drawing.DirectionTexture Texture = new("fluss_");
         protected override Drawing.DirectionTexture GetDirectionTexture() { return Texture; }

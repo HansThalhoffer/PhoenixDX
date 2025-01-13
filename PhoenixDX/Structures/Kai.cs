@@ -1,6 +1,8 @@
-﻿namespace PhoenixDX.Structures
+﻿using PhoenixDX.Drawing;
+
+namespace PhoenixDX.Structures
 {
-    public class Kai : GemarkAdorner
+    public class Kai : DirectionAdorner
     {
         public static Drawing.DirectionTexture Texture = new("kai_");
         protected override Drawing.DirectionTexture GetDirectionTexture() { return Texture; }
