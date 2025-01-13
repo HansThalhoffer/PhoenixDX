@@ -6,14 +6,32 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.Design;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Structures;
 
 namespace PhoenixModel.Helper
 {
-    internal class TextureCache
+    internal class TextureCache: Dictionary<string, Texture2D>
     {
+        private static TextureCache _instance = [];
+        public static TextureCache Instance => _instance;
+
+        public static bool Contains(string key)
+        {
+            return _instance.ContainsKey(key);
+        }
+
+        public static Texture2D Get(string key)
+        {
+            return _instance[key];
+        }
+
+        public static void Set(string key, Texture2D item)
+        {
+            _instance[key] = item;
+        }
 
         /// <summary>
         /// Merges a list of textures into a single texture.

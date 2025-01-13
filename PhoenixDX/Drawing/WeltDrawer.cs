@@ -29,10 +29,9 @@ namespace PhoenixDX.Drawing
         static double _tick = 0;
         static double _animated = 0;
         static bool _toggle = false;
-        public static Gemark Draw(SpriteBatch spriteBatch, Vektor scale, Vektor? mousePos, bool isMoving, float tileTransparancy, 
+        public static Gemark Draw(SpriteBatch spriteBatch, Vektor scale, Vektor? mousePos, bool isMoving,  
             ref Dictionary<int, Provinz> provinzen, TimeSpan gameTime, Gemark selected, Rectangle visibleScreen)
         {         
-            Color colorTiles = Color.White * tileTransparancy;
             _animated += gameTime.TotalMilliseconds - _tick;
             _tick = gameTime.TotalMilliseconds;
             if (_animated > 100d)
@@ -76,7 +75,7 @@ namespace PhoenixDX.Drawing
                     foreach (var hexTexture in listTexture)
                     {
                         // spriteBatch.Draw(hexTexture, posP, null, Color.Transparent);
-                        spriteBatch.Draw(hexTexture, rScreenG, null, inKleinfeld ? Color.Plum : colorTiles);
+                        spriteBatch.Draw(hexTexture, rScreenG, null, inKleinfeld ? Color.Plum : Color.White);
                     }
                     
                 }
@@ -105,7 +104,7 @@ namespace PhoenixDX.Drawing
                     foreach (var hexTexture in listTexture)
                     {
                         // spriteBatch.Draw(hexTexture, posP, null, Color.Transparent);
-                        spriteBatch.Draw(hexTexture, rScreenG, null, inKleinfeld ? Color.Plum : colorTiles);
+                        spriteBatch.Draw(hexTexture, rScreenG, null, inKleinfeld ? Color.Plum : Color.White);
                     }
 
                     if (ShowReichOverlay == true && gemark.ReichID > 0 && gemark.Reich != null)

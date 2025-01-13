@@ -6,11 +6,6 @@ using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Vektor = Microsoft.Xna.Framework.Vector2;
 
 namespace PhoenixDX.Structures
 {
@@ -81,20 +76,30 @@ namespace PhoenixDX.Structures
         }
 
         // hier werden die Figuren in eine Texture zusammengestellt
-        public void CreateTexture()
+        public static Texture2D CreateTexture(List<Figur> truppen)
         {
-            if (SpielDX.Instance.Graphics == null)
-                return;
+            if (SpielDX.Instance.Graphics == null || truppen.Count == 0)
+                return null;
+
+            // der key für den Cache ist Farbe und dann die Typen
+            string cacheKey = $"{truppen[0].Color.ToString()};";
+            foreach (var figur in truppen)
+            {
+                cacheKey += $"{figur.Typ.ToString()}, ";
+            }
+
+            if (TextureCache.Contains(cacheKey))
+                return TextureCache.Get(cacheKey);
 
             var graphicsDevice = SpielDX.Instance.Graphics.GraphicsDevice;
-            float faktor = _truppen.Count > 1 ? 1.2f :0.8f;
+            float faktor = truppen.Count > 1 ? 1.2f :0.8f;
             int figurHeight = Convert.ToInt32(719f / faktor);
             int figurWidth = Convert.ToInt32(670f / faktor);
             const int height = 138 *2;
             const int width = 160 *2;
 
             Position[] pos = [
-                new Position(_truppen.Count > 1 ? 4:40, _truppen.Count > 1 ? -8:20),
+                new Position(truppen.Count > 1 ? 4:40, truppen.Count > 1 ? -8:20),
                 new Position(140, 0),
                 new Position(-8, 140),
                 new Position(140, 140),
@@ -117,7 +122,7 @@ namespace PhoenixDX.Structures
 
                     // Draw each texture in the list on top of each other
                     int i = 0;
-                    foreach (var figur in _truppen)
+                    foreach (var figur in truppen)
                     {
                         int index = (int)figur.Typ;
                         var texture = FigurImages[index].Texture;
@@ -134,19 +139,21 @@ namespace PhoenixDX.Structures
                     graphicsDevice.SetRenderTarget(null);
 
                     // Get the final merged texture from the render target
-                    _texture = new Texture2D(graphicsDevice, width, height);
+                    Texture2D result = new Texture2D(graphicsDevice, width, height);
 
                     // Copy the data from the render target to the final texture
                     Color[] data = new Color[width * height];
                     renderTarget.GetData(data);
-                    _texture.SetData(data);
+                    result.SetData(data);
+                    TextureCache.Set(cacheKey, result);
+                    return result;
                 }
             }
             catch (Exception ex)
             {
-                MappaMundi.Log(0, 0, $"Bei der Erstellung der Textur für die Truppen auf {this.ToString()} kam es zu einem Fehler",ex);
+                MappaMundi.Log(0, 0, $"Bei der Erstellung der Textur für die Truppen kam es zu einem Fehler",ex);
             }
-           
+            return null;
         }
 
 
@@ -163,7 +170,7 @@ namespace PhoenixDX.Structures
         public override Texture2D GetTexture()
         {
            if (_texture == null)
-                CreateTexture();
+                _texture = CreateTexture(_truppen);
             return _texture;
         }
     }
