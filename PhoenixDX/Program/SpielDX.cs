@@ -6,6 +6,10 @@ using PhoenixDX.Structures;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
+
+// using SharpDX;
+
+// using SharpDX;
 using System;
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
@@ -50,7 +54,9 @@ namespace PhoenixDX.Program
             _wpfBridge = bridge;
             _clientWidth = 10;
             _clientHeight = 10;
-            Zoom = 0.4f;
+
+            if(Zoom<=0.01 || Zoom > 2.6)
+                Zoom = 0.4f;
             _cancellationToken = token;
             IsMouseVisible = true;
 

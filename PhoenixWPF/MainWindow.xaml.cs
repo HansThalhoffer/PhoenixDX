@@ -64,10 +64,7 @@ namespace PhoenixWPF
                         new TruppenEntwicklungDialog().Show();
                         break;
                     case "InstallUSB":
-                        Main.Instance.CreateInstallUbStick();
-                        break;
-                    case "Zug 999 (Testdaten)":
-                        Database.Generatoren.TestDataGenerator.GeneriereTestdatenFürZug999();
+                        Main.Instance.CreateInstallUSBStick();
                         break;
                 }
             }
