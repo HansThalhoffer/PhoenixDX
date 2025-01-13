@@ -8,8 +8,6 @@ using PhoenixModel.dbCrossRef;
 using PhoenixModel.Helper;
 using SharpDX.Direct2D1.Effects;
 
-
-
 // using SharpDX;
 using System;
 using System.Collections.Concurrent;
@@ -22,6 +20,7 @@ using Vektor = Microsoft.Xna.Framework.Vector2;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.Database;
 using System.ComponentModel;
+using SharpDX.X3DAudio;
 
 namespace PhoenixDX.Program
 {
@@ -61,7 +60,9 @@ namespace PhoenixDX.Program
             _wpfBridge = bridge;
             _clientWidth = 10;
             _clientHeight = 10;
-            Zoom = 0.4f;
+
+            if(Zoom<=0.01 || Zoom > 2.6)
+                Zoom = 0.4f;
             _cancellationToken = token;
             IsMouseVisible = true;
 

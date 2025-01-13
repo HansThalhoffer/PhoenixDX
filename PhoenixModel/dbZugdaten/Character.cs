@@ -14,7 +14,8 @@ namespace PhoenixModel.dbZugdaten
         // IEigenschaftler
         public override FigurType Typ => FigurType.Charakter;
         public override FigurType BaseTyp => FigurType.Charakter;
-    
+        string Einheit { get; set; }
+
         public enum Felder
         {
             nummer, Beschriftung, GP_ges, GP_akt, GP_ges_alt, GP_akt_alt, Charname, Spielername, gf_von, kf_von, gf_nach, kf_nach, rp, bp, tp_alt, tp, ph_xy, Teleport_gf_von, Teleport_kf_von, Teleport_gf_nach, Teleport_kf_nach, Befehl_magie, Befehl_Teleport, Befehl_bannt,

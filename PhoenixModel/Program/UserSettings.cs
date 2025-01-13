@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PhoenixModel.Program
-{
+﻿namespace PhoenixModel.Program {
     using System.ComponentModel;
 
     /// <summary>
@@ -14,15 +7,14 @@ namespace PhoenixModel.Program
     /// wenn alles neu gemacht werden soll, dann müssen die Settings gelöscht werden im
     /// Roaming App Data des Benutzers
     /// </summary>
-    public class UserSettings : INotifyPropertyChanged
-    {
+    public class UserSettings : INotifyPropertyChanged {
         private string _databaseLocationKarte = string.Empty;
-        private string _passwordKarte = string.Empty; 
+        private string _passwordKarte = string.Empty;
         private string _databaseLocationPZE = string.Empty;
         private string _passwordPZE = string.Empty;
         private string _defaultValuesReiche = string.Empty;
         private string _databaseLocationCrossRef = string.Empty;
-        private string _passwordCrossRef = string.Empty ;
+        private string _passwordCrossRef = string.Empty;
         private string _databaseLocationZugdaten = string.Empty;
         private string _passwordReich = string.Empty;
         private string _databaseLocationFeinde = string.Empty;
@@ -32,17 +24,15 @@ namespace PhoenixModel.Program
         private bool _showWindowNavigator = true;
         private bool _showWindowProperties = true;
         private bool _showWindowDiplomacy = true;
-        
+
+        private float _zoom = 0.4f;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public string DefaultValuesReiche
-        {
+        public string DefaultValuesReiche {
             get => _defaultValuesReiche;
-            set
-            {
-                if (_defaultValuesReiche != value)
-                {
+            set {
+                if (_defaultValuesReiche != value) {
                     _defaultValuesReiche = value;
                     OnPropertyChanged(nameof(DefaultValuesReiche));
                 }
@@ -50,172 +40,146 @@ namespace PhoenixModel.Program
         }
 
         #region AccessDatabase
-        public string DatabaseLocationCrossRef
-        {
+        public string DatabaseLocationCrossRef {
             get => _databaseLocationCrossRef;
-            set
-            {
-                if (_databaseLocationCrossRef != value)
-                {
+            set {
+                if (_databaseLocationCrossRef != value) {
                     _databaseLocationCrossRef = value;
                     OnPropertyChanged(nameof(DatabaseLocationCrossRef));
                 }
             }
         }
-        public string PasswordCrossRef
-        {
+        public string PasswordCrossRef {
             get => _passwordCrossRef;
-            set
-            {
-                if (_passwordCrossRef != value)
-                {
+            set {
+                if (_passwordCrossRef != value) {
                     _passwordCrossRef = value;
                     OnPropertyChanged(nameof(PasswordCrossRef));
                 }
             }
         }
 
-        public string DatabaseLocationKarte
-        {
+        public string DatabaseLocationKarte {
             get => _databaseLocationKarte;
-            set
-            {
-                if (_databaseLocationKarte != value)
-                {
+            set {
+                if (_databaseLocationKarte != value) {
                     _databaseLocationKarte = value;
                     OnPropertyChanged(nameof(DatabaseLocationKarte));
                 }
             }
         }
-        public string PasswordKarte
-        {
+        public string PasswordKarte {
             get => _passwordKarte;
-            set
-            {
-                if (_passwordKarte != value)
-                {
+            set {
+                if (_passwordKarte != value) {
                     _passwordKarte = value;
                     OnPropertyChanged(nameof(PasswordKarte));
                 }
             }
         }
-        public string DatabaseLocationPZE
-        {
+        public string DatabaseLocationPZE {
             get => _databaseLocationPZE;
-            set
-            {
-                if (_databaseLocationPZE != value)
-                {
+            set {
+                if (_databaseLocationPZE != value) {
                     _databaseLocationPZE = value;
                     OnPropertyChanged(nameof(DatabaseLocationPZE));
                 }
             }
         }
-        public string PasswordPZE
-        {
+        public string PasswordPZE {
             get => _passwordPZE;
-            set
-            {
-                if (_passwordPZE != value)
-                {
+            set {
+                if (_passwordPZE != value) {
                     _passwordPZE = value;
                     OnPropertyChanged(nameof(PasswordPZE));
                 }
             }
         }
 
-   
+
         #endregion
 
         #region Windows
-        public bool ShowWindowNavigator
-        {
+        public bool ShowWindowNavigator {
             get => _showWindowNavigator;
-            set
-            {
-                if (_showWindowNavigator != value)
-                {
+            set {
+                if (_showWindowNavigator != value) {
                     _showWindowNavigator = value;
                     OnPropertyChanged(nameof(ShowWindowNavigator));
                 }
             }
         }
 
-        public bool ShowWindowProperties
-        {
+        public bool ShowWindowProperties {
             get => _showWindowProperties;
-            set
-            {
-                if (_showWindowProperties != value)
-                {
+            set {
+                if (_showWindowProperties != value) {
                     _showWindowProperties = value;
                     OnPropertyChanged(nameof(ShowWindowProperties));
                 }
             }
         }
 
-        public bool ShowWindowDiplomacy
-        {
+        public bool ShowWindowDiplomacy {
             get => _showWindowDiplomacy;
-            set
-            {
-                if (_showWindowDiplomacy != value)
-                {
+            set {
+                if (_showWindowDiplomacy != value) {
                     _showWindowDiplomacy = value;
                     OnPropertyChanged(nameof(ShowWindowDiplomacy));
                 }
             }
         }
 
-        public string PasswordReich 
-        { 
-            get => _passwordReich; 
-            set { 
+        public string PasswordReich {
+            get => _passwordReich;
+            set {
                 _passwordReich = value;
                 OnPropertyChanged(nameof(PasswordReich));
             }
         }
-        public int SelectedReich 
-        { 
+        public int SelectedReich {
             get => _selectedReich;
-            set
-            {
+            set {
                 _selectedReich = value;
                 OnPropertyChanged(nameof(SelectedReich));
             }
 
         }
 
-        public string DatabaseLocationZugdaten
-        {
+        public string DatabaseLocationZugdaten {
             get => _databaseLocationZugdaten;
-            set
-            {
-                if (_databaseLocationZugdaten != value)
-                {
+            set {
+                if (_databaseLocationZugdaten != value) {
                     _databaseLocationZugdaten = value;
                     OnPropertyChanged(nameof(DatabaseLocationZugdaten));
                 }
             }
         }
-        public int SelectedZug
-        {
+        public int SelectedZug {
             get => _selectedZug;
-            set
-            {
+            set {
                 _selectedZug = value;
                 OnPropertyChanged(nameof(SelectedZug));
             }
 
         }
+
+        /// <summary>
+        /// Zoom-Faktor der Karte
+        /// </summary>
+        public float Zoom {
+            get => _zoom;
+            set {
+                _zoom = value;
+                OnPropertyChanged(nameof(Zoom));
+            }
+
+        }
         #endregion
 
+        public UserSettings() { }
 
-        public UserSettings()
-        { }
-
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
+        protected virtual void OnPropertyChanged(string propertyName) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
