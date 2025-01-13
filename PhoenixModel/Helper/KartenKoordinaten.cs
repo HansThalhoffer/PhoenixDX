@@ -8,16 +8,8 @@ using System.Threading.Tasks;
 using static PhoenixModel.ExternalTables.GeländeTabelle;
 
 namespace PhoenixModel.dbErkenfara {
-    public struct KartenKoordinaten {
-        /// <summary>
-        ///  Provinz
-        /// </summary>
-        public int gf;
-
-        /// <summary>
-        ///  Gemark
-        /// </summary>
-        public int kf;
+    public class KartenKoordinaten : KleinfeldPosition {
+      
         public int dbx;
         public int dby;
 
@@ -96,7 +88,7 @@ namespace PhoenixModel.dbErkenfara {
             { 30, new KleinfeldPosition[] { new (0, 22), new (100, 44), new (101, 1), new (101, 5), new (0, 37), new (0, 29) } },
 
             // 31..37 (Row 6)
-            { 31, new KleinfeldPosition[] { new (0, 23), new (0, 24), new (0, 32), new (0, 38), new (-100, 9), new (-100, 4) } },
+            { 31, new KleinfeldPosition[] { new (0, 23), new (0, 24), new (0, 32), new (0, 38), new (-100, 9), new (-100, 15) } },
             { 32, new KleinfeldPosition[] { new (0, 24), new (0, 25), new (0, 33), new (0, 39), new (0, 38), new (0, 31) } },
             { 33, new KleinfeldPosition[] { new (0, 25), new (0, 26), new (0, 34), new (0, 40), new (0, 39), new (0, 32) } },
             { 34, new KleinfeldPosition[] { new (0, 26), new (0, 27), new (0, 35), new (0, 41), new (0, 40), new (0, 33) } },
@@ -106,7 +98,7 @@ namespace PhoenixModel.dbErkenfara {
 
             // 38..43 (Row 7)
             { 38, new KleinfeldPosition[] { new (0, 31), new (0, 32), new (0, 39), new (0, 44), new (-100, 22), new (-100, 15) } },
-            { 39, new KleinfeldPosition[] { new (0, 32), new (0, 32), new (0, 40), new (0, 45), new (0, 44), new (0, 38) } },
+            { 39, new KleinfeldPosition[] { new (0, 32), new (0, 33), new (0, 40), new (0, 45), new (0, 44), new (0, 38) } },
             { 40, new KleinfeldPosition[] { new (0, 33), new (0, 34), new (0, 41), new (0, 46), new (0, 45), new (0, 39) } },
             { 41, new KleinfeldPosition[] { new (0, 34), new (0, 35), new (0, 42), new (0, 47), new (0, 46), new (0, 40) } },
             { 42, new KleinfeldPosition[] { new (0, 35), new (0, 36), new (0, 43), new (0, 48), new (0, 47), new (0, 41) } },
@@ -116,20 +108,20 @@ namespace PhoenixModel.dbErkenfara {
             { 44, new KleinfeldPosition[] { new (0, 38), new (0, 39), new (0, 45), new (1, 1), new (-100, 30), new (-100, 22) } },
             { 45, new KleinfeldPosition[] { new (0, 39), new (0, 40), new (0, 46), new (1, 2), new (1, 1), new (0, 44) } },
             { 46, new KleinfeldPosition[] { new (0, 40), new (0, 41), new (0, 47), new (1, 3), new (1, 2), new (0, 45) } },
-            { 47, new KleinfeldPosition[] { new (0, 41), new (0, 42), new (0, 46), new (1, 4), new (1, 3), new (0, 46) } },
+            { 47, new KleinfeldPosition[] { new (0, 41), new (0, 42), new (0, 48), new (1, 4), new (1, 3), new (0, 46) } },
             { 48, new KleinfeldPosition[] { new (0, 42), new (0, 43), new (0, 43), new (101, 16), new (101, 23), new (0, 47) } },
         };
 
-        public static IEnumerable<KleinfeldPosition> GetKleinfeldNachbarn(KleinfeldPosition pos) {
-            
-            List<KleinfeldPosition> list = [];
+        public static IEnumerable<KleinfeldPosition>? GetKleinfeldNachbarn(KleinfeldPosition pos) {
+
             if (pos.kf < 1 || pos.kf > 48)
-                return list;
-             foreach (KleinfeldPosition p in _nachbarn[pos.kf]) {
-                p.gf += pos.gf;
-                list.Add(p);
+                return null;
+            KleinfeldPosition[] nachbarn =  new KleinfeldPosition[6];
+            int i = 0;
+            foreach(var kf  in _nachbarn[pos.kf]) {
+                nachbarn[i++] = new KleinfeldPosition(kf.gf+pos.gf,kf.kf);
             }
-            return list;
+            return nachbarn;
         }
     }
 }

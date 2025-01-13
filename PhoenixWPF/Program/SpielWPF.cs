@@ -15,6 +15,7 @@ using PhoenixWPF.Host;
 using static PhoenixModel.Program.LogEntry;
 using PhoenixModel.Program;
 using PhoenixModel.dbZugdaten;
+using PhoenixModel.View;
 
 namespace PhoenixWPF.Program
 {
@@ -105,6 +106,15 @@ namespace PhoenixWPF.Program
                 var bezeichner = KleinfeldPosition.CreateBezeichner(e.GF, e.KF);
                 var gem = SharedData.Map[bezeichner];
                 Main.Instance.SelectionHistory.Current = gem;
+
+                /// TEST
+                KleinfeldView.UnMark();
+                var nachbarn = KleinfeldView.GetNachbarn(gem);
+                if (nachbarn != null) {
+                    foreach (var g in nachbarn) {
+                        KleinfeldView.Mark(g, MarkerType.Info,true);
+                    }
+                }
             }
         }
 

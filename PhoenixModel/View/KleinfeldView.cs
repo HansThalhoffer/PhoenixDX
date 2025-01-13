@@ -13,19 +13,50 @@ namespace PhoenixModel.View
     public static class KleinfeldView
     {
         /// <summary>
-        /// In dieser Queue werden die Objekte abgelegt, die in der Datenbank gespeichert werden sollen. Das geschieht asynchron
+        /// In dieser Queue werden die markierten Kleinfelder abgelegt, damit sie wieder unmarkiert werden können
         /// </summary>
-        public static ConcurrentQueue<KleinFeld> MarkedQueue = [];
+        private static ConcurrentQueue<KleinFeld> _markedQueue = [];
 
-        public static void Mark(KleinFeld kf, MarkerType type)
+        public static void Mark(KleinFeld kf, MarkerType type, bool append = false)
         {
+            if (append == false) 
+                UnMark();
+            
             kf.Mark = type;
-            MarkedQueue.Enqueue(kf);
-            //ViewModel.Update()
+            _markedQueue.Enqueue(kf);
+            SharedData.UpdateQueue.Enqueue(kf);
         }
 
+        /// <summary>
+        /// entfernt alle bisher markierten
+        /// </summary>
+        public static void UnMark() {
+            KleinFeld? kf = null;
+            while (_markedQueue.Count > 0 && _markedQueue.TryDequeue(out kf)) {
+                if (kf != null) {
+                    kf.Mark = MarkerType.None;
+                    SharedData.UpdateQueue.Enqueue(kf);
+                }
+            }
+        }
 
-
+        public static IEnumerable<KleinFeld>? GetNachbarn(KleinFeld kf) {
+            try {
+                var positionen = KartenKoordinaten.GetKleinfeldNachbarn(kf);
+                if (SharedData.Map != null && positionen != null) {
+                    List<KleinFeld> nachbarn = [];
+                    foreach (var pos in positionen) {
+                        string key = KleinfeldPosition.CreateBezeichner(pos);
+                        if (SharedData.Map.ContainsKey(key))
+                            nachbarn.Add(SharedData.Map[key]);
+                    }
+                    return nachbarn;
+                }
+            } catch (Exception e) {
+                ViewModel.LogError("Beim Zählen der Nachbarn gab es einen Fehler", e.Message);
+            }
+            return null;
+        }
 
         public static bool IsKleinfeldKüste(KleinFeld kf)
         {
