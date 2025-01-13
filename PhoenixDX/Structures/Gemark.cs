@@ -19,6 +19,7 @@ using SharpDX.XAudio2;
 using PhoenixDX.Helper;
 using PhoenixModel.View;
 using System.Diagnostics;
+using PhoenixDX.Drawing;
 
 namespace PhoenixDX.Structures {
     [DebuggerDisplay("{DebuggerDisplay()}")]
@@ -171,6 +172,37 @@ namespace PhoenixDX.Structures {
 
         #region Content
 
+        public List<Drawing.ColoredTexture> GetColoredTextures(int layer)
+        {
+            List<ColoredTexture> textures = [];
+            switch (layer)
+            {
+                case 0:
+                    {
+                        foreach (GemarkAdorner adorner in Layer_0)
+                        {
+                            if (adorner.HasColor)
+                                textures.Add(adorner.GetColoredTexture());
+                        }
+                        break;
+                    }
+                case 1:
+                    {
+                        foreach (GemarkAdorner adorner in Layer_1)
+                        {
+                            if (adorner.HasColor)
+                                textures.Add(adorner.GetColoredTexture());
+                        }
+                        break;
+                    }
+                default:
+                    MappaMundi.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler bei der Auswahl des Layers {layer}", "Der Layer {layer} in der DirectX Karte existiert nicht. Daher können dort auch keine Texturen gefunden werden."));
+                    break;
+            }
+
+            return textures;
+        }
+
         public List<Texture2D> GetTextures(int layer) {
             List<Texture2D> textures = new List<Texture2D>();
             switch (layer) {
@@ -213,11 +245,11 @@ namespace PhoenixDX.Structures {
                 .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(GemarkAdorner)))
                 .ToList();
 
-            var textureValues = new List<AdornerTexture>();
+            var textureValues = new List<DirectionTexture>();
             foreach (var type in derivedTypes) {
                 var textureField = type.GetField("Texture", BindingFlags.Public | BindingFlags.Static);
-                if (textureField != null && textureField.FieldType == typeof(AdornerTexture)) {
-                    var fieldValue = textureField.GetValue(null) as AdornerTexture;
+                if (textureField != null && textureField.FieldType == typeof(DirectionTexture)) {
+                    var fieldValue = textureField.GetValue(null) as DirectionTexture;
                     if (fieldValue != null) {
                         textureValues.Add(fieldValue);
                     }

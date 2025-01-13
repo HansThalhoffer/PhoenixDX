@@ -58,7 +58,7 @@ namespace PhoenixDX.Structures
             }
         }
 
-        public override AdornerTexture GetAdornerTexture()
+        protected override Drawing.DirectionTexture GetDirectionTexture()
         {
             return null;
         }

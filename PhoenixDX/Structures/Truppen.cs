@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using PhoenixDX.Drawing;
 using PhoenixDX.Program;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
@@ -58,7 +59,7 @@ namespace PhoenixDX.Structures
         }
 
 
-        Texture2D _texture = null;
+        ColoredTexture _gameTexture = null;
         List<Figur> _truppen = null;
 
         public Truppen(List<Figur> truppen)
@@ -76,13 +77,13 @@ namespace PhoenixDX.Structures
         }
 
         // hier werden die Figuren in eine Texture zusammengestellt
-        public static Texture2D CreateTexture(List<Figur> truppen)
+        public static ColoredTexture CreateTexture(List<Figur> truppen)
         {
             if (SpielDX.Instance.Graphics == null || truppen.Count == 0)
                 return null;
 
             // der key für den Cache ist Farbe und dann die Typen
-            string cacheKey = $"{truppen[0].Color.ToString()};";
+            string cacheKey = string.Empty;
             foreach (var figur in truppen)
             {
                 cacheKey += $"{figur.Typ.ToString()}, ";
@@ -127,9 +128,7 @@ namespace PhoenixDX.Structures
                         int index = (int)figur.Typ;
                         var texture = FigurImages[index].Texture;
                         Rectangle rScreenG = new Rectangle(pos[i].X, pos[i].Y, Convert.ToInt32(figurWidth / 4), Convert.ToInt32(figurHeight /4));
-                      
-
-                        spriteBatch.Draw(texture, rScreenG, null, figur.Color);
+                        spriteBatch.Draw(texture, rScreenG, null, Color.White); // figur.Color);
                         if (++i > pos.Length - 1)
                             i = 0;
                     }
@@ -145,8 +144,9 @@ namespace PhoenixDX.Structures
                     Color[] data = new Color[width * height];
                     renderTarget.GetData(data);
                     result.SetData(data);
-                    TextureCache.Set(cacheKey, result);
-                    return result;
+                    ColoredTexture gameTexture = new ColoredTexture(result, truppen[0].Color);
+                    TextureCache.Set(cacheKey, gameTexture);
+                    return gameTexture;
                 }
             }
             catch (Exception ex)
@@ -157,7 +157,7 @@ namespace PhoenixDX.Structures
         }
 
 
-        public override AdornerTexture GetAdornerTexture()
+        protected override DirectionTexture GetDirectionTexture()
         {
             return null;
         }
@@ -169,9 +169,9 @@ namespace PhoenixDX.Structures
 
         public override Texture2D GetTexture()
         {
-           if (_texture == null)
-                _texture = CreateTexture(_truppen);
-            return _texture;
+           if (_gameTexture == null)
+                _gameTexture = CreateTexture(_truppen);
+            return _gameTexture.Texture;
         }
     }
 }

@@ -100,7 +100,7 @@ namespace PhoenixDX.Drawing
                     if (inKleinfeld)
                         mouseover = gemark;
 
-                    var listTexture = gemark.GetTextures(1);
+                    var listTexture = gemark.GetColoredTextures(1);
                     foreach (var hexTexture in listTexture)
                     {
                         // spriteBatch.Draw(hexTexture, posP, null, Color.Transparent);

@@ -5,42 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using PhoenixDX.Drawing;
 
 namespace PhoenixDX.Structures
 {
-    public enum Direction 
-    {
-        NW = 0, NO =1, O=2 , SO=3, SW=4, W=5
-    }
-
-    public class AdornerTexture
-    {
-        public string ImageStartsWith = string.Empty;
-        public int IndexStartsWith = 0;
-
-        public AdornerTexture(string imageStartsWith)
-        {
-            ImageStartsWith = imageStartsWith;
-        }
-
-        Texture2D[] _hexTexture;
-        public void SetTextures(Texture2D[] texture)
-        {
-            _hexTexture = texture;
-        }
-        public Texture2D GetTexture(Direction dir)
-        {
-            return _hexTexture[(int)dir];
-        }
-    }
-
     public abstract class GemarkAdorner
     {
         public GemarkAdorner()
         {
         }
 
-        public abstract AdornerTexture GetAdornerTexture();
+        protected abstract DirectionTexture GetDirectionTexture();
 
         int[] _value = {0,0,0,0,0,0};
 
@@ -55,8 +30,13 @@ namespace PhoenixDX.Structures
         }
 
         public bool HasDirections = true;
-
         virtual public Texture2D GetTexture()
+        {
+            return null;
+        }
+
+        public bool HasColor = false;
+        virtual public ColoredTexture GetColoredTexture()
         {
             return null;
         }
@@ -68,7 +48,7 @@ namespace PhoenixDX.Structures
             {
                 if (HasDirection(direction) > 0 )
                 {
-                    var t = GetAdornerTexture();
+                    var t = GetDirectionTexture();
                     textures.Add(t.GetTexture(direction));
                 }
             }

@@ -9,11 +9,12 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using PhoenixDX.Drawing;
 using PhoenixDX.Structures;
 
 namespace PhoenixModel.Helper
 {
-    internal class TextureCache: Dictionary<string, Texture2D>
+    internal class TextureCache: Dictionary<string, ColoredTexture>
     {
         private static TextureCache _instance = [];
         public static TextureCache Instance => _instance;
@@ -23,12 +24,17 @@ namespace PhoenixModel.Helper
             return _instance.ContainsKey(key);
         }
 
-        public static Texture2D Get(string key)
+        public static ColoredTexture Get(string key)
         {
             return _instance[key];
         }
 
-        public static void Set(string key, Texture2D item)
+        public static void Set(string key, Texture2D item, Color farbe)
+        {
+            _instance[key] = new ColoredTexture(item, farbe);
+        }
+
+        public static void Set(string key, ColoredTexture item)
         {
             _instance[key] = item;
         }
@@ -39,7 +45,7 @@ namespace PhoenixModel.Helper
         /// <param name="graphicsDevice">The GraphicsDevice used for rendering.</param>
         /// <param name="textures">The list of Texture2D to be merged.</param>
         /// <returns>A new Texture2D containing the merged content of the input textures.</returns>
-        public static Texture2D MergeTextures(GraphicsDevice graphicsDevice, List<Texture2D> textures, int width, int height)
+        public static ColoredTexture MergeTextures(GraphicsDevice graphicsDevice, List<Texture2D> textures, int width, int height)
         {
             if (textures == null || textures.Count == 0)
                 throw new System.ArgumentException("The textures list must not be null or empty.");
@@ -77,7 +83,7 @@ namespace PhoenixModel.Helper
             // Dispose of the render target as it is no longer needed
             renderTarget.Dispose();
 
-            return mergedTexture;
+            return new ColoredTexture(mergedTexture);
         }
 
         /// <summary>
