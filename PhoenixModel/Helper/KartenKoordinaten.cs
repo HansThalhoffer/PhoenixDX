@@ -109,7 +109,7 @@ namespace PhoenixModel.dbErkenfara {
             { 45, new KleinfeldPosition[] { new (0, 39), new (0, 40), new (0, 46), new (1, 2), new (1, 1), new (0, 44) } },
             { 46, new KleinfeldPosition[] { new (0, 40), new (0, 41), new (0, 47), new (1, 3), new (1, 2), new (0, 45) } },
             { 47, new KleinfeldPosition[] { new (0, 41), new (0, 42), new (0, 48), new (1, 4), new (1, 3), new (0, 46) } },
-            { 48, new KleinfeldPosition[] { new (0, 42), new (0, 43), new (0, 43), new (101, 16), new (101, 23), new (0, 47) } },
+            { 48, new KleinfeldPosition[] { new (0, 42), new (0, 43), new (1, 4), new (101, 16), new (101, 23), new (0, 47) } },
         };
 
         public static IEnumerable<KleinfeldPosition>? GetKleinfeldNachbarn(KleinfeldPosition pos) {
@@ -119,7 +119,26 @@ namespace PhoenixModel.dbErkenfara {
             KleinfeldPosition[] nachbarn =  new KleinfeldPosition[6];
             int i = 0;
             foreach(var kf  in _nachbarn[pos.kf]) {
-                nachbarn[i++] = new KleinfeldPosition(kf.gf+pos.gf,kf.kf);
+                nachbarn[i] = new KleinfeldPosition(kf.gf+pos.gf,kf.kf);
+                if (pos.gf > 700) {
+                    int cur = pos.gf / 100;
+                    int nb = nachbarn[i].gf / 100;
+                    // wegen den halben eingeschobenen Provinzen ist das hier etwas schräg
+                    if ((cur == 8 && nb == 7) || 
+                        (cur == 10 && nb == 9) || (cur == 11 && nb == 10) ||
+                        (cur == 12 && nb == 11) || (cur == 13 && nb == 12) ||
+                        (cur == 14 && nb == 13) || (cur == 15 && nb == 14)
+                        ) {
+                        nachbarn[i].gf += 1;
+                    } else if((cur == 7 && nb == 8) || 
+                        (cur == 9 && nb == 10) || (cur == 10 && nb == 11) ||
+                        (cur == 11 && nb == 12) || (cur == 12 && nb == 13) ||
+                        (cur == 13 && nb == 14) || (cur == 14 && nb == 15)
+                        ) {
+                        nachbarn[i].gf -= 1;
+                    } 
+                }
+                i++;
             }
             return nachbarn;
         }

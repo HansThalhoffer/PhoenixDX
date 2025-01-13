@@ -109,10 +109,10 @@ namespace PhoenixWPF.Program
 
                 /// TEST
                 KleinfeldView.UnMark();
-                var nachbarn = KleinfeldView.GetNachbarn(gem);
+                var nachbarn = KleinfeldView.GetNachbarn(gem,1);
                 if (nachbarn != null) {
                     foreach (var g in nachbarn) {
-                        KleinfeldView.Mark(g, MarkerType.Info,true);
+                        KleinfeldView.Mark(g, MarkerType.Fatality,true);
                     }
                 }
             }

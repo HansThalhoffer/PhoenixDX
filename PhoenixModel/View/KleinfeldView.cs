@@ -5,23 +5,21 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhoenixModel.View
-{
-    public static class KleinfeldView
-    {
+namespace PhoenixModel.View {
+    public static class KleinfeldView {
         /// <summary>
         /// In dieser Queue werden die markierten Kleinfelder abgelegt, damit sie wieder unmarkiert werden können
         /// </summary>
         private static ConcurrentQueue<KleinFeld> _markedQueue = [];
 
-        public static void Mark(KleinFeld kf, MarkerType type, bool append = false)
-        {
-            if (append == false) 
+        public static void Mark(KleinFeld kf, MarkerType type, bool append = false) {
+            if (append == false)
                 UnMark();
-            
+
             kf.Mark = type;
             _markedQueue.Enqueue(kf);
             SharedData.UpdateQueue.Enqueue(kf);
@@ -40,26 +38,33 @@ namespace PhoenixModel.View
             }
         }
 
-        public static IEnumerable<KleinFeld>? GetNachbarn(KleinFeld kf) {
+        public static IEnumerable<KleinFeld>? GetNachbarn(KleinFeld kf, int Distanz = 1) {
             try {
-                var positionen = KartenKoordinaten.GetKleinfeldNachbarn(kf);
-                if (SharedData.Map != null && positionen != null) {
-                    List<KleinFeld> nachbarn = [];
-                    foreach (var pos in positionen) {
-                        string key = KleinfeldPosition.CreateBezeichner(pos);
-                        if (SharedData.Map.ContainsKey(key))
-                            nachbarn.Add(SharedData.Map[key]);
+                Queue<KleinFeld> working = [];
+                Dictionary<string, KleinFeld> nachbarn = [];
+                working.Enqueue(kf);
+
+                for (int i = 0; i < Distanz; i++) {
+                    var positionen = KartenKoordinaten.GetKleinfeldNachbarn(working.Dequeue());
+                    if (SharedData.Map != null && positionen != null) {
+                        foreach (var pos in positionen) {
+                            string key = KleinfeldPosition.CreateBezeichner(pos);
+                            if (SharedData.Map.ContainsKey(key) && nachbarn.ContainsKey(key) == false) {
+                                var nab = SharedData.Map[key];
+                                nachbarn.Add(key, nab);
+                                working.Enqueue(nab);
+                            }
+                        }
                     }
-                    return nachbarn;
                 }
+                return nachbarn.Values;
             } catch (Exception e) {
                 ViewModel.LogError("Beim Zählen der Nachbarn gab es einen Fehler", e.Message);
             }
             return null;
         }
 
-        public static bool IsKleinfeldKüste(KleinFeld kf)
-        {
+        public static bool IsKleinfeldKüste(KleinFeld kf) {
             /*if (SharedData.Map != null && SharedData.Map.ContainsKey(pos.CreateBezeichner()))
             {
                 var nachbar = SharedData.Map[pos.CreateBezeichner()];
