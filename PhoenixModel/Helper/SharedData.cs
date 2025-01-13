@@ -31,6 +31,7 @@ namespace PhoenixModel.Helper
         /// In dieser Queue werden die Objekte abgelegt, die in der Datenbank gespeichert werden sollen. Das geschieht asynchron
         /// </summary>
         public static ConcurrentQueue<IDatabaseTable> StoreQueue = [];
+        public static ConcurrentQueue<KleinFeld> UpdateQueue = [];
 
         // Karte
         public static BlockingDictionary<KleinFeld>? Map = null;

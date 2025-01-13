@@ -68,8 +68,7 @@ namespace PhoenixWPF.Program {
                         Settings.UserSettings.PasswordKarte = new PasswordHolder((string)loadedSettings.PasswordKarte).EncryptedPasswordBase64;
                         Settings.UserSettings.PasswordPZE = new PasswordHolder((string)loadedSettings.PasswordPZE).EncryptedPasswordBase64;
                     }
-                }
-                catch { } // wenn das mit den Passwötern im USB Stick nicht klappt, dann sind wir schön schweigsam
+                } catch { } // wenn das mit den Passwötern im USB Stick nicht klappt, dann sind wir schön schweigsam
             }
         }
 
@@ -90,8 +89,7 @@ namespace PhoenixWPF.Program {
             LoadKarte(true);
             if (SelectReich()) {
                 LoadZugdaten(true);
-            }
-            else {
+            } else {
                 Application.Current.Shutdown();
             }
 
@@ -115,17 +113,13 @@ namespace PhoenixWPF.Program {
                         ILoadableDatabase? db = null;
                         if (data.DatabaseName == Settings.UserSettings.DatabaseLocationCrossRef) {
                             db = CreateCrossRef(data.DatabaseName, Settings.UserSettings.PasswordCrossRef);
-                        }
-                        else if (data.DatabaseName == Settings.UserSettings.DatabaseLocationKarte) {
+                        } else if (data.DatabaseName == Settings.UserSettings.DatabaseLocationKarte) {
                             db = CreateKarte(data.DatabaseName, Settings.UserSettings.PasswordKarte);
-                        }
-                        else if (data.DatabaseName == Settings.UserSettings.DatabaseLocationZugdaten) {
+                        } else if (data.DatabaseName == Settings.UserSettings.DatabaseLocationZugdaten) {
                             db = CreateZugdaten(data.DatabaseName, Settings.UserSettings.PasswordReich);
-                        }
-                        else if (data.DatabaseName == Settings.UserSettings.DatabaseLocationPZE) {
+                        } else if (data.DatabaseName == Settings.UserSettings.DatabaseLocationPZE) {
                             db = CreatePZE(data.DatabaseName, Settings.UserSettings.PasswordPZE);
-                        }
-                        else {
+                        } else {
                             SpielWPF.LogError($"Die Datenbank {data.DatabaseName} ist unbenkannt", $"Die daten können nicht in der Tabelle {data.TableName} gespeichert werden, wenn die Datenbank nicht bekannt ist");
                         }
                         if (db != null) {
@@ -133,8 +127,7 @@ namespace PhoenixWPF.Program {
                         }
                     }
                 }
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 Console.WriteLine($"Error during save: {ex.Message}");
             }
         }
@@ -157,8 +150,7 @@ namespace PhoenixWPF.Program {
                             holder = new(dialog.Password);
                             Settings.UserSettings.PasswordReich = holder.EncryptedPasswordBase64;
 
-                        }
-                        else {
+                        } else {
                             Settings.UserSettings.PasswordReich = string.Empty;
                         }
                         Settings.UserSettings.SelectedReich = dialog.SelectedNation?.Nummer ?? -1;
@@ -214,18 +206,16 @@ namespace PhoenixWPF.Program {
             if (database is Zugdaten && SharedData.Map != null) {
                 foreach (var gem in SharedData.Map.Values) {
                     var figuren = SpielfigurenView.GetSpielfiguren(gem);
-                    if (figuren != null && figuren.Count > 0)
-                    {
-                       UpdateKleinfeld(gem);
+                    if (figuren != null && figuren.Count > 0) {
+                        UpdateKleinfeld(gem);
                     }
                 }
                 EverythingLoaded();
             }
         }
 
-        public void UpdateKleinfeld(KleinFeld gem)
-        {
-            this.Map?.OnUpdateEvent(new MapEventArgs(gem, MapEventType.UpdateGemark));
+        public void UpdateKleinfeld(KleinFeld gem) {
+            SharedData.UpdateQueue.Enqueue(gem);
         }
 
         public void Load(ref string databaseLocation, ref string encryptedPassword, LoadableDatabase dbCreator, string databaseName, LoadCompleted? loadCompletedDelegate = null) {

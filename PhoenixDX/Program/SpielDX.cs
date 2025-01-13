@@ -149,15 +149,6 @@ namespace PhoenixDX.Program
             });
         }
 
-        // wenn sich die Daten geändert haben, werden die jeweiligen Gemarken neu gezeichnet
-        ConcurrentQueue<KleinfeldPosition> _updateQueue = [];
-        public void OnUpdateEvent(MapEventArgs args)
-        {
-            
-            _updateQueue.Enqueue(new KleinfeldPosition(args.GF, args.KF));
-          
-        }
-
         private void _OnKeyEvent(PhoenixModel.Helper.KeyEventArgs args)
         {
             if (args.State == KeyEventArgs.KeyState.Down)
@@ -309,7 +300,7 @@ namespace PhoenixDX.Program
                 if (Weltkarte.ReicheInitalized)
                 {
                     _updateFunction = HandleInput;
-                    _backgroundUpdater = new BackgroundUpdater(ref Weltkarte, ref _updateQueue);   
+                    _backgroundUpdater = new BackgroundUpdater(ref Weltkarte, ref SharedData.UpdateQueue);   
                 }
             }
         }

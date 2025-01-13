@@ -12,7 +12,7 @@ namespace PhoenixModel.Helper
     {
         public enum MapEventType
         {
-            None, SelectGemark, Log, Zoom, UpdateGemark, UpdateAll
+            None, SelectGemark, Log, Zoom, UpdateAll
         }
 
         public int GF = 0, KF = 0;
