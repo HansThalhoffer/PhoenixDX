@@ -145,8 +145,6 @@ namespace PhoenixDX.Structures
             Gemark.LoadContent(contentManager);
         }
 
-        public float TileTransparancy { get; set; } = 1f;
-
         public Gemark GetKleinfeld(int gf, int kf)
         {
             Provinz provinz;
@@ -179,7 +177,7 @@ namespace PhoenixDX.Structures
       
         public Gemark Draw(SpriteBatch spriteBatch, Vector2 scale, Vector2? mousePos, bool isMoving, TimeSpan gameTime, Gemark selected, Rectangle visibleScreen)
         {
-            return WeltDrawer.Draw(spriteBatch, scale, mousePos, isMoving, TileTransparancy, ref Provinzen, gameTime, selected, visibleScreen );
+            return WeltDrawer.Draw(spriteBatch, scale, mousePos, isMoving, ref Provinzen, gameTime, selected, visibleScreen );
         }    
     }
 }
