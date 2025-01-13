@@ -1,22 +1,10 @@
 ﻿using PhoenixModel.Database;
-using PhoenixModel.dbPZE;
 using PhoenixModel.Helper;
-using PhoenixWPF.Dialogs;
-using PhoenixWPF.Helper;
 using PhoenixWPF.Program;
-using SharpDX.Direct2D1;
-using SharpDX.DirectWrite;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Common;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using static PhoenixModel.Database.PasswordHolder;
-using static PhoenixModel.Helper.SharedData;
+using static PhoenixModel.Program.SharedData;
 
 namespace PhoenixWPF.Database
 {

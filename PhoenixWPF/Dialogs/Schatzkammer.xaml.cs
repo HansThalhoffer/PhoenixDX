@@ -1,11 +1,7 @@
 ﻿using PhoenixModel.Helper;
+using PhoenixModel.Program;
 using PhoenixWPF.Pages;
-using SharpDX.Direct3D9;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Navigation;
 namespace PhoenixWPF.Dialogs
 {

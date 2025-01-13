@@ -1,20 +1,8 @@
 ﻿using PhoenixModel.Database;
-using PhoenixModel.Helper;
-using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbPZE;
-using PhoenixWPF.Dialogs;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static PhoenixModel.Database.PasswordHolder;
-using static PhoenixWPF.Program.ErkenfaraKarte;
-using System.IO;
-using PhoenixModel.dbCrossRef;
+using PhoenixModel.Program;
 using PhoenixWPF.Program;
+using static PhoenixModel.Database.PasswordHolder;
 
 namespace PhoenixWPF.Database
 {

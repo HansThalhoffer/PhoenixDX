@@ -1,29 +1,14 @@
-﻿using LiveCharts.Wpf;
-using LiveCharts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using LiveCharts;
+using LiveCharts.Wpf;
 using PhoenixModel.dbZugdaten;
+using PhoenixModel.Program;
 using PhoenixWPF.Database;
 using System.Collections.ObjectModel;
-using PhoenixModel.Helper;
-using SharpDX.Direct2D1.Effects;
-using PhoenixDX.Structures;
-using SharpDX.Direct3D9;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
-using Frame = System.Windows.Controls.Frame;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using static PhoenixWPF.Database.Zugdaten;
+using Frame = System.Windows.Controls.Frame;
 
 namespace PhoenixWPF.Pages
 {

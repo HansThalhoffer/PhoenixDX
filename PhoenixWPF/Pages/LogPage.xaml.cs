@@ -151,16 +151,15 @@ namespace PhoenixWPF.Pages
             return null;
         }
 
-
         private void ExtractAndGoTo(object? input)
         {
             var entry = input as LogEntry;
             if (entry == null)
                 return;
             KleinfeldPosition? pos = ExtractPosition(entry);
-            if (pos != null && PhoenixModel.Helper.SharedData.Map != null && PhoenixModel.Helper.SharedData.Map.ContainsKey(pos.CreateBezeichner()))
+            if (pos != null && SharedData.Map != null && SharedData.Map.ContainsKey(pos.CreateBezeichner()))
             {
-                var kleinfeld = PhoenixModel.Helper.SharedData.Map[pos.CreateBezeichner()];
+                var kleinfeld = SharedData.Map[pos.CreateBezeichner()];
                 Program.Main.Instance.Spiel?.SelectGemark(kleinfeld);
             }
         }

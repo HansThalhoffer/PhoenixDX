@@ -1,27 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using PhoenixDX.Helper;
 using PhoenixDX.Drawing;
+using PhoenixDX.Helper;
 using PhoenixDX.Structures;
-using PhoenixModel.dbCrossRef;
+using PhoenixModel.dbErkenfara;
 using PhoenixModel.Helper;
-using SharpDX.Direct2D1.Effects;
-
-
-
-// using SharpDX;
+using PhoenixModel.Program;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
-
 using Vektor = Microsoft.Xna.Framework.Vector2;
-using PhoenixModel.dbErkenfara;
-using PhoenixModel.Database;
-using System.ComponentModel;
 
 namespace PhoenixDX.Program
 {

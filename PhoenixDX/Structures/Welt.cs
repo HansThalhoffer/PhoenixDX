@@ -3,13 +3,12 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Helper;
 using PhoenixDX.Drawing;
-using PhoenixModel.Helper;
+using PhoenixModel.Program;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbPZE;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using static PhoenixModel.Helper.SharedData;
 using PhoenixModel.View;
 
 namespace PhoenixDX.Structures

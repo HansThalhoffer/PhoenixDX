@@ -1,11 +1,5 @@
 ﻿using PhoenixModel.dbPZE;
-using PhoenixModel.ExternalTables;
-using PhoenixModel.Helper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PhoenixModel.Program;
 
 namespace PhoenixModel.View
 {

@@ -1,21 +1,8 @@
-﻿using PhoenixModel.dbCrossRef;
-using PhoenixModel.Database;
-using PhoenixModel.dbPZE;
-using PhoenixModel.Helper;
-using PhoenixWPF.Dialogs;
+﻿using PhoenixModel.Database;
+using PhoenixModel.dbCrossRef;
+using PhoenixModel.Program;
 using PhoenixWPF.Program;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
 using static PhoenixModel.Database.PasswordHolder;
-using static PhoenixWPF.Database.CrossRef;
-using System.ComponentModel;
-using System.Windows;
 
 namespace PhoenixWPF.Database
 {
