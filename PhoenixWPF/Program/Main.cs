@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -244,12 +245,16 @@ namespace PhoenixWPF.Program
                     var figuren = SpielfigurenView.GetSpielfiguren(gem);
                     if (figuren != null && figuren.Count > 0)
                     {
-                        this.Map?.OnUpdateEvent(new MapEventArgs(gem, MapEventType.UpdateGemark));
+                       UpdateKleinfeld(gem);
                     }
                 }
                 EverythingLoaded();
             }
+        }
 
+        public void UpdateKleinfeld(KleinFeld gem)
+        {
+            this.Map?.OnUpdateEvent(new MapEventArgs(gem, MapEventType.UpdateGemark));
         }
 
         public void Load(ref string databaseLocation, ref string encryptedPassword, LoadableDatabase dbCreator, string databaseName, LoadCompleted? loadCompletedDelegate = null)

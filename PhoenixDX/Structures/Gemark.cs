@@ -141,6 +141,11 @@ namespace PhoenixDX.Structures {
                     Layer_1.Add(new Truppen(truppen));
                 }
             }
+
+            if (gem.Mark != MarkerType.None)
+            {
+                Layer_1.Add(new Marker(gem.Mark));
+            }
             return true;
         }
 
