@@ -5,49 +5,16 @@ using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
 namespace PhoenixModel.dbZugdaten
 {
-    public class Character : NamensSpielfigur,  IDatabaseTable, IEigenschaftler
+    public class Character : NamensSpielfigur, IDatabaseTable, IEigenschaftler
     {
         private static string _datebaseName = string.Empty;
         public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "chars";
-        string IDatabaseTable.TableName => TableName;   
+        string IDatabaseTable.TableName => TableName;
         // IEigenschaftler
         public override FigurType Typ => FigurType.Charakter;
         public override FigurType BaseTyp => FigurType.Charakter;
-
-        public int tp_alt { get; set; }
-        public int tp { get; set; }
-        public int Teleport_gf_von { get; set; }
-        public int Teleport_kf_von { get; set; }
-        public int Teleport_gf_nach { get; set; }
-        public int Teleport_kf_nach { get; set; }
-        public string? Befehl_magie { get; set; }
-        public string? Befehl_Teleport { get; set; }
-        public string? Befehl_bannt { get; set; }
-        public int x1 { get; set; }
-        public int y1 { get; set; }
-        public int x2 { get; set; }
-        public int y2 { get; set; }
-        public int x3 { get; set; }
-        public int y3 { get; set; }
-        public int hoehenstufen { get; set; }
-        public int schritt { get; set; }
-        public int x4 { get; set; }
-        public int y4 { get; set; }
-        public int x5 { get; set; }
-        public int y5 { get; set; }
-        public int x6 { get; set; }
-        public int y6 { get; set; }
-        public int x7 { get; set; }
-        public int y7 { get; set; }
-        public int x8 { get; set; }
-        public int y8 { get; set; }
-        public int x9 { get; set; }
-        public int y9 { get; set; }
-        public string? sonstiges { get; set; }
-        public string? Einheit { get; set; }
-        public int bp_max { get; set; }
-
+        public string Einheit {  get; set; } = string.Empty ;
         public enum Felder
         {
             nummer, Beschriftung, GP_ges, GP_akt, GP_ges_alt, GP_akt_alt, Charname, Spielername, gf_von, kf_von, gf_nach, kf_nach, rp, bp, tp_alt, tp, ph_xy, Teleport_gf_von, Teleport_kf_von, Teleport_gf_nach, Teleport_kf_nach, Befehl_magie, Befehl_Teleport, Befehl_bannt,

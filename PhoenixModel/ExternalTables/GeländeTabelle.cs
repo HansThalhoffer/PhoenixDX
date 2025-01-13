@@ -22,7 +22,8 @@ namespace PhoenixModel.ExternalTables
             Tiefland = 9,
             Auftauchpunkt = 10,
             Tiefseeeinbahnpunkt = 11,
-            AuftauchpunktUnbekannt // den gibt es nicht in der Tabelle der Datenbank
+            AuftauchpunktUnbekannt = 12, // den gibt es nicht in der Tabelle der Datenbank
+            Küste = 13
         }
 
         // IEigenschaftler
@@ -70,7 +71,8 @@ namespace PhoenixModel.ExternalTables
             new GeländeTabelle(TerrainType.Tiefland, "Tiefland", 1, 50000, 1000, "#8ecc2b", false),
             new GeländeTabelle(TerrainType.Auftauchpunkt, "Auftauchpunkt", 0, 0, 0, "#8616ab", true),
             new GeländeTabelle(TerrainType.Tiefseeeinbahnpunkt, "Tiefseeeinbahnpunkt (Tiefsee)", 0, 0, 0, "#19516b", true),
-            new GeländeTabelle(TerrainType.AuftauchpunktUnbekannt, "Auftauchpunkt (unbekannt)", 0, 0, 0, "#e8178e", false)
+            new GeländeTabelle(TerrainType.AuftauchpunktUnbekannt, "Auftauchpunkt (unbekannt)", 0, 0, 0, "#e8178e", false),
+            new GeländeTabelle(TerrainType.Küste, "Küste", 0, 0, 0, "#7eb8ec", true),
         };
     }
 }

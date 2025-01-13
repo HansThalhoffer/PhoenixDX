@@ -32,9 +32,32 @@ namespace PhoenixModel.dbZugdaten
         public int kf_von { get; set; } = 0;
         public int rp { get; set; } = 0;
         public int bp { get; set; } = 0;
+        public int bp_max { get; set; }
 
         private int _gfNach;
         private int _kfNach;
+        public int Kosten { get; set; } = 0;
+
+        public int x1 { get; set; }
+        public int y1 { get; set; }
+        public int x2 { get; set; }
+        public int y2 { get; set; }
+        public int x3 { get; set; }
+        public int y3 { get; set; }
+        public int hoehenstufen { get; set; }
+        public int schritt { get; set; }
+        public int x4 { get; set; }
+        public int y4 { get; set; }
+        public int x5 { get; set; }
+        public int y5 { get; set; }
+        public int x6 { get; set; }
+        public int y6 { get; set; }
+        public int x7 { get; set; }
+        public int y7 { get; set; }
+        public int x8 { get; set; }
+        public int y8 { get; set; }
+        public int x9 { get; set; }
+        public int y9 { get; set; }
 
         // wenn die Spielfigur bewegt wurde, dann steht die aktuelle Position in gf/kf_nach
         public override int gf
@@ -227,22 +250,53 @@ namespace PhoenixModel.dbZugdaten
         /// <summary>
         /// da die Datenbank für lkp_alt zwei Schreibweisen kennt und die Abbildung 1:1 sein soll zur AccessDB, wird hier gedoppelt
         /// </summary>
-        private int _lkp_alt = 0;
-        public int lkp_alt { get => _lkp_alt; set { _lkp_alt = value; } }
-        public int LKP_alt { get => _lkp_alt; set { _lkp_alt = value; } }
-
+        public int lkp_alt { get; set; }
+        public int LKP_alt { get => lkp_alt; set { lkp_alt = value; } }
         public int LKP { get; set; }
         
         /// <summary>
         /// da die Datenbank für skp_alt zwei Schreibweisen kennt und die Abbildung 1:1 sein soll zur AccessDB, wird hier gedoppelt
         /// </summary>
-        private int _skp_alt = 0;
-        public int skp_alt { get => _skp_alt; set { _skp_alt = value; } }
-        public int SKP_alt { get => _skp_alt; set { _skp_alt = value; } }
+        public int skp_alt { get; set; }
+        public int SKP_alt { get => skp_alt; set { skp_alt = value; } }
         public int SKP { get; set; }
         public int pferde_alt { get; set; }
         public int Pferde { get; set; }
         public bool Garde { get; set; }
+        public int isbanned { get; set; }
+
+
+        public string auf_Flotte { get; set; } = string.Empty;
+        public string Sonstiges { get; set; } = string.Empty;
+        public string spaltetab { get; set; } = string.Empty;
+        public string fusmit { get; set; } = string.Empty;
+        public string chars { get; set; } = string.Empty;
+        public string Chars { get => chars; set { chars = value; } }
+
+        public string Befehl_bew { get; set; } = string.Empty;
+        public string Befehl_ang { get; set; } = string.Empty;
+        public string Befehl_erobert { get; set; } = string.Empty;
+
+        public int x10 { get; set; }
+        public int y10 { get; set; }
+        public int x11 { get; set; }
+        public int y11 { get; set; }
+        public int x12 { get; set; }
+        public int y12 { get; set; }
+        public int x13 { get; set; }
+        public int y13 { get; set; }
+        public int x14 { get; set; }
+        public int y14 { get; set; }
+        public int x15 { get; set; }
+        public int y15 { get; set; }
+        public int x16 { get; set; }
+        public int y16 { get; set; }
+        public int x17 { get; set; }
+        public int y17 { get; set; }
+        public int x18 { get; set; }
+        public int y18 { get; set; }
+        public int x19 { get; set; }
+        public int y19 { get; set; }
 
         public override List<Eigenschaft> Eigenschaften
         {
@@ -297,6 +351,18 @@ namespace PhoenixModel.dbZugdaten
         public static string HeaderBeschriftung = "Beschriftung";
         public static string HeaderCharakterName = "Charaktername";
         public static string HeaderSpielerName = "Spielername";
+
+        public int tp_alt { get; set; }
+        public int tp { get; set; }
+        public int Teleport_gf_von { get; set; }
+        public int Teleport_kf_von { get; set; }
+        public int Teleport_gf_nach { get; set; }
+        public int Teleport_kf_nach { get; set; }
+        public string Befehl_magie { get; set; } = string.Empty;
+        public string Befehl_Teleport { get; set; } = string.Empty;
+        public string Befehl_bannt { get; set; } = string.Empty;
+        public string sonstiges { get; set; } = string.Empty;
+        public string einheit { get; set; } = string.Empty;
 
         public override List<Eigenschaft> Eigenschaften
         {

@@ -295,7 +295,7 @@ namespace PhoenixDX.Program
             FontManager.LoadContent(Content);
             RuestortSymbol.LoadContent(Content);
             Truppen.LoadContent(Content);
-
+            Marker.LoadContent(Content); // marker für den Layer 2
         }
 
         public delegate void UpdateFunction();
