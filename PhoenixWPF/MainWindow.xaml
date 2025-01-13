@@ -98,10 +98,10 @@
                         <RowDefinition Height="1*" />
                     </Grid.RowDefinitions>
                     <!-- Selection Navigator -->
-                    <Frame Grid.Row="1" Height="20" Source="Pages/SelectionNavigatorPage.xaml" />
+                    <Frame Grid.Row="0" Height="20" Source="Pages/SelectionNavigatorPage.xaml" />
 
                     <!-- Bottom TabControl -->
-                    <TabControl Grid.Row="3" Margin="5" Name="BottomTabControl">
+                    <TabControl Grid.Row="1" Margin="5" Name="BottomTabControl">
                         <TabItem Header="Eigenschaften" Name="Eigenschaften">
                             <Frame Source="Pages/PropertyListPage.xaml" />
                         </TabItem>

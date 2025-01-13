@@ -1,22 +1,20 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using PhoenixDX.Drawing;
 using PhoenixDX.Program;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Vektor = Microsoft.Xna.Framework.Vector2;
 
 namespace PhoenixDX.Structures
 {
-    internal class Truppen : GemarkAdorner
+    /// <summary>
+    /// Truppen sind spezielle Adorner, die Figuren zusammenstellen, so dass sie auf ein Kleinfeld passen
+    /// </summary>
+    internal class Truppen : ColorAdorner
     {
-
         public class FigurImage
         {
             public FigurType Typ = FigurType.NaN;
@@ -63,13 +61,11 @@ namespace PhoenixDX.Structures
         }
 
 
-        Texture2D _texture = null;
         List<Figur> _truppen = null;
 
         public Truppen(List<Figur> truppen)
         {
             _truppen = truppen;
-            this.HasDirections = false;
         }
 
         public static void LoadContent(ContentManager contentManager)
@@ -80,21 +76,36 @@ namespace PhoenixDX.Structures
             }
         }
 
-        // hier werden die Figuren in eine Texture zusammengestellt
-        public void CreateTexture()
+        public override ColoredTexture CreateTexture()
         {
-            if (SpielDX.Instance.Graphics == null)
-                return;
+            return CreateTexture(_truppen);
+        }
+
+        // hier werden die Figuren in eine Texture zusammengestellt
+        private static ColoredTexture CreateTexture(List<Figur> truppen)
+        {
+            if (SpielDX.Instance.Graphics == null || truppen.Count == 0)
+                return null;
+
+            // der key für den Cache ist Farbe und dann die Typen
+            string cacheKey = string.Empty;
+            foreach (var figur in truppen)
+            {
+                cacheKey += $"{figur.Typ.ToString()}, ";
+            }
+
+            if (TextureCache.Contains(cacheKey))
+                return TextureCache.Get(cacheKey) as ColoredTexture;
 
             var graphicsDevice = SpielDX.Instance.Graphics.GraphicsDevice;
-            float faktor = _truppen.Count > 1 ? 1.2f :0.8f;
+            float faktor = truppen.Count > 1 ? 1.2f :0.8f;
             int figurHeight = Convert.ToInt32(719f / faktor);
             int figurWidth = Convert.ToInt32(670f / faktor);
             const int height = 138 *2;
             const int width = 160 *2;
 
             Position[] pos = [
-                new Position(_truppen.Count > 1 ? 4:40, _truppen.Count > 1 ? -8:20),
+                new Position(truppen.Count > 1 ? 4:40, truppen.Count > 1 ? -8:20),
                 new Position(140, 0),
                 new Position(-8, 140),
                 new Position(140, 140),
@@ -117,14 +128,12 @@ namespace PhoenixDX.Structures
 
                     // Draw each texture in the list on top of each other
                     int i = 0;
-                    foreach (var figur in _truppen)
+                    foreach (var figur in truppen)
                     {
                         int index = (int)figur.Typ;
                         var texture = FigurImages[index].Texture;
                         Rectangle rScreenG = new Rectangle(pos[i].X, pos[i].Y, Convert.ToInt32(figurWidth / 4), Convert.ToInt32(figurHeight /4));
-                      
-
-                        spriteBatch.Draw(texture, rScreenG, null, figur.Color);
+                        spriteBatch.Draw(texture, rScreenG, null, Color.White); // figur.Color);
                         if (++i > pos.Length - 1)
                             i = 0;
                     }
@@ -134,37 +143,24 @@ namespace PhoenixDX.Structures
                     graphicsDevice.SetRenderTarget(null);
 
                     // Get the final merged texture from the render target
-                    _texture = new Texture2D(graphicsDevice, width, height);
+                    Texture2D result = new Texture2D(graphicsDevice, width, height);
 
                     // Copy the data from the render target to the final texture
                     Color[] data = new Color[width * height];
                     renderTarget.GetData(data);
-                    _texture.SetData(data);
+                    result.SetData(data);
+                    ColoredTexture gameTexture = new ColoredTexture(result, truppen[0].Color);
+                    TextureCache.Set(cacheKey, gameTexture);
+                    return gameTexture;
                 }
             }
             catch (Exception ex)
             {
-                MappaMundi.Log(0, 0, $"Bei der Erstellung der Textur für die Truppen auf {this.ToString()} kam es zu einem Fehler",ex);
+                MappaMundi.Log(0, 0, $"Bei der Erstellung der Textur für die Truppen kam es zu einem Fehler",ex);
             }
-           
-        }
-
-
-        public override AdornerTexture GetAdornerTexture()
-        {
             return null;
         }
 
-        public override List<Texture2D> GetTextures()
-        {
-            return new List<Texture2D>() { GetTexture() };
-        }
-
-        public override Texture2D GetTexture()
-        {
-           if (_texture == null)
-                CreateTexture();
-            return _texture;
-        }
+        
     }
 }

@@ -121,11 +121,13 @@ namespace PhoenixModel.dbErkenfara {
         };
 
         public static IEnumerable<KleinfeldPosition> GetKleinfeldNachbarn(KleinfeldPosition pos) {
+            
             List<KleinfeldPosition> list = [];
-            foreach (KleinfeldPosition p in _nachbarn[pos.gf]) {
+            if (pos.kf < 1 || pos.kf > 48)
+                return list;
+             foreach (KleinfeldPosition p in _nachbarn[pos.kf]) {
                 p.gf += pos.gf;
-                if (SharedData.Map != null && SharedData.Map.ContainsKey(p.CreateBezeichner()))
-                    list.Add(p);
+                list.Add(p);
             }
             return list;
         }

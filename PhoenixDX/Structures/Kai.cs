@@ -1,9 +1,11 @@
-﻿namespace PhoenixDX.Structures
+﻿using PhoenixDX.Drawing;
+
+namespace PhoenixDX.Structures
 {
-    public class Kai : GemarkAdorner
+    public class Kai : DirectionAdorner
     {
-        public static AdornerTexture Texture = new("kai_");
-        public override AdornerTexture GetAdornerTexture() { return Texture; }
+        public static Drawing.DirectionTexture Texture = new("kai_");
+        protected override Drawing.DirectionTexture GetDirectionTexture() { return Texture; }
 
         public Kai(PhoenixModel.dbErkenfara.KleinFeld gem) : base(gem.Kai_NW, gem.Kai_NO, gem.Kai_O, gem.Kai_SO, gem.Kai_SW, gem.Kai_W)
         { }

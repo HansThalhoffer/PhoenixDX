@@ -19,8 +19,10 @@ using SharpDX.XAudio2;
 using PhoenixDX.Helper;
 using PhoenixModel.View;
 using System.Diagnostics;
+using PhoenixDX.Drawing;
 
-namespace PhoenixDX.Structures {
+namespace PhoenixDX.Structures
+{
     [DebuggerDisplay("{DebuggerDisplay()}")]
     public class Gemark : Hex {
         public string DebuggerDisplay() {
@@ -140,6 +142,11 @@ namespace PhoenixDX.Structures {
                     Layer_1.Add(new Truppen(truppen));
                 }
             }
+
+            if (gem.Mark != MarkerType.None)
+            {
+                Layer_1.Add(new Marker(gem.Mark));
+            }
             return true;
         }
 
@@ -171,27 +178,26 @@ namespace PhoenixDX.Structures {
 
         #region Content
 
-        public List<Texture2D> GetTextures(int layer) {
-            List<Texture2D> textures = new List<Texture2D>();
+        public List<BaseTexture> GetTextures(int layer) {
+            List<BaseTexture> textures = [];
             switch (layer) {
                 case 0: {
                         Gelaende gel = GeländeTabelle.Terrains[(int)_terrainType] as Gelaende;
                         if (gel != null)
                             textures.Add(gel.GetTexture());
                         foreach (GemarkAdorner adorner in Layer_0) {
-                            if (adorner.HasDirections)
-                                textures.AddRange(adorner.GetTextures());
-                            else
-                                textures.Add(adorner.GetTexture());
+                            var tex = adorner.GetTexture();
+                            if (tex != null) 
+                                textures.Add(tex);
+                            
                         }
                         break;
                     }
                 case 1: {
                         foreach (GemarkAdorner adorner in Layer_1) {
-                            if (adorner.HasDirections)
-                                textures.AddRange(adorner.GetTextures());
-                            else
-                                textures.Add(adorner.GetTexture());
+                            var tex = adorner.GetTexture();
+                            if (tex != null)
+                                textures.Add(tex);
                         }
                         break;
                     }
@@ -213,11 +219,11 @@ namespace PhoenixDX.Structures {
                 .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(GemarkAdorner)))
                 .ToList();
 
-            var textureValues = new List<AdornerTexture>();
+            var textureValues = new List<DirectionTexture>();
             foreach (var type in derivedTypes) {
                 var textureField = type.GetField("Texture", BindingFlags.Public | BindingFlags.Static);
-                if (textureField != null && textureField.FieldType == typeof(AdornerTexture)) {
-                    var fieldValue = textureField.GetValue(null) as AdornerTexture;
+                if (textureField != null && textureField.FieldType == typeof(DirectionTexture)) {
+                    var fieldValue = textureField.GetValue(null) as DirectionTexture;
                     if (fieldValue != null) {
                         textureValues.Add(fieldValue);
                     }

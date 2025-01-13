@@ -13,6 +13,11 @@ using PhoenixModel.dbPZE;
 
 namespace PhoenixModel.dbErkenfara
 {
+    public enum MarkerType
+    {
+        None, Info, Warning, Fatality
+    }
+
     public class KleinFeld : KleinfeldPosition, ISelectable, IDatabaseTable
     {
         #region Schnittstellen
@@ -89,6 +94,31 @@ namespace PhoenixModel.dbErkenfara
         public string? Bauwerknamen { get; set; }
         public int? lehensid { get; set; }
 
+        private bool? _isWasser = null;
+        public bool IsWasser
+        {
+            get
+            {
+                if (_isWasser == null)
+                    _isWasser = this.Terrain.IsWasser;
+                return (bool)_isWasser;
+            }
+        }
+
+        private bool? _isKüste = null;
+        public bool IsKüste
+        {
+            get
+            {
+                if (IsWasser == false)
+                    return false;
+                if (_isKüste == null)
+                    _isKüste = KleinfeldView.IsKleinfeldKüste(this);
+                return (bool)_isKüste;
+            }
+        }
+
+        public MarkerType Mark { get; set; }
 
         public enum Felder
         {
@@ -183,7 +213,7 @@ namespace PhoenixModel.dbErkenfara
         {
             get { return SpielfigurenView.GetSpielfiguren(this); }
         }
-       
+
         public void Save(DbCommand command)
         {
             command.CommandText = $@"UPDATE {TableName} SET
@@ -265,8 +295,8 @@ namespace PhoenixModel.dbErkenfara
             if (this.Gebäude != null)
             {
                 this.Gebäude.Bauwerknamen = this.Bauwerknamen;
-               // gebäude müssen nicht gespeichert werden, da sie aus den Karten immer wieder aktualisiert werden.
-               // this.Gebäude.Save(command);
+                // gebäude müssen nicht gespeichert werden, da sie aus den Karten immer wieder aktualisiert werden.
+                // this.Gebäude.Save(command);
             }
         }
 
@@ -288,8 +318,9 @@ namespace PhoenixModel.dbErkenfara
 
         public GeländeTabelle Terrain
         {
-            get {
-                return GeländeTabelle.Terrains[Gelaendetyp != null ? (int)Gelaendetyp : 0]; 
+            get
+            {
+                return GeländeTabelle.Terrains[Gelaendetyp != null ? (int)Gelaendetyp : 0];
             }
         }
 

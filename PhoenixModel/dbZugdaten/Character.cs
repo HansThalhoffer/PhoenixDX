@@ -5,17 +5,16 @@ using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
 namespace PhoenixModel.dbZugdaten
 {
-    public class Character : NamensSpielfigur,  IDatabaseTable, IEigenschaftler
+    public class Character : NamensSpielfigur, IDatabaseTable, IEigenschaftler
     {
         private static string _datebaseName = string.Empty;
         public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "chars";
-        string IDatabaseTable.TableName => TableName;   
+        string IDatabaseTable.TableName => TableName;
         // IEigenschaftler
         public override FigurType Typ => FigurType.Charakter;
         public override FigurType BaseTyp => FigurType.Charakter;
-        string Einheit { get; set; }
-
+        public string Einheit {  get; set; } = string.Empty ;
         public enum Felder
         {
             nummer, Beschriftung, GP_ges, GP_akt, GP_ges_alt, GP_akt_alt, Charname, Spielername, gf_von, kf_von, gf_nach, kf_nach, rp, bp, tp_alt, tp, ph_xy, Teleport_gf_von, Teleport_kf_von, Teleport_gf_nach, Teleport_kf_nach, Befehl_magie, Befehl_Teleport, Befehl_bannt,

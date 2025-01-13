@@ -10,12 +10,13 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using System.Net;
 using PhoenixModel.ExternalTables;
+using PhoenixDX.Drawing;
 
 namespace PhoenixDX.Structures
 {
     public class Gelaende : GeländeTabelle
     {
-        Texture2D hexTexture;
+        SimpleTexture hexTexture;
         List<Texture2D>hexTextures = new List<Texture2D>();
 
         public Gelaende(GeländeTabelle source, string image, ContentManager contentManager):
@@ -23,17 +24,8 @@ namespace PhoenixDX.Structures
         {
             try
             {
-                string folder = "Images/TilesetV/";
-                /*if (image == "mountain")
-                {
-                    hexTexture = contentManager.Load<Texture2D>("Images/TilesetN/" + image);
-                    hexTextures.Add( contentManager.Load<Texture2D>("Images/TilesetN/mountain"));
-                    hexTextures.Add(contentManager.Load<Texture2D>("Images/TilesetN/mountain1" ));
-                    hexTextures.Add(contentManager.Load<Texture2D>("Images/TilesetN/mountain2"));
-                }
-                else
-                */
-                    hexTexture = contentManager.Load<Texture2D>(folder + image);
+                const string folder = "Images/TilesetV/";
+                hexTexture = new SimpleTexture(contentManager.Load<Texture2D>(folder + image));
             }
             catch (Exception ex)
             {
@@ -41,15 +33,8 @@ namespace PhoenixDX.Structures
             }
         }
 
-        public Texture2D GetTexture() { 
-        
-            //if (hexTextures.Count == 0)
-                return hexTexture;
-            /*Random rnd = new Random();
-            int index = rnd.Next(0,hexTextures.Count);
-            if (index >= hexTextures.Count)
-                index = hexTextures.Count;
-            return hexTextures[index];*/
+        public SimpleTexture GetTexture() { 
+            return hexTexture;
         }
 
         static bool _isLoaded = false;
@@ -70,6 +55,7 @@ namespace PhoenixDX.Structures
             Terrains[(int)TerrainType.Auftauchpunkt] = new Gelaende(Terrains[(int)TerrainType.Auftauchpunkt], "auftauchpunkt_ocean", contentManager);
             Terrains[(int)TerrainType.Tiefseeeinbahnpunkt] = new Gelaende(Terrains[(int)TerrainType.Tiefseeeinbahnpunkt], "deepseapoint", contentManager);
             Terrains[(int)TerrainType.AuftauchpunktUnbekannt] = new Gelaende(Terrains[(int)TerrainType.AuftauchpunktUnbekannt], "auftauchpunkt_unbekannt", contentManager);
+            Terrains[(int)TerrainType.Küste] = new Gelaende(Terrains[(int)TerrainType.Küste], "coast", contentManager);
             _isLoaded = true;
         }
 

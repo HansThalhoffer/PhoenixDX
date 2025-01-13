@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Helper;
 using PhoenixDX.Structures;
+using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
 
@@ -29,10 +30,9 @@ namespace PhoenixDX.Drawing
         static double _tick = 0;
         static double _animated = 0;
         static bool _toggle = false;
-        public static Gemark Draw(SpriteBatch spriteBatch, Vektor scale, Vektor? mousePos, bool isMoving, float tileTransparancy, 
+        public static Gemark Draw(SpriteBatch spriteBatch, Vektor scale, Vektor? mousePos, bool isMoving,  
             ref Dictionary<int, Provinz> provinzen, TimeSpan gameTime, Gemark selected, Rectangle visibleScreen)
         {         
-            Color colorTiles = Color.White * tileTransparancy;
             _animated += gameTime.TotalMilliseconds - _tick;
             _tick = gameTime.TotalMilliseconds;
             if (_animated > 100d)
@@ -73,12 +73,15 @@ namespace PhoenixDX.Drawing
                         mouseover = gemark;                  
 
                     var listTexture = gemark.GetTextures(0);
-                    foreach (var hexTexture in listTexture)
+                    foreach (var baseTexture in listTexture)
                     {
-                        // spriteBatch.Draw(hexTexture, posP, null, Color.Transparent);
-                        spriteBatch.Draw(hexTexture, rScreenG, null, inKleinfeld ? Color.Plum : colorTiles);
+                        if (baseTexture is ColoredTexture colored)
+                            spriteBatch.Draw(baseTexture.Texture, rScreenG, null, inKleinfeld ? Color.Plum : colored.Color);
+                        else
+                            spriteBatch.Draw(baseTexture.Texture, rScreenG, null, inKleinfeld ? Color.Plum : Color.White);
+
                     }
-                    
+
                 }
             }
             foreach (var province in provinzen.Values)
@@ -102,10 +105,12 @@ namespace PhoenixDX.Drawing
                         mouseover = gemark;
 
                     var listTexture = gemark.GetTextures(1);
-                    foreach (var hexTexture in listTexture)
+                    foreach (var baseTexture in listTexture)
                     {
-                        // spriteBatch.Draw(hexTexture, posP, null, Color.Transparent);
-                        spriteBatch.Draw(hexTexture, rScreenG, null, inKleinfeld ? Color.Plum : colorTiles);
+                        if (baseTexture is ColoredTexture colored)
+                            spriteBatch.Draw(baseTexture.Texture, rScreenG, null, inKleinfeld ? Color.Plum : colored.Color);
+                        else
+                            spriteBatch.Draw(baseTexture.Texture, rScreenG, null, inKleinfeld ? Color.Plum : Color.White);
                     }
 
                     if (ShowReichOverlay == true && gemark.ReichID > 0 && gemark.Reich != null)

@@ -122,14 +122,22 @@ namespace PhoenixModel.View
     /// </summary>
     public static class SpielfigurenView
     {
-        public static int BerechneBaupunkte(Spielfigur figur)
+        public static int BerechneBewegungspunkte(Spielfigur figur)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            return 0;
+        }
+
+        public static int BerechneBaukosten(Spielfigur figur)
+        {
+            // throw new NotImplementedException();
+            return 0;
         }
 
         public static int BerechneRaumpunkte(Spielfigur figur)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            return 0;
         }
 
         public static Armee GetSpielfiguren(KleinfeldPosition gem)

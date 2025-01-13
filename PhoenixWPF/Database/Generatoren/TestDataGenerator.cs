@@ -46,15 +46,35 @@ namespace PhoenixWPF.Database.Generatoren
             using (OleDbConnection connection = new OleDbConnection(connectionString))
             {
                 connection.Open();
-                OleDbCommand command = new OleDbCommand($"DELETE FROM Krieger", connection);
+                OleDbCommand command = new OleDbCommand("DELETE FROM Krieger", connection);
                 var result = command.ExecuteNonQuery();
+                command.CommandText = "DELETE FROM Schiffe";
+                result = command.ExecuteNonQuery();
+                command.CommandText = "DELETE FROM Reiter";
+                result = command.ExecuteNonQuery();
+                command.CommandText = "DELETE FROM Kreaturen";
+                result = command.ExecuteNonQuery();
+                command.CommandText = "DELETE FROM Zauberer";
+                result = command.ExecuteNonQuery();
+                command.CommandText = "DELETE FROM chars";
+                result = command.ExecuteNonQuery();
                 var schiffe = GenerateSchiffe(command, 50);
                 var krieger = GenerateKrieger(eigeneGebiet, command, 50, schiffe);
                 PutOnSchiffe(schiffe, krieger, 10);
-               
+                Save(schiffe, command);
+                Save(krieger, command);
             }
             
         }
+
+        private static void Save(IEnumerable<Spielfigur> figuren, DbCommand command)
+        {
+            foreach (var figur in figuren)
+            {
+                figur.Save(command);
+            }
+        }
+
 
         /// <summary>
         /// um Figuren auf Schiffe zu bringen, oder Einschiffen oder Ausschiffen Befehl_bew "#SCEA:[Schiffnummer]
@@ -111,7 +131,8 @@ namespace PhoenixWPF.Database.Generatoren
 
         private static void Calculate(ref TruppenSpielfigur figur, KleinFeld kf)
         {
-            figur.bp = SpielfigurenView.BerechneBaupunkte(figur);
+            figur.Kosten = SpielfigurenView.BerechneBaukosten(figur);
+            figur.bp = SpielfigurenView.BerechneBewegungspunkte(figur);
             figur.rp = SpielfigurenView.BerechneRaumpunkte(figur);
         }
 
@@ -143,6 +164,7 @@ namespace PhoenixWPF.Database.Generatoren
         {
             Random random = new();
             List<Krieger> list = new List<Krieger>();
+            int nummer = 101;
             for (int i = 0; i < count; ++i)
             {
                 KleinFeld kf = eigeneGebiet[random.Next(0, eigeneGebiet.Length - 1)];
@@ -151,17 +173,11 @@ namespace PhoenixWPF.Database.Generatoren
                 // auf Flotte
                 Krieger krieger = new Krieger()
                 {
-                    staerke = random.Next(1000, 60000),
-                    hf = random.Next(1, 60),
-                    gf = kf.gf,
-                    gf_von = kf.gf,
-                    kf = kf.kf,
-                    kf_von = kf.kf,
-                    LKP = lKP,
-                    lkp_alt = lKP,
-                    SKP = sKP,
-                    skp_alt = sKP,
+                    Nummer = nummer++
                 };
+                TruppenSpielfigur truppenSpielfigur = krieger as TruppenSpielfigur;
+                Fill(ref truppenSpielfigur, kf);
+                Calculate(ref truppenSpielfigur, kf);
                 list.Add(krieger);
             }
             return list;
