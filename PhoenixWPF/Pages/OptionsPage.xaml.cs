@@ -46,8 +46,8 @@ namespace PhoenixWPF.Pages
 
         private void sldZoom_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (Main.Instance.Map != null && _self == false)
-                Main.Instance.Map.SetZoom((float)e.NewValue / 100);
+            if (Main.Map != null && _self == false)
+                Main.Map.SetZoom((float)e.NewValue / 100);
         }
 
         public OptionsPage()

@@ -1,34 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Threading;
-using PhoenixDX;
-using PhoenixDX.Structures;
+﻿using PhoenixDX;
 using PhoenixModel.Database;
 using PhoenixModel.dbErkenfara;
-using PhoenixModel.Helper;
 using PhoenixModel.Program;
 using PhoenixModel.View;
 using PhoenixWPF.Database;
 using PhoenixWPF.Dialogs;
 using PhoenixWPF.Helper;
-using SharpDX;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrayNotify;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+using PhoenixWPF.Program;
+using System.IO;
+using System.Windows;
+using System.Windows.Threading;
 using static PhoenixModel.Database.PasswordHolder;
-using static PhoenixModel.Helper.MapEventArgs;
-using static PhoenixWPF.Program.ErkenfaraKarte;
+
 
 namespace PhoenixWPF.Program {
     public class Main : IDisposable {
         private static Main _instance = new Main();
         public AppSettings Settings { get; private set; }
-        public PhoenixDX.MappaMundi? Map { get; set; }
+        internal PhoenixDX.MappaMundi? SpielDXBridge { get; set; }
         public SpielWPF? Spiel { get; set; }
         public IPropertyDisplay? PropertyDisplay { get; set; } = null;
         public IOptions? Options { get; set; } = null;
@@ -50,6 +39,10 @@ namespace PhoenixWPF.Program {
             // Serialize the store to a JSON string
             string jsonString = store.Serialize();
             StorageSystem.WritePassKeyFile(jsonString);
+        }
+
+        public static MappaMundi? Map {
+            get => Main.Instance.SpielDXBridge;
         }
 
         public void TryLoadFromUSBStick() {
@@ -107,8 +100,8 @@ namespace PhoenixWPF.Program {
         public void StopInstance() {
             _backgroundSave?.Stop();
             PerformSave(null, new EventArgs());
-            if (Instance.Map != null) 
-                Settings.UserSettings.Zoom = Instance.Map.GetZoom();
+            if (Instance.SpielDXBridge != null) 
+                Settings.UserSettings.Zoom = Instance.SpielDXBridge.GetZoom();
         }
 
         /// <summary>

@@ -148,7 +148,7 @@ namespace PhoenixWPF.Host {
                 int height = Convert.ToInt32(sizeInfo.NewSize.Height);
                 // SetWindowRegion(_hWnd, width, height);
 
-                Main.Instance.Map?.Resize(width, height);
+                Main.Map?.Resize(width, height);
             }
         }
 
@@ -157,7 +157,7 @@ namespace PhoenixWPF.Host {
             if (_hWnd != IntPtr.Zero) {
                 int width = Convert.ToInt32(rcBoundingBox.Width);
                 int height = Convert.ToInt32(rcBoundingBox.Height);
-                Main.Instance.Map?.Resize(width, height);
+                Main.Map?.Resize(width, height);
             }
         }
         private void OnApplicationActivated(object? sender, EventArgs e) {
@@ -217,11 +217,11 @@ namespace PhoenixWPF.Host {
 
             _hWnd = CreateHostWindow(hwndParent.Handle);
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject()) == false) {
-                Main.Instance.Map = new PhoenixDX.MappaMundi(_hWnd);
+                Main.Instance.SpielDXBridge = new PhoenixDX.MappaMundi(_hWnd);
                 Main.Instance.Spiel = new SpielWPF();
                 MappaMundi.OnMapEvent += new MappaMundi.MapEventHandler(MapEventHandler);
                 ViewModel.OnViewEvent += new ViewModel.ViewEventHandler(ViewEventHandler);
-                Main.Instance.Map.Run();
+                Main.Instance.SpielDXBridge.Run();
             }
             return new HandleRef(this, _hWnd);
         }
@@ -241,7 +241,7 @@ namespace PhoenixWPF.Host {
         }
 
         protected override void DestroyWindowCore(HandleRef hwnd) {
-            Main.Instance.Map?.Exit();
+            Main.Instance.SpielDXBridge?.Exit();
             Main.Instance.Spiel?.Dispose();
             // Destroy the window and reset our hWnd value
             NativeMethods.DestroyWindow(hwnd.Handle);
@@ -444,11 +444,11 @@ namespace PhoenixWPF.Host {
         }
 
         protected virtual void OnMouseEvent(HwndMouseEventArgs args) {
-            Main.Instance.Map?.OnMouseEvent(args);
+            Main.Instance.SpielDXBridge?.OnMouseEvent(args);
         }
 
         protected virtual void OnKeyEvent(PhoenixModel.Helper.KeyEventArgs args) {
-            Main.Instance.Map?.OnKeyEvent(args);
+            Main.Instance.SpielDXBridge?.OnKeyEvent(args);
         }
 
 
