@@ -31,9 +31,14 @@ namespace PhoenixModel.Program
         /// In dieser Queue werden die Objekte abgelegt, die in der Datenbank gespeichert werden sollen. Das geschieht asynchron
         /// </summary>
         public static ConcurrentQueue<IDatabaseTable> StoreQueue = [];
+        /// <summary>
+        /// Hier kommen die Kleinfelder rein, die aufgrund neuer Daten auch neu gezeichnet werden sollen
+        /// </summary>
         public static ConcurrentQueue<KleinfeldPosition> UpdateQueue = [];
 
-        // Karte
+        /// <summary>
+        /// Karte - müsst eigentlich Kleinfelder heißen, aber es hat eine besondere Stellung
+        /// </summary>
         public static BlockingDictionary<KleinFeld>? Map = null;
         public static BlockingDictionary<Gebäude>? Gebäude = null; // bauwerkliste
         public static BlockingDictionary<ReichCrossref>? Diplomatie = null;

@@ -5,11 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PhoenixWPF.Dialogs"
         mc:Ignorable="d"
-        Title="TruppenEntwicklung" Height="450" Width="800">
+        Title="TruppenEntwicklung" Height="500" Width="800">
     <Grid>
-        <TabControl TabStripPlacement="Bottom">
+        <TabControl TabStripPlacement="Bottom" Margin="5">
+            <TabItem Header="Status">
+                <Frame x:Name="Status"  Source="/Pages/TruppenStatusPage.xaml" Tag="Status"/>
+            </TabItem>
             <TabItem Header="Historische Bilanzen">
-                <Frame x:Name="HistorischeBilanzen"  Source="/Pages/ChartPage.xaml" Tag="Truppen"/>
+                <Frame x:Name="HistorischeBilanzen"  Source="/Pages/ChartPage.xaml" Tag="Entwicklung"/>
             </TabItem>
         </TabControl>
     </Grid>

@@ -1,0 +1,89 @@
+﻿<Page x:Class="PhoenixWPF.Pages.TruppenStatusPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:PhoenixWPF.Pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="TruppenStatusPage">
+    <Page.Resources>
+        <!-- Style for all TextBlocks -->
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="AliceBlue"/>
+        </Style>
+        <Style TargetType="GroupBox">
+            <Setter Property="Foreground" Value="AliceBlue"/>
+        </Style>
+    </Page.Resources>
+    <Grid>
+            <GroupBox Header="Truppen" Margin="10">
+                <StackPanel>
+                    <!-- Krieg Section -->
+                    <TextBlock Text="Gesamtstärken bei Kriegern:" Margin="5" />
+                    <UniformGrid Columns="5" Margin="5">
+                        <TextBlock Text="Krieger" VerticalAlignment="Center"/>
+                        <TextBlock Text="Heerführer" VerticalAlignment="Center"/>
+                        <TextBlock Text="Leichte Katapulte" VerticalAlignment="Center"/>
+                        <TextBlock Text="Schwere Katapulte" VerticalAlignment="Center"/>
+                        <TextBlock Text="Pferde" VerticalAlignment="Center"/>
+                        <TextBox Text="{Binding Krieger}" IsReadOnly="True" Margin="2"/>
+                        <TextBox Text="{Binding HF_Krieg}" IsReadOnly="True" Margin="2"/>
+                        <TextBox Text="{Binding LKP_Krieg}" IsReadOnly="True" Margin="2"/>
+                        <TextBox Text="{Binding SK_Krieg}" IsReadOnly="True" Margin="2"/>
+                        <TextBox Text="{Binding Pferde_Krieg}" IsReadOnly="True" Margin="2"/>
+                    </UniformGrid>
+
+                    <!-- Reiten Section -->
+                    <TextBlock Text="Gesamtstärken bei Reitern:" Margin="5"/>
+                    <UniformGrid Columns="5" Margin="5">
+                        <TextBlock Text="Reiter" VerticalAlignment="Center"/>
+                        <TextBlock Text="Heerführer" VerticalAlignment="Center"/>
+                        <TextBlock Text="Leichte Katapulte" VerticalAlignment="Center"/>
+                        <TextBlock Text="Schwere Katapulte" VerticalAlignment="Center"/>
+                        <TextBlock Text="Pferde" VerticalAlignment="Center"/>
+                        <TextBox Text="{Binding Reiter}" IsReadOnly="True" Margin="2"/>
+                        <TextBox Text="{Binding HF_Reiten}" IsReadOnly="True" Margin="2"/>
+                        <TextBox Text="{Binding LKP_Reiten}" IsReadOnly="True" Margin="2"/>
+                        <TextBox Text="{Binding SKP_Reiten}" IsReadOnly="True" Margin="2"/>
+                        <TextBox Text="{Binding Pferde_Reiten}" IsReadOnly="True" Margin="2"/>
+                    </UniformGrid>
+
+                    <!-- Schiffe Section -->
+                    <TextBlock Text="Gesamtstärken bei Schiffen:" Margin="5"/>
+                    <UniformGrid Columns="4" Margin="5">
+                        <TextBlock Text="Schiffe" VerticalAlignment="Center"/>
+                        <TextBlock Text="Heerführer" VerticalAlignment="Center"/>
+                        <TextBlock Text="Leichte Kriegsschiffe" VerticalAlignment="Center"/>
+                        <TextBlock Text="Schwere Kriegsschiffe" VerticalAlignment="Center"/>
+                        <TextBox Text="{Binding Schiffe}" IsReadOnly="True" Margin="2"/>
+                        <TextBox Text="{Binding HF_Schiffe}" IsReadOnly="True" Margin="2"/>
+                        <TextBox Text="{Binding LK_Schiffe}" IsReadOnly="True" Margin="2"/>
+                        <TextBox Text="{Binding SKS_Schiffe}" IsReadOnly="True" Margin="2"/>
+                    </UniformGrid>
+                    <UniformGrid Columns="2" Width="300" HorizontalAlignment ="Left" Margin="5,20,0,0">
+                        <TextBlock Text="Heerführer Gesamt:" VerticalAlignment="Center"/>
+                        <TextBox Text="{Binding HF_Gesamt}" IsReadOnly="True" Margin="2"/>
+                    </UniformGrid>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="Zauberer" Margin="10" VerticalAlignment="Bottom">
+                <UniformGrid Columns="6" Margin="5">
+                    <TextBlock Text="ZA" VerticalAlignment="Center"/>
+                    <TextBlock Text="ZB" VerticalAlignment="Center"/>
+                    <TextBlock Text="ZC" VerticalAlignment="Center"/>
+                    <TextBlock Text="ZD" VerticalAlignment="Center"/>
+                    <TextBlock Text="ZE" VerticalAlignment="Center"/>
+                    <TextBlock Text="ZF" VerticalAlignment="Center"/>
+                    <TextBox Text="{Binding ZA}" IsReadOnly="True" Margin="2"/>
+                    <TextBox Text="{Binding ZB}" IsReadOnly="True" Margin="2"/>
+                    <TextBox Text="{Binding ZC}" IsReadOnly="True" Margin="2"/>
+                    <TextBox Text="{Binding ZD}" IsReadOnly="True" Margin="2"/>
+                    <TextBox Text="{Binding ZE}" IsReadOnly="True" Margin="2"/>
+                    <TextBox Text="{Binding ZF}" IsReadOnly="True" Margin="2"/>
+                </UniformGrid>
+            </GroupBox>
+        </Grid>
+
+</Page>
