@@ -115,8 +115,6 @@ namespace PhoenixWPF.Program {
             SelectGemark(pos);
         }
 
-
-
         public void Dispose() { }
     }
 }
