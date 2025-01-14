@@ -38,13 +38,16 @@ namespace PhoenixModel.View {
             }
         }
 
-        public static IEnumerable<KleinFeld>? GetNachbarn(KleinFeld kf, int Distanz = 1) {
+        public static IEnumerable<KleinFeld>? GetNachbarn(KleinFeld kf, int distance = 1) {
             try {
                 Queue<KleinFeld> working = [];
                 Dictionary<string, KleinFeld> nachbarn = [];
                 working.Enqueue(kf);
-
-                for (int i = 0; i < Distanz; i++) {
+                int max = distance > 1?1:0;
+                for (int i = 1; i <= distance; i++) {
+                    max += 6 * i;
+                }
+                while (working.Count > 0) {
                     var positionen = KartenKoordinaten.GetKleinfeldNachbarn(working.Dequeue());
                     if (SharedData.Map != null && positionen != null) {
                         foreach (var pos in positionen) {
@@ -55,6 +58,8 @@ namespace PhoenixModel.View {
                                 working.Enqueue(nab);
                             }
                         }
+                        if (nachbarn.Count >= max)
+                            break;
                     }
                 }
                 return nachbarn.Values;

@@ -93,7 +93,7 @@ namespace PhoenixWPF.Program {
 
                 /// TEST
                 KleinfeldView.UnMark();
-                var nachbarn = KleinfeldView.GetNachbarn(gem, 1);
+                var nachbarn = KleinfeldView.GetNachbarn(gem, 6);
                 if (nachbarn != null) {
                     foreach (var g in nachbarn) {
                         KleinfeldView.Mark(g, MarkerType.Fatality, true);
