@@ -55,8 +55,7 @@ namespace PhoenixDX.Program
             _clientWidth = 10;
             _clientHeight = 10;
 
-            if(Zoom<=0.01 || Zoom > 2.6)
-                Zoom = 0.4f;
+            _zoom = 0.4f;
             _cancellationToken = token;
             IsMouseVisible = true;
 
@@ -79,6 +78,8 @@ namespace PhoenixDX.Program
             IsFixedTimeStep = false;
 
             base.Initialize();
+            // der WPF Anwendung sagen, dass alles bereit ist
+            _wpfBridge.OnLoaded();
         }
 
 
@@ -326,8 +327,9 @@ namespace PhoenixDX.Program
         public float Zoom
         {
             get => _zoom;
-            set
-            {
+            set  { // aus technischen Gründen sind die Zoomwerte limitiert
+                if (value <= 0.01 || value > 2.6 || _zoom == value)
+                    return;
                 _zoom = value;
                 _RecalcScale();
                 _wpfBridge.OnZoomChanged(Zoom);

@@ -77,9 +77,10 @@ namespace PhoenixWPF.Program {
             Settings.InitializeSettings();
         }
 
-        public void InitInstance() {
-            Main.Instance?.Map?.SetZoom(Settings.UserSettings.Zoom);
-
+        /// <summary>
+        /// StartInstance wird im MainWindow.Loaded Event aufgerufen. D.h. die Elemente sollten schon alle konstruiert sein
+        /// </summary>
+        public void StartInstance() {
             TryLoadFromUSBStick();
             LoadCrossRef(); // die referenzen vor der Karte laden, auch wenn es dann weniger zu sehen gibt - insgesamt geht das schneller
             LoadKarte();
@@ -93,11 +94,21 @@ namespace PhoenixWPF.Program {
                 Application.Current.Shutdown();
             }
 
-
             _backgroundSave = new DispatcherTimer {
                 Interval = TimeSpan.FromSeconds(1)
             };
             _backgroundSave.Tick += PerformSave;
+        }
+
+        /// <summary>
+        /// StopInstancewird im MainWindow.OnClosing Event aufgerufen. 
+        /// Hier sollte Speicherung abgeschlossen werden
+        /// </summary>
+        public void StopInstance() {
+            _backgroundSave?.Stop();
+            PerformSave(null, new EventArgs());
+            if (Instance.Map != null) 
+                Settings.UserSettings.Zoom = Instance.Map.GetZoom();
         }
 
         /// <summary>
@@ -308,8 +319,6 @@ namespace PhoenixWPF.Program {
         public void Dispose() {
             if (Settings != null)
                 Settings.Dispose();
-            _backgroundSave?.Stop();
-            PerformSave(null, new EventArgs());
         }
     }
 }

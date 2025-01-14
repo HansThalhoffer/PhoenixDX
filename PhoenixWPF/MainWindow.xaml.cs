@@ -11,11 +11,16 @@ namespace PhoenixWPF
         {
             InitializeComponent();
             this.Loaded += OnLoaded;
+            this.Closing += OnClosing; ;
+        }
+
+        private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e) {
+            Main.Instance.StopInstance();
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            Main.Instance.InitInstance();
+            Main.Instance.StartInstance();
             this.Loaded -= OnLoaded;
         }
 

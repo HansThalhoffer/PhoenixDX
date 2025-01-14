@@ -219,10 +219,9 @@ namespace PhoenixWPF.Host {
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject()) == false) {
                 Main.Instance.Map = new PhoenixDX.MappaMundi(_hWnd);
                 Main.Instance.Spiel = new SpielWPF();
-                var us = Main.Instance.Settings.UserSettings;
                 MappaMundi.OnMapEvent += new MappaMundi.MapEventHandler(MapEventHandler);
                 ViewModel.OnViewEvent += new ViewModel.ViewEventHandler(ViewEventHandler);
-                Main.Instance.Map.Run(us);
+                Main.Instance.Map.Run();
             }
             return new HandleRef(this, _hWnd);
         }
@@ -240,7 +239,6 @@ namespace PhoenixWPF.Host {
                 Main.Instance.Spiel?.ViewEventHandler(e);
             }));
         }
-
 
         protected override void DestroyWindowCore(HandleRef hwnd) {
             Main.Instance.Map?.Exit();

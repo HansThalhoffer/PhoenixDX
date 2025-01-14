@@ -39,10 +39,7 @@ namespace PhoenixDX {
             }
         }
 
-        private UserSettings _userSettings;
-        public void Run(UserSettings us) {
-            _userSettings = us;
-            SetZoom(us.Zoom);
+        public void Run() {
             _gameThread = new Thread(() => this.Start());
             _gameThread.SetApartmentState(ApartmentState.STA);
             _gameThread.IsBackground = true;
@@ -86,20 +83,44 @@ namespace PhoenixDX {
             _game?.Goto(pos);
         }
 
+        /// <summary>
+        /// Zoom change von WPF zu DirectX
+        /// </summary>
+        /// <param name="val"></param>
         public void SetZoom(float val) {
             if (_game != null)
                 _game.Zoom = val;
         }
 
-        internal void OnZoomChanged(float val) {
-            _OnMapEvent(new MapEventArgs(0, 0, MapEventArgs.MapEventType.Zoom, _game?.Zoom));
-
+        /// <summary>
+        /// Zoom holen - wird benötigt für das Abspeichern des Zooms in den Settings
+        /// </summary>
+        /// <returns></returns>
+        public float GetZoom() {
             if (_game != null)
-                _userSettings.Zoom = _game.Zoom;
+                return _game.Zoom;
+            return 0f;
         }
         #endregion
 
         #region EventsFromDirectXToWpf
+        /// <summary>
+        /// Zoom change von DirectX zu WPF
+        /// </summary>
+        /// <param name="val"></param>
+        internal void OnZoomChanged(float val) {
+            _OnMapEvent(new MapEventArgs(0, 0, MapEventArgs.MapEventType.Zoom, _game?.Zoom));
+        }
+
+        /// <summary>
+        /// Zoom change von DirectX zu WPF
+        /// </summary>
+        /// <param name="val"></param>
+        internal void OnLoaded() {
+            _OnMapEvent(new MapEventArgs(MapEventArgs.MapEventType.Loaded));
+        }
+
+
         public delegate void MapEventHandler(object sender, MapEventArgs e);
         public static event MapEventHandler OnMapEvent;
         private static void _OnMapEvent(MapEventArgs args) {
