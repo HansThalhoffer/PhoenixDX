@@ -6,10 +6,9 @@ using Microsoft.Xna.Framework;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using PhoenixModel.Helper;
+using PhoenixModel.ViewModel;
 
-namespace PhoenixDX.Helper
-{
+namespace PhoenixDX.Helper {
     public static class VectorExtensions
     {
         public static void Move(ref this Vector2 v, int value)

@@ -3,10 +3,10 @@ using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbPZE;
 using PhoenixModel.dbZugdaten;
+using PhoenixModel.ViewModel;
 using System.Collections.Concurrent;
 
-namespace PhoenixModel.Program
-{
+namespace PhoenixModel.Program {
     public static class SharedData
     {
         public class BlockingDictionary<Tvalue> : ConcurrentDictionary<string, Tvalue>

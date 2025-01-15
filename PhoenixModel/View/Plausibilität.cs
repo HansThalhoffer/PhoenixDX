@@ -1,13 +1,11 @@
-﻿using PhoenixModel.dbErkenfara;
-using PhoenixModel.dbZugdaten;
+﻿using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhoenixModel.View
-{
+namespace PhoenixModel.View {
     public static class Plausibilität
     {
         public static bool IsValid(Spielfigur spielfigur)

@@ -1,5 +1,6 @@
 ﻿using PhoenixModel.Database;
 using PhoenixModel.Helper;
+using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -8,8 +9,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhoenixModel.dbPZE
-{
+namespace PhoenixModel.dbPZE {
     public class PzeUnits :  IDatabaseTable, IEigenschaftler
     {
         private static string _datebaseName = string.Empty;

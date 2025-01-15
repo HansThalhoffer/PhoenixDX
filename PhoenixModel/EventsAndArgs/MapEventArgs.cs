@@ -1,17 +1,14 @@
-﻿using PhoenixModel.dbErkenfara;
-using PhoenixModel.Program;
+﻿using PhoenixModel.Program;
+using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhoenixModel.Helper
-{
-    public class MapEventArgs
-    {
-        public enum MapEventType
-        {
+namespace PhoenixModel.EventsAndArgs {
+    public class MapEventArgs {
+        public enum MapEventType {
             None, Loaded, SelectGemark, Log, Zoom, UpdateAll
         }
 
@@ -21,44 +18,38 @@ namespace PhoenixModel.Helper
         public float? floatValue = null;
 
 
-        public MapEventArgs(MapEventType mapevent)
-        {
+        public MapEventArgs(MapEventType mapevent) {
             EventType = mapevent;
         }
 
 
-        public MapEventArgs(int gf, int kf, MapEventType mapevent, float? value)
-        {
+        public MapEventArgs(int gf, int kf, MapEventType mapevent, float? value) {
             GF = gf;
             KF = kf;
             EventType = mapevent;
             floatValue = value;
         }
 
-        public MapEventArgs(KleinfeldPosition gem, MapEventType mapevent)
-        {
+        public MapEventArgs(KleinfeldPosition gem, MapEventType mapevent) {
             GF = gem.gf;
             KF = gem.kf;
             EventType = mapevent;
         }
 
-        public MapEventArgs(int gf, int kf, MapEventType mapevent)
-        {
+        public MapEventArgs(int gf, int kf, MapEventType mapevent) {
             GF = gf;
             KF = kf;
             EventType = mapevent;
         }
 
-        public MapEventArgs(LogEntry logEntry)
-        {
+        public MapEventArgs(LogEntry logEntry) {
             GF = 0;
             KF = 0;
             EventType = MapEventType.Log;
             LogEntry = logEntry;
         }
 
-        public MapEventArgs(int gf, int kf, LogEntry logEntry)
-        {
+        public MapEventArgs(int gf, int kf, LogEntry logEntry) {
             GF = gf;
             KF = kf;
             EventType = MapEventType.Log;

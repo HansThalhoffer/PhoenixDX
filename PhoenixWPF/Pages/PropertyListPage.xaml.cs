@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.Helper;
+using PhoenixModel.ViewModel;
 using PhoenixWPF.Helper;
 using PhoenixWPF.Program;
 using System;
@@ -16,8 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace PhoenixWPF.Pages
-{
+namespace PhoenixWPF.Pages {
     /// <summary>
     /// Zeigt alle Properties eines IEigenschaftler an
     /// </summary>

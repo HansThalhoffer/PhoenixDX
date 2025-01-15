@@ -1,6 +1,7 @@
 ﻿using PhoenixModel.Database;
 using PhoenixModel.Program;
 using PhoenixModel.View;
+using PhoenixModel.ViewModel;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,8 +12,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace PhoenixModel.Helper
-{
+namespace PhoenixModel.Helper {
     /// <summary>
     /// Provides utility methods for processing properties and creating lists of <see cref="Eigenschaft"/> objects.
     /// </summary>
@@ -190,7 +190,7 @@ namespace PhoenixModel.Helper
             }
             catch (Exception ex)
             {
-                ViewModel.LogError($"Beim Erstellen der Eigenschaften zu {data} ist ein Fehler passiert", ex.Message);
+                ProgramView.LogError($"Beim Erstellen der Eigenschaften zu {data} ist ein Fehler passiert", ex.Message);
             }
         }
 
@@ -262,17 +262,17 @@ namespace PhoenixModel.Helper
         {
             if (changed.Source == null)
             {
-                ViewModel.LogError($"Eigenschaft {changed.Name} ohne Quelle kann nicht aktualisiert werden", "Es wurde das Aktualisieren einer Eigenschaft aufgerufen, die keine Quelle enthält. Das funktioniert nicht.");
+                ProgramView.LogError($"Eigenschaft {changed.Name} ohne Quelle kann nicht aktualisiert werden", "Es wurde das Aktualisieren einer Eigenschaft aufgerufen, die keine Quelle enthält. Das funktioniert nicht.");
                 return;
             }
             if (changed.IsEditable == false)
             {
-                ViewModel.LogError($"Eigenschaft {changed.Name} ist nicht aktualisierbar", "Es wurde das Aktualisieren einer Eigenschaft aufgerufen, die nicht bearbeitet werden darf");
+                ProgramView.LogError($"Eigenschaft {changed.Name} ist nicht aktualisierbar", "Es wurde das Aktualisieren einer Eigenschaft aufgerufen, die nicht bearbeitet werden darf");
                 return;
             }
             if (changed.IsChanged == false)
             {
-                ViewModel.LogError($"Eigenschaft {changed.Name} ist nicht geändert", "Es wurde das Aktualisieren einer Eigenschaft aufgerufen, die nicht geändert wurde");
+                ProgramView.LogError($"Eigenschaft {changed.Name} ist nicht geändert", "Es wurde das Aktualisieren einer Eigenschaft aufgerufen, die nicht geändert wurde");
                 return;
             }
 
@@ -298,7 +298,7 @@ namespace PhoenixModel.Helper
                             property.SetValue(changed.Source, i);
                         }
                         else
-                            ViewModel.LogError($"Eigenschaft mit Typ {property.DeclaringType} nicht aktualisierbar", "Es wurde das Aktualisieren einer Eigenschaft aufgerufen, deren Typ nicht bekannt ist");
+                            ProgramView.LogError($"Eigenschaft mit Typ {property.DeclaringType} nicht aktualisierbar", "Es wurde das Aktualisieren einer Eigenschaft aufgerufen, deren Typ nicht bekannt ist");
                         if (changed.Source is IDatabaseTable table)
                         {
                             SharedData.StoreQueue.Enqueue(table);
@@ -306,14 +306,14 @@ namespace PhoenixModel.Helper
                     }
                     catch (Exception ex)
                     {
-                        ViewModel.LogError($"Eigenschaft {changed.Name} konnte wegen einem Fehler nicht aktualisiert werden", ex.Message);
+                        ProgramView.LogError($"Eigenschaft {changed.Name} konnte wegen einem Fehler nicht aktualisiert werden", ex.Message);
                     }
 
 
                     return;
                 }
             }
-            ViewModel.LogError($"Eigenschaft {changed.Name} wurde nicht als bearbeitbar im Objekt markiert", "Es wurde das Aktualisieren einer Eigenschaft aufgerufen, die das Attribut [[Editable]] nicht besitzt");
+            ProgramView.LogError($"Eigenschaft {changed.Name} wurde nicht als bearbeitbar im Objekt markiert", "Es wurde das Aktualisieren einer Eigenschaft aufgerufen, die das Attribut [[Editable]] nicht besitzt");
         }
     }
 

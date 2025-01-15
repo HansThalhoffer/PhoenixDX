@@ -3,9 +3,9 @@ using System.Data.Common;
 using PhoenixModel.Database;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.Helper;
+using PhoenixModel.ViewModel;
 
-namespace PhoenixModel.dbPZE
-{
+namespace PhoenixModel.dbPZE {
     public class PzeSettingsMaster :  IDatabaseTable, IEigenschaftler
     {
         private static string _datebaseName = string.Empty;

@@ -1,11 +1,10 @@
 using System;
 using System.Data.Common;
 using PhoenixModel.Database;
-using PhoenixModel.dbErkenfara;
 using PhoenixModel.Helper;
+using PhoenixModel.ViewModel;
 
-namespace PhoenixModel.dbZugdaten
-{
+namespace PhoenixModel.dbZugdaten {
     public class Ruestung : KleinfeldPosition, IDatabaseTable, IEigenschaftler
     {
         private static string _datebaseName = string.Empty;

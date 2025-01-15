@@ -2,9 +2,9 @@ using System;
 using System.Data.Common;
 using PhoenixModel.Database;
 using PhoenixModel.Helper;
+using PhoenixModel.ViewModel;
 
-namespace PhoenixModel.dbCrossRef
-{
+namespace PhoenixModel.dbCrossRef {
     public class Crossref_zauberer_teleport :  IDatabaseTable, IEigenschaftler
     {
         private static string _datebaseName = string.Empty;

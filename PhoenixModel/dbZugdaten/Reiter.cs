@@ -3,9 +3,9 @@ using System.Data.Common;
 using PhoenixModel.Database;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
+using PhoenixModel.ViewModel;
 
-namespace PhoenixModel.dbZugdaten
-{
+namespace PhoenixModel.dbZugdaten {
     public class Reiter : TruppenSpielfigur, IDatabaseTable, IEigenschaftler
     {
         private static string _datebaseName = string.Empty;

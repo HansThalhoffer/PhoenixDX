@@ -1,17 +1,9 @@
 ﻿using PhoenixModel.dbErkenfara;
-using PhoenixModel.dbZugdaten;
 using PhoenixModel.Program;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace PhoenixWPF.Pages.Converter
-{
+namespace PhoenixWPF.Pages.Converter {
     public class AutorizedConverter : IValueConverter
     {
 
@@ -19,7 +11,7 @@ namespace PhoenixWPF.Pages.Converter
         {
             if (value is ReichCrossref diplomatie)
             {
-                if (ViewModel.SelectedNation != null && diplomatie.ReferenzNation == ViewModel.SelectedNation)
+                if (ProgramView.SelectedNation != null && diplomatie.ReferenzNation == ProgramView.SelectedNation)
                 {
                     return true;
                 }

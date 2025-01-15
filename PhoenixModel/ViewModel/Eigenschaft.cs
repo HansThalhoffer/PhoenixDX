@@ -1,26 +1,24 @@
-﻿using System;
+﻿using PhoenixModel.Helper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static PhoenixModel.ExternalTables.EinwohnerUndEinnahmenTabelle;
 
-namespace PhoenixModel.Helper
-{
+namespace PhoenixModel.ViewModel {
     /// <summary>
     /// Represents a property with a name, value, and editable state.
     /// </summary>
-    public class Eigenschaft
-    {
-        
+    public class Eigenschaft {
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Eigenschaft"/> class with a name, value, and editable state.
         /// </summary>
         /// <param name="name">The name of the property.</param>
         /// <param name="wert">The value of the property. Can be null.</param>
         /// <param name="editable">Indicates whether the property is editable.</param>
-        public Eigenschaft(string name, string? wert, bool editable, IEigenschaftler? source)
-        {
+        public Eigenschaft(string name, string? wert, bool editable, IEigenschaftler? source) {
             Name = name;
             _wert = wert;
             IsEditable = editable;
@@ -32,8 +30,7 @@ namespace PhoenixModel.Helper
         /// </summary>
         /// <param name="name">The name of the property.</param>
         /// <param name="liste">The list of sub-properties.</param>
-        public Eigenschaft(string name, List<Eigenschaft> liste, IEigenschaftler? source)
-        {
+        public Eigenschaft(string name, List<Eigenschaft> liste, IEigenschaftler? source) {
             Name = name;
             Eigenschaften = liste;
             Source = source;
@@ -54,43 +51,36 @@ namespace PhoenixModel.Helper
         /// <summary>
         /// Gets or sets the value of the property. Setting this property marks it as changed.
         /// </summary>
-        public string? Wert
-        {
+        public string? Wert {
             get { return _wert; }
-            set
-            {
-                if (_wert != value)
-                {
+            set {
+                if (_wert != value) {
                     _wert = value;
                     IsChanged = true;
                 }
             }
         }
 
-        public Int64? SortValue
-        {
-            get
-            {
+        public long? SortValue {
+            get {
                 if (string.IsNullOrWhiteSpace(_wert))
                     return int.MinValue; // Handle null or empty strings.
 
                 // Regular expression to extract leading numeric part
                 var match = System.Text.RegularExpressions.Regex.Match(_wert, @"^[\d.,]+");
 
-                if (match.Success)
-                {
+                if (match.Success) {
                     string numericPart = match.Value;
 
                     // Parse the numeric part considering culture-specific formats
                     if (decimal.TryParse(numericPart,
                                           System.Globalization.NumberStyles.Number,
                                           System.Globalization.CultureInfo.CurrentCulture,
-                                          out decimal result))
-                    {
+                                          out decimal result)) {
                         return (int)Math.Floor(result); // Convert to integer if needed
                     }
                 }
-                return int.MinValue; 
+                return int.MinValue;
             }
         }
 

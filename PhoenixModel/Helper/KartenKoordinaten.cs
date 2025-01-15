@@ -1,12 +1,5 @@
-﻿using PhoenixModel.Helper;
-using PhoenixModel.Program;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static PhoenixModel.ExternalTables.GeländeTabelle;
+﻿using PhoenixModel.Program;
+using PhoenixModel.ViewModel;
 
 namespace PhoenixModel.dbErkenfara {
 
@@ -228,7 +221,7 @@ namespace PhoenixModel.dbErkenfara {
                 }
             }
             catch (Exception ex) {
-                ViewModel.LogError("Irgendwer hat das Array vergößert", ex.Message);
+                ProgramView.LogError("Irgendwer hat das Array vergößert", ex.Message);
             }
             return nachbarn;
         }

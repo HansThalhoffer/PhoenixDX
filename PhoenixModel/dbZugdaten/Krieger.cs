@@ -2,11 +2,11 @@
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
+using PhoenixModel.ViewModel;
 using System;
 using System.Data.Common;
 
-namespace PhoenixModel.dbZugdaten
-{
+namespace PhoenixModel.dbZugdaten {
     public class Krieger : TruppenSpielfigur, IDatabaseTable, IEigenschaftler
     {
         private static string _datebaseName = string.Empty;

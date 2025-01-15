@@ -1,6 +1,6 @@
 ﻿using PhoenixModel.dbErkenfara;
-using PhoenixModel.dbZugdaten;
 using PhoenixModel.Program;
+using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -11,8 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace PhoenixWPF.Pages.Converter
-{
+namespace PhoenixWPF.Pages.Converter {
     public class CellBackgroundConverter : IMultiValueConverter
     {
         public object? Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
@@ -37,7 +36,7 @@ namespace PhoenixWPF.Pages.Converter
                 }
                 if (values[0] is ReichCrossref diplomatie)
                 {
-                    if (ViewModel.SelectedNation != null && diplomatie.ReferenzNation == ViewModel.SelectedNation)
+                    if (ProgramView.SelectedNation != null && diplomatie.ReferenzNation == ProgramView.SelectedNation)
                     {
                         return Brushes.Black;
                     }

@@ -1,11 +1,11 @@
 ﻿using PhoenixModel.dbPZE;
 using PhoenixModel.Helper;
+using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Generic;
 using static PhoenixModel.ExternalTables.GeländeTabelle;
 
-namespace PhoenixModel.ExternalTables
-{
+namespace PhoenixModel.ExternalTables {
     public class GeländeTabelle: IEigenschaftler
     {
         public enum TerrainType // entnommmen aus der Tabelle [crossref.mdb][Geleandetypen_crossref]

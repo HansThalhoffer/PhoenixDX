@@ -1,6 +1,6 @@
 ﻿using LiveCharts.Wpf;
-using PhoenixModel.dbErkenfara;
 using PhoenixModel.Program;
+using PhoenixModel.ViewModel;
 using PhoenixWPF.Dialogs;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -8,8 +8,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace PhoenixWPF.Pages
-{
+namespace PhoenixWPF.Pages {
     public partial class LogPage : Page, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;

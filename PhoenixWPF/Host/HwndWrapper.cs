@@ -8,8 +8,9 @@
 
 using Microsoft.Xna.Framework.Input;
 using PhoenixDX;
-using PhoenixModel.Helper;
+using PhoenixModel.EventsAndArgs;
 using PhoenixModel.Program;
+using PhoenixModel.ViewModel;
 using PhoenixWPF.Program;
 using System;
 using System.ComponentModel;
@@ -220,7 +221,7 @@ namespace PhoenixWPF.Host {
                 Main.Instance.SpielDXBridge = new PhoenixDX.MappaMundi(_hWnd);
                 Main.Instance.Spiel = new SpielWPF();
                 MappaMundi.OnMapEvent += new MappaMundi.MapEventHandler(MapEventHandler);
-                ViewModel.OnViewEvent += new ViewModel.ViewEventHandler(ViewEventHandler);
+                ProgramView.OnViewEvent += new ProgramView.ViewEventHandler(ViewEventHandler);
                 Main.Instance.SpielDXBridge.Run();
             }
             return new HandleRef(this, _hWnd);
@@ -432,10 +433,10 @@ namespace PhoenixWPF.Host {
 
                     break;
                 case NativeMethods.WM_KEYDOWN:
-                    OnKeyEvent(new PhoenixModel.Helper.KeyEventArgs(Convert.ToInt32(wParam), PhoenixModel.Helper.KeyEventArgs.KeyState.Down));
+                    OnKeyEvent(new PhoenixModel.EventsAndArgs.KeyEventArgs(Convert.ToInt32(wParam), PhoenixModel.EventsAndArgs.KeyEventArgs.KeyState.Down));
                     break;
                 case NativeMethods.WM_KEYUP:
-                    OnKeyEvent(new PhoenixModel.Helper.KeyEventArgs(Convert.ToInt32(wParam), PhoenixModel.Helper.KeyEventArgs.KeyState.Up));
+                    OnKeyEvent(new PhoenixModel.EventsAndArgs.KeyEventArgs(Convert.ToInt32(wParam), PhoenixModel.EventsAndArgs.KeyEventArgs.KeyState.Up));
                     break;
 
             }
@@ -447,7 +448,7 @@ namespace PhoenixWPF.Host {
             Main.Instance.SpielDXBridge?.OnMouseEvent(args);
         }
 
-        protected virtual void OnKeyEvent(PhoenixModel.Helper.KeyEventArgs args) {
+        protected virtual void OnKeyEvent(PhoenixModel.EventsAndArgs.KeyEventArgs args) {
             Main.Instance.SpielDXBridge?.OnKeyEvent(args);
         }
 

@@ -2,9 +2,9 @@ using System;
 using System.Data.Common;
 using PhoenixModel.Database;
 using PhoenixModel.Helper;
+using PhoenixModel.ViewModel;
 
-namespace PhoenixModel.dbPZE
-{
+namespace PhoenixModel.dbPZE {
     public class Kzelt :  IDatabaseTable, IEigenschaftler
     {
         private static string _datebaseName = string.Empty;

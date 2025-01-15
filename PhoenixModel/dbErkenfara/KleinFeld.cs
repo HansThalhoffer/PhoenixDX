@@ -10,9 +10,10 @@ using PhoenixModel.ExternalTables;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.View;
 using PhoenixModel.dbPZE;
+using PhoenixModel.ViewModel;
+using PhoenixModel.EventsAndArgs;
 
-namespace PhoenixModel.dbErkenfara
-{
+namespace PhoenixModel.dbErkenfara {
     public enum MarkerType
     {
         None, Info, Warning, Fatality
@@ -283,7 +284,7 @@ namespace PhoenixModel.dbErkenfara
             command.ExecuteNonQuery();
             SynchToOtherTables(command);
 
-            ViewModel.Update(ViewEventArgs.ViewEventType.UpdateGebäude);
+            ProgramView.Update(ViewEventArgs.ViewEventType.UpdateGebäude);
         }
 
         /// <summary>
@@ -313,7 +314,7 @@ namespace PhoenixModel.dbErkenfara
 
         public bool Edit()
         {
-            return ViewModel.BelongsToUser(this);
+            return ProgramView.BelongsToUser(this);
         }
 
         public GeländeTabelle Terrain

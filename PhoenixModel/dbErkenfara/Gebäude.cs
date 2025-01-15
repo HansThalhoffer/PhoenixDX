@@ -1,19 +1,13 @@
-﻿using PhoenixModel.dbCrossRef;
-using PhoenixModel.Database;
-using PhoenixModel.Helper;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PhoenixModel.Program;
+﻿using PhoenixModel.Database;
+using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbPZE;
-using PhoenixModel.ExternalTables;
+using PhoenixModel.Helper;
+using PhoenixModel.Program;
 using PhoenixModel.View;
+using PhoenixModel.ViewModel;
+using System.Data.Common;
 
-namespace PhoenixModel.dbErkenfara
-{
+namespace PhoenixModel.dbErkenfara {
     public class Gebäude : KleinfeldPosition, IEigenschaftler, IDatabaseTable, ISelectable
     {
         private static string _datebaseName = string.Empty;
@@ -113,7 +107,7 @@ namespace PhoenixModel.dbErkenfara
 
         public bool Select()
         {
-            return ViewModel.BelongsToUser(this);
+            return ProgramView.BelongsToUser(this);
         }
         public bool Edit()
         {

@@ -1,8 +1,10 @@
 ﻿using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbZugdaten;
+using PhoenixModel.EventsAndArgs;
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
 using PhoenixModel.View;
+using PhoenixModel.ViewModel;
 using PhoenixWPF.Program;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,8 +12,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace PhoenixWPF.Pages
-{
+namespace PhoenixWPF.Pages {
     /// <summary>
     /// Interaktionslogik für SelectRüstortPage.xaml
     /// </summary>
@@ -20,7 +21,7 @@ namespace PhoenixWPF.Pages
         public SelectRüstortPage()
         {
             InitializeComponent();
-            ViewModel.OnViewEvent += ViewModel_OnViewEvent;
+            ProgramView.OnViewEvent += ViewModel_OnViewEvent;
             Main.Instance.SelectionHistory.PropertyChanged += SelectionHistory_PropertyChanged;
         }
 
@@ -45,11 +46,11 @@ namespace PhoenixWPF.Pages
 
         private void ViewModel_OnViewEvent(object? sender, ViewEventArgs e)
         {
-            if (SharedData.Gebäude != null && ViewModel.SelectedNation != null && 
+            if (SharedData.Gebäude != null && ProgramView.SelectedNation != null && 
                 (e.EventType == ViewEventArgs.ViewEventType.EverythingLoaded || e.EventType == ViewEventArgs.ViewEventType.UpdateGebäude ))
             {
                 EigenschaftlerList.Clear();
-                var list = BauwerkeView.GetGebäude(ViewModel.SelectedNation);
+                var list = BauwerkeView.GetGebäude(ProgramView.SelectedNation);
                 if (list != null) 
                     EigenschaftlerList.AddRange(list);
                 LoadEigenschaftler();

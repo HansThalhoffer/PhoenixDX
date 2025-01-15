@@ -3,6 +3,7 @@ using PhoenixModel.Database;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.Program;
 using PhoenixModel.View;
+using PhoenixModel.EventsAndArgs;
 using PhoenixWPF.Database;
 using PhoenixWPF.Dialogs;
 using PhoenixWPF.Helper;
@@ -160,8 +161,8 @@ namespace PhoenixWPF.Program {
                         Settings.UserSettings.SelectedReich = dialog.SelectedNation?.Nummer ?? -1;
                         Settings.UserSettings.SelectedZug = dialog.SelectedZug ?? -1;
                         zugdatenPath = System.IO.Path.Combine(zugdatenPath, Settings.UserSettings.SelectedZug.ToString());
-                        ViewModel.SelectedNation = SharedData.Nationen?.ElementAt(Settings.UserSettings.SelectedReich);
-                        zugdatenPath = System.IO.Path.Combine(zugdatenPath, $"{ViewModel.SelectedNation?.DBname}.mdb");
+                        ProgramView.SelectedNation = SharedData.Nationen?.ElementAt(Settings.UserSettings.SelectedReich);
+                        zugdatenPath = System.IO.Path.Combine(zugdatenPath, $"{ProgramView.SelectedNation?.DBname}.mdb");
                         Settings.UserSettings.DatabaseLocationZugdaten = zugdatenPath;
                         return true;
                     }
@@ -185,7 +186,7 @@ namespace PhoenixWPF.Program {
         /// wenn alles datenbanken geladen sind, und das Programm soweit aktiv sein darf, wird die Funktion ausgeführt
         /// </summary>
         private void EverythingLoaded() {
-            ViewModel.DataLoadingCompleted();
+            ProgramView.DataLoadingCompleted();
             _backgroundSave?.Start();
         }
 
@@ -298,7 +299,7 @@ namespace PhoenixWPF.Program {
                 return;
             string databaseLocation = Settings.UserSettings.DatabaseLocationZugdaten;
             string encryptedPassword = Settings.UserSettings.PasswordReich;
-            var reich = ViewModel.SelectedNation;
+            var reich = ProgramView.SelectedNation;
             if (reich == null) {
                 SpielWPF.LogError("Zugdaten: Es wurde kein Reich ausgewählt", "Beim Laden ist ein Fehler aufgetregten, da kein Reich ausgewählt wurde. Daher ist der Ordner für die Zugdaten unbekannt.");
                 return;

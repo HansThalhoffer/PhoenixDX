@@ -3,9 +3,10 @@ using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Drawing;
 using PhoenixDX.Helper;
 using PhoenixDX.Structures;
-using PhoenixModel.dbErkenfara;
-using PhoenixModel.Helper;
+using PhoenixModel.EventsAndArgs;
 using PhoenixModel.Program;
+using PhoenixModel.ViewModel;
+
 
 // using SharpDX;
 
@@ -16,8 +17,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Vektor = Microsoft.Xna.Framework.Vector2;
 
-namespace PhoenixDX.Program
-{
+namespace PhoenixDX.Program {
     public class SpielDX : Game
     {
         public static SpielDX Instance;
@@ -150,7 +150,7 @@ namespace PhoenixDX.Program
             });
         }
 
-        private void _OnKeyEvent(PhoenixModel.Helper.KeyEventArgs args)
+        private void _OnKeyEvent(KeyEventArgs args)
         {
             if (args.State == KeyEventArgs.KeyState.Down)
             {
@@ -172,7 +172,7 @@ namespace PhoenixDX.Program
             }
         }
 
-        public void OnKeyEvent(PhoenixModel.Helper.KeyEventArgs args)
+        public void OnKeyEvent(KeyEventArgs args)
         {
             EnqueueAction(() =>
             {

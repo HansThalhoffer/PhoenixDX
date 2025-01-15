@@ -2,6 +2,7 @@
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
+using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -11,8 +12,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhoenixModel.dbPZE
-{
+namespace PhoenixModel.dbPZE {
     public class Nation :  IDatabaseTable, IEigenschaftler
     {
         public Nation() { }
@@ -62,12 +62,12 @@ namespace PhoenixModel.dbPZE
                 }
                 catch (Exception ex)
                 {
-                    ViewModel.LogError($"Fehler bei der Farbkonvertierung {Farbe}", ex.Message);
+                    ProgramView.LogError($"Fehler bei der Farbkonvertierung {Farbe}", ex.Message);
                 }
             }
             else
             {
-                ViewModel.LogError($"Die Nation {Reich} wurde nicht in der Vorbelegung gefunden", "Eventuell ist es eine fehlerhafte Schreibweise");
+                ProgramView.LogError($"Die Nation {Reich} wurde nicht in der Vorbelegung gefunden", "Eventuell ist es eine fehlerhafte Schreibweise");
             }
             
         }

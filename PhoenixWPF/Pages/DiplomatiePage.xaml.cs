@@ -1,7 +1,9 @@
 ﻿using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbZugdaten;
+using PhoenixModel.EventsAndArgs;
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
+using PhoenixModel.ViewModel;
 using PhoenixWPF.Pages.Converter;
 using PhoenixWPF.Program;
 using System.Reflection;
@@ -18,12 +20,12 @@ namespace PhoenixWPF.Pages {
         public DiplomatiePage()
         {
             InitializeComponent();
-            ViewModel.OnViewEvent += ViewModel_OnViewEvent;
+            ProgramView.OnViewEvent += ViewModel_OnViewEvent;
         }
 
         private void ViewModel_OnViewEvent(object? sender, ViewEventArgs e)
         {
-            if (SharedData.Diplomatiechange != null && ViewModel.SelectedNation != null &&
+            if (SharedData.Diplomatiechange != null && ProgramView.SelectedNation != null &&
                 (e.EventType == ViewEventArgs.ViewEventType.UpdateDiplomatie))
             {
                 EigenschaftlerList.Clear();

@@ -27,9 +27,9 @@ namespace PhoenixModel.Helper
                 case "Bauwerknamen":
                     {
                         if (table is KleinFeld gemark)
-                            return (ViewModel.BelongsToUser(gemark));
+                            return (ProgramView.BelongsToUser(gemark));
                         if (table is Gebäude gebäude)
-                            return (ViewModel.BelongsToUser(gebäude));
+                            return (ProgramView.BelongsToUser(gebäude));
                     }
                     break;
             }

@@ -5,13 +5,10 @@ using PhoenixModel.dbPZE;
 using PhoenixModel.dbZugdaten;
 using System.Collections.Concurrent;
 
-namespace PhoenixModel.Helper
-{
-    public static class SharedData2
-    {
-        public class BlockingDictionary<Tvalue> : ConcurrentDictionary<string, Tvalue> 
-        {
-            public BlockingDictionary(int access, int capacity): base(access, capacity) { }
+namespace PhoenixModel.ViewModel {
+    public static class SharedData2 {
+        public class BlockingDictionary<Tvalue> : ConcurrentDictionary<string, Tvalue> {
+            public BlockingDictionary(int access, int capacity) : base(access, capacity) { }
 
             bool _isAddingCompleted = false;
             bool _isBlocked = false;
@@ -19,7 +16,7 @@ namespace PhoenixModel.Helper
 
             public BlockingDictionary() { }
             // dann kommwen keine weiteren Elemente dazu
-            public void CompleteAdding() { IsAddingCompleted = true;  }
+            public void CompleteAdding() { IsAddingCompleted = true; }
             public bool Add(string key, Tvalue obj) { return TryAdd(key, obj); }
             public bool IsAddingCompleted { get => _isAddingCompleted; set => _isAddingCompleted = value; }
             public bool IsBlocked { get => _isBlocked; set => _isBlocked = value; }
@@ -36,7 +33,7 @@ namespace PhoenixModel.Helper
         // Karte
         public static BlockingDictionary<KleinFeld>? Map = null;
         public static BlockingDictionary<Gebäude>? Gebäude = null; // bauwerkliste
-        public static BlockingDictionary<ReichCrossref>? Diplomatie= null; 
+        public static BlockingDictionary<ReichCrossref>? Diplomatie = null;
 
         // PZE
         public static BlockingCollection<Nation>? Nationen = null;

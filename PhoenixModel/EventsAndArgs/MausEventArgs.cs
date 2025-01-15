@@ -6,19 +6,17 @@
 //-----------------------------------------------------------------------------
 #endregion
 
-namespace PhoenixModel.Helper
-{
+using PhoenixModel.ViewModel;
 
-    public class MausEventArgs : EventArgs
-    {
-        public enum MouseButtonState
-        {
+namespace PhoenixModel.EventsAndArgs {
+
+    public class MausEventArgs : EventArgs {
+        public enum MouseButtonState {
             Released = 0,
             Pressed = 1
         }
 
-        public enum MouseEventType
-        {
+        public enum MouseEventType {
             None, LeftButtonDown, LeftButtonUp, LeftButtonDoubleClick,
             MiddleButtonDown, MiddleButtonUp, MiddleButtonDoubleClick,
             RightButtonDown, RightButtonUp, RightButtonDoubleClick,
@@ -32,7 +30,7 @@ namespace PhoenixModel.Helper
         public MouseButtonState MiddleButton { get; set; } = MouseButtonState.Released;
         public MouseButtonState X1Button { get; set; } = MouseButtonState.Released;
         public MouseButtonState X2Button { get; set; } = MouseButtonState.Released;
-      
+
         public int WheelDelta { get; set; } = 0;
         public int HorizontalWheelDelta { get; set; } = 0;
         public Position? ScreenPosition { get; set; } = null;
@@ -40,11 +38,9 @@ namespace PhoenixModel.Helper
 
         public bool Handled { get; set; } = false;
 
-        public MausEventArgs()
-        { }
+        public MausEventArgs() { }
 
-        public MausEventArgs(MausEventArgs state)
-        {
+        public MausEventArgs(MausEventArgs state) {
             EventType = state.EventType;
             LeftButton = state.LeftButton;
             RightButton = state.RightButton;

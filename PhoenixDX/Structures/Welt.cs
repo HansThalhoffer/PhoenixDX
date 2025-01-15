@@ -10,9 +10,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using PhoenixModel.View;
+using PhoenixModel.ViewModel;
 
-namespace PhoenixDX.Structures
-{
+namespace PhoenixDX.Structures {
     public class Welt
     {
 

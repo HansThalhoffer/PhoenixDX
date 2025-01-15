@@ -5,11 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhoenixModel.dbErkenfara {
+namespace PhoenixModel.ViewModel {
 
     [DebuggerDisplay("{CreateBezeichner()}")]
-    public class KleinfeldPosition
-    {
+    public class KleinfeldPosition {
         /// <summary>
         ///  Provinz / Großfeld
         /// </summary>
@@ -19,22 +18,18 @@ namespace PhoenixModel.dbErkenfara {
         /// </summary>
         public virtual int kf { get; set; } = 0;
 
-        public KleinfeldPosition()
-        { }
-        
-        public KleinfeldPosition(int gf, int kf)
-        {
+        public KleinfeldPosition() { }
+
+        public KleinfeldPosition(int gf, int kf) {
             this.gf = gf;
             this.kf = kf;
         }
 
-        public string CreateBezeichner()
-        {
+        public string CreateBezeichner() {
             return $"{gf}/{kf}";
         }
 
-        public static string CreateBezeichner(int gf, int kf)
-        {
+        public static string CreateBezeichner(int gf, int kf) {
             return $"{gf}/{kf}";
         }
 
@@ -42,8 +37,7 @@ namespace PhoenixModel.dbErkenfara {
             return $"{pos.gf}/{pos.kf}";
         }
 
-        public int Key
-        {
+        public int Key {
             get { return gf * 100 + kf; }
         }
     }

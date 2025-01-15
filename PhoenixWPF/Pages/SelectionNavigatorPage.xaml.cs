@@ -1,5 +1,5 @@
-﻿using PhoenixModel.dbErkenfara;
-using PhoenixModel.dbZugdaten;
+﻿using PhoenixModel.dbZugdaten;
+using PhoenixModel.ViewModel;
 using PhoenixWPF.Helper;
 using PhoenixWPF.Program;
 using System;
@@ -17,8 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace PhoenixWPF.Pages
-{
+namespace PhoenixWPF.Pages {
     /// <summary>
     /// Interaktionslogik für SelectionNavigatorPage.xaml
     /// </summary>

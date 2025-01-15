@@ -4,9 +4,9 @@ using PhoenixModel.Database;
 using PhoenixModel.dbPZE;
 using PhoenixModel.Helper;
 using PhoenixModel.View;
+using PhoenixModel.ViewModel;
 
-namespace PhoenixModel.dbErkenfara
-{
+namespace PhoenixModel.dbErkenfara {
     public class ReichCrossref : IDatabaseTable, IEigenschaftler
     {
         private static string _datebaseName = string.Empty;

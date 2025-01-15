@@ -1,21 +1,8 @@
-﻿using PhoenixDX.Structures;
-using PhoenixModel.Helper;
-using PhoenixModel.dbErkenfara;
-using PhoenixWPF.Helper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using PhoenixWPF.Pages;
-using PhoenixDX;
-using PhoenixWPF.Host;
-using static PhoenixModel.Program.LogEntry;
+﻿using PhoenixModel.EventsAndArgs;
 using PhoenixModel.Program;
-using PhoenixModel.dbZugdaten;
-using PhoenixModel.View;
+using PhoenixModel.ViewModel;
+using PhoenixWPF.Pages;
+using static PhoenixModel.Program.LogEntry;
 
 namespace PhoenixWPF.Program {
     public class SpielWPF : IDisposable {

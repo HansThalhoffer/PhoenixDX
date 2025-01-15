@@ -5,11 +5,11 @@ using PhoenixDX.Drawing;
 using PhoenixDX.Program;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
+using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Generic;
 
-namespace PhoenixDX.Structures
-{
+namespace PhoenixDX.Structures {
     /// <summary>
     /// Truppen sind spezielle Adorner, die Figuren zusammenstellen, so dass sie auf ein Kleinfeld passen
     /// </summary>

@@ -1,19 +1,10 @@
-﻿using Microsoft.VisualBasic.FileIO;
-using PhoenixModel.dbCrossRef;
-using PhoenixModel.dbErkenfara;
-using PhoenixModel.dbPZE;
-using PhoenixModel.dbZugdaten;
-using PhoenixModel.Helper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static PhoenixModel.Helper.ViewEventArgs;
+﻿using PhoenixModel.dbPZE;
+using PhoenixModel.EventsAndArgs;
+using PhoenixModel.ViewModel;
+using static PhoenixModel.EventsAndArgs.ViewEventArgs;
 
-namespace PhoenixModel.Program
-{
-    public static class ViewModel
+namespace PhoenixModel.Program {
+    public static class ProgramView
     {
         public static Nation? SelectedNation { get; set; }
 
@@ -69,22 +60,22 @@ namespace PhoenixModel.Program
         {
             if (SharedData.Map == null)
             {
-                ViewModel.LogError("Die Kartendaten sind nicht geladen"," Ohne Kartendaten kann ein Besitz einer Spielfigur nicht ermittelt werden");
+                ProgramView.LogError("Die Kartendaten sind nicht geladen"," Ohne Kartendaten kann ein Besitz einer Spielfigur nicht ermittelt werden");
                 return false;
             }            
-            if (ViewModel.SelectedNation == null)
+            if (ProgramView.SelectedNation == null)
             {
-                ViewModel.LogError("Keine Nation ausgewählt","Ohne eine ausgewählte Nation kann kein Besitz einer Spielfigur ermittelt werden");
+                ProgramView.LogError("Keine Nation ausgewählt","Ohne eine ausgewählte Nation kann kein Besitz einer Spielfigur ermittelt werden");
                 return false;
             }
             if (figur.Nation == null)
             {
-                ViewModel.LogError($"Spielfigur {figur.Bezeichner} ohne Nation", "Der Spielfigur {figur.Bezeichner} ist keine Nation zugeordnet, daher kann der Besitz nicht ermittelt werden");
+                ProgramView.LogError($"Spielfigur {figur.Bezeichner} ohne Nation", "Der Spielfigur {figur.Bezeichner} ist keine Nation zugeordnet, daher kann der Besitz nicht ermittelt werden");
                 return false;
             }
 
             // das Kleinfeld des Rüstotes gehört evtl. zum Nation des aktuellen Nutzers und kann daher ausgeählt werden
-            return ViewModel.SelectedNation == figur.Nation;
+            return ProgramView.SelectedNation == figur.Nation;
         }
 
         /// <summary>
@@ -96,21 +87,21 @@ namespace PhoenixModel.Program
         {
             if (SharedData.Map == null)
             {
-                ViewModel.LogError("Die Kartendaten sind nicht geladen", "Die Kartendaten sind nicht geladen, daher kann ein Besitz eines Kleinfeldes nicht ermittelt werden");
+                ProgramView.LogError("Die Kartendaten sind nicht geladen", "Die Kartendaten sind nicht geladen, daher kann ein Besitz eines Kleinfeldes nicht ermittelt werden");
                 return false;
             }
             if (SharedData.Map.ContainsKey(position.CreateBezeichner()) == false)
             {
-                ViewModel.LogError($"Unbekannte Position  Position {position.CreateBezeichner()}", $"Die Position {position.CreateBezeichner()} befindet sich auf einem nicht existenten Kleinfeld");
+                ProgramView.LogError($"Unbekannte Position  Position {position.CreateBezeichner()}", $"Die Position {position.CreateBezeichner()} befindet sich auf einem nicht existenten Kleinfeld");
                 return false;
             }
-            if (ViewModel.SelectedNation == null)
+            if (ProgramView.SelectedNation == null)
             {
-                ViewModel.LogError("Keine Nation ausgewählt", "Ohne eine ausgewählte Nation kann kein Besitz eines Kleinfeldes ermittelt werden");
+                ProgramView.LogError("Keine Nation ausgewählt", "Ohne eine ausgewählte Nation kann kein Besitz eines Kleinfeldes ermittelt werden");
                 return false;
             }
             // das Kleinfeld des Rüstotes gehört evtl. zum Nation des aktuellen Nutzers und kann daher ausgeählt werden
-            return ViewModel.SelectedNation == SharedData.Map[position.CreateBezeichner()].Nation;
+            return ProgramView.SelectedNation == SharedData.Map[position.CreateBezeichner()].Nation;
         }
 
         public static void LogError(string titel, string msg)

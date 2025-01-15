@@ -3,8 +3,8 @@ using System.Data.Common;
 using PhoenixModel.Database;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
-namespace PhoenixModel.dbZugdaten
-{
+using PhoenixModel.ViewModel;
+namespace PhoenixModel.dbZugdaten {
     public class Character : NamensSpielfigur, IDatabaseTable, IEigenschaftler
     {
         private static string _datebaseName = string.Empty;

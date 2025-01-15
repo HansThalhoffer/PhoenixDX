@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using PhoenixDX.Structures;
-using PhoenixModel.dbErkenfara;
+using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -10,8 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PhoenixDX.Program
-{
+namespace PhoenixDX.Program {
     public class BackgroundUpdater: IDisposable
     {
         private BackgroundWorker _backgroundWorker;

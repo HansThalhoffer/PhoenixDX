@@ -2,9 +2,9 @@ using System;
 using System.Data.Common;
 using PhoenixModel.Database;
 using PhoenixModel.Helper;
+using PhoenixModel.ViewModel;
 
-namespace PhoenixModel.dbErkenfara
-{
+namespace PhoenixModel.dbErkenfara {
     public class Bestiarium :  IDatabaseTable, IEigenschaftler
     {
         private static string _datebaseName = string.Empty;

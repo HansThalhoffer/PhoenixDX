@@ -1,8 +1,8 @@
-﻿using PhoenixModel.dbErkenfara;
-using PhoenixModel.dbPZE;
+﻿using PhoenixModel.dbPZE;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
+using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -10,8 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhoenixModel.View
-{
+namespace PhoenixModel.View {
     public class Armee : List<Spielfigur>, IEigenschaftler
     {
         /// <summary>
@@ -201,7 +200,7 @@ namespace PhoenixModel.View
         /// <returns></returns>
         public static bool BelongsToUser(Spielfigur figur)
         {
-            return ViewModel.BelongsToUser(figur);
+            return ProgramView.BelongsToUser(figur);
         }
     }
 }

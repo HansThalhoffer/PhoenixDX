@@ -1,19 +1,10 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Data;
-using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Security.Principal;
-using System.Text;
-using System.Threading;
-using PhoenixDX.Drawing;
+﻿using PhoenixDX.Drawing;
 using PhoenixDX.Program;
-using PhoenixModel.dbErkenfara;
-using PhoenixModel.Helper;
+using PhoenixModel.EventsAndArgs;
 using PhoenixModel.Program;
-using SharpDX.Direct3D9;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using PhoenixModel.ViewModel;
+using System;
+using System.Threading;
 
 namespace PhoenixDX {
     // stellt die API zur Verfügung für die WPF Welt
@@ -75,7 +66,7 @@ namespace PhoenixDX {
             _game?.OnMouseEvent(args);
         }
 
-        public void OnKeyEvent(PhoenixModel.Helper.KeyEventArgs args) {
+        public void OnKeyEvent(KeyEventArgs args) {
             _game?.OnKeyEvent(args);
         }
 

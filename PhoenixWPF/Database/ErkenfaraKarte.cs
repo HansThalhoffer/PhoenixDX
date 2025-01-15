@@ -1,14 +1,13 @@
 ﻿using PhoenixModel.Database;
 using PhoenixModel.dbErkenfara;
-using PhoenixModel.Helper;
+using PhoenixModel.EventsAndArgs;
 using PhoenixModel.Program;
 using PhoenixWPF.Database;
 using System.Data;
 using System.Windows;
 using static PhoenixModel.Database.PasswordHolder;
 
-namespace PhoenixWPF.Program
-{
+namespace PhoenixWPF.Program {
     public class ErkenfaraKarte: DatabaseLoader, ILoadableDatabase
     {
         EncryptedString _encryptedpassword;
@@ -34,7 +33,7 @@ namespace PhoenixWPF.Program
                 connector?.Close();
                 Task.Run(() => RepairBauwerklistePhase1());
                 //Task.Run(() => Küsten());
-                ViewModel.OnViewEvent += ViewModel_OnViewEvent;
+                ProgramView.OnViewEvent += ViewModel_OnViewEvent;
                 return;
             }
         }
@@ -63,10 +62,10 @@ namespace PhoenixWPF.Program
 
         private void ViewModel_OnViewEvent(object? sender, ViewEventArgs e)
         {
-            if (e.EventType == ViewEventArgs.ViewEventType.EverythingLoaded && SharedData.Gebäude != null && ViewModel.SelectedNation != null)
+            if (e.EventType == ViewEventArgs.ViewEventType.EverythingLoaded && SharedData.Gebäude != null && ProgramView.SelectedNation != null)
             {
                 Task.Run(() => RepairBauwerklistePhase2());
-                ViewModel.OnViewEvent -= ViewModel_OnViewEvent;
+                ProgramView.OnViewEvent -= ViewModel_OnViewEvent;
             }
         }
 
@@ -87,7 +86,7 @@ namespace PhoenixWPF.Program
                     // ergänzt die Datenbank falls notwendig
                     if (gebäude == null)
                     {
-                        ViewModel.LogWarning(gemark, $"Fehlendes Gebäude in der Bauwerktabelle mit dem Namen {gemark.Bauwerknamen}", $"Durch einen Datenbankfehler hat das Gebäude auf {gemark.Bezeichner} keinen Eintrag in der Tabelle [bauwerkliste] in der Datenbank Ekrenfarakarte.mdb.\r\rDieser Fehler wurde automatisch korrigiert");
+                        ProgramView.LogWarning(gemark, $"Fehlendes Gebäude in der Bauwerktabelle mit dem Namen {gemark.Bauwerknamen}", $"Durch einen Datenbankfehler hat das Gebäude auf {gemark.Bezeichner} keinen Eintrag in der Tabelle [bauwerkliste] in der Datenbank Ekrenfarakarte.mdb.\r\rDieser Fehler wurde automatisch korrigiert");
                         gebäude = new Gebäude();
                         gebäude.kf = gemark.kf;
                         gebäude.gf = gemark.gf;
@@ -98,7 +97,7 @@ namespace PhoenixWPF.Program
             }
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
-                ViewModel.Update(ViewEventArgs.ViewEventType.UpdateGebäude);
+                ProgramView.Update(ViewEventArgs.ViewEventType.UpdateGebäude);
             }));
         }
 
@@ -117,14 +116,14 @@ namespace PhoenixWPF.Program
                         gebäude.Reich = gemark.Nation.Reich;
                     if (gemark.Baupunkte == 0)
                     {
-                        ViewModel.LogWarning(gemark, $"Zerstörtes Gebäude in der Bauwerktabelle mit dem Namen {gebäude.Bauwerknamen}", $"Durch einen Datenbankfehler existiert das zerstörte Gebäude auf {gebäude.Bezeichner} noch in der Tabelle [bauwerkliste] in der Datenbank Ekrenfarakarte.mdb.\r\rDieser Fehler wurde automatisch korrigiert");
+                        ProgramView.LogWarning(gemark, $"Zerstörtes Gebäude in der Bauwerktabelle mit dem Namen {gebäude.Bauwerknamen}", $"Durch einen Datenbankfehler existiert das zerstörte Gebäude auf {gebäude.Bezeichner} noch in der Tabelle [bauwerkliste] in der Datenbank Ekrenfarakarte.mdb.\r\rDieser Fehler wurde automatisch korrigiert");
                         gebäude.Zerstört = true;
                     }
                 }
             }
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
-                ViewModel.Update(ViewEventArgs.ViewEventType.UpdateGebäude);
+                ProgramView.Update(ViewEventArgs.ViewEventType.UpdateGebäude);
             }));
         }
 

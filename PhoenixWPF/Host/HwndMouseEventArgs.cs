@@ -8,10 +8,9 @@
 
 using System;
 using System.Windows;
-using PhoenixModel.Helper;
+using PhoenixModel.EventsAndArgs;
 
-namespace PhoenixWPF.Host
-{
+namespace PhoenixWPF.Host {
     public class HwndMouseEventArgs : MausEventArgs
     {
        

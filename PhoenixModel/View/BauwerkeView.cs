@@ -1,17 +1,10 @@
 ﻿using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbPZE;
-using PhoenixModel.Helper;
 using PhoenixModel.Program;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.ConstrainedExecution;
-using System.Text;
-using System.Threading.Tasks;
+using PhoenixModel.ViewModel;
 
-namespace PhoenixModel.View
-{
+namespace PhoenixModel.View {
     public static class BauwerkeView
     {
         public static Rüstort? GetRuestortReferenz(int? nummer)
@@ -58,7 +51,7 @@ namespace PhoenixModel.View
             }
             catch (Exception ex) 
             {
-                ViewModel.LogError(pos, "Kleinfeld existiert nicht", ex.Message);
+                ProgramView.LogError(pos, "Kleinfeld existiert nicht", ex.Message);
                 return null; 
             }
         }
@@ -73,7 +66,7 @@ namespace PhoenixModel.View
             }
             catch (Exception ex)
             {
-                ViewModel.LogError(pos, "Kleinfeld existiert nicht", ex.Message);
+                ProgramView.LogError(pos, "Kleinfeld existiert nicht", ex.Message);
                 return null;
             }
         }*/
@@ -120,7 +113,7 @@ namespace PhoenixModel.View
                     // ergänzt die Datenbank falls notwendig
                     if (gebäude == null)
                     {
-                        ViewModel.LogError( gemark, $"Fehlendes Gebäude in der Bauwerktabelle mit dem Namen {gemark.Bauwerknamen}", "Durch einen Datenbankfehler hat das Gebäude keinen Eintrag in der Tabelle [bauwerkliste] in der Datenbank Ekrenfarakarte.mdb");    
+                        ProgramView.LogError( gemark, $"Fehlendes Gebäude in der Bauwerktabelle mit dem Namen {gemark.Bauwerknamen}", "Durch einen Datenbankfehler hat das Gebäude keinen Eintrag in der Tabelle [bauwerkliste] in der Datenbank Ekrenfarakarte.mdb");    
                     }
                     return gebäude;
                 }

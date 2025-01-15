@@ -1,13 +1,7 @@
 ﻿using PhoenixModel.dbErkenfara;
-using PhoenixModel.Helper;
 using PhoenixModel.Program;
-using System;
+using PhoenixModel.ViewModel;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.ExceptionServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PhoenixModel.View {
     public static class KleinfeldView {
@@ -63,13 +57,13 @@ namespace PhoenixModel.View {
                         }
                     }
                     else {
-                        ViewModel.LogError($"Fehlerhaftes direction token '{token}' in einem Pfad verwendt", $"Die Funktion GetPath wurde mit dem Pfad {path} aufgerufen.");
+                        ProgramView.LogError($"Fehlerhaftes direction token '{token}' in einem Pfad verwendt", $"Die Funktion GetPath wurde mit dem Pfad {path} aufgerufen.");
                     }
                 }
                 return list;
             }
             catch (Exception e) {
-                ViewModel.LogError("Beim Zählen der Nachbarn gab es einen Fehler", e.Message);
+                ProgramView.LogError("Beim Zählen der Nachbarn gab es einen Fehler", e.Message);
             }
             return null;
         }
@@ -100,7 +94,7 @@ namespace PhoenixModel.View {
                 }
                 return nachbarn.Values;
             } catch (Exception e) {
-                ViewModel.LogError("Beim Zählen der Nachbarn gab es einen Fehler", e.Message);
+                ProgramView.LogError("Beim Zählen der Nachbarn gab es einen Fehler", e.Message);
             }
             return null;
         }

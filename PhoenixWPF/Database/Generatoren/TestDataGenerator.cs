@@ -4,6 +4,7 @@ using PhoenixModel.dbZugdaten;
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
 using PhoenixModel.View;
+using PhoenixModel.ViewModel;
 using PhoenixWPF.Helper;
 using PhoenixWPF.Program;
 using System;
@@ -17,19 +18,18 @@ using System.Text;
 using System.Threading.Tasks;
 using static PhoenixModel.Database.PasswordHolder;
 
-namespace PhoenixWPF.Database.Generatoren
-{
+namespace PhoenixWPF.Database.Generatoren {
     internal static class TestDataGenerator
     {
         public static void GeneriereTestdatenFürZug999()
         {
-            if(ViewModel.SelectedNation == null)
+            if(ProgramView.SelectedNation == null)
                 throw new Exception("Reich muss ausgewählt sein");
             
             string path = Main.Instance.Settings.UserSettings.DatabaseLocationZugdaten;
             path = StorageSystem.ExtractBasePath(path, "Zugdaten");
             path = Path.Combine(path, "999");
-            path = Path.Combine(path, $"{ViewModel.SelectedNation.Name}.mdb");
+            path = Path.Combine(path, $"{ProgramView.SelectedNation.Name}.mdb");
             if (File.Exists(path) == false)
             {
                 SpielWPF.LogError("Der Zug 999 mus angelegt werden", $"Bitte kopiere eine beliebige Zudaten datenbank in {path}");
@@ -42,7 +42,7 @@ namespace PhoenixWPF.Database.Generatoren
             if (SharedData.Map == null)
                 throw new Exception("Kartendaten fehlen");
 
-            KleinFeld[] eigeneGebiet = SharedData.Map.Values.Where(kf => kf.Nation == ViewModel.SelectedNation).ToArray();
+            KleinFeld[] eigeneGebiet = SharedData.Map.Values.Where(kf => kf.Nation == ProgramView.SelectedNation).ToArray();
             using (OleDbConnection connection = new OleDbConnection(connectionString))
             {
                 connection.Open();

@@ -20,7 +20,7 @@ namespace PhoenixModel.View
                 }
                 else
                 {
-                    ViewModel.LogError(gem.gf, gem.kf, $"Das Gelände {gem.Terrain.Name} hat keine Einahmen in der EinnahmenView Tabelle","Durch einen Datenbankfehler hat das Kleinfeld ein Terrain ohne Eintrag in der Einnahmentabelle");
+                    ProgramView.LogError(gem.gf, gem.kf, $"Das Gelände {gem.Terrain.Name} hat keine Einahmen in der EinnahmenView Tabelle","Durch einen Datenbankfehler hat das Kleinfeld ein Terrain ohne Eintrag in der Einnahmentabelle");
                 }
             }
             return 0;
@@ -37,7 +37,7 @@ namespace PhoenixModel.View
                 }
                 else
                 {
-                    ViewModel.LogError(gem.gf, gem.kf, $"Das Gebäude {gebäude.Bauwerknamen} hat keine Einahmen in der EinnahmenView Tabelle", "Durch einen Datenbankfehler hat das Gebäude keinen Eintrag in der Einnahmentabelle");
+                    ProgramView.LogError(gem.gf, gem.kf, $"Das Gebäude {gebäude.Bauwerknamen} hat keine Einahmen in der EinnahmenView Tabelle", "Durch einen Datenbankfehler hat das Gebäude keinen Eintrag in der Einnahmentabelle");
                 }
             }
             return 0;

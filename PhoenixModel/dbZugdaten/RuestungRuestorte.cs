@@ -2,9 +2,9 @@ using System;
 using System.Data.Common;
 using PhoenixModel.Database;
 using PhoenixModel.Helper;
+using PhoenixModel.ViewModel;
 
-namespace PhoenixModel.dbZugdaten
-{
+namespace PhoenixModel.dbZugdaten {
     public class RuestungRuestorte :  IDatabaseTable, IEigenschaftler
     {
         private static string _datebaseName = string.Empty;

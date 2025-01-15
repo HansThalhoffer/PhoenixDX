@@ -1,12 +1,11 @@
 using System;
 using System.Data.Common;
 using PhoenixModel.Database;
-using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.Helper;
+using PhoenixModel.ViewModel;
 
-namespace PhoenixModel.dbPZE
-{
+namespace PhoenixModel.dbPZE {
     public class PzeKarte : KleinfeldPosition, IDatabaseTable, IEigenschaftler
     {
         private static string _datebaseName = string.Empty;

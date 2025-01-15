@@ -1,5 +1,6 @@
 ﻿using PhoenixModel.Database;
 using PhoenixModel.Helper;
+using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -7,8 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhoenixModel.dbZugdaten
-{
+namespace PhoenixModel.dbZugdaten {
     public class BilanzEinnahmen :  IDatabaseTable, IEigenschaftler
     {
         private static string _datebaseName = string.Empty;

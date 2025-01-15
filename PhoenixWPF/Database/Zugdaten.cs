@@ -1,7 +1,7 @@
 ﻿using PhoenixModel.Database;
 using PhoenixModel.dbPZE;
 using PhoenixModel.dbZugdaten;
-using PhoenixModel.Helper;
+using PhoenixModel.EventsAndArgs;
 using PhoenixModel.Program;
 using PhoenixWPF.Dialogs;
 using PhoenixWPF.Program;
@@ -10,8 +10,7 @@ using System.Collections.Generic;
 using System.Windows;
 using static PhoenixModel.Database.PasswordHolder;
 
-namespace PhoenixWPF.Database
-{
+namespace PhoenixWPF.Database {
 
     public class Zugdaten : DatabaseLoader, ILoadableDatabase
     {
@@ -30,10 +29,10 @@ namespace PhoenixWPF.Database
         private void ViewModel_OnViewEvent(object? sender, ViewEventArgs e)
         {
             if (e.EventType == ViewEventArgs.ViewEventType.EverythingLoaded && SharedData.Diplomatie != null && SharedData.Diplomatiechange != null
-                && ViewModel.SelectedNation != null)
+                && ProgramView.SelectedNation != null)
             {
                 Task.Run(() => RepairDiplomatieChange());
-                ViewModel.OnViewEvent -= ViewModel_OnViewEvent;
+                ProgramView.OnViewEvent -= ViewModel_OnViewEvent;
             }
         }
 
@@ -52,7 +51,7 @@ namespace PhoenixWPF.Database
                 {
 
 
-                    if (diplo.Nation != ViewModel.SelectedNation )
+                    if (diplo.Nation != ProgramView.SelectedNation )
                     {
                         string key = diplo.Bezeichner;
                         if (keys.Contains(key) == false)
@@ -68,7 +67,7 @@ namespace PhoenixWPF.Database
             }
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
-                ViewModel.Update(ViewEventArgs.ViewEventType.UpdateDiplomatie);
+                ProgramView.Update(ViewEventArgs.ViewEventType.UpdateDiplomatie);
             }));
 
         }
@@ -143,7 +142,7 @@ namespace PhoenixWPF.Database
                     Load<Schiffe>(connector, ref SharedData.Schiffe, Enum.GetNames(typeof(Schiffe.Felder)));
                     Load<Units>(connector, ref SharedData.Units_Zugdaten, Enum.GetNames(typeof(Units.Felder)));
                     Load<Zauberer>(connector, ref SharedData.Zauberer, Enum.GetNames(typeof(Zauberer.Felder)));
-                    ViewModel.OnViewEvent += ViewModel_OnViewEvent;
+                    ProgramView.OnViewEvent += ViewModel_OnViewEvent;
                 }
                 catch (Exception ex)
                 {

@@ -1,6 +1,7 @@
 ﻿using PhoenixModel.Database;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.Helper;
+using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -9,8 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhoenixModel.dbCrossRef
-{
+namespace PhoenixModel.dbCrossRef {
     public class BauwerkBasis
     {
         static Dictionary<string, BauwerkBasis> Bauwerke = [];

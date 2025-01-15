@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using PhoenixModel.EventsAndArgs;
 using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static PhoenixModel.Database.PasswordHolder;
 
-namespace PhoenixModel.Database
-{
-    public delegate void LoadCompleted(ILoadableDatabase database);
+namespace PhoenixModel.Database {
 
     public interface ILoadableDatabase : IDisposable
     {
