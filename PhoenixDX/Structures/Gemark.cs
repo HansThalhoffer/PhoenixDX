@@ -21,6 +21,7 @@ using PhoenixModel.View;
 using System.Diagnostics;
 using PhoenixDX.Drawing;
 using PhoenixModel.ViewModel;
+using PhoenixModel.Program;
 
 namespace PhoenixDX.Structures {
     [DebuggerDisplay("{DebuggerDisplay()}")]
@@ -108,8 +109,12 @@ namespace PhoenixDX.Structures {
                 return false;
             _isInitalized = true;
             ReichKennzahl = (int)gem.Reich;
-            if (gem.Gelaendetyp <= (int)TerrainType.AuftauchpunktUnbekannt)
-                _terrainType = (TerrainType)gem.Gelaendetyp;
+            if (gem.Gelaendetyp <= (int)TerrainType.AuftauchpunktUnbekannt) {
+                if (KleinfeldView.UserHasKuestenrecht(gem))
+                    _terrainType = TerrainType.Küste;
+                else
+                    _terrainType = (TerrainType)gem.Gelaendetyp;
+            }
 
             Koordinaten = new KartenKoordinaten(Koordinaten.gf, Koordinaten.kf, (int)gem.x, (int)gem.y);
             ReichID = gem.Reich ?? -1;

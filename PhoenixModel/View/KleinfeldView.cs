@@ -12,6 +12,25 @@ namespace PhoenixModel.View {
     }
 
     public static class KleinfeldView {
+
+        /// <summary>
+        /// ist wahr, wenn die Nation der Gemark der Nation des Users das Küstenrecht zugebilligt haben
+        /// </summary>
+        /// <param name="kleinfeld"></param>
+        /// <returns></returns>
+        public static bool UserHasKuestenrecht(KleinFeld kleinfeld) {
+            return kleinfeld.IsKüste && DiplomatieView.GetKüstenregelAllowed().Contains(kleinfeld.Nation);
+        }
+
+        /// <summary>
+        /// ist wahr, wenn die Nation der Gemark der Nation des Users das Wegerecht zugebilligt haben
+        /// </summary>
+        /// <param name="kleinfeld"></param>
+        /// <returns></returns>
+        public static bool UserHasWegerecht(KleinFeld kleinfeld) {
+            return kleinfeld.IsWasser == false && DiplomatieView.GetWegerectAllowed().Contains(kleinfeld.Nation);
+        }
+
         /// <summary>
         /// In dieser Queue werden die markierten Kleinfelder abgelegt, damit sie wieder unmarkiert werden können
         /// </summary>
