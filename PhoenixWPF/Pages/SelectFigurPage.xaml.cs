@@ -207,5 +207,15 @@ namespace PhoenixWPF.Pages {
             }
             return visual as DataGridRow;
         }
+
+        private void EigenschaftlerDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (e.AddedItems.Count > 0) {
+                var item = e.AddedItems[0];
+                if (Main.Instance.SelectionHistory.Current == item)
+                    return;
+                if (item is Spielfigur figur)
+                    Program.Main.Instance.Spiel?.SelectGemark(figur);
+            }
+        }
     }
 }

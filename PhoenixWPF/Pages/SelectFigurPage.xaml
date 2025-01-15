@@ -13,7 +13,7 @@
         <converter:CellBackgroundConverter x:Key="CellBackgroundConverter"/>
     </Page.Resources>
     <Grid>
-        <DataGrid Name="EigenschaftlerDataGrid" AutoGenerateColumns="False"              
+        <DataGrid Name="EigenschaftlerDataGrid" AutoGenerateColumns="False"  SelectionChanged="EigenschaftlerDataGrid_SelectionChanged"   
           CellEditEnding="EigenschaftlerDataGrid_CellEditEnding" MouseRightButtonDown="EigenschaftlerDataGrid_MouseRightButtonDown">
             <DataGrid.CellStyle>
                 <Style TargetType="DataGridCell">

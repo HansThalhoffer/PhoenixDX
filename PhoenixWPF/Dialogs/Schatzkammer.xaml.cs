@@ -17,6 +17,7 @@ namespace PhoenixWPF.Dialogs
             InitializeComponent();
             Schenkungen.Navigated += Schenkungen_Navigated;
         }
+
         private void Schenkungen_Navigated(object sender, NavigationEventArgs e)
         {
             if (Schenkungen.Content is EigenschaftlerListGridPage page)
