@@ -1,5 +1,5 @@
 ﻿using PhoenixModel.Helper;
-using PhoenixModel.Program;
+using PhoenixModel.ViewModel;
 using PhoenixWPF.Pages;
 using System.Windows;
 using System.Windows.Navigation;

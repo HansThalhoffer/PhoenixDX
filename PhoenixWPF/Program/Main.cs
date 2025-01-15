@@ -1,13 +1,13 @@
 ﻿using PhoenixDX;
 using PhoenixModel.Database;
 using PhoenixModel.dbErkenfara;
+using PhoenixModel.EventsAndArgs;
 using PhoenixModel.Program;
 using PhoenixModel.View;
-using PhoenixModel.EventsAndArgs;
+using PhoenixModel.ViewModel;
 using PhoenixWPF.Database;
 using PhoenixWPF.Dialogs;
 using PhoenixWPF.Helper;
-using PhoenixWPF.Program;
 using System.IO;
 using System.Windows;
 using System.Windows.Threading;

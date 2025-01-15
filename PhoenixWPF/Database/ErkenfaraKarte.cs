@@ -2,6 +2,7 @@
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.EventsAndArgs;
 using PhoenixModel.Program;
+using PhoenixModel.ViewModel;
 using PhoenixWPF.Database;
 using System.Data;
 using System.Windows;

@@ -20,9 +20,9 @@ using PhoenixDX.Helper;
 using PhoenixModel.View;
 using System.Diagnostics;
 using PhoenixDX.Drawing;
+using PhoenixModel.ViewModel;
 
-namespace PhoenixDX.Structures
-{
+namespace PhoenixDX.Structures {
     [DebuggerDisplay("{DebuggerDisplay()}")]
     public class Gemark : Hex {
         public string DebuggerDisplay() {

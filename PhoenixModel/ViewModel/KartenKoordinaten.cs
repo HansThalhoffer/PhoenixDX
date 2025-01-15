@@ -1,7 +1,6 @@
 ﻿using PhoenixModel.Program;
-using PhoenixModel.ViewModel;
 
-namespace PhoenixModel.dbErkenfara {
+namespace PhoenixModel.ViewModel {
 
     /// <summary>
     /// Windrichtungen für die Texturen
@@ -11,7 +10,7 @@ namespace PhoenixModel.dbErkenfara {
     }
 
     public class KartenKoordinaten : KleinfeldPosition {
-      
+
         public int dbx;
         public int dby;
 
@@ -138,7 +137,7 @@ namespace PhoenixModel.dbErkenfara {
         /// <returns></returns>
         private static KleinfeldPosition? GetFromNachbarnArray(KleinfeldPosition pos, Direction direction) {
             if (pos.kf < 1 || pos.kf > 48)
-                return null; 
+                return null;
             switch (direction) {
                 case Direction.NW:
                     return _nachbarn[pos.kf][0];
@@ -165,12 +164,12 @@ namespace PhoenixModel.dbErkenfara {
         /// <returns></returns>
         public static KleinfeldPosition? GetNachbar(KleinfeldPosition pos, Direction direction) {
             // aus dem dictionary holen
-            var nachbar = GetFromNachbarnArray(pos,direction);
+            var nachbar = GetFromNachbarnArray(pos, direction);
             if (nachbar == null)
                 return null;
 
             // hier folgt nun die Berechnung
-            return CreateFromNachbarnArray(pos,nachbar);
+            return CreateFromNachbarnArray(pos, nachbar);
         }
 
         /// <summary>
@@ -179,24 +178,23 @@ namespace PhoenixModel.dbErkenfara {
         /// <param name="original"></param>
         /// <param name="nachbar"></param>
         /// <returns></returns>
-        private static KleinfeldPosition CreateFromNachbarnArray(KleinfeldPosition original, KleinfeldPosition nachbar) 
-        {
+        private static KleinfeldPosition CreateFromNachbarnArray(KleinfeldPosition original, KleinfeldPosition nachbar) {
             var result = new KleinfeldPosition(nachbar.gf + original.gf, nachbar.kf);
             if (original.gf > 700) {
                 int cur = original.gf / 100;
                 int nb = result.gf / 100;
                 // wegen den halben eingeschobenen Provinzen ist das hier etwas schräg, aber ziemlich schnell
-                if ((cur == 8 && nb == 7) ||
-                    (cur == 10 && nb == 9) || (cur == 11 && nb == 10) ||
-                    (cur == 12 && nb == 11) || (cur == 13 && nb == 12) ||
-                    (cur == 14 && nb == 13) || (cur == 15 && nb == 14)
+                if (cur == 8 && nb == 7 ||
+                    cur == 10 && nb == 9 || cur == 11 && nb == 10 ||
+                    cur == 12 && nb == 11 || cur == 13 && nb == 12 ||
+                    cur == 14 && nb == 13 || cur == 15 && nb == 14
                     ) {
                     result.gf += 1;
                 }
-                else if ((cur == 7 && nb == 8) ||
-                    (cur == 9 && nb == 10) || (cur == 10 && nb == 11) ||
-                    (cur == 11 && nb == 12) || (cur == 12 && nb == 13) ||
-                    (cur == 13 && nb == 14) || (cur == 14 && nb == 15)
+                else if (cur == 7 && nb == 8 ||
+                    cur == 9 && nb == 10 || cur == 10 && nb == 11 ||
+                    cur == 11 && nb == 12 || cur == 12 && nb == 13 ||
+                    cur == 13 && nb == 14 || cur == 14 && nb == 15
                     ) {
                     result.gf -= 1;
                 }
@@ -213,7 +211,7 @@ namespace PhoenixModel.dbErkenfara {
 
             if (pos.kf < 1 || pos.kf > 48)
                 return null;
-            KleinfeldPosition[] nachbarn =  new KleinfeldPosition[6];
+            KleinfeldPosition[] nachbarn = new KleinfeldPosition[6];
             int i = 0;
             try {
                 foreach (var kf in _nachbarn[pos.kf]) {

@@ -1,7 +1,7 @@
 ﻿using LiveCharts;
 using LiveCharts.Wpf;
 using PhoenixModel.dbZugdaten;
-using PhoenixModel.Program;
+using PhoenixModel.ViewModel;
 using PhoenixWPF.Database;
 using System.Collections.ObjectModel;
 using System.Windows;

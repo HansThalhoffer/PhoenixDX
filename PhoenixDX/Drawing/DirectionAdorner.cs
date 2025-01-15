@@ -1,12 +1,11 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Structures;
-using PhoenixModel.dbErkenfara;
 using PhoenixModel.Helper;
+using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Generic;
 
-namespace PhoenixDX.Drawing
-{
+namespace PhoenixDX.Drawing {
     public abstract class DirectionAdorner : GemarkAdorner
     {
         int[] _value = { 0, 0, 0, 0, 0, 0 };

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using PhoenixDX.Structures;
+using PhoenixModel.dbErkenfara;
 using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Concurrent;
@@ -15,9 +16,9 @@ namespace PhoenixDX.Program {
     {
         private BackgroundWorker _backgroundWorker;
         private volatile bool _isWorkerRunning;
-        ConcurrentQueue<KleinfeldPosition> _updateQueue;
+        ConcurrentQueue<KleinFeld> _updateQueue;
         Welt _weltkarte;
-        public BackgroundUpdater(ref Welt weltkarte, ref ConcurrentQueue<KleinfeldPosition> updateQueue)
+        public BackgroundUpdater(ref Welt weltkarte, ref ConcurrentQueue<KleinFeld> updateQueue)
         {
             _updateQueue =  updateQueue;
             _weltkarte = weltkarte;

@@ -9,7 +9,6 @@ using PhoenixModel.dbPZE;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 
 namespace PhoenixDX.Structures {
@@ -19,7 +18,7 @@ namespace PhoenixDX.Structures {
         Dictionary<int, Provinz> Provinzen = [] ;
         Dictionary<int, Reich> Reiche = [];
 
-        public Welt(SharedData.BlockingDictionary<KleinFeld> map) 
+        public Welt(BlockingDictionary<KleinFeld> map) 
         {
             Provinzen.Add(701, new Provinz(7, 0, 701));
             Provinzen.Add(901, new Provinz(9, 0, 901));

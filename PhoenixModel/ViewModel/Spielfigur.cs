@@ -200,8 +200,5 @@ namespace PhoenixModel.ViewModel {
         public virtual List<Eigenschaft> Eigenschaften {
             get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore);
         }
-    }
-
-    
-   
+    }  
 }

@@ -6,24 +6,9 @@ using PhoenixModel.dbZugdaten;
 using System.Collections.Concurrent;
 
 namespace PhoenixModel.ViewModel {
-    public static class SharedData2 {
-        public class BlockingDictionary<Tvalue> : ConcurrentDictionary<string, Tvalue> {
-            public BlockingDictionary(int access, int capacity) : base(access, capacity) { }
 
-            bool _isAddingCompleted = false;
-            bool _isBlocked = false;
-            bool _isUpdated = false;
-
-            public BlockingDictionary() { }
-            // dann kommwen keine weiteren Elemente dazu
-            public void CompleteAdding() { IsAddingCompleted = true; }
-            public bool Add(string key, Tvalue obj) { return TryAdd(key, obj); }
-            public bool IsAddingCompleted { get => _isAddingCompleted; set => _isAddingCompleted = value; }
-            public bool IsBlocked { get => _isBlocked; set => _isBlocked = value; }
-            // Elemente haben sich geändert
-            public bool IsUpdated { get => _isUpdated; set => _isUpdated = value; }
-        }
-
+    public static class SharedData {
+       
         /// <summary>
         /// In dieser Queue werden die Objekte abgelegt, die in der Datenbank gespeichert werden sollen. Das geschieht asynchron
         /// </summary>

@@ -1,5 +1,5 @@
 ﻿using PhoenixModel.dbPZE;
-using PhoenixModel.Program;
+using PhoenixModel.ViewModel;
 
 namespace PhoenixModel.View
 {

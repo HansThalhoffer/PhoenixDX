@@ -1,6 +1,6 @@
 ﻿using PhoenixModel.Database;
 using PhoenixModel.dbCrossRef;
-using PhoenixModel.Program;
+using PhoenixModel.ViewModel;
 using PhoenixWPF.Program;
 using static PhoenixModel.Database.PasswordHolder;
 
