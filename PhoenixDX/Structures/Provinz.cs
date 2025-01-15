@@ -61,18 +61,20 @@ namespace PhoenixDX.Structures
 
         public Gemark GetKleinfeld(int kf)
         {
-            if (Felder.ContainsKey(kf))
-                return Felder[kf];
+            Gemark? gemark = null;
+            if (Felder.TryGetValue(kf, out gemark))
+                return gemark;
             return null;
         }
 
         public Gemark GetOrCreateKleinfeld(int kf)
         {
-            if (Felder.ContainsKey(kf))
-                return Felder[kf];
-            var p = new Gemark(GF, kf);
-            Felder.Add(kf, p);
-            return p;
+            Gemark? gemark = null;
+            if (Felder.TryGetValue(kf, out gemark))
+                return gemark;
+            gemark = new Gemark(GF, kf);
+            Felder.Add(kf, gemark);
+            return gemark;
         }
     }
 }

@@ -14,10 +14,6 @@ using PhoenixModel.ViewModel;
 using PhoenixModel.EventsAndArgs;
 
 namespace PhoenixModel.dbErkenfara {
-    public enum MarkerType
-    {
-        None, Info, Warning, Fatality
-    }
 
     public class KleinFeld : KleinfeldPosition, ISelectable, IDatabaseTable
     {
@@ -114,7 +110,7 @@ namespace PhoenixModel.dbErkenfara {
                 if (IsWasser == false)
                     return false;
                 if (_isKüste == null)
-                    _isKüste = KleinfeldView.IsKleinfeldKüste(this);
+                    _isKüste = KleinfeldView.IsKleinfeldKüstenGewässer(this);
                 return (bool)_isKüste;
             }
         }

@@ -1,5 +1,6 @@
 ﻿using PhoenixModel.EventsAndArgs;
 using PhoenixModel.Program;
+using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using PhoenixWPF.Pages;
 using static PhoenixModel.Program.LogEntry;
@@ -87,13 +88,13 @@ namespace PhoenixWPF.Program {
                     }
                 }*/
                 /// TEST - nachbarn markieren
-                /*KleinfeldView.UnMark();
-                var nachbarn = KleinfeldView.GetNachbarn(gem, 6);
+                KleinfeldView.UnMark();
+                var nachbarn = KleinfeldView.GetNachbarn(gem, 2);
                 if (nachbarn != null) {
                     foreach (var g in nachbarn) {
                         KleinfeldView.Mark(g, MarkerType.Fatality, true);
                     }
-                }*/
+                }
             }
         }
 

@@ -2,8 +2,15 @@
 using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
 using System.Collections.Concurrent;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace PhoenixModel.View {
+
+    public enum MarkerType {
+        None, Info, Warning, Fatality
+    }
+
     public static class KleinfeldView {
         /// <summary>
         /// In dieser Queue werden die markierten Kleinfelder abgelegt, damit sie wieder unmarkiert werden können
@@ -42,7 +49,7 @@ namespace PhoenixModel.View {
             try {
                 List<KleinFeld> list = [];
                 var tokens = path.Split(' ');
-                foreach(string token in tokens) {
+                foreach (string token in tokens) {
                     if (Enum.TryParse<Direction>(token, out Direction direction)) {
                         // hol den nachbar in der Windrichtung
                         var pos = KartenKoordinaten.GetNachbar(kf, direction);
@@ -67,48 +74,102 @@ namespace PhoenixModel.View {
             }
             return null;
         }
-
-        public static IEnumerable<KleinFeld>? GetNachbarn(KleinFeld kf, int distance = 1) {
+        /// <summary>
+        /// holt die Nachbarn des übergebenen Kleinfeldes in der Distanz
+        /// </summary>
+        /// <param name="kf">kleinfeld als Ursprung der Suche</param>
+        /// <param name="distance">Anzahl der Felder als Radius des Umkreises</param>
+        /// <param name="includeSelf">das übergebene Feld mitnehmen</param>
+        /// <returns>nichts, falls Fehler oder eine Liste aller Nachbarn und bei Bedarf des Feldes</returns>
+        public static IEnumerable<KleinFeld>? GetNachbarn(KleinFeld kf, int distance = 1, bool includeSelf = true) {
             try {
-                Queue<KleinFeld> working = [];
-                Dictionary<string, KleinFeld> nachbarn = [];
+                Queue<KleinfeldPosition> working = [];
+                Dictionary<string, KleinfeldPosition> nachbarn = [];
+                List<KleinFeld> result = [];
                 working.Enqueue(kf);
-                int max = distance > 1?1:0;
+                int max = distance > 1 ? 1 : 0;
                 for (int i = 1; i <= distance; i++) {
                     max += 6 * i;
                 }
+                KleinFeld? feld = null;
                 while (working.Count > 0) {
                     var positionen = KartenKoordinaten.GetKleinfeldNachbarn(working.Dequeue());
                     if (SharedData.Map != null && positionen != null) {
                         foreach (var pos in positionen) {
                             string key = KleinfeldPosition.CreateBezeichner(pos);
-                            if (SharedData.Map.ContainsKey(key) && nachbarn.ContainsKey(key) == false) {
-                                var nab = SharedData.Map[key];
-                                nachbarn.Add(key, nab);
-                                working.Enqueue(nab);
+                            if (nachbarn.ContainsKey(key) == false) {
+                                nachbarn.Add(key, pos);
+                                working.Enqueue(pos);
+                                if (SharedData.Map.TryGetValue(key, out feld)) {
+                                    result.Add(feld);
+                                }
                             }
                         }
                         if (nachbarn.Count >= max)
                             break;
                     }
                 }
-                return nachbarn.Values;
-            } catch (Exception e) {
+                if (includeSelf && nachbarn.ContainsKey(kf.CreateBezeichner()) == false)
+                    result.Add(kf);
+                else if (!includeSelf && nachbarn.ContainsKey(kf.CreateBezeichner()) == true)
+                    result.Remove(kf);
+                return result;
+            }
+            catch (Exception e) {
                 ProgramView.LogError("Beim Zählen der Nachbarn gab es einen Fehler", e.Message);
             }
             return null;
         }
 
-        public static bool IsKleinfeldKüste(KleinFeld kf) {
-            /*if (SharedData.Map != null && SharedData.Map.ContainsKey(pos.CreateBezeichner()))
-            {
-                var nachbar = SharedData.Map[pos.CreateBezeichner()];
-                // das Wasserfeld grenzt an land und ist daher Küste
-                if (nachbar.Terrain.IsWasser == false)
-                {
-                    kf.Gelaendetyp = (int)PhoenixModel.ExternalTables.GeländeTabelle.TerrainType.Küste;
+        /// <summary>
+        /// Die Position Am Meer ist für das Einschiffen und für ds Rüsten von Flotten hilfreich
+        /// </summary>
+        /// <param name="kf"></param>
+        /// <returns></returns>
+        public static bool IsKleinfeldAmMeer(KleinFeld kf) {
+            if (SharedData.Map == null || kf.IsWasser != false)
+                return false;
+            try {
+                if (Plausibilität.IsOnMap(kf)) {
+                    // optimistisch erstmal nur distanz 1 holen
+                    var nachbar = GetNachbarn(kf, 1);
+                    if (nachbar != null)
+                        foreach (var f in nachbar)
+                            if (f.IsWasser == false)
+                                return true;
                 }
-            }*/
+            }
+            catch (Exception ex) {
+                ProgramView.LogError($"Fehler bei der Berechung der Küstengewässer für {kf}", ex.Message);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// gibt zurück, ob das Kleinfeld im Wasser liegt und in der gegebenen Distanz an Land grenzt
+        /// </summary>
+        /// <param name="kf"></param>
+        /// <param name="distanz"></param>
+        /// <returns></returns>
+
+        public static bool IsKleinfeldKüstenGewässer(KleinFeld kf, int distanz = 2) {
+            if (SharedData.Map == null || kf.IsWasser == false)
+                return false;
+            try {
+                if (Plausibilität.IsOnMap(kf)) {
+                    // optimistisch erstmal nur distanz 1 holen
+                    for (int i = 1; i <= distanz; i++) {
+                        var nachbar = GetNachbarn(kf, i);
+                        if (nachbar != null)
+                            foreach (var f in nachbar)
+                                if (f.IsWasser == false)
+                                    return true;
+                    }
+                }
+            }
+            catch (Exception ex) {
+                ProgramView.LogError($"Fehler bei der Berechung der Küstengewässer für {kf}", ex.Message);
+            }
             return false;
         }
     }

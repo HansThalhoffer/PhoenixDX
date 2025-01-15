@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using PhoenixDX.Drawing;
 using PhoenixDX.Helper;
+using PhoenixDX.Program;
 using PhoenixModel.dbPZE;
 using System;
 using System.Collections.Generic;
@@ -24,14 +25,8 @@ namespace PhoenixDX.Structures
         {
             color = Kolor.Convert(nation.Farbe);
             name = nation.Reich;
-            if (reichsFarben.ContainsKey(nation.Farbname))
-            {
-                _hexTexture = reichsFarben[nation.Farbname];
-            }
-            else
-            {
-                _ = MessageBox.Show("Fehler", "Das Nation hat keine Farbe gefunden " + nation.Farbname, ["OK"]);
-            }
+            if (reichsFarben.TryGetValue(nation.Farbname, out _hexTexture) == false)
+                MappaMundi.Log(new PhoenixModel.Program.LogEntry("Fehler", $"Nation hat keine Farbe gefunden: {nation.Farbname}"));
         }
 
         public static void LoadContent(ContentManager contentManager) 

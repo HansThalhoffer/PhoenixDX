@@ -12,7 +12,7 @@ namespace PhoenixModel.ViewModel {
         }
 
         public static bool IsOnMap(KleinfeldPosition? pos) {
-            if (! IsValid(pos)) 
+            if (!IsValid(pos) || pos == null) 
                 return false;
             if (SharedData.Map == null)
                 return false;

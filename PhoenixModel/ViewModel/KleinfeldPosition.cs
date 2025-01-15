@@ -24,7 +24,7 @@ namespace PhoenixModel.ViewModel {
             this.gf = gf;
             this.kf = kf;
         }
-
+        
         public string CreateBezeichner() {
             return $"{gf}/{kf}";
         }

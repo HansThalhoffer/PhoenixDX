@@ -14,9 +14,10 @@ namespace PhoenixModel.dbCrossRef {
     public class BauwerkBasis
     {
         static Dictionary<string, BauwerkBasis> Bauwerke = [];
-        static BauwerkBasis? GetBauwerk(string name)
+        public static BauwerkBasis? GetBauwerk(string name)
         {
-            if (Bauwerke.ContainsKey(name)) return Bauwerke[name];
+            if (Bauwerke.ContainsKey(name)) 
+                return Bauwerke[name];
             return null;
         }
 

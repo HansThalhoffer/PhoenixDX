@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using PhoenixModel.dbErkenfara;
+using PhoenixModel.View;
 using PhoenixDX.Drawing;
 
 namespace PhoenixDX.Structures
