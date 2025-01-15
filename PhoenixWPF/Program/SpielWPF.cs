@@ -91,14 +91,22 @@ namespace PhoenixWPF.Program {
                 var gem = SharedData.Map[bezeichner];
                 Main.Instance.SelectionHistory.Current = gem;
 
-                /// TEST
-                KleinfeldView.UnMark();
+                // Test Pfad sichtbar machen
+                /*IEnumerable<KleinFeld>? list = KleinfeldView.GetPath(gem, "SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO");
+                if (list != null) {
+                    KleinfeldView.UnMark();
+                    foreach (var f in list) {
+                        KleinfeldView.Mark(f, MarkerType.Fatality, true);
+                    }
+                }*/
+                /// TEST - nachbarn markieren
+                /*KleinfeldView.UnMark();
                 var nachbarn = KleinfeldView.GetNachbarn(gem, 6);
                 if (nachbarn != null) {
                     foreach (var g in nachbarn) {
                         KleinfeldView.Mark(g, MarkerType.Fatality, true);
                     }
-                }
+                }*/
             }
         }
 
@@ -108,6 +116,7 @@ namespace PhoenixWPF.Program {
                 if (pos is ISelectable select)
                     Main.Instance.SelectionHistory.Current = select;
             }
+            
         }
 
 

@@ -38,6 +38,42 @@ namespace PhoenixModel.View {
             }
         }
 
+        /// <summary>
+        /// verfolgt einen Pfad wie  "NO N SO S W SO O"
+        /// </summary>
+        /// <param name="kf"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static IEnumerable<KleinFeld>? GetPath(KleinFeld kf, string path) {
+            try {
+                List<KleinFeld> list = [];
+                var tokens = path.Split(' ');
+                foreach(string token in tokens) {
+                    if (Enum.TryParse<Direction>(token, out Direction direction)) {
+                        // hol den nachbar in der Windrichtung
+                        var pos = KartenKoordinaten.GetNachbar(kf, direction);
+                        // verwende den Nachbar, falls es geht
+                        if (SharedData.Map != null && pos != null && SharedData.Map.ContainsKey(pos.CreateBezeichner())) {
+                            kf = SharedData.Map[pos.CreateBezeichner()];
+                            list.Add(kf);
+                        }
+                        else {
+                            // der Pfad verlässt bekanntes Gebiet
+                            break;
+                        }
+                    }
+                    else {
+                        ViewModel.LogError($"Fehlerhaftes direction token '{token}' in einem Pfad verwendt", $"Die Funktion GetPath wurde mit dem Pfad {path} aufgerufen.");
+                    }
+                }
+                return list;
+            }
+            catch (Exception e) {
+                ViewModel.LogError("Beim Zählen der Nachbarn gab es einen Fehler", e.Message);
+            }
+            return null;
+        }
+
         public static IEnumerable<KleinFeld>? GetNachbarn(KleinFeld kf, int distance = 1) {
             try {
                 Queue<KleinFeld> working = [];

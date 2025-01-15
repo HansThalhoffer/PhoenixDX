@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Structures;
+using PhoenixModel.dbErkenfara;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,13 +45,7 @@ namespace PhoenixDX.Drawing
         }
     }
 
-    /// <summary>
-    /// Windrichtungen für die Texturen
-    /// </summary>
-    public enum Direction
-    {
-        NW = 0, NO = 1, O = 2, SO = 3, SW = 4, W = 5
-    }
+   
 
     /// <summary>
     /// DirectionTexture überträgt Windrichtungen in Texturen

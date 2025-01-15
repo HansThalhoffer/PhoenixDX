@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Structures;
+using PhoenixModel.dbErkenfara;
 using PhoenixModel.Helper;
 using System;
 using System.Collections.Generic;

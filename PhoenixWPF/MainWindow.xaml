@@ -64,7 +64,7 @@
                     <!-- Splitter  -->
                     <RowDefinition Height="5" />
                     <!-- Bottom TabControl -->
-                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="2*" />
 
                 </Grid.RowDefinitions>
 
