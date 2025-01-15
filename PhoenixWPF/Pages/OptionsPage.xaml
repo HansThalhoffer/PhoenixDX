@@ -13,8 +13,10 @@
             <CheckBox Content="Reichszugehörigkeit sichtbar" 
                       IsChecked="{Binding IsReichszugehorigkeitSichtbar}" 
                       FontSize="14" />
-
-                <TextBlock Foreground="Wheat" FontSize="12" FontStyle="Italic" Width="200" HorizontalAlignment="Left">
+            <CheckBox Content="Küstenvorteil sichtbar" 
+                IsChecked="{Binding IsKüstenregelSichtbar}" 
+                FontSize="14" />
+            <TextBlock Foreground="Wheat" FontSize="12" FontStyle="Italic" Width="200" HorizontalAlignment="Left">
                 <Run Text="Zoom: " />
                 </TextBlock>
             <StackPanel Orientation="Horizontal">

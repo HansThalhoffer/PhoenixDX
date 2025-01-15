@@ -20,7 +20,13 @@
         private string _databaseLocationFeinde = string.Empty;
         private int _selectedReich = -1;
         private int _selectedZug = -1;
+        private bool _showKüstenRegel = true;
 
+
+        /// <summary>
+        /// die Fenstereinstellungen betreffenn die sichtbaren Tabs - ein Erbe aus dem 2. Versuch der Ablösung
+        /// unklar, ob das hier noch anwwendbar sein sollte
+        /// </summary>
         private bool _showWindowNavigator = true;
         private bool _showWindowProperties = true;
         private bool _showWindowDiplomacy = true;
@@ -155,13 +161,21 @@
                 }
             }
         }
+
         public int SelectedZug {
             get => _selectedZug;
             set {
                 _selectedZug = value;
                 OnPropertyChanged(nameof(SelectedZug));
             }
+        }
 
+        public bool ShowKüstenregel{
+            get => _showKüstenRegel;
+            set {
+                _showKüstenRegel = value;
+                OnPropertyChanged(nameof(SelectedZug));
+            }
         }
 
         /// <summary>

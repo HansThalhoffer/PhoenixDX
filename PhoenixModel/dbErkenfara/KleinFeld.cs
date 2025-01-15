@@ -115,6 +115,29 @@ namespace PhoenixModel.dbErkenfara {
             }
         }
 
+        private bool? _hasKüstenRecht = null;
+        public bool HasKüstenRecht {
+            get {
+                if (IsWasser == false || IsKüste == false)
+                    return false;
+                if (_hasKüstenRecht == null)
+                    _hasKüstenRecht = KleinfeldView.UserHasKuestenrecht(this);
+                return (bool)_hasKüstenRecht;
+            }
+        }
+
+        private bool? _hasWegeRecht = null;
+        public bool HasWegeRecht {
+            get {
+                if (IsWasser == false || IsKüste == false)
+                    return false;
+                if (_hasWegeRecht == null)
+                    _hasWegeRecht = KleinfeldView.UserHasWegerecht(this);
+                return (bool)_hasWegeRecht;
+            }
+        }
+
+
         public MarkerType Mark { get; set; }
 
         public enum Felder

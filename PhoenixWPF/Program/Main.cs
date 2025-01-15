@@ -188,6 +188,20 @@ namespace PhoenixWPF.Program {
         private void EverythingLoaded() {
             ProgramView.DataLoadingCompleted();
             _backgroundSave?.Start();
+            if (Settings.UserSettings.ShowKüstenregel == true)
+                ShowKüstenRecht(Visibility.Visible);
+        }
+
+        public void ShowKüstenRecht(Visibility visibility) {
+            Settings.UserSettings.ShowKüstenregel = visibility == Visibility.Visible;
+            if (Map != null)
+                Map.Küsten = Settings.UserSettings.ShowKüstenregel;
+            if (SharedData.Map != null) {
+                var küsten = SharedData.Map.Values.Where(f => f.HasKüstenRecht == true);
+                foreach(var k in küsten) {
+                    SharedData.UpdateQueue.Enqueue(k);
+                }
+            }
         }
 
 

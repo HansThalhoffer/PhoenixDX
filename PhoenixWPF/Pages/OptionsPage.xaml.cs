@@ -36,6 +36,18 @@ namespace PhoenixWPF.Pages
             } 
         }
 
+        bool _isKüstenregelSichtbar = false;
+        public bool IsKüstenregelSichtbar {
+            get { 
+                return _isKüstenregelSichtbar;
+            }
+            set {
+                _isKüstenregelSichtbar = value;
+                Main.Instance.ShowKüstenRecht(_isKüstenregelSichtbar ? Visibility.Visible : Visibility.Hidden);
+            }
+        }
+
+
         bool _self = false;
         public void ChangeZoomLevel(float zoomLevel)
         {
@@ -55,6 +67,7 @@ namespace PhoenixWPF.Pages
             InitializeComponent();
             DataContext = this;
             Main.Instance.Options = this;
+            IsKüstenregelSichtbar = Main.Instance.Settings.UserSettings.ShowKüstenregel;
         }
     }
 }

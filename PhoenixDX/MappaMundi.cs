@@ -62,6 +62,15 @@ namespace PhoenixDX {
             set { WeltDrawer.ShowReichOverlay = value; }
         }
 
+        /// <summary>
+        /// um das Zeigen der Küsten, ein und auszuschalten, reicht es nicht hier den boolschen Parameter umzuschalten
+        /// es muss in der SharedData.UpdateQueue auch alle betroffenen Kleinfelder abgelegt werden
+        /// </summary>
+        public bool Küsten {
+            get { return WeltDrawer.ShowKüsten; }
+            set { WeltDrawer.ShowKüsten = value; }
+        }
+
         public void OnMouseEvent(MausEventArgs args) {
             _game?.OnMouseEvent(args);
         }

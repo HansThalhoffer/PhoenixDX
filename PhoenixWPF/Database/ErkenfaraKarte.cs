@@ -33,33 +33,10 @@ namespace PhoenixWPF.Program {
                 Load<KleinFeld>(connector, ref SharedData.Map, Enum.GetNames(typeof(KleinFeld.Felder)));
                 connector?.Close();
                 Task.Run(() => RepairBauwerklistePhase1());
-                //Task.Run(() => Küsten());
                 ProgramView.OnViewEvent += ViewModel_OnViewEvent;
                 return;
             }
-        }
-
-        /// <summary>
-        /// die Reinigung kann kaputte Kleinfelder entfernen, das sind aktuell aber nur 2 Stück
-        /// </summary>
-        private void Reinigung()
-        {
-            if (SharedData.Map == null)
-                return;
-            var tonne = SharedData.Map.Values.Where(kf => kf.gf < 1 || kf.kf > 48);
-            KleinFeld? removed = null;
-            foreach (var müll in tonne)
-            {
-                SharedData.Map.Remove(müll.Bezeichner, out removed);
-            }
-
-        }
-        private void Küsten()
-        {
-            if (SharedData.Map == null)
-                return;
-            KleinFeld[] meer = SharedData.Map.Values.Where(kf => kf.IsKüste).ToArray();
-        }
+        } 
 
         private void ViewModel_OnViewEvent(object? sender, ViewEventArgs e)
         {

@@ -110,7 +110,7 @@ namespace PhoenixDX.Structures {
             _isInitalized = true;
             ReichKennzahl = (int)gem.Reich;
             if (gem.Gelaendetyp <= (int)TerrainType.AuftauchpunktUnbekannt) {
-                if (KleinfeldView.UserHasKuestenrecht(gem))
+                if (WeltDrawer.ShowKüsten == true && KleinfeldView.UserHasKuestenrecht(gem))
                     _terrainType = TerrainType.Küste;
                 else
                     _terrainType = (TerrainType)gem.Gelaendetyp;

@@ -17,6 +17,7 @@ namespace PhoenixDX.Drawing
         static Texture2D _selection1 = null;
         static Texture2D _selection2 = null;
         static public bool ShowReichOverlay = false;
+        static public bool ShowKüsten = false;
 
         // für optimierungen siehe http://rbwhitaker.wikidot.com/render-to-texture
 
