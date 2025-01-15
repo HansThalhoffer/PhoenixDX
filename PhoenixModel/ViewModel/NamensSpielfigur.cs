@@ -5,6 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PhoenixModel.ViewModel {
+    /// <summary>
+    /// Die Spielfiguren unterscheiden sich in zwei Typen: Truppen- und NamensSpielfigur
+    /// Diese wurden in der Altanwendung noch in weitere Tabellen aufgeteilt, obwohl viele Daten identisch sind
+    /// Hier werden diese wieder weitgehend zusammengefasst
+    /// </summary>
     public abstract class NamensSpielfigur : Spielfigur {
         public override string Stärke { get { return $"{GP_akt.ToString("n0")} (max {GP_ges.ToString("n0")})"; } }
         public int GP_ges { get; set; } = 0;
