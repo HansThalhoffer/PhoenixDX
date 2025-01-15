@@ -14,12 +14,22 @@ namespace PhoenixModel.View {
     public static class KleinfeldView {
 
         /// <summary>
-        /// ist wahr, wenn die Nation der Gemark der Nation des Users das Küstenrecht zugebilligt haben
+        /// ist wahr, wenn eine Nation im Abstand von 2 ein Landfeld hat, die der Nation des Users das Küstenrecht zugebilligt hat
         /// </summary>
         /// <param name="kleinfeld"></param>
         /// <returns></returns>
         public static bool UserHasKuestenrecht(KleinFeld kleinfeld) {
-            return kleinfeld.IsKüste && DiplomatieView.GetKüstenregelAllowed().Contains(kleinfeld.Nation);
+            if (SharedData.Map == null ||  SharedData.Map.IsAddingCompleted == false)
+                return false;
+            if (kleinfeld.IsKüste == false) 
+                return false;
+            var nachbarn = KleinfeldView.GetNachbarn(kleinfeld, 2);
+            if (nachbarn == null)
+                return false;
+            var allowed = DiplomatieView.GetKüstenregelAllowed();
+            if (allowed == null)
+                return false;
+            return nachbarn.Any(s => allowed.Contains(s.Nation));
         }
 
         /// <summary>
@@ -28,7 +38,10 @@ namespace PhoenixModel.View {
         /// <param name="kleinfeld"></param>
         /// <returns></returns>
         public static bool UserHasWegerecht(KleinFeld kleinfeld) {
-            return kleinfeld.IsWasser == false && DiplomatieView.GetWegerectAllowed().Contains(kleinfeld.Nation);
+            var allowed = DiplomatieView.GetKüstenregelAllowed();
+            if (allowed == null)
+                return false;
+            return kleinfeld.IsWasser == false && allowed.Contains(kleinfeld.Nation);
         }
 
         /// <summary>
@@ -101,6 +114,8 @@ namespace PhoenixModel.View {
         /// <param name="includeSelf">das übergebene Feld mitnehmen</param>
         /// <returns>nichts, falls Fehler oder eine Liste aller Nachbarn und bei Bedarf des Feldes</returns>
         public static IEnumerable<KleinFeld>? GetNachbarn(KleinFeld kf, int distance = 1, bool includeSelf = true) {
+            if (SharedData.Map == null || SharedData.Map.IsAddingCompleted == false)
+                return null;
             try {
                 Queue<KleinfeldPosition> working = [];
                 Dictionary<string, KleinfeldPosition> nachbarn = [];

@@ -61,7 +61,7 @@ namespace PhoenixDX.Structures
 
         public Gemark GetKleinfeld(int kf)
         {
-            Gemark? gemark = null;
+            Gemark gemark = null;
             if (Felder.TryGetValue(kf, out gemark))
                 return gemark;
             return null;
@@ -69,7 +69,7 @@ namespace PhoenixDX.Structures
 
         public Gemark GetOrCreateKleinfeld(int kf)
         {
-            Gemark? gemark = null;
+            Gemark gemark = null;
             if (Felder.TryGetValue(kf, out gemark))
                 return gemark;
             gemark = new Gemark(GF, kf);

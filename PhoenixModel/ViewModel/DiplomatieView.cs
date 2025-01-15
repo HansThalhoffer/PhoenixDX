@@ -16,7 +16,7 @@ namespace PhoenixModel.ViewModel {
         /// <param name="nation"></param>
         /// <returns></returns>
         static List<Nation>? _NationenMitKüstenrechtErlaubt = null;
-        public static IEnumerable<Nation> GetKüstenregelAllowed() {
+        public static IEnumerable<Nation>? GetKüstenregelAllowed() {
             if (_NationenMitKüstenrechtErlaubt == null) 
                 _NationenMitKüstenrechtErlaubt = GetKüstenregelAllowed(ProgramView.SelectedNation) as List<Nation>;
             if (_NationenMitKüstenrechtErlaubt == null)
@@ -30,7 +30,7 @@ namespace PhoenixModel.ViewModel {
         /// <param name="nation"></param>
         /// <returns></returns>
         static List<Nation>? _NationenMitWegerechtErlaubt = [];
-        public static IEnumerable<Nation> GetWegerectAllowed() {
+        public static IEnumerable<Nation>? GetWegerectAllowed() {
             if (_NationenMitWegerechtErlaubt == null)
                 _NationenMitWegerechtErlaubt = GetWegerectAllowed(ProgramView.SelectedNation) as List<Nation>;
             if (_NationenMitWegerechtErlaubt == null)
@@ -43,9 +43,9 @@ namespace PhoenixModel.ViewModel {
         /// </summary>
         /// <param name="nation"></param>
         /// <returns></returns>
-        public static IEnumerable<Nation> GetKüstenregelAllowed(Nation? nation) {
-            if (nation == null || SharedData.Diplomatie == null || SharedData.Diplomatiechange == null )
-                return [];
+        public static IEnumerable<Nation>? GetKüstenregelAllowed(Nation? nation) {
+            if (nation == null || SharedData.Diplomatie == null || SharedData.Diplomatie.IsAddingCompleted == false)
+                return null;
             var crossref = SharedData.Diplomatie.Values.Where(d => d.Nation == ProgramView.SelectedNation && d.Kuestenrecht_von > 0);
             List<Nation> result = [];
             foreach (var c in crossref) {
@@ -59,11 +59,9 @@ namespace PhoenixModel.ViewModel {
         /// </summary>
         /// <param name="nation"></param>
         /// <returns></returns>
-        public static IEnumerable<Nation> GetWegerectAllowed(Nation? nation = null) {
-            if (nation == null)
-                nation = ProgramView.SelectedNation;
-            if (nation == null || SharedData.Diplomatie == null || SharedData.Diplomatiechange == null)
-                return [];
+        public static IEnumerable<Nation>? GetWegerectAllowed(Nation? nation) {
+            if (nation == null || SharedData.Diplomatie == null || SharedData.Diplomatie.IsAddingCompleted == false)
+                return null;
             var crossref = SharedData.Diplomatie.Values.Where(d => d.Nation == ProgramView.SelectedNation && d.Kuestenrecht_von > 0);
             List<Nation> result = [];
             foreach (var c in crossref) {
