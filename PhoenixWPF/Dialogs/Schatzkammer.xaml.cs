@@ -1,10 +1,12 @@
-﻿using PhoenixModel.Helper;
+﻿using PhoenixModel.dbPZE;
+using PhoenixModel.Helper;
 using PhoenixModel.ViewModel;
 using PhoenixWPF.Pages;
 using System.Windows;
 using System.Windows.Navigation;
 namespace PhoenixWPF.Dialogs
 {
+   
     /// <summary>
     /// Interaktionslogik für SchatzkammerDialog.xaml
     /// </summary>

@@ -14,6 +14,9 @@
             <TabItem Header="Schenkungen">
                 <Frame x:Name="Schenkungen"  Source="/Pages/EigenschaftlerListGridPage.xaml" Tag="Schenkungen"/>
             </TabItem>
+            <TabItem Header="Erwartete Einkommen">
+                <Frame x:Name="ErwarteteEinkommen"  Source="/Pages/ExpectedIncomePage.xaml" Tag="ErwarteteEinkommen"/>
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>
