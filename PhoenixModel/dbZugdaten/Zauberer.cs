@@ -3,10 +3,13 @@ using System.Data.Common;
 using PhoenixModel.Database;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
+using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 
 namespace PhoenixModel.dbZugdaten {
+    
     public enum Zaubererklasse { ZA, ZB, ZC, ZD, ZE, ZF, none }
+
     public class Zauberer : NamensSpielfigur, IDatabaseTable, IEigenschaftler
     {
         private static string _datebaseName = string.Empty;
@@ -27,6 +30,8 @@ namespace PhoenixModel.dbZugdaten {
             }
         }
  
+        public Zaubererklasse Klasse { get => SpielfigurenView.GetZaubererklasse(this); }
+
         public enum Felder
         {
             nummer, Beschriftung, GP_ges_alt, GP_ges, GP_akt_alt, GP_akt, charname, Spielername, gf_von, kf_von, gf_nach, kf_nach, rp, bp, tp_alt, tp, ph_xy, Teleport_gf_von, Teleport_kf_von, Teleport_gf_nach, Teleport_kf_nach, Befehl_magie, Befehl_Teleport, Befehl_bannt,

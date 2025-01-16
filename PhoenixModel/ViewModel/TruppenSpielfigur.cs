@@ -89,6 +89,11 @@ namespace PhoenixModel.ViewModel {
                     katapult += $"\r+ {SKP} SK";
                     lineCount++;
                 }
+                if (Pferde > 0) {
+                    typ += $"\r+ Pferde";
+                    katapult += $"\r+ {Pferde}";
+                    lineCount++;
+                }
                 list.Add(new Eigenschaft("Typ", typ, false, this));
                 list.Add(new Eigenschaft("Stärke", str, false, this));
                 list.Add(new Eigenschaft("Katapulte", katapult, false, this));

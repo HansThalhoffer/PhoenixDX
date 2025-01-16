@@ -28,10 +28,10 @@
                         <TextBlock Text="Schwere Katapulte" VerticalAlignment="Center"/>
                         <TextBlock Text="Pferde" VerticalAlignment="Center"/>
                         <TextBox Text="{Binding Krieger}" IsReadOnly="True" Margin="2"/>
-                        <TextBox Text="{Binding HF_Krieg}" IsReadOnly="True" Margin="2"/>
-                        <TextBox Text="{Binding LKP_Krieg}" IsReadOnly="True" Margin="2"/>
-                        <TextBox Text="{Binding SK_Krieg}" IsReadOnly="True" Margin="2"/>
-                        <TextBox Text="{Binding Pferde_Krieg}" IsReadOnly="True" Margin="2"/>
+                        <TextBox Text="{Binding HF_Krieger}" IsReadOnly="True" Margin="2"/>
+                        <TextBox Text="{Binding LKP_Krieger}" IsReadOnly="True" Margin="2"/>
+                        <TextBox Text="{Binding SKP_Krieger}" IsReadOnly="True" Margin="2"/>
+                        <TextBox Text="{Binding Pferde_Krieger}" IsReadOnly="True" Margin="2"/>
                     </UniformGrid>
 
                     <!-- Reiten Section -->
@@ -43,10 +43,10 @@
                         <TextBlock Text="Schwere Katapulte" VerticalAlignment="Center"/>
                         <TextBlock Text="Pferde" VerticalAlignment="Center"/>
                         <TextBox Text="{Binding Reiter}" IsReadOnly="True" Margin="2"/>
-                        <TextBox Text="{Binding HF_Reiten}" IsReadOnly="True" Margin="2"/>
-                        <TextBox Text="{Binding LKP_Reiten}" IsReadOnly="True" Margin="2"/>
-                        <TextBox Text="{Binding SKP_Reiten}" IsReadOnly="True" Margin="2"/>
-                        <TextBox Text="{Binding Pferde_Reiten}" IsReadOnly="True" Margin="2"/>
+                        <TextBox Text="{Binding HF_Reiter}" IsReadOnly="True" Margin="2"/>
+                        <TextBox Text="{Binding LKP_Reiter}" IsReadOnly="True" Margin="2"/>
+                        <TextBox Text="{Binding SKP_Reiter}" IsReadOnly="True" Margin="2"/>
+                        <TextBox Text="{Binding Pferde_Reiter}" IsReadOnly="True" Margin="2"/>
                     </UniformGrid>
 
                     <!-- Schiffe Section -->
@@ -58,7 +58,7 @@
                         <TextBlock Text="Schwere Kriegsschiffe" VerticalAlignment="Center"/>
                         <TextBox Text="{Binding Schiffe}" IsReadOnly="True" Margin="2"/>
                         <TextBox Text="{Binding HF_Schiffe}" IsReadOnly="True" Margin="2"/>
-                        <TextBox Text="{Binding LK_Schiffe}" IsReadOnly="True" Margin="2"/>
+                        <TextBox Text="{Binding LKS_Schiffe}" IsReadOnly="True" Margin="2"/>
                         <TextBox Text="{Binding SKS_Schiffe}" IsReadOnly="True" Margin="2"/>
                     </UniformGrid>
                     <UniformGrid Columns="2" Width="300" HorizontalAlignment ="Left" Margin="5,20,0,0">

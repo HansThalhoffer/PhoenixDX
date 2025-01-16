@@ -27,8 +27,8 @@
                 <MenuItem Header="Bericht des Kämmerers" IsCheckable="False"  Click="MenuItem_Click" Tag="Schatzkammer" />
                 <MenuItem Header="Geld verschenken" IsCheckable="False"  Click="MenuItem_Click" Tag="Schenken" />
             </MenuItem>
-            <MenuItem Header="Analysen">
-                <MenuItem Header="Truppenentwicklung" IsCheckable="False"  Click="MenuItem_Click" Tag="Truppen" />
+            <MenuItem Header="Militär">
+                <MenuItem Header="Bericht der Generäle" IsCheckable="False"  Click="MenuItem_Click" Tag="Truppen" />
             </MenuItem>
             <MenuItem Header="Extras">
                 <MenuItem Header="Zug Wechseln" IsCheckable="False"  Click="MenuItem_Click" Tag="Zugwechsel" />
