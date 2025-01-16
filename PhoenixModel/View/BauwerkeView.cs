@@ -34,10 +34,10 @@ namespace PhoenixModel.View {
             return rnbp;
         }
 
-        public static IEnumerable<Gebäude>? GetGebäude(Nation nation)
+        public static List<Gebäude>? GetGebäude(Nation nation)
         {
             if (SharedData.Gebäude != null)
-                return SharedData.Gebäude.Values?.Where(s => s.Nation == nation);
+                return SharedData.Gebäude.Values?.Where(s => s.Nation == nation).ToList();
             return null;
         }
 

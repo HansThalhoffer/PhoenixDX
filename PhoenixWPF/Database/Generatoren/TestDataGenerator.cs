@@ -7,35 +7,34 @@ using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using PhoenixWPF.Helper;
 using PhoenixWPF.Program;
+using SharpDX.MediaFoundation;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.OleDb;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using static PhoenixModel.Database.PasswordHolder;
 
 namespace PhoenixWPF.Database.Generatoren {
-    internal static class TestDataGenerator
-    {
-        public static void GeneriereTestdatenFürZug999()
-        {
-            if(ProgramView.SelectedNation == null)
+    internal static class TestDataGenerator {
+        public static void GeneriereTestdatenFürZug999() {
+            if (ProgramView.SelectedNation == null)
                 throw new Exception("Reich muss ausgewählt sein");
-            
+
             string path = Main.Instance.Settings.UserSettings.DatabaseLocationZugdaten;
             path = StorageSystem.ExtractBasePath(path, "Zugdaten");
             path = Path.Combine(path, "999");
             path = Path.Combine(path, $"{ProgramView.SelectedNation.Name}.mdb");
-            if (File.Exists(path) == false)
-            {
+            if (File.Exists(path) == false) {
                 SpielWPF.LogError("Der Zug 999 mus angelegt werden", $"Bitte kopiere eine beliebige Zudaten datenbank in {path}");
                 return;
             }
-            PasswordHolder password = new ((EncryptedString)Main.Instance.Settings.UserSettings.PasswordReich);
+            PasswordHolder password = new((EncryptedString)Main.Instance.Settings.UserSettings.PasswordReich);
             string connectionString = $"Provider = Microsoft.ACE.OLEDB.16.0; Data Source = {path}; Persist Security Info = False;";
             connectionString += $"Jet OLEDB:Database Password={password.DecryptedPassword};";
 
@@ -43,8 +42,7 @@ namespace PhoenixWPF.Database.Generatoren {
                 throw new Exception("Kartendaten fehlen");
 
             KleinFeld[] eigeneGebiet = SharedData.Map.Values.Where(kf => kf.Nation == ProgramView.SelectedNation).ToArray();
-            using (OleDbConnection connection = new OleDbConnection(connectionString))
-            {
+            using (OleDbConnection connection = new OleDbConnection(connectionString)) {
                 connection.Open();
                 OleDbCommand command = new OleDbCommand("DELETE FROM Krieger", connection);
                 var result = command.ExecuteNonQuery();
@@ -58,19 +56,23 @@ namespace PhoenixWPF.Database.Generatoren {
                 result = command.ExecuteNonQuery();
                 command.CommandText = "DELETE FROM chars";
                 result = command.ExecuteNonQuery();
-                var schiffe = GenerateSchiffe(command, 50);
-                var krieger = GenerateKrieger(eigeneGebiet, command, 50, schiffe);
-                PutOnSchiffe(schiffe, krieger, 10);
+                var schiffe = GenerateSchiffe(20);
+                var krieger = GenerateKrieger(eigeneGebiet, 20);
+                var reiter = GenerateReiter(eigeneGebiet, 20);
+                var zauberer = GenerateZauberer(eigeneGebiet, 20);
+                var charakter = GenerateCharacter(eigeneGebiet, 20);
+                PutOnSchiffe(schiffe, krieger, 5);
+                PutOnSchiffe(schiffe, reiter, 5);
                 Save(schiffe, command);
                 Save(krieger, command);
+                Save(reiter, command);
+                Save(charakter, command);
+                Save(zauberer, command);
             }
-            
         }
 
-        private static void Save(IEnumerable<Spielfigur> figuren, DbCommand command)
-        {
-            foreach (var figur in figuren)
-            {
+        private static void Save(IEnumerable<Spielfigur> figuren, DbCommand command) {
+            foreach (var figur in figuren) {
                 figur.Insert(command);
             }
         }
@@ -84,28 +86,24 @@ namespace PhoenixWPF.Database.Generatoren {
         /// <param name="schiffe"></param>
         /// <param name="figuren"></param>
         /// <param name="count"></param>
-        private static void PutOnSchiffe(IEnumerable<Schiffe> schiffe, IEnumerable<TruppenSpielfigur> figuren, int count)
-        {
+        private static void PutOnSchiffe(IEnumerable<Schiffe> schiffe, IEnumerable<TruppenSpielfigur> figuren, int count) {
             Random random = new Random();
             int anzahlFiguren = figuren.Count();
             int anzahlSchiffe = schiffe.Count();
-            for (int i = 0; i < count; i++)
-            {
+            for (int i = 0; i < count; i++) {
                 Schiffe schiff = schiffe.ElementAt(random.Next(0, anzahlSchiffe - 1));
-                TruppenSpielfigur truppenSpielfigur = figuren.ElementAt(random.Next(0,anzahlFiguren - 1));
+                TruppenSpielfigur truppenSpielfigur = figuren.ElementAt(random.Next(0, anzahlFiguren - 1));
                 schiff.auf_Flotte = $"#{truppenSpielfigur.Nummer}";
                 truppenSpielfigur.auf_Flotte = $"#{schiff.Nummer}";
             }
         }
 
-        private static int Zufall(Random random, int wahrscheinlichkeit, int minValue, int maxValue)
-        {
+        private static int Zufall(Random random, int wahrscheinlichkeit, int minValue, int maxValue) {
             return random?.Next(1, 100) < wahrscheinlichkeit ? random.Next(minValue, maxValue) : 0;
         }
 
 
-        private static void Fill(ref Spielfigur figur, KleinFeld kf)
-        {
+        private static void Fill(ref Spielfigur figur, KleinFeld kf) {
             figur.ph_xy = kf.ph_xy;
             figur.gf = kf.gf;
             figur.gf_von = kf.gf;
@@ -113,14 +111,22 @@ namespace PhoenixWPF.Database.Generatoren {
             figur.kf_von = kf.kf;
         }
 
-        private static void Fill(ref TruppenSpielfigur figur, KleinFeld kf)
-        {
+        private static void Fill(ref TruppenSpielfigur figur, KleinFeld kf) {
+            Random random = new();
+            int lKP = Zufall(random, 20, 1, 20);
+            int sKP = Zufall(random, 10, 1, 5); ;
+            if ((figur is Krieger || figur is Reiter) && (lKP > 0 || sKP > 0)) {
+                if (ProgramView.SelectedNation != null) {
+                    var gebäude = BauwerkeView.GetGebäude(ProgramView.SelectedNation);
+                    if (gebäude != null) {
+                        var bw = gebäude[random.Next(0, gebäude.Count - 1)];
+                        if (SharedData.Map != null)
+                            kf = SharedData.Map[bw.CreateBezeichner()];
+                    }
+                }
+            }
             Spielfigur spielfigur = figur as Spielfigur;
             Fill(ref spielfigur, kf);
-            Random random = new();
-            int lKP = Zufall(random,20,1,20);
-            int sKP = Zufall(random, 10, 1, 5); ;
-
             figur.staerke = random.Next(500, 6000);
             figur.hf = random.Next(1, 20);
             figur.LKP = lKP;
@@ -129,56 +135,126 @@ namespace PhoenixWPF.Database.Generatoren {
             figur.skp_alt = sKP;
         }
 
-        private static void Calculate(ref TruppenSpielfigur figur, KleinFeld kf)
-        {
+        private static void Fill(ref NamensSpielfigur figur, KleinFeld kf) {
+            Random random = new();
+            int lKP = Zufall(random, 20, 1, 20);
+            int sKP = Zufall(random, 10, 1, 5); ;
+            
+            Spielfigur spielfigur = figur as Spielfigur;
+            Fill(ref spielfigur, kf);
+        }
+
+        private static void Calculate(ref TruppenSpielfigur figur, KleinFeld kf) {
             figur.Kosten = SpielfigurenView.BerechneBaukosten(figur);
             figur.bp = SpielfigurenView.BerechneBewegungspunkte(figur);
             figur.rp = SpielfigurenView.BerechneRaumpunkte(figur);
         }
 
-        private static List<Schiffe> GenerateSchiffe(DbCommand command, int count)
-        {
+        private static void Calculate(ref NamensSpielfigur figur, KleinFeld kf) {
+            figur.Kosten = SpielfigurenView.BerechneBaukosten(figur);
+            figur.bp = SpielfigurenView.BerechneBewegungspunkte(figur);
+            figur.rp = SpielfigurenView.BerechneRaumpunkte(figur);
+        }
+
+        private static List<Schiffe> GenerateSchiffe(int count) {
             Random random = new();
             if (SharedData.Map == null)
                 throw new Exception("Kartendaten fehlen");
+
+            KleinFeld[] EigeneKüste = SharedData.Map.Values.Where(kf => kf.Nation == ProgramView.SelectedNation && KleinfeldView.IsKleinfeldAmMeer(kf) == true).ToArray();
+
             // schiffe aufs Meer
-            KleinFeld[] meer = SharedData.Map.Values.Where(kf => kf.Terrain.IsWasser).ToArray(); 
             List<Schiffe> list = [];
             int nummer = 301;
-            for (int i = 0; i < count; ++i)
-            {
-                KleinFeld kf = meer[random.Next(0, meer.Length - 1)];
-                var schiff = new Schiffe()
-                {
-                    Nummer = nummer++
-                };
-                TruppenSpielfigur truppenSpielfigur = schiff as TruppenSpielfigur;
-                Fill(ref truppenSpielfigur, kf);
-                Calculate(ref truppenSpielfigur, kf);
-                list.Add(schiff);
+            for (int i = 0; i < count; ++i) {
+                KleinFeld? kf = EigeneKüste[random.Next(0, EigeneKüste.Length - 1)];
+                var nachbarn = KleinfeldView.GetNachbarn(kf, 2);
+                if (nachbarn != null) {
+                    var wasser = nachbarn.Where(f => f.IsWasser == true).ToList();
+                    kf = wasser[random.Next(0, wasser.Count() - 1)];
+                    if (kf != null) {
+                        var schiff = new Schiffe() {
+                            Nummer = nummer++
+                        };
+                        TruppenSpielfigur truppenSpielfigur = schiff as TruppenSpielfigur;
+                        Fill(ref truppenSpielfigur, kf);
+                        Calculate(ref truppenSpielfigur, kf);
+                        list.Add(schiff);
+                    }
+                }
             }
+
             return list;
         }
 
-        private static List<Krieger> GenerateKrieger(KleinFeld[] eigeneGebiet, DbCommand command, int count, IEnumerable<Schiffe> schiffe)
-        {
+        private static List<Krieger> GenerateKrieger(KleinFeld[] eigeneGebiet, int count) {
             Random random = new();
-            List<Krieger> list = new List<Krieger>();
+            List<Krieger> list = [];
             int nummer = 101;
-            for (int i = 0; i < count; ++i)
-            {
+            for (int i = 0; i < count; ++i) {
                 KleinFeld kf = eigeneGebiet[random.Next(0, eigeneGebiet.Length - 1)];
-                int lKP = random.Next(0, 9) > 6 ? random.Next(0, 20) : 0;
-                int sKP = random.Next(0, 9) > 8 ? random.Next(0, 6) : 0;
                 // auf Flotte
-                Krieger krieger = new Krieger()
-                {
+                Krieger krieger = new Krieger() {
                     Nummer = nummer++
                 };
                 TruppenSpielfigur truppenSpielfigur = krieger as TruppenSpielfigur;
                 Fill(ref truppenSpielfigur, kf);
                 Calculate(ref truppenSpielfigur, kf);
                 list.Add(krieger);
+            }
+            return list;
+        }
+
+        private static List<Reiter> GenerateReiter(KleinFeld[] eigeneGebiet, int count) {
+            Random random = new();
+            List<Reiter> list = [];
+            int nummer = 201;
+            for (int i = 0; i < count; ++i) {
+                KleinFeld kf = eigeneGebiet[random.Next(0, eigeneGebiet.Length - 1)];
+                // auf Flotte
+                Reiter reiter = new Reiter() {
+                    Nummer = nummer++
+                };
+                TruppenSpielfigur truppenSpielfigur = reiter as TruppenSpielfigur;
+                Fill(ref truppenSpielfigur, kf);
+                Calculate(ref truppenSpielfigur, kf);
+                list.Add(reiter);
+            }
+            return list;
+        }
+
+        private static List<Character> GenerateCharacter(KleinFeld[] eigeneGebiet, int count) {
+            Random random = new();
+            List<Character> list = [];
+            int nummer = 201;
+            for (int i = 0; i < count; ++i) {
+                KleinFeld kf = eigeneGebiet[random.Next(0, eigeneGebiet.Length - 1)];
+                // auf Flotte
+                Character wizard = new Character() {
+                    Nummer = nummer++
+                };
+                NamensSpielfigur truppenSpielfigur = wizard as NamensSpielfigur;
+                Fill(ref truppenSpielfigur, kf);
+                Calculate(ref truppenSpielfigur, kf);
+                list.Add(wizard);
+            }
+            return list;
+        }
+
+        private static List<Zauberer> GenerateZauberer(KleinFeld[] eigeneGebiet, int count) {
+            Random random = new();
+            List<Zauberer> list = [];
+            int nummer = 201;
+            for (int i = 0; i < count; ++i) {
+                KleinFeld kf = eigeneGebiet[random.Next(0, eigeneGebiet.Length - 1)];
+                // auf Flotte
+                Zauberer wizard = new Zauberer() {
+                    Nummer = nummer++
+                };
+                NamensSpielfigur truppenSpielfigur = wizard as NamensSpielfigur;
+                Fill(ref truppenSpielfigur, kf);
+                Calculate(ref truppenSpielfigur, kf);
+                list.Add(wizard);
             }
             return list;
         }

@@ -166,11 +166,9 @@ namespace PhoenixModel.View {
             try {
                 if (Plausibilität.IsOnMap(kf)) {
                     // optimistisch erstmal nur distanz 1 holen
-                    var nachbar = GetNachbarn(kf, 1);
-                    if (nachbar != null)
-                        foreach (var f in nachbar)
-                            if (f.IsWasser == false)
-                                return true;
+                    var nachbarn = GetNachbarn(kf, 1);
+                    if (nachbarn != null)
+                        return nachbarn.Where(f => f.IsWasser == true).FirstOrDefault() != null;
                 }
             }
             catch (Exception ex) {
@@ -185,7 +183,6 @@ namespace PhoenixModel.View {
         /// <param name="kf"></param>
         /// <param name="distanz"></param>
         /// <returns></returns>
-
         public static bool IsKleinfeldKüstenGewässer(KleinFeld kf, int distanz = 2) {
             if (SharedData.Map == null || kf.IsWasser == false)
                 return false;
