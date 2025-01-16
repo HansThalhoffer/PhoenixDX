@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.dbPZE;
+using PhoenixModel.ExternalTables;
 using static PhoenixModel.ExternalTables.GeländeTabelle;
 
 namespace PhoenixModel.ViewModel {
@@ -36,7 +37,7 @@ namespace PhoenixModel.ViewModel {
             if (SharedData.Map != null) {
                 var kleinfelder = SharedData.Map.Values.Where(k => k.Nation == reich);
                 this.BergFelder = kleinfelder.Where(k => k.Terrain.Typ == TerrainType.Bergland).Count();
-                this.BergEinkommen = BergFelder * 500;
+                this.BergEinkommen = BergFelder * GeländeTabelle.Terrains[(int)TerrainType.Bergland].Einnahmen;
             }
 
         }

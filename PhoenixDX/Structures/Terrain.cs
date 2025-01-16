@@ -1,23 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using SharpDX.Direct3D9;
-using static PhoenixModel.ExternalTables.GeländeTabelle;
+﻿using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Content;
-using System.Net;
-using PhoenixModel.ExternalTables;
 using PhoenixDX.Drawing;
+using PhoenixModel.ExternalTables;
+using System;
+using System.Collections.Generic;
 
-namespace PhoenixDX.Structures
-{
+namespace PhoenixDX.Structures {
     public class Gelaende : GeländeTabelle
     {
         SimpleTexture hexTexture;
-        List<Texture2D>hexTextures = new List<Texture2D>();
+        List<Texture2D>hexTextures = [];
 
         public Gelaende(GeländeTabelle source, string image, ContentManager contentManager):
             base(source.Typ, source.Name, source.Höhe, source.Einwohner, source.Einnahmen, source.Farbe, source.IsWasser)

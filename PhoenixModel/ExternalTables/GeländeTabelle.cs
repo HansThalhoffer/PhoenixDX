@@ -6,25 +6,28 @@ using System.Collections.Generic;
 using static PhoenixModel.ExternalTables.GeländeTabelle;
 
 namespace PhoenixModel.ExternalTables {
+
+    public enum TerrainType // entnommmen aus der Tabelle [crossref.mdb][Geleandetypen_crossref]
+       {
+        Default = 0,
+        Wasser = 1,
+        Hochland = 2,
+        Wald = 3,
+        Wüste = 4,
+        Sumpf = 5,
+        Bergland = 6,
+        Gebirge = 7,
+        Tiefsee = 8,
+        Tiefland = 9,
+        Auftauchpunkt = 10,
+        Tiefseeeinbahnpunkt = 11,
+        AuftauchpunktUnbekannt = 12, // den gibt es nicht in der Tabelle der Datenbank
+        Küste = 13
+    }
+
     public class GeländeTabelle: IEigenschaftler
     {
-        public enum TerrainType // entnommmen aus der Tabelle [crossref.mdb][Geleandetypen_crossref]
-        {
-            Default = 0,
-            Wasser = 1,
-            Hochland = 2,
-            Wald = 3,
-            Wüste = 4,
-            Sumpf = 5,
-            Bergland = 6,
-            Gebirge = 7,
-            Tiefsee = 8,
-            Tiefland = 9,
-            Auftauchpunkt = 10,
-            Tiefseeeinbahnpunkt = 11,
-            AuftauchpunktUnbekannt = 12, // den gibt es nicht in der Tabelle der Datenbank
-            Küste = 13
-        }
+       
 
         // IEigenschaftler
         public string Bezeichner => Name;
