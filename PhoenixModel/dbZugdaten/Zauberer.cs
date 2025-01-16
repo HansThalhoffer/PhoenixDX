@@ -6,6 +6,7 @@ using PhoenixModel.Helper;
 using PhoenixModel.ViewModel;
 
 namespace PhoenixModel.dbZugdaten {
+    public enum Zaubererklasse { ZA, ZB, ZC, ZD, ZE, ZF, none }
     public class Zauberer : NamensSpielfigur, IDatabaseTable, IEigenschaftler
     {
         private static string _datebaseName = string.Empty;

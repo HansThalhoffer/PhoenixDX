@@ -1,4 +1,6 @@
-﻿using PhoenixModel.View;
+﻿using PhoenixModel.dbZugdaten;
+using PhoenixModel.Program;
+using PhoenixModel.View;
 using System.ComponentModel;
 using System.Windows.Controls;
 
@@ -28,6 +30,43 @@ namespace PhoenixWPF.Pages {
         public TruppenStatus(Armee amy) {
             /// Army ist eine Ableitung von List<Spielfigur>
             /// jede Spielfigur kann von der Klasse Truppenspielfigur
+            foreach (var item in amy) {
+                if (item is Kreaturen kreatur) {
+                    ProgramView.LogWarning("Kreaturen werden im Truppenstatus nicht erfasst", "Eventuell muss dies noch implementiert werden");
+                }
+                else if (item is Krieger krieger) {
+                    this._krieger += krieger.staerke;
+                    this._hfKrieger += krieger.hf;
+                    this._hfGesamt += krieger.hf;
+                    this._skpKrieger += krieger.SchwereKP;
+                    this._lkpKrieger += krieger.LeichteKP;
+                    this._pferdeKrieger += krieger.Pferde;
+                }
+                else if (item is Reiter reiter) {
+                    this._reiter += reiter.staerke;
+                    this._hfReiten += reiter.hf;
+                    this._hfGesamt += reiter.hf;
+                    this._skpReiten += reiter.SchwereKP;
+                    this._lkpReiten += reiter.LeichteKP;
+                    this._pferdeReiten += reiter.Pferde;
+                }
+                else if (item is Schiffe schiffe) {
+                    this._schiffe += schiffe.staerke;
+                    this._hfSchiffe += schiffe.hf;
+                    this._hfGesamt += schiffe.hf;
+                    this._sksSchiffe += schiffe.SchwereKP;
+                    this._lkSchiffe += schiffe.LeichteKP;                  
+                }
+                else if (item is Zauberer wiz){
+                    if (SpielfigurenView.GetZaubererklasse(wiz) == Zaubererklasse.ZA) { this._za++; }
+                    else if (SpielfigurenView.GetZaubererklasse(wiz) == Zaubererklasse.ZB) { this._zb++; }
+                    else if (SpielfigurenView.GetZaubererklasse(wiz) == Zaubererklasse.ZC) { this._zc++; }
+                    else if (SpielfigurenView.GetZaubererklasse(wiz) == Zaubererklasse.ZD) { this._zd++; }
+                    else if (SpielfigurenView.GetZaubererklasse(wiz) == Zaubererklasse.ZE) { this._ze++; }
+                    else if (SpielfigurenView.GetZaubererklasse(wiz) == Zaubererklasse.ZF) { this._zf++; }
+                }
+
+            }
 
         }
 
@@ -41,40 +80,40 @@ namespace PhoenixWPF.Pages {
             set { _krieger = value; OnPropertyChanged(nameof(Krieger)); }
         }
 
-        private int _hfKrieg;
+        private int _hfKrieger;
         /// <summary>
         /// Die Anzahl der Hauptführer im Krieg.
         /// </summary>
         public int HF_Krieg {
-            get => _hfKrieg;
-            set { _hfKrieg = value; OnPropertyChanged(nameof(HF_Krieg)); }
+            get => _hfKrieger;
+            set { _hfKrieger = value; OnPropertyChanged(nameof(HF_Krieg)); }
         }
 
-        private int _lkpKrieg;
+        private int _lkpKrieger;
         /// <summary>
         /// Die Anzahl der Landkommandanten im Krieg.
         /// </summary>
         public int LKP_Krieg {
-            get => _lkpKrieg;
-            set { _lkpKrieg = value; OnPropertyChanged(nameof(LKP_Krieg)); }
+            get => _lkpKrieger;
+            set { _lkpKrieger = value; OnPropertyChanged(nameof(LKP_Krieg)); }
         }
 
-        private int _skKrieg;
+        private int _skpKrieger;
         /// <summary>
         /// Die Anzahl der Spezialkommandanten im Krieg.
         /// </summary>
         public int SK_Krieg {
-            get => _skKrieg;
-            set { _skKrieg = value; OnPropertyChanged(nameof(SK_Krieg)); }
+            get => _skpKrieger;
+            set { _skpKrieger = value; OnPropertyChanged(nameof(SK_Krieg)); }
         }
 
-        private int _pferdeKrieg;
+        private int _pferdeKrieger;
         /// <summary>
         /// Die Anzahl der Pferde im Krieg.
         /// </summary>
         public int Pferde_Krieg {
-            get => _pferdeKrieg;
-            set { _pferdeKrieg = value; OnPropertyChanged(nameof(Pferde_Krieg)); }
+            get => _pferdeKrieger;
+            set { _pferdeKrieger = value; OnPropertyChanged(nameof(Pferde_Krieg)); }
         }
 
         // Eigenschaften für den Abschnitt "Reiten"
@@ -233,6 +272,8 @@ namespace PhoenixWPF.Pages {
 
         public TruppenStatusPage() {
             InitializeComponent();
+            var curArmy = SpielfigurenView.GetSpielfiguren(PhoenixModel.Program.ProgramView.SelectedNation);
+            Status = new TruppenStatus(curArmy);
             this.DataContext = Status;
         }
     }

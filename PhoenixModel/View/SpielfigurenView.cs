@@ -194,7 +194,17 @@ namespace PhoenixModel.View {
                 result.AddRange(zauberer);
             return result;
         }
-
+        
+        public static Zaubererklasse GetZaubererklasse (Zauberer wiz) {
+            if (wiz== null) { return Zaubererklasse.none; }
+            if (wiz.GP_ges <=4) { return Zaubererklasse.ZA;}
+            if (wiz.GP_ges <= 8) { return Zaubererklasse.ZB; }
+            if (wiz.GP_ges <= 16) { return Zaubererklasse.ZC; }
+            if (wiz.GP_ges <= 32) { return Zaubererklasse.ZD; }
+            if (wiz.GP_ges <= 64) { return Zaubererklasse.ZE; }
+            if (wiz.GP_ges <= 128) { return Zaubererklasse.ZF; }
+            return Zaubererklasse.none;
+        }
         /// <summary>
         /// eine klare Zuordnung zu einer Klasse ist hier schwierig, daher die Weiterleitung
         /// </summary>
