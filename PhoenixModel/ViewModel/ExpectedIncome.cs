@@ -37,7 +37,7 @@ namespace PhoenixModel.ViewModel {
             if (SharedData.Map != null) {
                 var kleinfelder = SharedData.Map.Values.Where(k => k.Nation == reich);
                 this.BergFelder = kleinfelder.Where(k => k.Terrain.Typ == TerrainType.Bergland).Count();
-                this.BergEinkommen = BergFelder * GeländeTabelle.Terrains[(int)TerrainType.Bergland].Einnahmen;
+                this.BergEinkommen = BergFelder * Terrains[(int)TerrainType.Bergland].Einnahmen;
             }
 
         }
