@@ -1,6 +1,7 @@
 ﻿using PhoenixDX;
 using PhoenixModel.Database;
 using PhoenixModel.dbErkenfara;
+using PhoenixModel.dbZugdaten;
 using PhoenixModel.EventsAndArgs;
 using PhoenixModel.Program;
 using PhoenixModel.View;
@@ -8,6 +9,7 @@ using PhoenixModel.ViewModel;
 using PhoenixWPF.Database;
 using PhoenixWPF.Dialogs;
 using PhoenixWPF.Helper;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Windows;
 using System.Windows.Threading;
@@ -62,7 +64,8 @@ namespace PhoenixWPF.Program {
                         Settings.UserSettings.PasswordKarte = new PasswordHolder((string)loadedSettings.PasswordKarte).EncryptedPasswordBase64;
                         Settings.UserSettings.PasswordPZE = new PasswordHolder((string)loadedSettings.PasswordPZE).EncryptedPasswordBase64;
                     }
-                } catch { } // wenn das mit den Passwötern im USB Stick nicht klappt, dann sind wir schön schweigsam
+                }
+                catch { } // wenn das mit den Passwötern im USB Stick nicht klappt, dann sind wir schön schweigsam
             }
         }
 
@@ -84,7 +87,8 @@ namespace PhoenixWPF.Program {
             LoadKarte(true);
             if (SelectReich()) {
                 LoadZugdaten(true);
-            } else {
+            }
+            else {
                 Application.Current.Shutdown();
             }
 
@@ -94,6 +98,66 @@ namespace PhoenixWPF.Program {
             _backgroundSave.Tick += PerformSave;
         }
 
+        public void Zugwechsel() {
+
+            /// gibt  es noch was zum Speichern?
+            _backgroundSave?.Stop();
+            PerformSave(null, new EventArgs());
+
+            // truppen müssen auch in der Karte entfernt werden
+            var armee = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation);
+            List<KleinFeld> updateList = [];
+            if (SharedData.Map != null) {
+                foreach (var figur in armee) {
+                    updateList.Add(SharedData.Map[figur.CreateBezeichner()]);
+                }
+            }
+            SharedData.BilanzEinnahmen_Zugdaten?.Dispose();
+            SharedData.Character?.Dispose();
+            SharedData.Diplomatiechange?.Dispose();
+            SharedData.Kreaturen?.Dispose();
+            SharedData.Krieger?.Dispose();
+            SharedData.Lehensvergabe?.Dispose();
+            //  SharedData.Personal ?.Dispose();
+            SharedData.Reiter?.Dispose();
+            SharedData.RuestungBauwerke?.Dispose();
+            SharedData.RuestungRuestorte?.Dispose();
+            SharedData.Schatzkammer?.Dispose();
+            SharedData.Schenkungen?.Dispose();
+            SharedData.Schiffe?.Dispose();
+            SharedData.Units_Zugdaten?.Dispose();
+            SharedData.Zauberer?.Dispose();
+
+            SharedData.BilanzEinnahmen_Zugdaten = null;
+            SharedData.Character=null;
+            SharedData.Diplomatiechange=null;
+            SharedData.Kreaturen=null;
+            SharedData.Krieger=null;
+            SharedData.Lehensvergabe=null;
+            //  SharedData.Personal =null;
+            SharedData.Reiter=null;
+            SharedData.RuestungBauwerke=null;
+            SharedData.RuestungRuestorte=null;
+            SharedData.Schatzkammer=null;
+            SharedData.Schenkungen=null;
+            SharedData.Schiffe=null;
+            SharedData.Units_Zugdaten=null;
+            SharedData.Zauberer=null;
+            // die Truppen in der Darstellung löschen
+            foreach (var f in updateList)
+                UpdateKleinfeld(f);
+
+            if (SelectReich()) {
+                LoadZugdaten(true);
+            }
+            else {
+                Application.Current.Shutdown();
+            }
+            
+            // und wieder im Hintergrund speichern
+            _backgroundSave?.Start();
+        }
+
         /// <summary>
         /// StopInstancewird im MainWindow.OnClosing Event aufgerufen. 
         /// Hier sollte Speicherung abgeschlossen werden
@@ -101,7 +165,7 @@ namespace PhoenixWPF.Program {
         public void StopInstance() {
             _backgroundSave?.Stop();
             PerformSave(null, new EventArgs());
-            if (Instance.SpielDXBridge != null) 
+            if (Instance.SpielDXBridge != null)
                 Settings.UserSettings.Zoom = Instance.SpielDXBridge.GetZoom();
         }
 
@@ -118,13 +182,17 @@ namespace PhoenixWPF.Program {
                         ILoadableDatabase? db = null;
                         if (data.DatabaseName == Settings.UserSettings.DatabaseLocationCrossRef) {
                             db = CreateCrossRef(data.DatabaseName, Settings.UserSettings.PasswordCrossRef);
-                        } else if (data.DatabaseName == Settings.UserSettings.DatabaseLocationKarte) {
+                        }
+                        else if (data.DatabaseName == Settings.UserSettings.DatabaseLocationKarte) {
                             db = CreateKarte(data.DatabaseName, Settings.UserSettings.PasswordKarte);
-                        } else if (data.DatabaseName == Settings.UserSettings.DatabaseLocationZugdaten) {
+                        }
+                        else if (data.DatabaseName == Settings.UserSettings.DatabaseLocationZugdaten) {
                             db = CreateZugdaten(data.DatabaseName, Settings.UserSettings.PasswordReich);
-                        } else if (data.DatabaseName == Settings.UserSettings.DatabaseLocationPZE) {
+                        }
+                        else if (data.DatabaseName == Settings.UserSettings.DatabaseLocationPZE) {
                             db = CreatePZE(data.DatabaseName, Settings.UserSettings.PasswordPZE);
-                        } else {
+                        }
+                        else {
                             SpielWPF.LogError($"Die Datenbank {data.DatabaseName} ist unbenkannt", $"Die daten können nicht in der Tabelle {data.TableName} gespeichert werden, wenn die Datenbank nicht bekannt ist");
                         }
                         if (db != null) {
@@ -132,11 +200,16 @@ namespace PhoenixWPF.Program {
                         }
                     }
                 }
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 Console.WriteLine($"Error during save: {ex.Message}");
             }
         }
 
+        /// <summary>
+        /// die Anmeldemaske mit dem Passwort und der Zugauswahl wird hier gezeigt, um die spezifischen Daten des Reiches zu laden
+        /// </summary>
+        /// <returns></returns>
         public bool SelectReich() {
             var nationen = SharedData.Nationen?.ToArray();
             if (nationen != null) {
@@ -155,7 +228,8 @@ namespace PhoenixWPF.Program {
                             holder = new(dialog.Password);
                             Settings.UserSettings.PasswordReich = holder.EncryptedPasswordBase64;
 
-                        } else {
+                        }
+                        else {
                             Settings.UserSettings.PasswordReich = string.Empty;
                         }
                         Settings.UserSettings.SelectedReich = dialog.SelectedNation?.Nummer ?? -1;
@@ -170,7 +244,11 @@ namespace PhoenixWPF.Program {
             }
             return false;
         }
-
+        #region Options
+        /// <summary>
+        /// Ein Overlay wird gezeigt, welche die Karte einfärbt
+        /// </summary>
+        /// <param name="visibility"></param>
         public void SetReichOverlay(Visibility visibility) {
             if (Map != null) {
                 if (visibility == Visibility.Visible)
@@ -180,8 +258,31 @@ namespace PhoenixWPF.Program {
             }
         }
 
+        /// <summary>
+        /// Das Küstenrecht wird als Gelände "Küste" in der Karte eingeblendet und bekommt eine eigene Textur
+        /// </summary>
+        /// <param name="visibility"></param>
+        public void ShowKüstenRecht(Visibility visibility) {
+            Settings.UserSettings.ShowKüstenregel = visibility == Visibility.Visible;
+            if (Map != null)
+                Map.Küsten = Settings.UserSettings.ShowKüstenregel;
+            if (SharedData.Map != null) {
+                var küsten = SharedData.Map.Values.Where(f => f.HasKüstenRecht == true);
+                foreach (var k in küsten) {
+                    UpdateKleinfeld(k);
+                }
+            }
+        }
 
-        #region Daten Laden
+        /// <summary>
+        /// Ein Kleinfeld soll neu gezeichnet werden
+        /// </summary>
+        /// <param name="gem"></param>
+        public void UpdateKleinfeld(KleinFeld gem) {
+            SharedData.UpdateQueue.Enqueue(gem);
+        }
+        #endregion
+
         /// <summary>
         /// wenn alles datenbanken geladen sind, und das Programm soweit aktiv sein darf, wird die Funktion ausgeführt
         /// </summary>
@@ -192,20 +293,11 @@ namespace PhoenixWPF.Program {
                 ShowKüstenRecht(Visibility.Visible);
         }
 
-        public void ShowKüstenRecht(Visibility visibility) {
-            Settings.UserSettings.ShowKüstenregel = visibility == Visibility.Visible;
-            if (Map != null)
-                Map.Küsten = Settings.UserSettings.ShowKüstenregel;
-            if (SharedData.Map != null) {
-                var küsten = SharedData.Map.Values.Where(f => f.HasKüstenRecht == true);
-                foreach(var k in küsten) {
-                    SharedData.UpdateQueue.Enqueue(k);
-                }
-            }
-        }
-
-
-        public delegate ILoadableDatabase LoadableDatabase(string databaseLocation, string encryptedPassword);
+                   
+        /// <summary>
+        /// wird gefeuert wenn eine Datenbank geladen wurde
+        /// </summary>
+        /// <param name="database"></param>
         private void OnLoadCompleted(ILoadableDatabase database) {
             // aktuell wird die Update Queue für Gebäude nicht verwendet, da die Gebäude sehr statisch sind
             /*if (database is ErkenfaraKarte && SharedData.Map != null && SharedData.Gebäude != null)
@@ -233,10 +325,16 @@ namespace PhoenixWPF.Program {
             }
         }
 
-        public void UpdateKleinfeld(KleinFeld gem) {
-            SharedData.UpdateQueue.Enqueue(gem);
-        }
+     
 
+        #region Daten Laden
+        /// <summary>
+        /// Das delegate wird verwendet, da Templates in C# nicht wirklich existieren
+        /// </summary>
+        /// <param name="databaseLocation"></param>
+        /// <param name="encryptedPassword"></param>
+        /// <returns></returns>
+        public delegate ILoadableDatabase LoadableDatabase(string databaseLocation, string encryptedPassword);
         public void Load(ref string databaseLocation, ref string encryptedPassword, LoadableDatabase dbCreator, string databaseName, LoadCompleted? loadCompletedDelegate = null) {
             if (Settings == null)
                 return;

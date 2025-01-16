@@ -108,48 +108,70 @@ namespace PhoenixDX.Structures {
             if (_isInitalized == true)
                 return false;
             _isInitalized = true;
-            ReichKennzahl = (int)gem.Reich;
-            if (gem.Gelaendetyp <= (int)TerrainType.AuftauchpunktUnbekannt) {
-                if (WeltDrawer.ShowKüsten == true && KleinfeldView.UserHasKuestenrecht(gem))
-                    _terrainType = TerrainType.Küste;
-                else
-                    _terrainType = (TerrainType)gem.Gelaendetyp;
+            try {
+                ReichKennzahl = (int)gem.Reich;
             }
-
+            catch (Exception ex) {
+                MappaMundi.Log(gem.gf, gem.kf, $"Beim Anlegen der Nation kam es zu einem Fehler", ex);
+            }
+            try {
+                if (gem.Gelaendetyp <= (int)TerrainType.AuftauchpunktUnbekannt) {
+                    if (WeltDrawer.ShowKüsten == true && KleinfeldView.UserHasKuestenrecht(gem))
+                        _terrainType = TerrainType.Küste;
+                    else
+                        _terrainType = (TerrainType)gem.Gelaendetyp;
+                }
+            }
+            catch (Exception ex) {
+                MappaMundi.Log(gem.gf, gem.kf, $"Beim Anlegen des Geländes kam es zu einem Fehler", ex);
+            }
             Koordinaten = new KartenKoordinaten(Koordinaten.gf, Koordinaten.kf, (int)gem.x, (int)gem.y);
             ReichID = gem.Reich ?? -1;
 
-            Layer_0.Add(new Fluss(gem));
-            Layer_0.Add(new Kai(gem));
-            Layer_0.Add(new Bruecke(gem));
-            Layer_0.Add(new Strasse(gem));
-            Layer_0.Add(new Wall(gem));
-
+            try {
+                Layer_0.Add(new Fluss(gem));
+                Layer_0.Add(new Kai(gem));
+                Layer_0.Add(new Bruecke(gem));
+                Layer_0.Add(new Strasse(gem));
+                Layer_0.Add(new Wall(gem));
+            }
+            catch (Exception ex) {
+                MappaMundi.Log(gem.gf, gem.kf, $"Beim Anlegen der Geländebestandteile kam es zu einem Fehler", ex);
+            }
             if (gem.Gebäude != null) {
-                string name = gem.Gebäude.Rüstort.Bauwerk;
-                if (RuestortSymbol.Ruestorte.ContainsKey(name)) {
-                    // Layer_0.Add("Rüstort", RuestortSymbol.Ruestorte[name]);
-                    Layer_0.Add(RuestortSymbol.Ruestorte[name]);
+                try {
+                    string name = gem.Gebäude.Rüstort.Bauwerk;
+                    if (RuestortSymbol.Ruestorte.ContainsKey(name)) {
+                        // Layer_0.Add("Rüstort", RuestortSymbol.Ruestorte[name]);
+                        Layer_0.Add(RuestortSymbol.Ruestorte[name]);
+                    }
+                    else {
+                        MappaMundi.Log(this.Koordinaten.gf, this.Koordinaten.kf, new PhoenixModel.Program.LogEntry($"Unbekanntes Gebäude {name}", $"Die Bezeichnung des Gebäudes {name} findet sich nicht in der Referenztabelle für Bauwerke"));
+                    }
                 }
-                else {
-                    MappaMundi.Log(this.Koordinaten.gf, this.Koordinaten.kf, new PhoenixModel.Program.LogEntry($"Unbekanntes Gebäude {name}", $"Die Bezeichnung des Gebäudes {name} findet sich nicht in der Referenztabelle für Bauwerke"));
+                catch (Exception ex) {
+                    MappaMundi.Log(gem.gf, gem.kf, $"Beim Anlegen der Gebäude kam es zu einem Fehler", ex);
                 }
             }
 
             var spielfiguren = gem.Truppen;
             if (spielfiguren != null && spielfiguren.Count > 0) {
-                List<Truppen.Figur> truppen = [];
-                foreach (var figur in spielfiguren) {
-                    Microsoft.Xna.Framework.Color color = Kolor.Convert(figur.Nation.Farbe);
-                    truppen.Add(new Truppen.Figur(figur.Typ, color));
+                try {
+                    List<Truppen.Figur> truppen = [];
+                    foreach (var figur in spielfiguren) {
+                        Microsoft.Xna.Framework.Color color = Kolor.Convert(figur.Nation.Farbe);
+                        truppen.Add(new Truppen.Figur(figur.Typ, color));
+                    }
+                    if (truppen.Count > 0) {
+                        Layer_1.Add(new Truppen(truppen));
+                    }
                 }
-                if (truppen.Count > 0) {
-                    Layer_1.Add(new Truppen(truppen));
+                catch (Exception ex) {
+                    MappaMundi.Log(gem.gf, gem.kf, $"Beim Anlegen der Truppen kam es zu einem Fehler", ex);
                 }
             }
 
-            if (gem.Mark != MarkerType.None)
-            {
+            if (gem.Mark != MarkerType.None) {
                 Layer_1.Add(new Marker(gem.Mark));
             }
             return true;
@@ -185,32 +207,36 @@ namespace PhoenixDX.Structures {
 
         public List<BaseTexture> GetTextures(int layer) {
             List<BaseTexture> textures = [];
-            switch (layer) {
-                case 0: {
-                        Gelaende gel = GeländeTabelle.Terrains[(int)_terrainType] as Gelaende;
-                        if (gel != null)
-                            textures.Add(gel.GetTexture());
-                        foreach (GemarkAdorner adorner in Layer_0) {
-                            var tex = adorner.GetTexture();
-                            if (tex != null) 
-                                textures.Add(tex);
-                            
-                        }
-                        break;
-                    }
-                case 1: {
-                        foreach (GemarkAdorner adorner in Layer_1) {
-                            var tex = adorner.GetTexture();
-                            if (tex != null)
-                                textures.Add(tex);
-                        }
-                        break;
-                    }
-                default:
-                    MappaMundi.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler bei der Auswahl des Layers {layer}", "Der Layer {layer} in der DirectX Karte existiert nicht. Daher können dort auch keine Texturen gefunden werden."));
-                    break;
-            }
+            try {
+                switch (layer) {
+                    case 0: {
+                            Gelaende gel = GeländeTabelle.Terrains[(int)_terrainType] as Gelaende;
+                            if (gel != null)
+                                textures.Add(gel.GetTexture());
+                            foreach (GemarkAdorner adorner in Layer_0) {
+                                var tex = adorner.GetTexture();
+                                if (tex != null)
+                                    textures.Add(tex);
 
+                            }
+                            break;
+                        }
+                    case 1: {
+                            foreach (GemarkAdorner adorner in Layer_1) {
+                                var tex = adorner.GetTexture();
+                                if (tex != null)
+                                    textures.Add(tex);
+                            }
+                            break;
+                        }
+                    default:
+                        MappaMundi.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler bei der Auswahl des Layers {layer}", "Der Layer {layer} in der DirectX Karte existiert nicht. Daher können dort auch keine Texturen gefunden werden."));
+                        break;
+                }
+            }
+            catch (Exception ex) {
+                MappaMundi.Log(this.Koordinaten.gf, this.Koordinaten.kf, $"Beim Holen der Texturen kam es zu einem Fehler", ex);
+            }
             return textures;
         }
 
@@ -218,38 +244,42 @@ namespace PhoenixDX.Structures {
         public static bool IsLoaded { get { return _isLoaded; } }
 
         public static void LoadContent(ContentManager contentManager) {
-            // Get all types in the current assembly that derive from the base type
-            var derivedTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(assembly => assembly.GetTypes())
-                .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(GemarkAdorner)))
-                .ToList();
+            try {
+                // Get all types in the current assembly that derive from the base type
+                var derivedTypes = AppDomain.CurrentDomain.GetAssemblies()
+                    .SelectMany(assembly => assembly.GetTypes())
+                    .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(GemarkAdorner)))
+                    .ToList();
 
-            var textureValues = new List<DirectionTexture>();
-            foreach (var type in derivedTypes) {
-                var textureField = type.GetField("Texture", BindingFlags.Public | BindingFlags.Static);
-                if (textureField != null && textureField.FieldType == typeof(DirectionTexture)) {
-                    var fieldValue = textureField.GetValue(null) as DirectionTexture;
-                    if (fieldValue != null) {
-                        textureValues.Add(fieldValue);
+                var textureValues = new List<DirectionTexture>();
+                foreach (var type in derivedTypes) {
+                    var textureField = type.GetField("Texture", BindingFlags.Public | BindingFlags.Static);
+                    if (textureField != null && textureField.FieldType == typeof(DirectionTexture)) {
+                        var fieldValue = textureField.GetValue(null) as DirectionTexture;
+                        if (fieldValue != null) {
+                            textureValues.Add(fieldValue);
+                        }
                     }
                 }
-            }
 
-            const string folder = "Images/TilesetV/";
-            foreach (var adornerTexture in textureValues) {
-                List<Texture2D> textures = new List<Texture2D>();
-                foreach (string name in Enum.GetNames(typeof(Direction))) {
-                    string fileName = folder + adornerTexture.ImageStartsWith + name;
-                    try {
-                        textures.Add(contentManager.Load<Texture2D>(fileName));
+                const string folder = "Images/TilesetV/";
+                foreach (var adornerTexture in textureValues) {
+                    List<Texture2D> textures = new List<Texture2D>();
+                    foreach (string name in Enum.GetNames(typeof(Direction))) {
+                        string fileName = folder + adornerTexture.ImageStartsWith + name;
+                        try {
+                            textures.Add(contentManager.Load<Texture2D>(fileName));
+                        }
+                        catch (Exception ex) {
+                            MappaMundi.Log(0, 0, $"Fehler bei der Laden von Texturem von {name}", ex);
+                        }
                     }
-                    catch (Exception ex) {
-                        MappaMundi.Log(0, 0, $"Fehler bei der Laden von Texturem von {name}", ex);
-                    }
+                    adornerTexture.SetTextures(textures.ToArray());
                 }
-                adornerTexture.SetTextures(textures.ToArray());
             }
-
+            catch (Exception ex) {
+                MappaMundi.Log($"Beim Laden der Texturen aus der Bibliothek kam es zu einem Fehler", ex);
+            }
             _isLoaded = true;
         }
         #endregion

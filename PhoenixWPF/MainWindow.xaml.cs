@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using PhoenixWPF.Database.Generatoren;
 using PhoenixWPF.Dialogs;
 using PhoenixWPF.Program;
 
@@ -68,9 +69,18 @@ namespace PhoenixWPF
                     case "Truppen":
                         new TruppenEntwicklungDialog().Show();
                         break;
+
+                    case "Zugwechsel":
+                        Main.Instance.Zugwechsel();
+                        break;
                     case "InstallUSB":
                         Main.Instance.CreateInstallUSBStick();
                         break;
+                   
+                    case "Zug 999 (Testdaten)":
+                        TestDataGenerator.GeneriereTestdatenFürZug999();
+                        break;
+
                 }
             }
         }

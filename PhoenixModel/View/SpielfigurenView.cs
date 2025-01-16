@@ -166,8 +166,10 @@ namespace PhoenixModel.View {
             return result;
         }
 
-        public static Armee GetSpielfiguren(Nation nation)
+        public static Armee GetSpielfiguren(Nation? nation)
         {
+            if (nation == null)
+                return [];
             Armee result = [];
             var kreaturen = SharedData.Kreaturen?.Where(s => s.Nation == nation && Plausibilität.IsValid(s));
             if (kreaturen != null)

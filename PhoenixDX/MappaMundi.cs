@@ -144,6 +144,9 @@ namespace PhoenixDX {
         public static void Log(int gf, int kf, string titel, Exception ex) {
             MappaMundi.Log(gf, kf, new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, titel, ex.Message));
         }
+        public static void Log(string titel, Exception ex) {
+            MappaMundi.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, titel, ex.Message));
+        }
         #endregion
     }
 }
