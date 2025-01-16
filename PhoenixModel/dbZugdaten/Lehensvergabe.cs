@@ -44,14 +44,38 @@ namespace PhoenixModel.dbZugdaten {
             this.y = DatabaseConverter.ToInt32(reader[(int)Felder.y]);
         }
 
-        public void Save(DbCommand reader)
-        {
-            throw new NotImplementedException();
+        public void Save(DbCommand command) {
+            command.CommandText = $@"
+        UPDATE {TableName} SET
+            gf = {this.gf},
+            kf = {this.kf},
+            Ruestort = '{DatabaseConverter.EscapeString(this.Ruestort)}',
+            Ruestortname = '{DatabaseConverter.EscapeString(this.Ruestortname)}',
+            Charname = '{DatabaseConverter.EscapeString(this.Charname)}',
+            Charrang = '{DatabaseConverter.EscapeString(this.Charrang)}',
+            x = {this.x},
+            y = {this.y}
+        WHERE ID = {this.ID}";
+
+            command.ExecuteNonQuery();
         }
 
-        public void Insert(DbCommand reader)
-        {
-            throw new NotImplementedException();
+
+        public void Insert(DbCommand command) {
+            command.CommandText = $@"
+        INSERT INTO {TableName} (
+            ID, gf, kf, Ruestort, Ruestortname, Charname, Charrang, x, y
+        ) VALUES (
+            {this.ID}, {this.gf}, {this.kf}, 
+            '{DatabaseConverter.EscapeString(this.Ruestort)}', 
+            '{DatabaseConverter.EscapeString(this.Ruestortname)}', 
+            '{DatabaseConverter.EscapeString(this.Charname)}', 
+            '{DatabaseConverter.EscapeString(this.Charrang)}', 
+            {this.x}, {this.y}
+        )";
+
+            command.ExecuteNonQuery();
         }
+
     }
 }
