@@ -43,14 +43,39 @@ namespace PhoenixModel.dbZugdaten {
             this.ID = DatabaseConverter.ToString(reader[(int)Felder.id]);
         }
 
-        public void Save(DbCommand reader)
-        {
-            throw new NotImplementedException();
+        public void Save(DbCommand command) {
+            command.CommandText = $@"
+        UPDATE {TableName} SET
+            Vorname = '{DatabaseConverter.EscapeString(this.Vorname)}',
+            Nachname = '{DatabaseConverter.EscapeString(this.Nachname)}',
+            Spielername = '{DatabaseConverter.EscapeString(this.Spielername)}',
+            Pos = '{DatabaseConverter.EscapeString(this.Pos)}',
+            Anschrift = '{DatabaseConverter.EscapeString(this.Anschrift)}',
+            Tel = '{DatabaseConverter.EscapeString(this.Tel)}',
+            Email = '{DatabaseConverter.EscapeString(this.Email)}'
+        WHERE ID = '{DatabaseConverter.EscapeString(this.ID)}'";
+
+            command.ExecuteNonQuery();
         }
 
-        public void Insert(DbCommand reader)
-        {
-            throw new NotImplementedException();
+
+        public void Insert(DbCommand command) {
+            command.CommandText = $@"
+        INSERT INTO {TableName} (
+            Vorname, Nachname, Spielername, Pos, Anschrift, Tel, Email, ID
+        ) VALUES (
+            '{DatabaseConverter.EscapeString(this.Vorname)}',
+            '{DatabaseConverter.EscapeString(this.Nachname)}',
+            '{DatabaseConverter.EscapeString(this.Spielername)}',
+            '{DatabaseConverter.EscapeString(this.Pos)}',
+            '{DatabaseConverter.EscapeString(this.Anschrift)}',
+            '{DatabaseConverter.EscapeString(this.Tel)}',
+            '{DatabaseConverter.EscapeString(this.Email)}',
+            '{DatabaseConverter.EscapeString(this.ID)}'
+        )";
+
+            command.ExecuteNonQuery();
         }
+
     }
 }

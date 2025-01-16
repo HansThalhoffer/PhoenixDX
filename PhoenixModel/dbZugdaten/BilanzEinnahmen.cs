@@ -118,15 +118,66 @@ namespace PhoenixModel.dbZugdaten {
             Reichsschatzneu = DatabaseConverter.ToInt32(reader[(int)Felder.Reichsschatzneu]);
         }
 
-        public void Save(DbCommand reader)
-        {
-            throw new NotImplementedException();
+        public void Save(DbCommand command) {
+            command.CommandText = $@"
+        UPDATE {TableName} SET
+            Tiefland = {this.Tiefland},
+            Tieflandwald = {this.Tieflandwald},
+            Tieflandwüste = {this.Tieflandwüste},
+            Tieflandsumpf = {this.Tieflandsumpf},
+            Hochland = {this.Hochland},
+            Bergland = {this.Bergland},
+            Gebirge = {this.Gebirge},
+            Burgen = {this.Burgen},
+            Städte = {this.Städte},
+            Festungen = {this.Festungen},
+            Hauptstadt = {this.Hauptstadt},
+            Festungshauptstadt = {this.Festungshauptstadt},
+            Kampfeinnahmen = {this.Kampfeinnahmen},
+            Pluenderungen = {this.Pluenderungen},
+            eroberte_burgen = {this.eroberte_burgen},
+            eroberte_staedte = {this.eroberte_staedte},
+            eroberte_festungen = {this.eroberte_festungen},
+            eroberte_hauptstadt = {this.eroberte_hauptstadt},
+            eroberte_festungshauptstadt = {this.eroberte_festungshauptstadt},
+            Reichsschatzalt = {this.Reichsschatzalt},
+            gew_einnahmen = {this.gew_einnahmen},
+            bes_einnahmen = {this.bes_einnahmen},
+            gew_ausgaben = {this.gew_ausgaben},
+            bes_ausgaben = {this.bes_ausgaben},
+            Geldverleih = {this.Geldverleih},
+            Geldschenkung = {this.Geldschenkung},
+            Sonstiges = {this.Sonstiges},
+            Reichsschatzneu = {this.Reichsschatzneu}
+        WHERE monat = {this.monat}";
+
+            // Execute the command
+            command.ExecuteNonQuery();
         }
 
-        public void Insert(DbCommand reader)
-        {
-            throw new NotImplementedException();
+
+        public void Insert(DbCommand command) {
+            command.CommandText = $@"
+        INSERT INTO {TableName} (
+            monat, Tiefland, Tieflandwald, Tieflandwüste, Tieflandsumpf, Hochland, Bergland, Gebirge, 
+            Burgen, Städte, Festungen, Hauptstadt, Festungshauptstadt, Kampfeinnahmen, Pluenderungen, 
+            eroberte_burgen, eroberte_staedte, eroberte_festungen, eroberte_hauptstadt, eroberte_festungshauptstadt, 
+            Reichsschatzalt, gew_einnahmen, bes_einnahmen, gew_ausgaben, bes_ausgaben, Geldverleih, Geldschenkung, 
+            Sonstiges, Reichsschatzneu
+        ) VALUES (
+            {this.monat}, {this.Tiefland}, {this.Tieflandwald}, {this.Tieflandwüste}, {this.Tieflandsumpf}, 
+            {this.Hochland}, {this.Bergland}, {this.Gebirge}, {this.Burgen}, {this.Städte}, {this.Festungen}, 
+            {this.Hauptstadt}, {this.Festungshauptstadt}, {this.Kampfeinnahmen}, {this.Pluenderungen}, 
+            {this.eroberte_burgen}, {this.eroberte_staedte}, {this.eroberte_festungen}, {this.eroberte_hauptstadt}, 
+            {this.eroberte_festungshauptstadt}, {this.Reichsschatzalt}, {this.gew_einnahmen}, {this.bes_einnahmen}, 
+            {this.gew_ausgaben}, {this.bes_ausgaben}, {this.Geldverleih}, {this.Geldschenkung}, {this.Sonstiges}, 
+            {this.Reichsschatzneu}
+        )";
+
+            // Execute the command
+            command.ExecuteNonQuery();
         }
+
     }
 
 

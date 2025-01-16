@@ -71,7 +71,7 @@ namespace PhoenixWPF.Database.Generatoren {
         {
             foreach (var figur in figuren)
             {
-                figur.Save(command);
+                figur.Insert(command);
             }
         }
 

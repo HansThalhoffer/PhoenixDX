@@ -140,9 +140,31 @@ namespace PhoenixModel.dbZugdaten {
             command.ExecuteNonQuery();
         }
 
-        public void Insert(DbCommand reader)
-        {
-            throw new NotImplementedException();
+        public override void Insert(DbCommand command) {
+            command.CommandText = $@"
+        INSERT INTO {TableName} (
+            Beschriftung, GP_ges_alt, GP_ges, GP_akt_alt, GP_akt, charname, Spielername, 
+            gf_von, kf_von, gf_nach, kf_nach, rp, bp, tp_alt, tp, ph_xy, 
+            Teleport_gf_von, Teleport_kf_von, Teleport_gf_nach, Teleport_kf_nach, 
+            Befehl_magie, Befehl_Teleport, Befehl_bannt, x1, y1, x2, y2, x3, y3, 
+            hoehenstufen, schritt, x4, y4, x5, y5, x6, y6, x7, y7, x8, y8, x9, y9, 
+            sonstiges, einheit, bp_max, nummer
+        ) VALUES (
+            '{DatabaseConverter.EscapeString(this.Beschriftung)}', {this.GP_ges_alt}, {this.GP_ges}, 
+            {this.GP_akt_alt}, {this.GP_akt}, '{DatabaseConverter.EscapeString(this.charname)}', 
+            '{DatabaseConverter.EscapeString(this.Spielername)}', {this.gf_von}, {this.kf_von}, 
+            {this.gf_nach}, {this.kf_nach}, {this.rp}, {this.bp}, {this.tp_alt}, {this.tp}, 
+            '{DatabaseConverter.EscapeString(this.ph_xy)}', {this.Teleport_gf_von}, {this.Teleport_kf_von}, 
+            {this.Teleport_gf_nach}, {this.Teleport_kf_nach}, '{DatabaseConverter.EscapeString(this.Befehl_magie)}', 
+            '{DatabaseConverter.EscapeString(this.Befehl_Teleport)}', '{DatabaseConverter.EscapeString(this.Befehl_bannt)}', 
+            {this.x1}, {this.y1}, {this.x2}, {this.y2}, {this.x3}, {this.y3}, {this.hoehenstufen}, {this.schritt}, 
+            {this.x4}, {this.y4}, {this.x5}, {this.y5}, {this.x6}, {this.y6}, {this.x7}, {this.y7}, 
+            {this.x8}, {this.y8}, {this.x9}, {this.y9}, '{DatabaseConverter.EscapeString(this.sonstiges)}', 
+            '{DatabaseConverter.EscapeString(this.einheit)}', {this.bp_max}, {this.Nummer}
+        )";
+
+            // Execute the command
+            command.ExecuteNonQuery();
         }
     }
 }

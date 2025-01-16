@@ -6,23 +6,20 @@ using PhoenixModel.Helper;
 using PhoenixModel.ViewModel;
 
 namespace PhoenixModel.dbZugdaten {
-    public class Kreaturen : TruppenSpielfigur, IDatabaseTable, IEigenschaftler
-    {
+    public class Kreaturen : TruppenSpielfigur, IDatabaseTable, IEigenschaftler {
         private static string _datebaseName = string.Empty;
         public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "Kreaturen";
         string IDatabaseTable.TableName => TableName;
         public override FigurType Typ => FigurType.Kreatur;
         public override FigurType BaseTyp => FigurType.Kreatur;
-    
-        public enum Felder
-        {
+
+        public enum Felder {
             nummer, staerke_alt, staerke, hf_alt, hf, lkp_alt, LKP, skp_alt, SKP, pferde_alt, Pferde, Garde, gf_von, kf_von, gf_nach, kf_nach, rp, bp, ph_xy, Befehl_bew, Befehl_ang, Befehl_erobert, GS, GS_alt, Kampfeinnahmen, Kampfeinnahmen_alt, x1, y1, x2, y2, x3,
             y3, hoehenstufen, schritt, x4, y4, x5, y5, x6, y6, x7, y7, x8, y8, x9, y9, auf_Flotte, Sonstiges, spaltetab, fusmit, Chars, bp_max, isbanned, x10, y10, x11, y11, x12, y12, x13, y13, x14, y14, x15, y15, x16, y16, x17, y17, x18, y18, x19, y19,
         }
 
-        public override void Load(DbDataReader reader)
-        {
+        public override void Load(DbDataReader reader) {
             base.Load(reader);
             this.Nummer = DatabaseConverter.ToInt32(reader[(int)Felder.nummer]);
             this.staerke_alt = DatabaseConverter.ToInt32(reader[(int)Felder.staerke_alt]);
@@ -98,8 +95,7 @@ namespace PhoenixModel.dbZugdaten {
             this.x19 = DatabaseConverter.ToInt32(reader[(int)Felder.x19]);
             this.y19 = DatabaseConverter.ToInt32(reader[(int)Felder.y19]);
         }
-        public override void Save(DbCommand command)
-        {
+        public override void Save(DbCommand command) {
             command.CommandText = $@"
         UPDATE {TableName} SET
             staerke_alt = {this.staerke_alt},
@@ -180,9 +176,38 @@ namespace PhoenixModel.dbZugdaten {
             command.ExecuteNonQuery();
         }
 
-        public void Insert(DbCommand reader)
-        {
-            throw new NotImplementedException();
+        public override void Insert(DbCommand command) {
+            command.CommandText = $@"
+        INSERT INTO {TableName} (
+            Nummer, staerke_alt, staerke, hf_alt, hf, lkp_alt, LKP, skp_alt, SKP, 
+            pferde_alt, Pferde, Garde, gf_von, kf_von, gf_nach, kf_nach, rp, bp, 
+            ph_xy, Befehl_bew, Befehl_ang, Befehl_erobert, GS, GS_alt, Kampfeinnahmen, 
+            Kampfeinnahmen_alt, x1, y1, x2, y2, x3, y3, hoehenstufen, schritt, 
+            x4, y4, x5, y5, x6, y6, x7, y7, x8, y8, x9, y9, auf_Flotte, Sonstiges, 
+            spaltetab, fusmit, Chars, bp_max, isbanned, x10, y10, x11, y11, x12, 
+            y12, x13, y13, x14, y14, x15, y15, x16, y16, x17, y17, x18, y18, 
+            x19, y19
+        ) VALUES (
+            {this.Nummer}, {this.staerke_alt}, {this.staerke}, {this.hf_alt}, {this.hf}, 
+            {this.lkp_alt}, {this.LKP}, {this.skp_alt}, {this.SKP}, {this.pferde_alt}, {this.Pferde}, 
+            {(this.Garde ? 1 : 0)}, {this.gf_von}, {this.kf_von}, {this.gf_nach}, {this.kf_nach}, 
+            {this.rp}, {this.bp}, '{DatabaseConverter.EscapeString(this.ph_xy)}', 
+            '{DatabaseConverter.EscapeString(this.Befehl_bew)}', '{DatabaseConverter.EscapeString(this.Befehl_ang)}', 
+            '{DatabaseConverter.EscapeString(this.Befehl_erobert)}', {this.GS}, {this.GS_alt}, 
+            {this.Kampfeinnahmen}, {this.Kampfeinnahmen_alt}, {this.x1}, {this.y1}, {this.x2}, {this.y2}, 
+            {this.x3}, {this.y3}, {this.hoehenstufen}, {this.schritt}, {this.x4}, {this.y4}, 
+            {this.x5}, {this.y5}, {this.x6}, {this.y6}, {this.x7}, {this.y7}, {this.x8}, {this.y8}, 
+            {this.x9}, {this.y9}, '{DatabaseConverter.EscapeString(this.auf_Flotte)}', 
+            '{DatabaseConverter.EscapeString(this.Sonstiges)}', '{DatabaseConverter.EscapeString(this.spaltetab)}', 
+            '{DatabaseConverter.EscapeString(this.fusmit)}', '{DatabaseConverter.EscapeString(this.Chars)}', 
+            {this.bp_max}, {this.isbanned}, {this.x10}, {this.y10}, {this.x11}, {this.y11}, 
+            {this.x12}, {this.y12}, {this.x13}, {this.y13}, {this.x14}, {this.y14}, 
+            {this.x15}, {this.y15}, {this.x16}, {this.y16}, {this.x17}, {this.y17}, 
+            {this.x18}, {this.y18}, {this.x19}, {this.y19}
+        )";
+
+            // Execute the command
+            command.ExecuteNonQuery();
         }
     }
 }

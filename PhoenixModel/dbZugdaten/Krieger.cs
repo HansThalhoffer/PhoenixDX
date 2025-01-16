@@ -192,11 +192,11 @@ namespace PhoenixModel.dbZugdaten {
             command.ExecuteNonQuery();
         }
 
-        public void Insert(DbCommand command)
+        public override void Insert(DbCommand command)
         {
             command.CommandText = $@"
         INSERT INTO {TableName} (
-            staerke_alt, staerke, hf_alt, hf, LKP_alt, LKP, SKP_alt, SKP, 
+            Nummer, staerke_alt, staerke, hf_alt, hf, LKP_alt, LKP, SKP_alt, SKP, 
             pferde_alt, Pferde, gf_von, kf_von, gf_nach, kf_nach, rp, bp, 
             ph_xy, Garde, Befehl_bew, Befehl_ang, Befehl_erobert, GS, GS_alt, 
             Kampfeinnahmen, Kampfeinnahmen_alt, x1, y1, x2, y2, x3, y3, 
@@ -205,7 +205,7 @@ namespace PhoenixModel.dbZugdaten {
             x10, y10, x11, y11, x12, y12, x13, y13, x14, y14, x15, y15, 
             x16, y16, x17, y17, x18, y18, x19, y19
         ) VALUES (
-            {this.staerke_alt}, {this.staerke}, {this.hf_alt}, {this.hf}, 
+            {this.Nummer}, {this.staerke_alt}, {this.staerke}, {this.hf_alt}, {this.hf}, 
             {this.LKP_alt}, {this.LKP}, {this.SKP_alt}, {this.SKP}, 
             {this.pferde_alt}, {this.Pferde}, {this.gf_von}, {this.kf_von}, 
             {this.gf_nach}, {this.kf_nach}, {this.rp}, {this.bp}, 

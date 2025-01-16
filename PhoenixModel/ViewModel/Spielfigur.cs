@@ -172,6 +172,7 @@ namespace PhoenixModel.ViewModel {
         }
 
         public abstract void Save(DbCommand command);
+        public abstract void Insert(DbCommand command);
 
 
         public void AssignToSelectedReich() {

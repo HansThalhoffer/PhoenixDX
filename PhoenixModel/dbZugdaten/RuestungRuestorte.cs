@@ -35,7 +35,7 @@ namespace PhoenixModel.dbZugdaten {
             this.BP_up = DatabaseConverter.ToInt32(reader[(int)Felder.BP_up]);
             this.ID = DatabaseConverter.ToInt32(reader[(int)Felder.id]);
         }
-        public void Update(DbCommand command)
+        public void Save(DbCommand command)
         {
             command.CommandText = $@"
         UPDATE {TableName} SET
@@ -56,11 +56,6 @@ namespace PhoenixModel.dbZugdaten {
 
             // Execute the command
             command.ExecuteNonQuery();
-        }
-
-        public void Save(DbCommand reader)
-        {
-            throw new NotImplementedException();
         }
     }
 }

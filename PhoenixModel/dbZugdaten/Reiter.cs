@@ -189,7 +189,7 @@ namespace PhoenixModel.dbZugdaten {
 
             command.ExecuteNonQuery();
         }
-        public void Insert(DbCommand command)
+        public override void Insert(DbCommand command)
         {
             command.CommandText = $@"
         INSERT INTO {TableName} (

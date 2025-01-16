@@ -5,8 +5,7 @@ using PhoenixModel.Helper;
 using PhoenixModel.ViewModel;
 
 namespace PhoenixModel.dbZugdaten {
-    public class Schatzkammer :  IDatabaseTable, IEigenschaftler
-    {
+    public class Schatzkammer : IDatabaseTable, IEigenschaftler {
         private static string _datebaseName = string.Empty;
         public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "Schatzkammer";
@@ -25,13 +24,11 @@ namespace PhoenixModel.dbZugdaten {
         public int Verruestet { get; set; }
         public int monat { get; set; }
 
-        public enum Felder
-        {
+        public enum Felder {
             monat, Reichschatz, Einahmen_land, schenkung_bekommen, GS_bei_truppen, schenkung_getaetigt, Verruestet
         }
 
-        public void Load(DbDataReader reader)
-        {
+        public void Load(DbDataReader reader) {
             this.Reichschatz = DatabaseConverter.ToInt32(reader[(int)Felder.Reichschatz]);
             this.Einahmen_land = DatabaseConverter.ToInt32(reader[(int)Felder.Einahmen_land]);
             this.schenkung_bekommen = DatabaseConverter.ToInt32(reader[(int)Felder.schenkung_bekommen]);
@@ -41,14 +38,31 @@ namespace PhoenixModel.dbZugdaten {
             this.monat = DatabaseConverter.ToInt32(reader[(int)Felder.monat]);
         }
 
-        public void Save(DbCommand reader)
-        {
-            throw new NotImplementedException();
+        public void Save(DbCommand command) {
+            command.CommandText = $@"
+        UPDATE {TableName} SET
+            Reichschatz = {this.Reichschatz},
+            Einahmen_land = {this.Einahmen_land},
+            schenkung_bekommen = {this.schenkung_bekommen},
+            GS_bei_truppen = {this.GS_bei_truppen},
+            schenkung_getaetigt = {this.schenkung_getaetigt},
+            Verruestet = {this.Verruestet},
+        WHERE  monat = {this.monat}";
+
+            command.ExecuteNonQuery();
         }
 
-        public void Insert(DbCommand reader)
-        {
-            throw new NotImplementedException();
+        public void Insert(DbCommand command) {
+            command.CommandText = $@"
+        INSERT INTO {TableName} (
+            Reichschatz, Einahmen_land, schenkung_bekommen, GS_bei_truppen, 
+            schenkung_getaetigt, Verruestet, monat
+        ) VALUES (
+            {this.Reichschatz}, {this.Einahmen_land}, {this.schenkung_bekommen}, 
+            {this.GS_bei_truppen}, {this.schenkung_getaetigt}, {this.Verruestet}, {this.monat}
+        )";
+
+            command.ExecuteNonQuery();
         }
     }
 }
