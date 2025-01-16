@@ -7,11 +7,11 @@
         mc:Ignorable="d"
         Title="TruppenEntwicklung" Height="500" Width="800">
     <Grid>
-        <TabControl TabStripPlacement="Bottom" Margin="5">
-            <TabItem Header="Status">
+        <TabControl x:Name="Tabulator" TabStripPlacement="Bottom" Margin="5">
+            <TabItem Header="Status" Tag="Status">
                 <Frame x:Name="Status"  Source="/Pages/TruppenStatusPage.xaml" Tag="Status"/>
             </TabItem>
-            <TabItem Header="Historische Bilanzen">
+            <TabItem Header="Historische Daten"  Tag="Entwicklung">
                 <Frame x:Name="HistorischeBilanzen"  Source="/Pages/ChartPage.xaml" Tag="Entwicklung"/>
             </TabItem>
         </TabControl>

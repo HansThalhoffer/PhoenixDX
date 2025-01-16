@@ -26,6 +26,16 @@ namespace PhoenixWPF.Dialogs
             InitializeComponent();
         }
 
+        public void Show (string page) {
+            this.Loaded += (s, e) => {
+                foreach (TabItem tab in Tabulator.Items) {
+                    if (tab != null && tab.Tag != null && tab.Tag.ToString() == page)
+                        Tabulator.SelectedItem = tab;
+                }
+            };
+            Show();
+            
+        }
       
     }
 }

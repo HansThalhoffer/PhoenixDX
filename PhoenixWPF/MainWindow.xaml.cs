@@ -63,20 +63,35 @@ namespace PhoenixWPF
                     return;
                 switch (tag)
                 {
-                    case "Schatzkammer":
-                        new SchatzkammerDialog().Show();
-                        break;
+                    // Truppendialog
                     case "Truppen":
-                        new TruppenEntwicklungDialog().Show();
+                        new TruppenEntwicklungDialog().Show("Status");
+                        break;
+                    case "TruppenEntwicklung":
+                        new TruppenEntwicklungDialog().Show("Entwicklung");
                         break;
 
+                    // Schatzkammerdialog
+                    case "ErwarteteEinkommen":
+                        new SchatzkammerDialog().Show("ErwarteteEinkommen");
+                        break;
+                    case "Entwicklung":
+                        new SchatzkammerDialog().Show("Entwicklung");
+                        break;
+                    case "Schenkungen":
+                        new SchatzkammerDialog().Show("Schenkungen");
+                        break;
+                    case "Schenken":
+                        new SchatzkammerDialog().Show("Schenken");
+                        break;
+
+                    // Extras
                     case "Zugwechsel":
                         Main.Instance.Zugwechsel();
                         break;
                     case "InstallUSB":
                         Main.Instance.CreateInstallUSBStick();
                         break;
-                   
                     case "Zug 999 (Testdaten)":
                         TestDataGenerator.GeneriereTestdatenFürZug999();
                         break;

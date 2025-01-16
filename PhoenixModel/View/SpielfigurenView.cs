@@ -1,4 +1,5 @@
-﻿using PhoenixModel.dbPZE;
+﻿using PhoenixModel.dbCrossRef;
+using PhoenixModel.dbPZE;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
@@ -11,32 +12,24 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PhoenixModel.View {
-    public class Armee : List<Spielfigur>, IEigenschaftler
-    {
+    public class Armee : List<Spielfigur>, IEigenschaftler {
         /// <summary>
         ///  dieses Property wird für die Anzeige in den Eigenschaften eines Kleinfeldes genutzt, die Darstellung in der Truppenliste wird in der Page selbst erzeugt
         /// </summary>
-        public List<Eigenschaft> Eigenschaften
-        {
-            get
-            {
+        public List<Eigenschaft> Eigenschaften {
+            get {
                 List<Eigenschaft> eigenschaften = [];
-                foreach (var figur in this)
-                {
-                    if (figur is Kreaturen)
-                    {
+                foreach (var figur in this) {
+                    if (figur is Kreaturen) {
                         var k = figur as Kreaturen;
-                        if (k != null)
-                        {
+                        if (k != null) {
                             string wert = $"{k.Bezeichner}";
                             eigenschaften.Add(new Eigenschaft("Kreatur", wert, false, this));
                         }
                     }
-                    else if (figur is Krieger)
-                    {
+                    else if (figur is Krieger) {
                         var k = figur as Krieger;
-                        if (k != null)
-                        {
+                        if (k != null) {
                             string wert = $"{k.Bezeichner} Str {k.staerke.ToString("n0")} HF {k.hf}";
                             if (k.Garde)
                                 wert += " Garde";
@@ -51,11 +44,9 @@ namespace PhoenixModel.View {
                             eigenschaften.Add(new Eigenschaft("Krieger", wert, false, this));
                         }
                     }
-                    else if (figur is Reiter)
-                    {
+                    else if (figur is Reiter) {
                         var k = figur as Reiter;
-                        if (k != null)
-                        {
+                        if (k != null) {
                             string wert = $"{k.Bezeichner} Str {k.staerke} HF {k.hf}";
                             if (k.Garde)
                                 wert += " Garde";
@@ -70,11 +61,9 @@ namespace PhoenixModel.View {
                             eigenschaften.Add(new Eigenschaft("Reiter", wert, false, this));
                         }
                     }
-                    else if (figur is Schiffe)
-                    {
+                    else if (figur is Schiffe) {
                         var k = figur as Schiffe;
-                        if (k != null)
-                        {
+                        if (k != null) {
                             string wert = $"{k.Bezeichner} Str {k.staerke}";
                             if (k.Garde)
                                 wert += " G";
@@ -86,23 +75,19 @@ namespace PhoenixModel.View {
                                 wert += $" SKP {k.SKP}";
                             if (k.Pferde > 0)
                                 wert += $" Pferde {k.Pferde}";
-                            eigenschaften.Add(new Eigenschaft("Schiff", wert, false, this ));
+                            eigenschaften.Add(new Eigenschaft("Schiff", wert, false, this));
                         }
                     }
-                    else if (figur is Zauberer)
-                    {
+                    else if (figur is Zauberer) {
                         var k = figur as Zauberer;
-                        if (k != null)
-                        {
+                        if (k != null) {
                             string wert = $"{k.Bezeichner} {k.Beschriftung} {k.charname} GP {k.GP_akt}";
                             eigenschaften.Add(new Eigenschaft("Zauberer", wert, false, this));
                         }
                     }
-                    else if (figur is Character)
-                    {
+                    else if (figur is Character) {
                         var k = figur as Character;
-                        if (k != null)
-                        {
+                        if (k != null) {
                             string wert = $"{k.Bezeichner} {k.Beschriftung} {k.Charname} GP {k.GP_akt}";
                             eigenschaften.Add(new Eigenschaft("Charakter", wert, false, this));
                         }
@@ -119,28 +104,23 @@ namespace PhoenixModel.View {
     /// <summary>
     /// Vereinfacht die Nutzung von Truppensammlungen, die aus verschiedenen Klassen bestehen
     /// </summary>
-    public static class SpielfigurenView
-    {
-        public static int BerechneBewegungspunkte(Spielfigur figur)
-        {
+    public static class SpielfigurenView {
+        public static int BerechneBewegungspunkte(Spielfigur figur) {
             //throw new NotImplementedException();
             return 0;
         }
 
-        public static int BerechneBaukosten(Spielfigur figur)
-        {
+        public static int BerechneBaukosten(Spielfigur figur) {
             // throw new NotImplementedException();
             return 0;
         }
 
-        public static int BerechneRaumpunkte(Spielfigur figur)
-        {
+        public static int BerechneRaumpunkte(Spielfigur figur) {
             //throw new NotImplementedException();
             return 0;
         }
 
-        public static Armee GetSpielfiguren(KleinfeldPosition gem)
-        {
+        public static Armee GetSpielfiguren(KleinfeldPosition gem) {
             Armee result = [];
             var kreaturen = SharedData.Kreaturen?.Where(s => s.gf == gem.gf && s.kf == gem.kf && Plausibilität.IsValid(s));
             if (kreaturen != null)
@@ -166,8 +146,7 @@ namespace PhoenixModel.View {
             return result;
         }
 
-        public static Armee GetSpielfiguren(Nation? nation)
-        {
+        public static Armee GetSpielfiguren(Nation? nation) {
             if (nation == null)
                 return [];
             Armee result = [];
@@ -194,15 +173,29 @@ namespace PhoenixModel.View {
                 result.AddRange(zauberer);
             return result;
         }
-        
-        public static Zaubererklasse GetZaubererklasse (Zauberer wiz) {
-            if (wiz== null) { return Zaubererklasse.none; }
-            if (wiz.GP_ges <=4) { return Zaubererklasse.ZA;}
-            if (wiz.GP_ges <= 8) { return Zaubererklasse.ZB; }
-            if (wiz.GP_ges <= 16) { return Zaubererklasse.ZC; }
-            if (wiz.GP_ges <= 32) { return Zaubererklasse.ZD; }
-            if (wiz.GP_ges <= 64) { return Zaubererklasse.ZE; }
-            if (wiz.GP_ges <= 128) { return Zaubererklasse.ZF; }
+
+        public static Zaubererklasse GetZaubererklasse(Zauberer wiz) {
+            if (SharedData.Crossref_zauberer_teleport == null) {
+                if (wiz == null) { return Zaubererklasse.none; }
+                if (wiz.GP_ges <= 4) { return Zaubererklasse.ZA; }
+                if (wiz.GP_ges <= 8) { return Zaubererklasse.ZB; }
+                if (wiz.GP_ges <= 16) { return Zaubererklasse.ZC; }
+                if (wiz.GP_ges <= 32) { return Zaubererklasse.ZD; }
+                if (wiz.GP_ges <= 64) { return Zaubererklasse.ZE; }
+                if (wiz.GP_ges <= 128) { return Zaubererklasse.ZF; }
+            }
+            else {
+                string klasse = string.Empty;
+                foreach (var f in SharedData.Crossref_zauberer_teleport.OrderBy(item => item.GP)) {
+                    if (wiz.GP_ges <= f.GP) {
+                        klasse = f.ZX;
+                        break;
+                    }
+                }
+                Zaubererklasse zaubererklasse;
+                if (Enum.TryParse(klasse, true, out zaubererklasse)) // Case-insensitive comparison
+                    return zaubererklasse;
+            }
             return Zaubererklasse.none;
         }
         /// <summary>
@@ -210,8 +203,7 @@ namespace PhoenixModel.View {
         /// </summary>
         /// <param name="figur"></param>
         /// <returns></returns>
-        public static bool BelongsToUser(Spielfigur figur)
-        {
+        public static bool BelongsToUser(Spielfigur figur) {
             return ProgramView.BelongsToUser(figur);
         }
     }

@@ -16,7 +16,7 @@ namespace PhoenixModel.dbCrossRef {
         private static readonly string[] PropertiestoIgnore = ["DatabaseName"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
         public int GP { get; set; }
-        public string? ZX { get; set; }
+        public string ZX { get; set; } = string.Empty;
         public int Teleport { get; set; }
         public int Regeneration_GP { get; set; }
 

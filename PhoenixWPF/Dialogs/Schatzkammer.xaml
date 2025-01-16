@@ -7,15 +7,18 @@
         mc:Ignorable="d"
         Title="Schatzkammer" Height="450" Width="800">
     <Grid>
-        <TabControl TabStripPlacement="Bottom">
-            <TabItem Header="Historische Bilanzen">
-                <Frame x:Name="HistorischeBilanzen"  Source="/Pages/ChartPage.xaml" Tag="Schatzkammer"/>
+        <TabControl x:Name="Tabulator" TabStripPlacement="Bottom">
+            <TabItem Header="Erwartete Einkommen"  Tag="ErwarteteEinkommen">
+                <Frame x:Name="ErwarteteEinkommen"  Source="/Pages/ExpectedIncomePage.xaml" Tag="ErwarteteEinkommen"/>
             </TabItem>
-            <TabItem Header="Schenkungen">
+            <TabItem Header="Historische Bilanzen" Tag="Entwicklung">
+                <Frame x:Name="HistorischeBilanzen"  Source="/Pages/ChartPage.xaml" Tag="Entwicklung"/>
+            </TabItem>
+            <TabItem Header="Schenkungen"  Tag="Schenkungen">
                 <Frame x:Name="Schenkungen"  Source="/Pages/EigenschaftlerListGridPage.xaml" Tag="Schenkungen"/>
             </TabItem>
-            <TabItem Header="Erwartete Einkommen">
-                <Frame x:Name="ErwarteteEinkommen"  Source="/Pages/ExpectedIncomePage.xaml" Tag="ErwarteteEinkommen"/>
+            <TabItem Header="Geld verschenken"  Tag="Schenken">
+                <Frame x:Name="SchenkungDurchführen"  Source="/Pages/SchenkenPage.xaml" Tag="Schenken"/>
             </TabItem>
         </TabControl>
     </Grid>

@@ -24,11 +24,14 @@
                 <MenuItem Header="Auswahl Rüstorte" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="RüstortAuswahl" />
             </MenuItem>
             <MenuItem Header="Schatzkammer">
-                <MenuItem Header="Bericht des Kämmerers" IsCheckable="False"  Click="MenuItem_Click" Tag="Schatzkammer" />
+                <MenuItem Header="Bericht des Kämmerers" IsCheckable="False"  Click="MenuItem_Click" Tag="ErwarteteEinkommen" />
+                <MenuItem Header="Bericht der Historiker" IsCheckable="False"  Click="MenuItem_Click" Tag="Entwicklung" />
+                <MenuItem Header="Bisherige Schenkungen" IsCheckable="False"  Click="MenuItem_Click" Tag="Schenkungen" />
                 <MenuItem Header="Geld verschenken" IsCheckable="False"  Click="MenuItem_Click" Tag="Schenken" />
             </MenuItem>
             <MenuItem Header="Militär">
                 <MenuItem Header="Bericht der Generäle" IsCheckable="False"  Click="MenuItem_Click" Tag="Truppen" />
+                <MenuItem Header="Bericht der Historiker" IsCheckable="False"  Click="MenuItem_Click" Tag="TruppenEntwicklung" />
             </MenuItem>
             <MenuItem Header="Extras">
                 <MenuItem Header="Zug Wechseln" IsCheckable="False"  Click="MenuItem_Click" Tag="Zugwechsel" />

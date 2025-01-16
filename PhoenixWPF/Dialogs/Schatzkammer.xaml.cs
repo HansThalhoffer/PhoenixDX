@@ -3,6 +3,7 @@ using PhoenixModel.Helper;
 using PhoenixModel.ViewModel;
 using PhoenixWPF.Pages;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Navigation;
 namespace PhoenixWPF.Dialogs
 {
@@ -18,6 +19,16 @@ namespace PhoenixWPF.Dialogs
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
             InitializeComponent();
             Schenkungen.Navigated += Schenkungen_Navigated;
+        }
+
+        public void Show(string page) {
+            this.Loaded += (s, e) => {
+                foreach (TabItem tab in Tabulator.Items) {
+                    if (tab != null && tab.Tag != null && tab.Tag.ToString() == page)
+                        Tabulator.SelectedItem = tab;
+                }
+            };
+            Show();
         }
 
         private void Schenkungen_Navigated(object sender, NavigationEventArgs e)
