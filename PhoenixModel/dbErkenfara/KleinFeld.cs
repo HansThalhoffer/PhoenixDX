@@ -306,6 +306,50 @@ namespace PhoenixModel.dbErkenfara {
             ProgramView.Update(ViewEventArgs.ViewEventType.UpdateGebäude);
         }
 
+
+        public void Insert(DbCommand command) {
+            command.CommandText = $@"
+        INSERT INTO {TableName} (
+            ph_xy, x, y, db_xy, Rand, Gelaendetyp, Ruestort, 
+            Fluss_NW, Fluss_NO, Fluss_O, Fluss_SO, Fluss_SW, Fluss_W, 
+            Wall_NW, Wall_NO, Wall_O, Wall_SO, Wall_SW, Wall_W, 
+            Kai_NW, Kai_NO, Kai_O, Kai_SO, Kai_SW, Kai_W, 
+            Strasse_NW, Strasse_NO, Strasse_O, Strasse_SO, Strasse_SW, Strasse_W, 
+            Bruecke_NW, Bruecke_NO, Bruecke_O, Bruecke_SO, Bruecke_SW, Bruecke_W, 
+            Reich, Krieger_eigen, Krieger_feind, Krieger_freund, 
+            Reiter_eigene, Reiter_feind, Reiter_freund, 
+            Schiffe_eigene, schiffe_feind, Schiffe_freund, 
+            Zauberer_eigene, Zauberer_feind, Zauberer_freund, 
+            Char_eigene, Char_feind, Char_freund, 
+            krieger_text, kreatur_eigen, kreatur_feind, kreatur_freund, 
+            Baupunkte, Bauwerknamen, lehensid, gf, kf
+        ) VALUES (
+            '{DatabaseConverter.EscapeString(this.ph_xy)}', {this.x}, {this.y}, 
+            '{DatabaseConverter.EscapeString(this.db_xy)}', {this.Rand}, {this.Gelaendetyp}, {this.Ruestort}, 
+            {this.Fluss_NW}, {this.Fluss_NO}, {this.Fluss_O}, {this.Fluss_SO}, {this.Fluss_SW}, {this.Fluss_W}, 
+            {this.Wall_NW}, {this.Wall_NO}, {this.Wall_O}, {this.Wall_SO}, {this.Wall_SW}, {this.Wall_W}, 
+            {this.Kai_NW}, {this.Kai_NO}, {this.Kai_O}, {this.Kai_SO}, {this.Kai_SW}, {this.Kai_W}, 
+            {this.Strasse_NW}, {this.Strasse_NO}, {this.Strasse_O}, {this.Strasse_SO}, {this.Strasse_SW}, {this.Strasse_W}, 
+            {this.Bruecke_NW}, {this.Bruecke_NO}, {this.Bruecke_O}, {this.Bruecke_SO}, {this.Bruecke_SW}, {this.Bruecke_W}, 
+            {this.Reich}, {this.Krieger_eigen}, {this.Krieger_feind}, {this.Krieger_freund}, 
+            {this.Reiter_eigene}, {this.Reiter_feind}, {this.Reiter_freund}, 
+            {this.Schiffe_eigene}, {this.schiffe_feind}, {this.Schiffe_freund}, 
+            {this.Zauberer_eigene}, {this.Zauberer_feind}, {this.Zauberer_freund}, 
+            {this.Char_eigene}, {this.Char_feind}, {this.Char_freund}, 
+            '{DatabaseConverter.EscapeString(this.krieger_text)}', {this.kreatur_eigen}, {this.kreatur_feind}, {this.kreatur_freund}, 
+            {this.Baupunkte}, '{DatabaseConverter.EscapeString(this.Bauwerknamen)}', {this.lehensid}, 
+            {this.gf}, {this.kf}
+        )";
+
+            // Execute the command
+            command.ExecuteNonQuery();
+            SynchToOtherTables(command);
+
+            ProgramView.Update(ViewEventArgs.ViewEventType.UpdateGebäude);
+        }
+
+
+
         /// <summary>
         /// da manche werte doppelt gehalten werden, erfolgt hier die Synchronisation
         /// </summary>
@@ -320,11 +364,6 @@ namespace PhoenixModel.dbErkenfara {
             }
         }
 
-
-        public void Insert(DbCommand reader)
-        {
-            throw new NotImplementedException();
-        }
 
         public bool Select()
         {

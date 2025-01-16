@@ -35,14 +35,33 @@ namespace PhoenixModel.dbErkenfara {
             this.ID = DatabaseConverter.ToInt32(reader[(int)Felder.id]);
         }
 
-        public void Save(DbCommand reader)
-        {
-            throw new NotImplementedException();
+        public void Save(DbCommand command) {
+            command.CommandText = $@"
+        UPDATE {TableName} SET
+            Monat = '{DatabaseConverter.EscapeString(this.Monat)}',
+            Reihenfolge = {this.Reihenfolge},
+            Reich = '{DatabaseConverter.EscapeString(this.Reich)}',
+            Auftauchpunkt_A = '{DatabaseConverter.EscapeString(this.Auftauchpunkt_A)}'
+        WHERE ID = {this.ID}";
+
+            command.ExecuteNonQuery();
         }
 
-        public void Insert(DbCommand reader)
-        {
-            throw new NotImplementedException();
+
+        public void Insert(DbCommand command) {
+            command.CommandText = $@"
+        INSERT INTO {TableName} (
+            Monat, Reihenfolge, Reich, Auftauchpunkt_A, ID
+        ) VALUES (
+            '{DatabaseConverter.EscapeString(this.Monat)}',
+            {this.Reihenfolge},
+            '{DatabaseConverter.EscapeString(this.Reich)}',
+            '{DatabaseConverter.EscapeString(this.Auftauchpunkt_A)}',
+            {this.ID}
+        )";
+
+            command.ExecuteNonQuery();
         }
+
     }
 }

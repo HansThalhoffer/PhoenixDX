@@ -48,14 +48,44 @@ namespace PhoenixModel.dbErkenfara {
             this.BP = DatabaseConverter.ToInt32(reader[(int)Felder.BP]);
         }
 
-        public void Save(DbCommand reader)
-        {
-            throw new NotImplementedException();
+        public void Save(DbCommand command) {
+            command.CommandText = $@"
+        UPDATE {TableName} SET
+            Beschreibung1 = '{DatabaseConverter.EscapeString(this.Beschreibung1)}',
+            Beschreibung2 = '{DatabaseConverter.EscapeString(this.Beschreibung2)}',
+            Beschreibung3 = '{DatabaseConverter.EscapeString(this.Beschreibung3)}',
+            Beschreibung4 = '{DatabaseConverter.EscapeString(this.Beschreibung4)}',
+            Waffengattung = '{DatabaseConverter.EscapeString(this.Waffengattung)}',
+            GP = {this.GP},
+            HF = {this.HF},
+            Stärke = {this.Stärke},
+            IMG = '{DatabaseConverter.EscapeString(this.IMG)}',
+            BP = {this.BP}
+        WHERE Kreaturenname = '{DatabaseConverter.EscapeString(this.Kreaturenname)}'";
+
+            command.ExecuteNonQuery();
         }
 
-        public void Insert(DbCommand reader)
-        {
-            throw new NotImplementedException();
+
+        public void Insert(DbCommand command) {
+            command.CommandText = $@"
+        INSERT INTO {TableName} (
+            Kreaturenname, Beschreibung1, Beschreibung2, Beschreibung3, Beschreibung4, 
+            Waffengattung, GP, HF, Stärke, IMG, BP
+        ) VALUES (
+            '{DatabaseConverter.EscapeString(this.Kreaturenname)}', 
+            '{DatabaseConverter.EscapeString(this.Beschreibung1)}', 
+            '{DatabaseConverter.EscapeString(this.Beschreibung2)}', 
+            '{DatabaseConverter.EscapeString(this.Beschreibung3)}', 
+            '{DatabaseConverter.EscapeString(this.Beschreibung4)}', 
+            '{DatabaseConverter.EscapeString(this.Waffengattung)}', 
+            {this.GP}, {this.HF}, {this.Stärke}, 
+            '{DatabaseConverter.EscapeString(this.IMG)}', 
+            {this.BP}
+        )";
+
+            command.ExecuteNonQuery();
         }
+
     }
 }

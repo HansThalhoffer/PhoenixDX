@@ -72,15 +72,34 @@ namespace PhoenixModel.dbPZE {
             
         }
 
-        public void Save(DbCommand reader)
-        {
-            throw new NotImplementedException();
+        public void Save(DbCommand command) {
+            command.CommandText = $@"
+        UPDATE {TableName} SET
+            Reich = '{DatabaseConverter.EscapeString(this.Reich)}',
+            DBname = '{DatabaseConverter.EscapeString(this.DBname)}',
+            DBpass = '{DatabaseConverter.EscapeString(this.DBpass)}'
+        WHERE Nummer = {this.Nummer}";
+
+            // Execute the command
+            command.ExecuteNonQuery();
         }
 
-        public void Insert(DbCommand reader)
-        {
-            throw new NotImplementedException();
+
+        public void Insert(DbCommand command) {
+            command.CommandText = $@"
+        INSERT INTO {TableName} (
+            Nummer, Reich, DBname, DBpass
+        ) VALUES (
+            {this.Nummer}, 
+            '{DatabaseConverter.EscapeString(this.Reich)}', 
+            '{DatabaseConverter.EscapeString(this.DBname)}', 
+            '{DatabaseConverter.EscapeString(this.DBpass)}'
+        )";
+
+            // Execute the command
+            command.ExecuteNonQuery();
         }
+
         #endregion
 
     }
