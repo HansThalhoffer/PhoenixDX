@@ -114,6 +114,30 @@ namespace PhoenixModel.ViewModel {
         public int y8 { get; set; }
         public int x9 { get; set; }
         public int y9 { get; set; }
+        /// <summary>
+        /// Die Werte x10-x19, y10-y19 werden nicht in Zauberern und Charaktern verwendet - warum auch immer
+        /// anscheinend erwartet man da nicht so viele Bewegungen
+        /// </summary>
+        public int x10 { get; set; }
+        public int y10 { get; set; }
+        public int x11 { get; set; }
+        public int y11 { get; set; }
+        public int x12 { get; set; }
+        public int y12 { get; set; }
+        public int x13 { get; set; }
+        public int y13 { get; set; }
+        public int x14 { get; set; }
+        public int y14 { get; set; }
+        public int x15 { get; set; }
+        public int y15 { get; set; }
+        public int x16 { get; set; }
+        public int y16 { get; set; }
+        public int x17 { get; set; }
+        public int y17 { get; set; }
+        public int x18 { get; set; }
+        public int y18 { get; set; }
+        public int x19 { get; set; }
+        public int y19 { get; set; }
 
         /// <summary>
         /// Der Bezeichner erzugt sich aus Typ und Nummer.
