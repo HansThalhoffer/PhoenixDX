@@ -11,10 +11,13 @@ using System.Collections.Generic;
 
 namespace PhoenixDX.Structures {
     /// <summary>
-    /// Truppen sind spezielle Adorner, die Figuren zusammenstellen, so dass sie auf ein Kleinfeld passen
+    /// Die Klasse Truppen stellt eine Gruppe von Spielfiguren dar, die als Adorner gezeichnet werden können.
     /// </summary>
     internal class Truppen : ColorAdorner
     {
+        /// <summary>
+        /// Repräsentiert eine Bildreferenz für eine bestimmte Figur.
+        /// </summary>
         public class FigurImage
         {
             public FigurType Typ = FigurType.NaN;
@@ -28,8 +31,10 @@ namespace PhoenixDX.Structures {
                 Index = index;
             }
         }
-
-        public static List<FigurImage> FigurImages =
+        /// <summary>
+        /// Liste der verfügbaren Figurenbilder.
+        /// </summary>
+        public static readonly List<FigurImage> FigurImages =
         [
             new FigurImage(0, FigurType.Kreatur, "Monster"),
             new FigurImage(1, FigurType.Krieger, "Krieger"),
@@ -49,6 +54,9 @@ namespace PhoenixDX.Structures {
             new FigurImage(16, FigurType.CharakterZauberer, "CharakterZauberer")
         ];
 
+        /// <summary>
+        /// Repräsentiert eine einzelne Figur mit einem bestimmten Typ und einer Farbe.
+        /// </summary>
         public class Figur
         {
             public FigurType Typ = FigurType.NaN;
@@ -60,14 +68,19 @@ namespace PhoenixDX.Structures {
             }
         }
 
-
+        /// <summary>
+        /// anwesende Truppen
+        /// </summary>
         List<Figur> _truppen = null;
 
         public Truppen(List<Figur> truppen)
         {
             _truppen = truppen;
         }
-
+        /// <summary>
+        /// Lädt die Inhalte für alle Figurenbilder.
+        /// </summary>
+        /// <param name="contentManager">Der Content-Manager zum Laden der Texturen.</param>
         public static void LoadContent(ContentManager contentManager)
         {
             foreach (var item in FigurImages)
@@ -75,13 +88,19 @@ namespace PhoenixDX.Structures {
                 item.Texture = contentManager.Load<Texture2D>($"Images/Symbol/{item.FileName}");
             }
         }
-
+        /// <summary>
+        /// Erstellt eine Textur für die Truppen.
+        /// </summary>
+        /// <returns>Die erstellte Textur.</returns>
         public override ColoredTexture CreateTexture()
         {
             return CreateTexture(_truppen);
         }
 
-        // hier werden die Figuren in eine Texture zusammengestellt
+        /// <summary> 
+        /// hier werden die Figuren in eine Texture zusammengefügt
+        /// </summary>
+        /// <returns>Die erstellte Textur.</returns>
         private static ColoredTexture CreateTexture(List<Figur> truppen)
         {
             if (SpielDX.Instance.Graphics == null || truppen.Count == 0)

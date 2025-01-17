@@ -6,34 +6,50 @@ using System;
 using System.Collections.Generic;
 
 namespace PhoenixDX.Structures {
-    internal class Gelaende : GeländeTabelle
-    {
-        SimpleTexture hexTexture;
-        List<Texture2D>hexTextures = [];
+    /// <summary>
+    /// Repräsentiert ein Geländeobjekt mit einer zugehörigen Textur.
+    /// </summary>
+    internal class Gelaende : GeländeTabelle {
+        private SimpleTexture hexTexture;
+        private List<Texture2D> hexTextures = [];
 
-        public Gelaende(GeländeTabelle source, string image, ContentManager contentManager):
-            base(source.Typ, source.Name, source.Höhe, source.Einwohner, source.Einnahmen, source.Farbe, source.IsWasser)
-        {
-            try
-            {
+        /// <summary>
+        /// Erstellt eine neue Instanz eines Geländes und lädt die zugehörige Textur.
+        /// </summary>
+        /// <param name="source">Die Quelle der Geländedaten.</param>
+        /// <param name="image">Der Bildname der zu ladenden Textur.</param>
+        /// <param name="contentManager">Der Content-Manager für das Laden der Texturen.</param>
+        public Gelaende(GeländeTabelle source, string image, ContentManager contentManager) :
+            base(source.Typ, source.Name, source.Höhe, source.Einwohner, source.Einnahmen, source.Farbe, source.IsWasser) {
+            try {
                 const string folder = "Images/TilesetV/";
                 hexTexture = new SimpleTexture(contentManager.Load<Texture2D>(folder + image));
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 MappaMundi.Log(0, 0, $"Die Textur für {source.Name} konnte nicht geladen werden", ex);
             }
         }
 
-        public SimpleTexture GetTexture() { 
+        /// <summary>
+        /// Gibt die Textur des Geländes zurück.
+        /// </summary>
+        /// <returns>Die SimpleTexture des Geländes.</returns>
+        public SimpleTexture GetTexture() {
             return hexTexture;
         }
 
-        static bool _isLoaded = false;
-        public static bool IsLoaded { get { return _isLoaded; }}
-        
-        public static void LoadContent(ContentManager contentManager)
-        {
+        private static bool _isLoaded = false;
+
+        /// <summary>
+        /// Gibt an, ob das Gelände geladen wurde.
+        /// </summary>
+        public static bool IsLoaded { get { return _isLoaded; } }
+
+        /// <summary>
+        /// Lädt die Geländetexturen aus den definierten Ressourcen.
+        /// </summary>
+        /// <param name="contentManager">Der Content-Manager zum Laden der Ressourcen.</param>
+        public static void LoadContent(ContentManager contentManager) {
             Terrains[(int)TerrainType.Default] = new Gelaende(Terrains[(int)TerrainType.Default], "defaultTerrain", contentManager);
             Terrains[(int)TerrainType.Wasser] = new Gelaende(Terrains[(int)TerrainType.Wasser], "ocean", contentManager);
             Terrains[(int)TerrainType.Hochland] = new Gelaende(Terrains[(int)TerrainType.Hochland], "highland", contentManager);
@@ -50,6 +66,5 @@ namespace PhoenixDX.Structures {
             Terrains[(int)TerrainType.Küste] = new Gelaende(Terrains[(int)TerrainType.Küste], "coast", contentManager);
             _isLoaded = true;
         }
-
     }
 }

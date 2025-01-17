@@ -12,12 +12,24 @@ using System.Collections.Generic;
 using PhoenixModel.ViewModel;
 
 namespace PhoenixDX.Structures {
+    /// <summary>
+    /// Die Klasse Welt repräsentiert die gesamte Spielwelt und verwaltet Provinzen, Reiche und Karteninformationen.
+    /// </summary>
     public class Welt
     {
-
+        /// <summary>
+        /// Speicher der Provinzen
+        /// </summary>
         Dictionary<int, Provinz> Provinzen = [] ;
+        /// <summary>
+        /// Speicher für die Reiche
+        /// </summary>
         Dictionary<int, Reich> Reiche = [];
 
+        /// <summary>
+        /// Erstellt eine neue Instanz der Welt und initialisiert die Provinzen basierend auf der übergebenen Kartenstruktur.
+        /// </summary>
+        /// <param name="map">Die Kartenstruktur, die die KleinFelder aus SharedData.Map enthält.</param>
         public Welt(BlockingDictionary<KleinFeld> map) 
         {
             Provinzen.Add(701, new Provinz(7, 0, 701));
@@ -89,7 +101,11 @@ namespace PhoenixDX.Structures {
                 }
             }
         }
-
+        /// <summary>
+        /// Aktualisiert eine bestimmte Gemarkung (Kleinfeld) basierend auf der gegebenen Position.
+        /// wird vom <see cref="BackgroundUpdater"/> verwendet, um aus der Queue die Gemarken zu holen und zu aktualisieren
+        /// </summary>
+        /// <param name="pos">Die Position der zu aktualisierenden Gemarkung.</param
         public void UpdateGemark(KleinfeldPosition pos)
         {
             if (pos.gf < 0 || pos.kf < 0 || pos.kf > 48)
@@ -113,8 +129,14 @@ namespace PhoenixDX.Structures {
             }
 
         }
-
+        /// <summary>
+        /// wir wollen nur 1x die Reiche hinzufügen
+        /// </summary>
         public bool ReicheInitalized = false;
+        /// <summary>
+        /// Fügt der Welt Nationen hinzu und verknüpft sie mit den entsprechenden Reichen.
+        /// </summary>
+        /// <param name="nations">Die zu hinzuzufügenden Nationen.</param>
         public void AddNationen(BlockingCollection<Nation> nations)
         {
             ReicheInitalized = true;
@@ -135,14 +157,22 @@ namespace PhoenixDX.Structures {
                 }
             }
         }
-
+        /// <summary>
+        /// Lädt die notwendigen Inhalte für die Welt.
+        /// </summary>
+        /// <param name="contentManager">Der Content-Manager.</param>
         public static void LoadContent(ContentManager contentManager)
         {
             Gelaende.LoadContent(contentManager);
             Reich.LoadContent(contentManager);
             Gemark.LoadContent(contentManager);
         }
-
+        /// <summary>
+        /// Gibt das Kleinfeld einer bestimmten Provinz zurück.
+        /// </summary>
+        /// <param name="gf">Die ID des Großfelds.</param>
+        /// <param name="kf">Die ID des Kleinfelds.</param>
+        /// <returns>Das entsprechende Kleinfeld oder null, falls nicht vorhanden.</returns>
         internal Gemark GetKleinfeld(int gf, int kf)
         {
             Provinz provinz;
@@ -152,7 +182,11 @@ namespace PhoenixDX.Structures {
             }
             return null;
         }
-
+        /// <summary>
+        /// Gibt eine Provinz basierend auf ihrer ID zurück.
+        /// </summary>
+        /// <param name="gf">Die ID des Großfelds.</param>
+        /// <returns>Die entsprechende Provinz oder null, falls nicht vorhanden.</returns>
         internal Provinz GetProviz(int gf)
         {
             Provinz provinz;
@@ -162,7 +196,13 @@ namespace PhoenixDX.Structures {
             }
             return null;
         }
-
+        /// <summary>
+        /// Gibt die physikalische Position eines bestimmten Kleinfelds in der Weltkarte zurück.
+        /// </summary>
+        /// <param name="gf">Die ID des Großfelds.</param>
+        /// <param name="kf">Die ID des Kleinfelds.</param>
+        /// <param name="scale">Der Skalierungsfaktor für die Position.</param>
+        /// <returns>Die Position als Vector2 oder null, falls nicht vorhanden.</returns>
         public Vector2? GetPosition(int gf, int kf, Vector2 scale)
         {
             Provinz provinz;
@@ -173,6 +213,17 @@ namespace PhoenixDX.Structures {
             return null;
         }
 
+        /// <summary>
+        /// Zeichnet die Weltkarte und gibt das ausgewählte Kleinfeld zurück.
+        /// </summary>
+        /// <param name="spriteBatch">Das SpriteBatch-Objekt für das Rendering.</param>
+        /// <param name="scale">Der Skalierungsfaktor der Weltkarte.</param>
+        /// <param name="mousePos">Die aktuelle Position der Maus.</param>
+        /// <param name="isMoving">Gibt an, ob sich die Karte bewegt.</param>
+        /// <param name="gameTime">Die aktuelle Spielzeit.</param>
+        /// <param name="selected">Das aktuell ausgewählte Kleinfeld.</param>
+        /// <param name="visibleScreen">Der sichtbare Bereich des Bildschirms.</param>
+        /// <returns>Das gezeichnete und ausgewählte Kleinfeld.</returns>
         internal Gemark Draw(SpriteBatch spriteBatch, Vector2 scale, Vector2? mousePos, bool isMoving, TimeSpan gameTime, Gemark selected, Rectangle visibleScreen)
         {
             return WeltDrawer.Draw(spriteBatch, scale, mousePos, isMoving, ref Provinzen, gameTime, selected, visibleScreen );

@@ -1,47 +1,71 @@
-﻿// Province.cs
-using Microsoft.Xna.Framework.Content;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework.Graphics;
+﻿using System.Collections.Generic;
 using Vektor = Microsoft.Xna.Framework.Vector2;
 
-namespace PhoenixDX.Structures
-{
-    internal class Provinz : Hex
-    {
+namespace PhoenixDX.Structures {
+    /// <summary>
+    /// Repräsentiert eine Provinz innerhalb der Spielwelt.
+    /// </summary>
+    /// <remarks>
+    /// Eine Provinz besteht aus mehreren Feldern (Gemarkungen) und hat eine eindeutige Position auf der Karte.
+    /// </remarks>
+    internal class Provinz : Hex {
         private int _gf;
+
+        /// <summary>
+        /// Die X-Koordinate der Provinz.
+        /// </summary>
         public int X { get; private set; }
+
+        /// <summary>
+        /// Die Y-Koordinate der Provinz.
+        /// </summary>
         public int Y { get; private set; }
 
-        public int GF
-        {
+        /// <summary>
+        /// Gibt den Gelände-Faktor der Provinz zurück.
+        /// </summary>
+        public int GF {
             get { return _gf; }
-            private set
-            {
+            private set {
                 _gf = value;
             }
         }
 
-        public string Bezeichner
-        {
+        /// <summary>
+        /// Gibt die Bezeichnung der Provinz zurück.
+        /// </summary>
+        public string Bezeichner {
             get { return _gf.ToString(); }
         }
 
+        /// <summary>
+        /// Enthält alle Felder (Gemarkungen) der Provinz.
+        /// </summary>
         public Dictionary<int, Gemark> Felder { get; set; } = [];
 
-        public Provinz(int x, int y, int gf) : base(Hex.RadiusProvinz, false)
-        {
+        /// <summary>
+        /// Erstellt eine neue Provinz mit den angegebenen Koordinaten und Gelände-Faktor.
+        /// </summary>
+        /// <param name="x">Die X-Koordinate.</param>
+        /// <param name="y">Die Y-Koordinate.</param>
+        /// <param name="gf">Der Gelände-Faktor.</param>
+        public Provinz(int x, int y, int gf) : base(Hex.RadiusProvinz, false) {
             X = x;
             Y = y;
             GF = gf;
         }
 
-        Vektor _mapCoords = new();
-        Vektor _mapSize = new();
-        Vektor _scale = new(0,0);
-        public Vektor GetMapPosition(Vektor scale)
-        {
-            if (scale.X != _scale.X || scale.X != _scale.Y)
-            {
+        private Vektor _mapCoords = new();
+        private Vektor _mapSize = new();
+        private Vektor _scale = new(0, 0);
+
+        /// <summary>
+        /// Berechnet die Kartenposition der Provinz basierend auf dem Maßstab.
+        /// </summary>
+        /// <param name="scale">Der Skalierungsfaktor.</param>
+        /// <returns>Die Position der Provinz auf der Karte.</returns>
+        public Vektor GetMapPosition(Vektor scale) {
+            if (scale.X != _scale.X || scale.X != _scale.Y) {
                 _scale.X = scale.X;
                 _scale.Y = scale.Y;
                 float x = (X - 1) * ColumnWidth * scale.X;
@@ -54,21 +78,32 @@ namespace PhoenixDX.Structures
             return _mapCoords;
         }
 
-        public Microsoft.Xna.Framework.Vector2 GetMapSize()
-        {
+        /// <summary>
+        /// Gibt die Kartengröße der Provinz zurück.
+        /// </summary>
+        /// <returns>Die Größe der Provinz auf der Karte.</returns>
+        public Microsoft.Xna.Framework.Vector2 GetMapSize() {
             return _mapSize;
         }
 
-        public Gemark GetKleinfeld(int kf)
-        {
+        /// <summary>
+        /// Gibt eine Gemarkung innerhalb der Provinz zurück.
+        /// </summary>
+        /// <param name="kf">Die ID der Gemarkung.</param>
+        /// <returns>Die entsprechende Gemarkung oder null, falls sie nicht existiert.</returns>
+        public Gemark GetKleinfeld(int kf) {
             Gemark gemark = null;
             if (Felder.TryGetValue(kf, out gemark))
                 return gemark;
             return null;
         }
 
-        public Gemark GetOrCreateKleinfeld(int kf)
-        {
+        /// <summary>
+        /// Gibt eine existierende Gemarkung zurück oder erstellt eine neue, falls sie nicht existiert.
+        /// </summary>
+        /// <param name="kf">Die ID der Gemarkung.</param>
+        /// <returns>Die existierende oder neu erstellte Gemarkung.</returns>
+        public Gemark GetOrCreateKleinfeld(int kf) {
             Gemark gemark = null;
             if (Felder.TryGetValue(kf, out gemark))
                 return gemark;

@@ -3,10 +3,14 @@ using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Drawing;
 using System.Collections.Generic;
 
-namespace PhoenixDX.Structures
-{
-    internal class RuestortSymbol : GemarkAdorner
-    {
+namespace PhoenixDX.Structures {
+    /// <summary>
+    /// Stellt ein Rüstortsymbol dar, das eine visuelle Darstellung für verschiedene Orte im Spiel bietet.
+    /// </summary>
+    internal class RuestortSymbol : GemarkAdorner {
+        /// <summary>
+        /// Enthält eine Sammlung vordefinierter Rüstortsymbole.
+        /// </summary>
         public static Dictionary<string, RuestortSymbol> Ruestorte = new Dictionary<string, RuestortSymbol>
         {
             {"Burg-I", new RuestortSymbol(11, "Burg-I","Burg-I")},
@@ -27,27 +31,38 @@ namespace PhoenixDX.Structures
             {"Dorf-III",new RuestortSymbol(10, "Dorf-III", "Dorf-III") }
         };
 
-        SimpleTexture _hexTexture = null;
-        int _nummer;
-        string _name;
-        string _image;
-        public RuestortSymbol(int Nummer, string Name, string Image)
-        {
+        private SimpleTexture _hexTexture = null;
+        private int _nummer;
+        private string _name;
+        private string _image;
+
+        /// <summary>
+        /// Erstellt eine neue Instanz eines Rüstortsymbols.
+        /// </summary>
+        /// <param name="Nummer">Die eindeutige Nummer des Symbols.</param>
+        /// <param name="Name">Der Name des Symbols.</param>
+        /// <param name="Image">Der Bildpfad des Symbols.</param>
+        public RuestortSymbol(int Nummer, string Name, string Image) {
             this._nummer = Nummer;
             this._name = Name;
             this._image = Image;
         }
 
-        public static void LoadContent(ContentManager contentManager)
-        {
-            foreach (var item in Ruestorte.Values)
-            {
-                item._hexTexture =new SimpleTexture(contentManager.Load<Texture2D>($"Images/Symbol/{item._image}"));
+        /// <summary>
+        /// Lädt die Inhalte (Texturen) für alle definierten Rüstortsymbole.
+        /// </summary>
+        /// <param name="contentManager">Der Content-Manager zum Laden der Texturen.</param>
+        public static void LoadContent(ContentManager contentManager) {
+            foreach (var item in Ruestorte.Values) {
+                item._hexTexture = new SimpleTexture(contentManager.Load<Texture2D>($"Images/Symbol/{item._image}"));
             }
         }
 
-        public override BaseTexture GetTexture()
-        {
+        /// <summary>
+        /// Gibt die Textur des Rüstortsymbols zurück.
+        /// </summary>
+        /// <returns>Die Textur des Symbols.</returns>
+        public override BaseTexture GetTexture() {
             return _hexTexture;
         }
     }
