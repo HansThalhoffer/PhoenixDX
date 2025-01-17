@@ -23,5 +23,83 @@ namespace PhoenixModel.Extensions {
             spielfigur.gf = kleinfeld.gf;
             spielfigur.kf = kleinfeld.kf;
         }
+
+        /// <summary>
+        /// Ermittelt den aktuellen Wert von gf (aus gf_nach oder gf_von)
+        /// </summary>
+        public static int GetGf(this Spielfigur spielfigur) {
+            return spielfigur.gf_nach > 0 ? spielfigur.gf_nach : spielfigur.gf_von;
+        }
+
+        /// <summary>
+        /// Setzt den Wert für gf, wobei gf_von initialisiert wird
+        /// </summary>
+        public static void SetGf(this Spielfigur spielfigur, int value) {
+            if (spielfigur.gf_von == 0)
+                spielfigur.gf_von = value;
+            spielfigur.gf_nach = value;
+        }
+
+        /// <summary>
+        /// Ermittelt den aktuellen Wert von kf (aus kf_nach oder kf_von).
+        /// </summary>
+        public static int GetKf(this Spielfigur spielfigur) {
+            return spielfigur.kf_nach > 0 ? spielfigur.kf_nach : spielfigur.kf_von;
+        }
+
+        /// <summary>
+        /// Setzt den Wert für kf, wobei kf_von initialisiert wird.
+        /// </summary>
+        public static void SetKf(this Spielfigur spielfigur, int value) {
+            if (spielfigur.kf_von == 0)
+                spielfigur.kf_von = value;
+            spielfigur.kf_nach = value;
+        }
+
+        /// <summary>
+        /// Holt den Wert von gf_nach.
+        /// </summary>
+        public static int GetGfNach(this Spielfigur spielfigur) {
+            return spielfigur.gf_nach;
+        }
+
+        /// <summary>
+        /// Setzt den Wert von gf_nach und löst OnPropertyChanged aus.
+        /// </summary>
+        public static void SetGfNach(this Spielfigur spielfigur, int value) {
+            if (spielfigur.gf_nach != value) {
+                spielfigur.gf_nach = value;
+                spielfigur.OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Holt den Wert von kf_nach.
+        /// </summary>
+        public static int GetKfNach(this Spielfigur spielfigur) {
+            return spielfigur.kf_nach;
+        }
+
+        /// <summary>
+        /// Setzt den Wert von kf_nach und löst OnPropertyChanged aus.
+        /// </summary>
+        public static void SetKfNach(this Spielfigur spielfigur, int value) {
+            if (spielfigur.kf_nach != value) {
+                spielfigur.kf_nach = value;
+                spielfigur.OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Weist die Spielfigur der ausgewählten Nation zu.
+        /// </summary>
+        /// <param name="spielfigur">Die Spielfigur, die zugewiesen wird.</param>
+        /// <exception cref="InvalidOperationException">Wird ausgelöst, wenn keine Nation ausgewählt ist.</exception>
+        public static void AssignToSelectedReich(this Spielfigur spielfigur) {
+            if (ProgramView.SelectedNation == null)
+                throw new InvalidOperationException("Zuerst muss eine Nation ausgewählt sein.");
+
+            spielfigur.Nation = ProgramView.SelectedNation;
+        }
     }
 }

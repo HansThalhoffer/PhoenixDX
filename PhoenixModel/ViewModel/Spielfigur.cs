@@ -1,4 +1,4 @@
-﻿using PhoenixModel.dbErkenfara;
+﻿using PhoenixModel.Extensions;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
@@ -123,75 +123,49 @@ namespace PhoenixModel.ViewModel {
         public dbPZE.Nation? Nation { get; set; } = null;
 
         /// <summary>
-        /// setzt eine Figur auf ein Kleinfeld - keine Bewegung
-        /// </summary>
-        /// <param name="kleinfeld"></param>
-        public void PutOnKleinfeld(KleinFeld kleinfeld) {
-            if (gf > 0 || string.IsNullOrEmpty(ph_xy) == false || kf > 0)
-                ProgramView.LogError($"Fehler bei dem Setzen der Figur {Bezeichner} auf {kleinfeld.Bezeichner}", "Eine bereits auf dem Spielfeld befindlichen Figur, darf nicht erneut gesetzt werden, sondern muss bewegt werden.");
-            ph_xy = kleinfeld.ph_xy;
-            gf = kleinfeld.gf;
-            kf = kleinfeld.kf;
-        }
-
-        /// <summary>
+        /// Implementierung in <see cref="SpielfigurExtensions"/>
         /// wenn die Spielfigur bewegt wurde, dann steht die aktuelle Position in gf/kf_nach
         /// bei der Neuanlage, muss der Wert gf_von auf den ersten übergebenen Wert gesetzt werden
         /// Wichtig ist: beim Bewegen danach auch die xy Koordinaten zu nutzen, so lange die Altanwendung nicht ganz weg ist
         /// </summary>
         public override int gf {
-            get {
-                if (gf_nach > 0)
-                    return gf_nach;
-                return gf_von;
-            }
+            get =>  this.GetGf();
             set {
-                if (gf_von == 0) 
-                    gf_von = value;
-                gf_nach = value;
+                this.SetGf(value);
             }
         }
         /// <summary>
+        /// Implementierung in <see cref="SpielfigurExtensions"/>
         /// wenn die Spielfigur bewegt wurde, dann steht die aktuelle Position in gf/kf_nach
         /// bei der Neuanlage, muss der Wert kf_von auf den ersten übergebenen Wert gesetzt werden
         /// Wichtig ist: beim Bewegen danach auch die xy Koordinaten zu nutzen, so lange die Altanwendung nicht ganz weg ist
         /// </summary>
         public override int kf {
-            get {
-                if (kf_nach > 0)
-                    return kf_nach;
-                return kf_von;
-            }
+            get => this.GetKf();
             set {
-                if (kf_von == 0)
-                    kf_von = value;
-                kf_nach = value;
+                this.SetKf(value);
             }
         }
         /// <summary>
+        /// Implementierung in <see cref="SpielfigurExtensions"/>
         /// wenn die Spielfigur bewegt wurde, dann steht die aktuelle Position in gf/kf_nach
         /// Wichtig ist: beim Bewegen danach auch die xy Koordinaten zu nutzen, so lange die Altanwendung nicht ganz weg ist
         /// </summary>
         public int gf_nach {
-            get => _gfNach;
+            get => this.GetGfNach();
             set {
-                if (_gfNach != value) {
-                    _gfNach = value;
-                    OnPropertyChanged();
-                }
+                this.SetGfNach(value);
             }
         }
         /// <summary>
+        /// Implementierung in <see cref="SpielfigurExtensions"/>
         /// wenn die Spielfigur bewegt wurde, dann steht die aktuelle Position in gf/kf_nach
         /// Wichtig ist: beim Bewegen danach auch die xy Koordinaten zu nutzen, so lange die Altanwendung nicht ganz weg ist
         /// </summary>
         public int kf_nach {
-            get => _kfNach;
+            get => this.GetKfNach();
             set {
-                if (_kfNach != value) {
-                    _kfNach = value;
-                    OnPropertyChanged();
-                }
+                this.SetKfNach(value);
             }
         }
 
@@ -199,31 +173,19 @@ namespace PhoenixModel.ViewModel {
         /// Heerführer statt hf. Für die Listendarstellung
         /// </summary>
         public int Heerführer {
-            get {
-                if (this is TruppenSpielfigur truppe)
-                    return truppe.hf;
-                return 0;
-            }
+            get  => (this is TruppenSpielfigur truppe) ? truppe.hf: 0;
         }
         /// <summary>
         /// LeichteKP statt lkp. Für die Listendarstellung
         /// </summary>
         public int LeichteKP {
-            get {
-                if (this is TruppenSpielfigur truppe)
-                    return truppe.LKP;
-                return 0;
-            }
+            get => (this is TruppenSpielfigur truppe) ? truppe.LKP : 0;
         }
         /// <summary>
         /// LeichteKP statt lkp. Für die Listendarstellung
         /// </summary>
         public int SchwereKP {
-            get {
-                if (this is TruppenSpielfigur truppe)
-                    return truppe.SKP;
-                return 0;
-            }
+            get => (this is TruppenSpielfigur truppe) ? truppe.SKP : 0;
         }
 
         /// <summary>
@@ -231,11 +193,7 @@ namespace PhoenixModel.ViewModel {
         /// </summary>
         [View.Editable]
         public string CharakterName {
-            get {
-                if (this is NamensSpielfigur figur)
-                    return figur.Charname;
-                return string.Empty;
-            }
+            get => (this is NamensSpielfigur figur)? figur.Charname: string.Empty;
             set {
                 if (this is NamensSpielfigur figur && value != null)
                     figur.Charname = value;
@@ -247,11 +205,7 @@ namespace PhoenixModel.ViewModel {
         /// </summary>
         [View.Editable]
         public string SpielerName {
-            get {
-                if (this is NamensSpielfigur figur)
-                    return figur.Spielername;
-                return string.Empty;
-            }
+            get => (this is NamensSpielfigur figur) ? figur.Spielername : string.Empty;
             set {
                 if (this is NamensSpielfigur figur && value != null)
                     figur.Spielername = value;
@@ -263,11 +217,7 @@ namespace PhoenixModel.ViewModel {
         /// </summary>
         [View.Editable]
         public string Titel {
-            get {
-                if (this is NamensSpielfigur figur)
-                    return figur.Beschriftung;
-                return string.Empty;
-            }
+            get => (this is NamensSpielfigur figur) ? figur.Beschriftung : string.Empty;
             set {
                 if (this is NamensSpielfigur figur && value != null)
                     figur.Beschriftung = value;
@@ -285,11 +235,12 @@ namespace PhoenixModel.ViewModel {
 
         /// <summary>
         /// Überschreibung der Laden Funktion, diese hier sollte zwingend von den abgeleiteten Klassen aufgerufen werden
+        /// für AssignToSelectedReich <see cref="SpielfigurExtensions"/>
         /// Implementierung des Interfaces IDatabaseTable als abstract
         /// </summary>
         /// <param name="reader"></param>
         public virtual void Load(DbDataReader reader) {
-            AssignToSelectedReich();
+            this.AssignToSelectedReich(); 
         }
 
         /// <summary>
@@ -303,17 +254,7 @@ namespace PhoenixModel.ViewModel {
         /// <param name="command"></param>public abstract void Insert(DbCommand command);
         public abstract void Insert(DbCommand command);
 
-        /// <summary>
-        /// wenn es aus der Zugdaten Datenbank kommt, dann ist es eine Spielfigur des ausgewählten Reiches
-        /// Die Feinde sind eine eigene Klasse
-        /// </summary>
-        /// <exception cref="InvalidOperationException"></exception>
-        public void AssignToSelectedReich() {
-            if (ProgramView.SelectedNation == null)
-                throw new InvalidOperationException("Zuext muss ein Nation ausgewählt sein");
-            Nation = ProgramView.SelectedNation;
-        }
-
+     
         /// <summary>
         /// Implementierung von <see cref="ISelectable"/>
         /// </summary>

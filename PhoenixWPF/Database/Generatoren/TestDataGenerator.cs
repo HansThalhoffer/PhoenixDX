@@ -1,24 +1,15 @@
 ﻿using PhoenixModel.Database;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbZugdaten;
-using PhoenixModel.Helper;
+using PhoenixModel.Extensions;
 using PhoenixModel.Program;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using PhoenixWPF.Helper;
 using PhoenixWPF.Program;
-using SharpDX.MediaFoundation;
-using System;
-using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.OleDb;
 using System.IO;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Reflection;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 using static PhoenixModel.Database.PasswordHolder;
 
 namespace PhoenixWPF.Database.Generatoren {
@@ -104,7 +95,6 @@ namespace PhoenixWPF.Database.Generatoren {
         private static int Zufall(Random random, int wahrscheinlichkeit, int minValue, int maxValue) {
             return random?.Next(1, 100) < wahrscheinlichkeit ? random.Next(minValue, maxValue) : 0;
         }
-
 
         private static void Fill(ref Spielfigur figur, KleinFeld kf) {
             figur.PutOnKleinfeld(kf);  
