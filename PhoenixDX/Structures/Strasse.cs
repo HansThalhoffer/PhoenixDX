@@ -2,7 +2,7 @@
 
 namespace PhoenixDX.Structures
 {
-    public class Strasse : DirectionAdorner
+    internal class Strasse : DirectionAdorner
     {
         public static Drawing.DirectionTexture Texture = new("strasse_");
         protected override Drawing.DirectionTexture GetDirectionTexture() { return Texture; }

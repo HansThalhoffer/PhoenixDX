@@ -1,31 +1,22 @@
-﻿using PhoenixModel.dbErkenfara;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using PhoenixDX.Drawing;
+using PhoenixDX.Helper;
+using PhoenixModel.dbErkenfara;
+using PhoenixModel.ExternalTables;
+using PhoenixModel.View;
+using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Content;
-using System.Reflection;
-using static PhoenixModel.ExternalTables.GeländeTabelle;
-using SharpDX.Direct2D1.Effects;
-using System.Drawing;
-using Microsoft.Xna.Framework;
-using System.Collections.Concurrent;
-using PhoenixModel.dbCrossRef;
-using Vektor = Microsoft.Xna.Framework.Vector2;
-using PhoenixModel.ExternalTables;
-using SharpDX.XAudio2;
-using PhoenixDX.Helper;
-using PhoenixModel.View;
 using System.Diagnostics;
-using PhoenixDX.Drawing;
-using PhoenixModel.ViewModel;
-using PhoenixModel.Program;
+using System.Linq;
+using System.Reflection;
+using Vektor = Microsoft.Xna.Framework.Vector2;
 
 namespace PhoenixDX.Structures {
     [DebuggerDisplay("{DebuggerDisplay()}")]
-    public class Gemark : Hex {
+    internal class Gemark : Hex {
         public string DebuggerDisplay() {
             return $"Gemark {Koordinaten.gf}/{Koordinaten.kf} {_terrainType} [{Reich.name}]";
         }

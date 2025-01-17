@@ -1,24 +1,29 @@
-﻿using SharpDX.MediaFoundation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Xna.Framework;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Xna.Framework;
 using PhoenixModel.ViewModel;
+using System;
 
 namespace PhoenixDX.Helper {
-    public static class VectorExtensions
-    {
-        public static void Move(ref this Vector2 v, int value)
-        {
+    /// <summary>
+    /// Statische Klasse zur Erweiterung von <see cref="Vector2"/> um Bewegungsfunktionen.
+    /// </summary>
+    public static class VectorExtensions {
+        /// <summary>
+        /// Verschiebt einen <see cref="Vector2"/>-Wert um einen bestimmten Betrag in beide Richtungen.
+        /// </summary>
+        /// <param name="v">Der zu verschiebende Vektor.</param>
+        /// <param name="value">Der Wert, um den sich X- und Y-Koordinaten gleichermaßen ändern.</param>
+        public static void Move(ref this Vector2 v, int value) {
             v.X += value;
             v.Y += value;
         }
 
-        public static void Move(ref this Vector2 v, int moveX, int moveY)
-        {
+        /// <summary>
+        /// Verschiebt einen <see cref="Vector2"/>-Wert um unterschiedliche Werte für X und Y.
+        /// </summary>
+        /// <param name="v">Der zu verschiebende Vektor.</param>
+        /// <param name="moveX">Der Wert, um den sich die X-Koordinate ändert.</param>
+        /// <param name="moveY">Der Wert, um den sich die Y-Koordinate ändert.</param>
+        public static void Move(ref this Vector2 v, int moveX, int moveY) {
             v.X += moveX;
             v.Y += moveY;
         }

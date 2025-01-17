@@ -2,7 +2,7 @@
 
 namespace PhoenixDX.Structures
 {
-    public class Kai : DirectionAdorner
+    internal class Kai : DirectionAdorner
     {
         public static Drawing.DirectionTexture Texture = new("kai_");
         protected override Drawing.DirectionTexture GetDirectionTexture() { return Texture; }

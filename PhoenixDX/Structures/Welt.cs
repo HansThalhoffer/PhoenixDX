@@ -143,7 +143,7 @@ namespace PhoenixDX.Structures {
             Gemark.LoadContent(contentManager);
         }
 
-        public Gemark GetKleinfeld(int gf, int kf)
+        internal Gemark GetKleinfeld(int gf, int kf)
         {
             Provinz provinz;
             if (Provinzen.TryGetValue(gf, out provinz))
@@ -153,7 +153,7 @@ namespace PhoenixDX.Structures {
             return null;
         }
 
-        public Provinz GetProviz(int gf)
+        internal Provinz GetProviz(int gf)
         {
             Provinz provinz;
             if (Provinzen.TryGetValue(gf, out provinz))
@@ -172,8 +172,8 @@ namespace PhoenixDX.Structures {
             }
             return null;
         }
-      
-        public Gemark Draw(SpriteBatch spriteBatch, Vector2 scale, Vector2? mousePos, bool isMoving, TimeSpan gameTime, Gemark selected, Rectangle visibleScreen)
+
+        internal Gemark Draw(SpriteBatch spriteBatch, Vector2 scale, Vector2? mousePos, bool isMoving, TimeSpan gameTime, Gemark selected, Rectangle visibleScreen)
         {
             return WeltDrawer.Draw(spriteBatch, scale, mousePos, isMoving, ref Provinzen, gameTime, selected, visibleScreen );
         }    

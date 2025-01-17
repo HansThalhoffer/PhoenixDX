@@ -7,7 +7,7 @@ using PhoenixDX.Drawing;
 
 namespace PhoenixDX.Structures
 {
-    public class Marker :ColorAdorner
+    internal class Marker :ColorAdorner
     {
         static Texture2D _hexTexture = null;
         MarkerType MarkerType { get; set; }

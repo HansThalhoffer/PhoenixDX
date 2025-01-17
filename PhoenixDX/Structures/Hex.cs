@@ -3,7 +3,7 @@
 
 namespace PhoenixDX.Structures
 {
-   public  class Hex
+    internal class Hex
     {
         public float Width { get; set; }
         public float Height { get; set; }

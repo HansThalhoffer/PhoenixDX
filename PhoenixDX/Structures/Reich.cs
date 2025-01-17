@@ -14,7 +14,7 @@ namespace PhoenixDX.Structures
     /// <summary>
     /// Der Reich Adorner lässt sich in Zukunft einfacher, mit weniger Texturen als ColorAdorner abbilden
     /// </summary>
-    public class Reich : GemarkAdorner
+    internal class Reich : GemarkAdorner
     {
         public Color color;
         public string name;

@@ -7,7 +7,7 @@ namespace PhoenixDX.Structures
 {
     internal class RuestortSymbol : GemarkAdorner
     {
-           public static Dictionary<string, RuestortSymbol> Ruestorte = new Dictionary<string, RuestortSymbol>
+        public static Dictionary<string, RuestortSymbol> Ruestorte = new Dictionary<string, RuestortSymbol>
         {
             {"Burg-I", new RuestortSymbol(11, "Burg-I","Burg-I")},
             {"Burg-II",new RuestortSymbol(12, "Burg-II", "Burg-II") },

@@ -6,7 +6,7 @@ using Vektor = Microsoft.Xna.Framework.Vector2;
 
 namespace PhoenixDX.Structures
 {
-    public class Provinz : Hex
+    internal class Provinz : Hex
     {
         private int _gf;
         public int X { get; private set; }

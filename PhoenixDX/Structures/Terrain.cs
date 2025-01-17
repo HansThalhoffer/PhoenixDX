@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 
 namespace PhoenixDX.Structures {
-    public class Gelaende : GeländeTabelle
+    internal class Gelaende : GeländeTabelle
     {
         SimpleTexture hexTexture;
         List<Texture2D>hexTextures = [];

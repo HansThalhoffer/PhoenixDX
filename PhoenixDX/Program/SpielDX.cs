@@ -4,13 +4,7 @@ using PhoenixDX.Drawing;
 using PhoenixDX.Helper;
 using PhoenixDX.Structures;
 using PhoenixModel.EventsAndArgs;
-using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
-
-
-// using SharpDX;
-
-// using SharpDX;
 using System;
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
@@ -18,36 +12,111 @@ using System.Threading;
 using Vektor = Microsoft.Xna.Framework.Vector2;
 
 namespace PhoenixDX.Program {
-    public class SpielDX : Game
+    /// <summary>
+    /// Hauptklasse des Spiels, die von der MonoGame Game-Klasse erbt.
+    /// Verarbeitet Spielereignisse, Eingaben und Darstellungen.
+    /// </summary>
+    internal class SpielDX : Game
     {
+        /// <summary>
+        /// zum Beenden der Engine
+        /// </summary>
+        private CancellationToken _cancellationToken;
+        /// <summary>
+        /// Das Handle des Host Fensters als Rederziel
+        /// </summary>
+        private nint _windowHandle;
+        private readonly ConcurrentQueue<Action> _actionQueue = new();
+        /// <summary>
+        /// wird von der Kamera benutzt, um nicht endlos zu bewegen
+        /// </summary>
+        bool _isMoving = false; 
+        /// <summary>
+        /// Mausevents zum Verarbeiten
+        /// </summary>
+        MausEventArgs _maus = new MausEventArgs();
+        /// <summary>
+        /// aktuelle Kamerapositon
+        /// </summary>
+        Position _cameraPosition = new Position(0, 0);
+        /// <summary>
+        /// virtuelle Breite des Fenster in 4K
+        /// </summary>
+        const int _virtualWidth = 3840;
+        /// <summary>
+        /// virtuelle Höhe des Fenster in 4K
+        /// </summary>
+        const int _virtualHeight = 2160;
+        /// <summary>
+        /// tatsächliche Breite
+        /// </summary>
+        int _clientWidth = _virtualWidth;
+        /// <summary>
+        /// tatsächliche Höhe
+        /// </summary>
+        int _clientHeight = _virtualHeight;
+        /// <summary>
+        /// Skalierung die sich aus sichtbaren Bereich und Zoom errechnet
+        /// </summary>
+        Vektor _scale = Vektor.Zero;
+        /// <summary>
+        /// Zoomfaktor - Backing member für das Property
+        /// </summary>
+        float _zoom = 0f;
+        /// <summary>
+        /// die Batch zum Zeichnen in DirectX
+        /// </summary>
+        private SpriteBatch _spriteBatch;
+        /// <summary>
+        /// Die Welt als Sammlung von Strukturen, die sich zeichnen lassen
+        /// Sie wird aus den Datenstrukturen von SharedData.Map gebildet 
+        /// und ist daher eine art Kopie. Änderungen in den Daten müssen per Update
+        /// an die Engine herangetragen werden
+        /// </summary>
+        public Welt Weltkarte;
+        /// <summary>
+        /// aktuell ausgewähltes Kleinfeld. Wird durch MapEvents aktualisiert
+        /// </summary>
+        private Gemark _selected = null;
+        /// <summary>
+        /// aktuelles Feld, über dem sich die Maus befindet
+        /// </summary>
+        private Gemark _mouseOver = null;
+        /// <summary>
+        /// die API zur Benutzeroberfläche 
+        /// die DirectX Engine verarbeitet keine vom Benutzer ausgelösten Events
+        /// </summary>
+        private MappaMundi _wpfBridge;
+        /// <summary>
+        /// Updates an der Karte werden asynchron verarbeitet
+        /// Damit ist der DirectX Thread weitgehend frei
+        /// lediglich das Rendern von zusammengeführten Texturen blockiert ihn noch.
+        /// </summary>
+        private BackgroundUpdater _backgroundUpdater = null;
+
+        /// <summary>
+        /// Singleton-Instanz des Spiels.
+        /// </summary>
         public static SpielDX Instance;
 
         private GraphicsDeviceManager _graphics;
+        /// <summary>
+        /// Verwaltet die Grafikkonfiguration.
+        /// </summary>
         public GraphicsDeviceManager Graphics { get => _graphics; private set => _graphics = value; }
 
-        private CancellationToken _cancellationToken;
-        private nint _windowHandle;
-        private readonly ConcurrentQueue<Action> _actionQueue = new();
-
-        Position _cameraPosition = new Position(0, 0);
-        const int _virtualWidth = 3840;
-        const int _virtualHeight = 2160;
-        int _clientWidth = _virtualWidth;
-        int _clientHeight = _virtualHeight;
-        Vektor _scale = Vektor.Zero;
-        private SpriteBatch _spriteBatch;
-
-        public Welt Weltkarte;
-        private Gemark _selected = null;
-        private Gemark _mouseOver = null;
-        private MappaMundi _wpfBridge;
-        private BackgroundUpdater _backgroundUpdater = null;
-
+        /// <summary>
+        /// Fügt eine Aktion zur Warteschlange hinzu, die später ausgeführt wird.
+        /// </summary>
+        /// <param name="action">Die auszuführende Aktion.</param>
         public void EnqueueAction(Action action)
         {
             _actionQueue.Enqueue(action);
         }
 
+        /// <summary>
+        /// Erstellt eine neue Instanz des Spiels.
+        /// </summary>
         public SpielDX(nint windowHandle, CancellationToken token, MappaMundi bridge)
         {
             Instance = this;
@@ -71,6 +140,9 @@ namespace PhoenixDX.Program {
             _updateFunction = DoInitialization;
         }
 
+        /// <summary>
+        /// Initialisiert das Spiel. Herausgelöst aus dem Konstruktor für späte Initalisierung
+        /// </summary>
         protected override void Initialize()
         {
             // Disable vertical sync
@@ -82,11 +154,17 @@ namespace PhoenixDX.Program {
             _wpfBridge.OnLoaded();
         }
 
-
+        /// <summary>
+        /// Importiert die Windows-API-Funktion zum Anzeigen oder Verbergen eines Fensters.
+        /// </summary>
+        /// <param name="hWnd">Das Handle des Fensters.</param>
+        /// <param name="nCmdShow">Der Befehl zum Anzeigen oder Verbergen des Fensters.</param>
         [DllImport("user32.dll")]
         private static extern bool ShowWindow(nint hWnd, int nCmdShow);
 
-        // Hide the MonoGame window 
+        /// <summary>
+        /// Versteckt das MonoGame-Fenster, da es in einem ChildWindow gerendert wird
+        /// </summary>
         private void HideGameWindow()
         {
             var windowHandle = Window.Handle;
@@ -97,24 +175,38 @@ namespace PhoenixDX.Program {
             }
         }
 
+        /// <summary>
+        /// Wird aufgerufen, wenn das Spiel aktiviert wird.
+        /// </summary>
         private void Spiel_Activated(object sender, EventArgs e)
         {
             HideGameWindow();
         }
 
+        /// <summary>
+        /// Wird aufgerufen, wenn die Grafikeinstellungen vorbereitet werden.
+        /// </summary>
+        /// <param name="sender">Das auslösende Objekt.</param>
+        /// <param name="e">Ereignisdaten mit Informationen zu den Grafikeinstellungen.</param>
         private void Graphics_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
         {
             // Redirect rendering to the WPF control's window handle
             e.GraphicsDeviceInformation.PresentationParameters.DeviceWindowHandle = _windowHandle;
         }
-
+        /// <summary>
+        /// Berechnet die Skalierung basierend auf der virtuellen und der Client-Größe sowie dem Zoomfaktor.
+        /// </summary>
         void _RecalcScale()
         {
             _scale.X = _virtualWidth / (float)_clientWidth * Zoom;
             _scale.Y = _virtualHeight / (float)_clientHeight * Zoom;
         }
 
-
+        /// <summary>
+        /// Ändert die Größe des Client-Fensters und passt die Grafikeinstellungen an.
+        /// </summary>
+        /// <param name="width">Die neue Breite des Fensters.</param>
+        /// <param name="height">Die neue Höhe des Fensters.</param>
         public void Resize(int width, int height)
         {
             EnqueueAction(() =>
@@ -129,19 +221,30 @@ namespace PhoenixDX.Program {
             });
         }
 
-
-        bool _isMoving = false;
+        /// <summary>
+        /// Verschiebt die Kamera um eine bestimmte Distanz.
+        /// </summary>
+        /// <param name="delta">Die Verschiebung der Kamera.</param>
         void MoveCamera(Position delta)
         {
             _cameraPosition += delta;
             _isMoving = true;
         }
+        /// <summary>
+        /// Konvertiert eine Client-Position in die virtuelle Bildschirmkoordinaten.
+        /// </summary>
+        /// <param name="pos">Die Position im Client-Koordinatensystem.</param>
+        /// <returns>Die Position im virtuellen Bildschirmkoordinatensystem.</returns>
         public Vektor ClientToVirtualScreen(Position pos)
         {
             return new Vektor(pos.X - _cameraPosition.X, pos.Y - _cameraPosition.Y);
         }
 
-        MausEventArgs _maus = new MausEventArgs();
+        /// <summary>
+        /// Verarbeitet ein Mausereignis und speichert die Argumente.
+        /// Sendet es damit in den Thread der Game Engine
+        /// </summary>
+        /// <param name="args">Die Mausereignis-Argumente.</param>
         public void OnMouseEvent(MausEventArgs args)
         {
             EnqueueAction(() =>
@@ -149,7 +252,10 @@ namespace PhoenixDX.Program {
                 _maus = args;
             });
         }
-
+        /// <summary>
+        /// Verarbeitet Tastatureingaben und bewegt die Kamera entsprechend.
+        /// </summary>
+        /// <param name="args">Die Tasteneingabe-Argumente.</param>
         private void _OnKeyEvent(KeyEventArgs args)
         {
             if (args.State == KeyEventArgs.KeyState.Down)
@@ -171,7 +277,10 @@ namespace PhoenixDX.Program {
                 }
             }
         }
-
+        /// <summary>
+        /// Sendet ein Tastenereignis in den Thread der Game Engine
+        /// </summary>
+        /// <param name="args">Die Tastenereignis-Argumente.</param>
         public void OnKeyEvent(KeyEventArgs args)
         {
             EnqueueAction(() =>
@@ -180,7 +289,10 @@ namespace PhoenixDX.Program {
             });
         }
 
-
+        /// <summary>
+        /// Bewegt die Kamera zur angegebenen Position auf der Karte.
+        /// </summary>
+        /// <param name="pos">Die Zielposition auf der Karte.</param>
         void _goto(KleinfeldPosition pos)
         {
             Provinz provinz = Weltkarte.GetProviz(pos.gf);
@@ -201,6 +313,10 @@ namespace PhoenixDX.Program {
             //_wpfBridge.SelectKleinfeld(_selected.Koordinaten.gf, _selected.Koordinaten.kf, MausEventArgs.MouseEventType.None);
         }
 
+        /// <summary>
+        /// Schickt das Verschieben der Kamera in den Game Engine Thread
+        /// </summary>
+        /// <param name="pos">Die Zielposition auf der Karte.</param>
         public void Goto(KleinfeldPosition pos)
         {
             EnqueueAction(() =>
@@ -209,16 +325,25 @@ namespace PhoenixDX.Program {
             });
         }
 
+        /// <summary>
+        /// Gibt an, ob das Reichs-Overlay angezeigt wird.
+        /// Da dies im Drawing passiert und bool Threadsafe ist, kann hier direkt zugegriffen werden
+        /// </summary>
         public bool ReichOverlay
         {
             get { return WeltDrawer.ShowReichOverlay; }
             set { WeltDrawer.ShowReichOverlay = value; }
         }
 
+        /// <summary>
+        /// Verarbeitet die Eingaben der Maus.
+        /// Wird im Udate der GameEngine aufgerufen
+        /// </summary>
         private void HandleInput()
         {
             // Font for status text
             SpriteFont font = FontManager.Fonts["Default"];
+            // wenn der Event noch nicht verarbeitet wurde, dann jetzt bitte
             if (_maus?.Handled == false)
             {
                 _maus.Handled = true;
@@ -273,6 +398,9 @@ namespace PhoenixDX.Program {
             }
         }
 
+        /// <summary>
+        /// Lädt den Inhalt der Spielressourcen.
+        /// </summary>
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(_graphics.GraphicsDevice);
@@ -285,10 +413,20 @@ namespace PhoenixDX.Program {
             Marker.LoadContent(Content); // marker für den Layer 2
         }
 
+        /// <summary>
+        /// Delegat für die Update-Funktion.
+        /// </summary>
         public delegate void UpdateFunction();
+        /// <summary>
+        /// Die Update-Funktion wird je anch Status der Welt umgeschaltet
+        /// zuerst soll die Initialisierung abgeschlossen sein
+        /// dann werden der Input und die Queues verarbeitet
+        /// </summary>
         private UpdateFunction _updateFunction;
 
-        
+        /// <summary>
+        /// Initialisiert die Weltkarte und setzt die Update-Funktion um, damit die Inputs verarbeitet werden können
+        /// </summary>
         private void DoInitialization()
         {
             if (Weltkarte == null && SharedData.Map != null && SharedData.Map.IsAddingCompleted)
@@ -306,6 +444,10 @@ namespace PhoenixDX.Program {
             }
         }
 
+        /// <summary>
+        /// Aktualisiert das Spiel in jedem Frame.
+        /// </summary>
+        /// <param name="gameTime">Spielzeit-Informationen.</param>
         protected override void Update(GameTime gameTime)
         {
             if (_cancellationToken.IsCancellationRequested)
@@ -323,7 +465,9 @@ namespace PhoenixDX.Program {
             base.Update(gameTime);
         }
 
-        float _zoom = 0f;
+        /// <summary>
+        /// Steuerung des Zoom-Faktors mit Begrenzung der Werte.
+        /// </summary>
         public float Zoom
         {
             get => _zoom;
@@ -335,7 +479,10 @@ namespace PhoenixDX.Program {
                 _wpfBridge.OnZoomChanged(Zoom);
             }
         }
-            
+        /// <summary>
+        /// Zeichnet das aktuelle Frame.
+        /// </summary>
+        /// <param name="gameTime">Spielzeit-Informationen.</param> 
         protected override void Draw(GameTime gameTime)
         {
             _graphics.GraphicsDevice.Clear(Color.Black);

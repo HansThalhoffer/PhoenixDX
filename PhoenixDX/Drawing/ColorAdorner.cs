@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PhoenixDX.Drawing
 {
-    public abstract class ColorAdorner : GemarkAdorner
+    internal abstract class ColorAdorner : GemarkAdorner
     {
         ColoredTexture _ColorTexture = null;
 
