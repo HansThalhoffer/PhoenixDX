@@ -28,7 +28,7 @@ namespace PhoenixModel.dbErkenfara {
         #endregion
 
         #region Datenbankfelder
-        public string? ph_xy { get; set; }
+        public string ph_xy { get; set; } = string.Empty;
         public int x { get; set; } = 0;
         public int? y { get; set; }
         public string? db_xy { get; set; }

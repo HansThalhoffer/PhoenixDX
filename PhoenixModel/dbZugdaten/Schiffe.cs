@@ -13,6 +13,8 @@ namespace PhoenixModel.dbZugdaten {
         public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "Schiffe";
         string IDatabaseTable.TableName => TableName;
+        public const int StartNummer = 300; 
+        
         // IEigenschaftler
         public override FigurType BaseTyp => FigurType.Schiff;
         public override FigurType Typ {

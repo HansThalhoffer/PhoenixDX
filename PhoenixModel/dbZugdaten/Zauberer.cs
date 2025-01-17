@@ -17,6 +17,7 @@ namespace PhoenixModel.dbZugdaten {
         public const string TableName = "Zauberer";
         string IDatabaseTable.TableName => TableName;
         public override FigurType BaseTyp => FigurType.Zauberer;
+        public const int StartNummer = 500;
 
         public override FigurType Typ
         {
@@ -30,7 +31,9 @@ namespace PhoenixModel.dbZugdaten {
             }
         }
  
-        public Zaubererklasse Klasse { get => SpielfigurenView.GetZaubererklasse(this); }
+        public Zaubererklasse Klasse { get => ZaubererView.GetKlasse(this); }
+        public int MaxTeleportPunkte { get => ZaubererView.GetMaxTeleportPunkte(this); }
+        public int Regeneration { get => ZaubererView.GetRegeneration(this); }
 
         public enum Felder
         {

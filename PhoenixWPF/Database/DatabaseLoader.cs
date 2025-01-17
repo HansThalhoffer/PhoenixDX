@@ -25,6 +25,7 @@ namespace PhoenixWPF.Database
 
         /// <summary>
         /// Lädt die objekte in eine Collection
+        /// Wichtig: das erst genannte Feld im String Array bestimmt die Sortierung
         /// leider zwingt C# durch die ref parameterübergabe hier zwei identische Load Funktionen zu haben, eventuell wäre es eine
         /// Lösung die Colletion außerhalb zu erzeugen und das Laden in eine Funktion zu packen, wäre was zum Aufräumen
         /// </summary>

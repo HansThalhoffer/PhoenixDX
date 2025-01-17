@@ -9,6 +9,8 @@ namespace PhoenixModel.dbZugdaten {
         private static string _datebaseName = string.Empty;
         public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
         public const string TableName = "chars";
+        public const int StartNummer = 600;
+
         string IDatabaseTable.TableName => TableName;
         // IEigenschaftler
         public override FigurType Typ => FigurType.Charakter;

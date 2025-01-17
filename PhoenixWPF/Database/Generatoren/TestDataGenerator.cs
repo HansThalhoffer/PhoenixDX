@@ -15,6 +15,7 @@ using System.Data.OleDb;
 using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Reflection;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
@@ -68,6 +69,8 @@ namespace PhoenixWPF.Database.Generatoren {
                 Save(reiter, command);
                 Save(charakter, command);
                 Save(zauberer, command);
+
+                // todo schenkungen
             }
         }
 
@@ -104,11 +107,7 @@ namespace PhoenixWPF.Database.Generatoren {
 
 
         private static void Fill(ref Spielfigur figur, KleinFeld kf) {
-            figur.ph_xy = kf.ph_xy;
-            figur.gf = kf.gf;
-            figur.gf_von = kf.gf;
-            figur.kf = kf.kf;
-            figur.kf_von = kf.kf;
+            figur.PutOnKleinfeld(kf);  
         }
 
         private static void Fill(ref TruppenSpielfigur figur, KleinFeld kf) {
@@ -127,7 +126,7 @@ namespace PhoenixWPF.Database.Generatoren {
             }
             Spielfigur spielfigur = figur as Spielfigur;
             Fill(ref spielfigur, kf);
-            figur.staerke = random.Next(500, 6000);
+            figur.staerke = (random.Next(500, 6000) / 1000) * (figur is Reiter ? 500 : 1000);
             figur.hf = random.Next(1, 20);
             figur.LKP = lKP;
             figur.lkp_alt = lKP;
@@ -135,23 +134,89 @@ namespace PhoenixWPF.Database.Generatoren {
             figur.skp_alt = sKP;
         }
 
+        private static readonly string[] GermanNames =
+        {
+            // Male Names
+            "Alexander Schmidt", "Andreas Müller", "Anton Wagner", "Benedikt Fischer", "Christian Weber",
+            "Christoph Meyer", "Daniel Hoffmann", "Elias Schäfer", "Erik Becker", "Fabian Schröder",
+            "Felix Schneider", "Florian Neumann", "Franz Braun", "Friedrich Zimmermann", "Georg Krüger",
+            "Gustav Hartmann", "Heinrich Lange", "Jakob Schulz", "Jonas Lehmann", "Julian Köhler",
+            "Karl Maier", "Klaus Klein", "Leon Wolf", "Ludwig Schmitt", "Matthias Bauer",
+
+            // Female Names
+            "Amalia Schröder", "Anneliese Schulz", "Beatrix Hoffmann", "Charlotte Weber", "Claudia Fischer",
+            "Dagmar Wagner", "Daniela Meier", "Elfriede Becker", "Emilia Lehmann", "Erika Braun",
+            "Esther Klein", "Franziska Zimmermann", "Freya Maier", "Gertrud Wolf", "Gisela Krüger",
+            "Greta Müller", "Helga Neumann", "Ingrid Schröder", "Johanna Köhler", "Katharina Lange",
+            "Leonie Schmitt", "Lieselotte Schäfer", "Margarete Hartmann", "Marianne Bauer", "Sabine Meyer"
+        };
+
+        private static readonly string[] HeroNames =
+        {
+            // Male Names
+            "Aldric Eisenherz", "Borin Sturmfels", "Cedric Nachtschatten", "Draven Dunkelwald", "Eldrin Sternenlicht",
+            "Faelar Mondschatten", "Garrik Donnerherz", "Haldor Schattenfluch", "Ivar Blutwolf", "Jorik Morgentau",
+            "Kaelen Flinkklinge", "Lucian Feuerglut", "Magnus Frosthain", "Nyx Dämmerborn", "Orin Windreiter",
+            "Pelor Sonnenspeer", "Quintus Schattenstreif", "Ragnar Wolfszahn", "Sorin Sturmrufer", "Talon Schwarzspeer",
+            "Ulric Eisenfaust", "Veyron Nachtstürmer", "Wystan Silberglanz", "Xandor Sternenschmied", "Zephyrus Windwandler",
+
+            // Female Names
+            "Aelara Mondveil", "Brynna Sturmlied", "Celestia Morgenstrahl", "Delara Nachtgale", "Elaris Sternenschleier",
+            "Faenya Sonnenflüstern", "Gwyndolin Frostblüte", "Hestia Glutfeuer", "Isolde Schattentänzerin", "Jelena Lichtklinge",
+            "Kaida Sturmreiter", "Lyara Nebelkind", "Melisara Dämmerblüte", "Nymeria Windschatten", "Orlena Donnerstimme",
+            "Phaedra Flammenherz", "Quenara Frostflüstern", "Rhiannon Schattenflamme", "Selene Sternenspeer", "Talia Sonnenweber",
+            "Ulyssia Dunkelmond", "Vespera Nachtdorn", "Wynora Silberbach", "Xanthe Feuerschlag", "Zyra Sturmjäger"
+        };
+        private static readonly string[] WizardNames =
+        {
+            // Male Wizards
+            "Aldric Zauberherz", "Borin Runenstein", "Cedric Dämmersturm", "Draven Schattenfels", "Eldrin Sternenweise",
+            "Faelar Mondrunen", "Garrik Feuerzunge", "Haldor Schattenschwur", "Ivar Blutfeder", "Jorik Nebelweber",
+            "Kaelen Zauberkind", "Lucian Flammenlied", "Magnus Frostfluch", "Nyx Nachtruf", "Orin Windseher",
+            "Pelor Sonnenwirker", "Quintus Schattenleser", "Ragnar Wolfsweise", "Sorin Sturmblick", "Talon Schicksalsfluch",
+            "Ulric Runenfaust", "Veyron Dämmerglut", "Wystan Silberspruch", "Xandor Sternenseher", "Zephyrus Windzeichen",
+
+            // Female Wizards
+            "Aelara Mondweberin", "Brynna Runenzunge", "Celestia Morgenhauch", "Delara Nachtschrift", "Elaris Sternenlicht",
+            "Faenya Sonnenwirkerin", "Gwyndolin Frosthauch", "Hestia Glutlied", "Isolde Schattenruferin", "Jelena Zauberklinge",
+            "Kaida Sturmkristall", "Lyara Nebelfluch", "Melisara Dämmerrose", "Nymeria Windläuferin", "Orlena Donnerwort",
+            "Phaedra Flammenschwur", "Quenara Frosthüterin", "Rhiannon Schattensang", "Selene Sternenmantel", "Talia Sonnenkuss",
+            "Ulyssia Dunkelmantel", "Vespera Nachtzauber", "Wynora Silberbann", "Xanthe Feuermythos", "Zyra Sturmglanz"
+        };
+
         private static void Fill(ref NamensSpielfigur figur, KleinFeld kf) {
             Random random = new();
-            int lKP = Zufall(random, 20, 1, 20);
-            int sKP = Zufall(random, 10, 1, 5); ;
-            
+            figur.GP_ges = Zufall(random, 10, 32, 70);
+            if (figur.GP_ges ==0)
+                figur.GP_ges = Zufall(random, 20, 16, 32);
+            if (figur.GP_ges == 0)
+                figur.GP_ges = Zufall(random, 40, 8, 16);
+            if (figur.GP_ges == 0)
+                figur.GP_ges = random.Next(4, 8);
+            figur.GP_ges_alt = figur.GP_ges;
+
+            if (figur is Zauberer wiz) {
+                figur.Beschriftung = wiz.Klasse.ToString();
+                figur.tp_alt = wiz.MaxTeleportPunkte;
+                figur.tp = random.Next(wiz.MaxTeleportPunkte - 4, wiz.MaxTeleportPunkte);
+                figur.CharakterName = WizardNames[random.Next(WizardNames.Length)];
+                figur.GP_akt = random.Next(figur.GP_ges - 4, figur.GP_ges);
+                // TODO 
+            }
+            else {
+                figur.CharakterName = HeroNames[random.Next(HeroNames.Length)];
+            }
+            figur.SpielerName = GermanNames[random.Next(GermanNames.Length)];
             Spielfigur spielfigur = figur as Spielfigur;
             Fill(ref spielfigur, kf);
         }
 
         private static void Calculate(ref TruppenSpielfigur figur, KleinFeld kf) {
-            figur.Kosten = SpielfigurenView.BerechneBaukosten(figur);
             figur.bp = SpielfigurenView.BerechneBewegungspunkte(figur);
             figur.rp = SpielfigurenView.BerechneRaumpunkte(figur);
         }
 
         private static void Calculate(ref NamensSpielfigur figur, KleinFeld kf) {
-            figur.Kosten = SpielfigurenView.BerechneBaukosten(figur);
             figur.bp = SpielfigurenView.BerechneBewegungspunkte(figur);
             figur.rp = SpielfigurenView.BerechneRaumpunkte(figur);
         }
@@ -165,7 +230,7 @@ namespace PhoenixWPF.Database.Generatoren {
 
             // schiffe aufs Meer
             List<Schiffe> list = [];
-            int nummer = 301;
+            int nummer = Schiffe.StartNummer+1;
             for (int i = 0; i < count; ++i) {
                 KleinFeld? kf = EigeneKüste[random.Next(0, EigeneKüste.Length - 1)];
                 var nachbarn = KleinfeldView.GetNachbarn(kf, 2);
@@ -190,7 +255,7 @@ namespace PhoenixWPF.Database.Generatoren {
         private static List<Krieger> GenerateKrieger(KleinFeld[] eigeneGebiet, int count) {
             Random random = new();
             List<Krieger> list = [];
-            int nummer = 101;
+            int nummer = Krieger.StartNummer + 1;
             for (int i = 0; i < count; ++i) {
                 KleinFeld kf = eigeneGebiet[random.Next(0, eigeneGebiet.Length - 1)];
                 // auf Flotte
@@ -208,7 +273,7 @@ namespace PhoenixWPF.Database.Generatoren {
         private static List<Reiter> GenerateReiter(KleinFeld[] eigeneGebiet, int count) {
             Random random = new();
             List<Reiter> list = [];
-            int nummer = 201;
+            int nummer = Reiter.StartNummer + 1;
             for (int i = 0; i < count; ++i) {
                 KleinFeld kf = eigeneGebiet[random.Next(0, eigeneGebiet.Length - 1)];
                 // auf Flotte
@@ -226,7 +291,7 @@ namespace PhoenixWPF.Database.Generatoren {
         private static List<Character> GenerateCharacter(KleinFeld[] eigeneGebiet, int count) {
             Random random = new();
             List<Character> list = [];
-            int nummer = 201;
+            int nummer = Character.StartNummer + 1;
             for (int i = 0; i < count; ++i) {
                 KleinFeld kf = eigeneGebiet[random.Next(0, eigeneGebiet.Length - 1)];
                 // auf Flotte
@@ -244,7 +309,7 @@ namespace PhoenixWPF.Database.Generatoren {
         private static List<Zauberer> GenerateZauberer(KleinFeld[] eigeneGebiet, int count) {
             Random random = new();
             List<Zauberer> list = [];
-            int nummer = 201;
+            int nummer = Zauberer.StartNummer + 1;
             for (int i = 0; i < count; ++i) {
                 KleinFeld kf = eigeneGebiet[random.Next(0, eigeneGebiet.Length - 1)];
                 // auf Flotte

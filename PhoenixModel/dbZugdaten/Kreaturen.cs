@@ -13,6 +13,8 @@ namespace PhoenixModel.dbZugdaten {
         string IDatabaseTable.TableName => TableName;
         public override FigurType Typ => FigurType.Kreatur;
         public override FigurType BaseTyp => FigurType.Kreatur;
+        public const int StartNummer = 400;
+
 
         public enum Felder {
             nummer, staerke_alt, staerke, hf_alt, hf, lkp_alt, LKP, skp_alt, SKP, pferde_alt, Pferde, Garde, gf_von, kf_von, gf_nach, kf_nach, rp, bp, ph_xy, Befehl_bew, Befehl_ang, Befehl_erobert, GS, GS_alt, Kampfeinnahmen, Kampfeinnahmen_alt, x1, y1, x2, y2, x3,

@@ -16,7 +16,7 @@ namespace PhoenixModel.ViewModel {
         public int GP_akt { get; set; } = 0;
         public int GP_ges_alt { get; set; } = 0;
         public int GP_akt_alt { get; set; } = 0;
-        internal string Beschriftung { get; set; } = string.Empty;
+        public string Beschriftung { get; set; } = string.Empty;
         /// <summary>
         /// da die Datenbank für Charname zwei Schreibweisen kennt und die Abbildung 1:1 sein soll zur AccessDB, wird hier gedoppelt
         /// </summary>

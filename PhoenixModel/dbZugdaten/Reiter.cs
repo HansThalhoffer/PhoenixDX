@@ -13,6 +13,8 @@ namespace PhoenixModel.dbZugdaten {
         public const string TableName = "Reiter";
         string IDatabaseTable.TableName => TableName;
         public override FigurType BaseTyp => FigurType.Reiter;
+        public const int StartNummer = 200;
+
         public override FigurType Typ
         {
             get
