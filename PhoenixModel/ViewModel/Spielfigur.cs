@@ -57,11 +57,11 @@ namespace PhoenixModel.ViewModel {
         /// <summary>
         /// Die Startpostion Großfeld am Anfang des Zuges
         /// </summary>
-        private int _gfNach;
+        public int _gfNach;
         /// <summary>
         /// Die Startpostion Kleinfeld am Anfang des Zuges
         /// </summary>
-        private int _kfNach;
+        public int _kfNach;
         /// <summary>
         /// Der Raumpunkteverbrauch durch die Spielfigur, die Menge der Raumpunkte sind je nach Beschaffenheit des Kleinfeldes und Rüstortes begrenzt
         /// </summary>

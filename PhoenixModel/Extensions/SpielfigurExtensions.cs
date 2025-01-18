@@ -60,15 +60,15 @@ namespace PhoenixModel.Extensions {
         /// Holt den Wert von gf_nach.
         /// </summary>
         public static int GetGfNach(this Spielfigur spielfigur) {
-            return spielfigur.gf_nach;
+            return spielfigur._gfNach;
         }
 
         /// <summary>
         /// Setzt den Wert von gf_nach und löst OnPropertyChanged aus.
         /// </summary>
         public static void SetGfNach(this Spielfigur spielfigur, int value) {
-            if (spielfigur.gf_nach != value) {
-                spielfigur.gf_nach = value;
+            if (spielfigur._gfNach != value) {
+                spielfigur._gfNach = value;
                 spielfigur.OnPropertyChanged();
             }
         }
@@ -77,15 +77,15 @@ namespace PhoenixModel.Extensions {
         /// Holt den Wert von kf_nach.
         /// </summary>
         public static int GetKfNach(this Spielfigur spielfigur) {
-            return spielfigur.kf_nach;
+            return spielfigur._kfNach;
         }
 
         /// <summary>
         /// Setzt den Wert von kf_nach und löst OnPropertyChanged aus.
         /// </summary>
         public static void SetKfNach(this Spielfigur spielfigur, int value) {
-            if (spielfigur.kf_nach != value) {
-                spielfigur.kf_nach = value;
+            if (spielfigur._kfNach != value) {
+                spielfigur._kfNach = value;
                 spielfigur.OnPropertyChanged();
             }
         }
