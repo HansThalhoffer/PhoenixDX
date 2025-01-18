@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace PhoenixWPF.Pages
 {
     /// <summary>
-    /// Interaktionslogik für HistoryPage.xaml
+    /// Interaktionslogik für CommanndHistoryPage.xaml
     /// </summary>
-    public partial class HistoryPage : Page
+    public partial class CommanndHistoryPage : Page
     {
-        public HistoryPage()
+        public CommanndHistoryPage()
         {
             InitializeComponent();
         }

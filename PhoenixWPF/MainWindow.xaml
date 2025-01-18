@@ -84,8 +84,8 @@
                     <TabItem Header="Befehle" Name="CommandPage">
                         <Frame Source="Pages/CommandPage.xaml" />
                     </TabItem>
-                    <TabItem Header="History" Name="HistoryPage">
-                        <Frame Source="Pages/HistoryPage.xaml" />
+                    <TabItem Header="History" Name="CommandHistoryPage">
+                        <Frame Source="Pages/CommandHistoryPage.xaml" />
                     </TabItem>
                     <TabItem Header="Optionen" Name="Optionen">
                         <Frame Source="Pages/OptionsPage.xaml" />
