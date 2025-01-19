@@ -146,6 +146,8 @@ namespace PhoenixWPF.Database.Generatoren {
             figur.lkp_alt = lKP;
             figur.SKP = sKP;
             figur.skp_alt = sKP;
+            figur.GS = Zufall(random, 10, 6000, 15000);
+            figur.Kampfeinnahmen = Zufall(random, 10, 6000, 15000);
         }
 
         /// <summary>
@@ -323,6 +325,8 @@ namespace PhoenixWPF.Database.Generatoren {
                 TruppenSpielfigur truppenSpielfigur = krieger as TruppenSpielfigur;
                 Fill(ref truppenSpielfigur, kf);
                 Calculate(ref truppenSpielfigur, kf);
+                krieger.Pferde = Zufall(random, 20, krieger.staerke / 2, krieger.staerke);
+                krieger.Garde = i == 47;
                 list.Add(krieger);
             }
             return list;
