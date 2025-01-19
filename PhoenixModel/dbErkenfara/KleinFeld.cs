@@ -129,7 +129,7 @@ namespace PhoenixModel.dbErkenfara {
         private bool? _hasWegeRecht = null;
         public bool HasWegeRecht {
             get {
-                if (IsWasser == false || IsKüste == false)
+                if (IsWasser == true || IsKüste == true)
                     return false;
                 if (_hasWegeRecht == null)
                     _hasWegeRecht = KleinfeldView.UserHasWegerecht(this);

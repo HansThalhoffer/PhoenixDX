@@ -226,7 +226,10 @@ namespace PhoenixWPF.Database.Generatoren {
             figur.GP_ges_alt = figur.GP_ges;
 
             if (figur is Zauberer wiz) {
-                figur.Beschriftung = wiz.Klasse.ToString();
+                if (random.Next(47) % 3 == 0) 
+                    figur.Beschriftung = $"C{wiz.Klasse.ToString()}";
+                else
+                    figur.Beschriftung = wiz.Klasse.ToString();
                 figur.tp_alt = wiz.MaxTeleportPunkte;
                 figur.tp = random.Next(wiz.MaxTeleportPunkte - 4, wiz.MaxTeleportPunkte);
                 figur.CharakterName = WizardNames[random.Next(WizardNames.Length)];
@@ -239,11 +242,14 @@ namespace PhoenixWPF.Database.Generatoren {
                 if (kategorie != null) {
                     figur.Beschriftung = kategorie.Abkürzung.Replace("#", random.Next(1000).ToString()); ;
                 }
-                else figur.Beschriftung = "???";
+                else 
+                    figur.Beschriftung = "???";
                 figur.GP_akt = figur.GP_ges;
                 figur.CharakterName = HeroNames[random.Next(HeroNames.Length)];
+                figur.SpielerName = GermanNames[random.Next(GermanNames.Length)];
             }
-            figur.SpielerName = GermanNames[random.Next(GermanNames.Length)];
+            if (figur.Beschriftung.StartsWith("C"))
+                figur.SpielerName = GermanNames[random.Next(GermanNames.Length)];
             Spielfigur spielfigur = figur as Spielfigur;
             Fill(ref spielfigur, kf);
         }

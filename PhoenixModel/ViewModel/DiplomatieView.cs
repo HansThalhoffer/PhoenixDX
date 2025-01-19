@@ -29,7 +29,7 @@ namespace PhoenixModel.ViewModel {
         /// </summary>
         /// <param name="nation"></param>
         /// <returns></returns>
-        static List<Nation>? _NationenMitWegerechtErlaubt = [];
+        static List<Nation>? _NationenMitWegerechtErlaubt = null;
         public static IEnumerable<Nation>? GetWegerectAllowed() {
             if (_NationenMitWegerechtErlaubt == null)
                 _NationenMitWegerechtErlaubt = GetWegerectAllowed(ProgramView.SelectedNation) as List<Nation>;
@@ -62,7 +62,7 @@ namespace PhoenixModel.ViewModel {
         public static IEnumerable<Nation>? GetWegerectAllowed(Nation? nation) {
             if (nation == null || SharedData.Diplomatie == null || SharedData.Diplomatie.IsAddingCompleted == false)
                 return null;
-            var crossref = SharedData.Diplomatie.Values.Where(d => d.Nation == ProgramView.SelectedNation && d.Kuestenrecht_von > 0);
+            var crossref = SharedData.Diplomatie.Values.Where(d => d.Nation == ProgramView.SelectedNation && d.Wegerecht_von > 0);
             List<Nation> result = [];
             foreach (var c in crossref) {
                 result.Add(c.ReferenzNation);

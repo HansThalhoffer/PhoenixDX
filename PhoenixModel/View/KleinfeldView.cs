@@ -38,7 +38,7 @@ namespace PhoenixModel.View {
         /// <param name="kleinfeld"></param>
         /// <returns></returns>
         public static bool UserHasWegerecht(KleinFeld kleinfeld) {
-            var allowed = DiplomatieView.GetKüstenregelAllowed();
+            var allowed = DiplomatieView.GetWegerectAllowed();
             if (allowed == null)
                 return false;
             return kleinfeld.IsWasser == false && allowed.Contains(kleinfeld.Nation);
