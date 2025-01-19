@@ -12,22 +12,38 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PhoenixModel.View {
-   
 
     /// <summary>
     /// Vereinfacht die Nutzung von Truppensammlungen, die aus verschiedenen Klassen bestehen
     /// </summary>
+
     public static class SpielfigurenView {
+
+        /// <summary>
+        /// TODO Berechnugn der Beweungspunkte aus bereits geschriebenen Daten
+        /// </summary>
+        /// <param name="figur"></param>
+        /// <returns></returns>
         public static int BerechneBewegungspunkte(Spielfigur figur) {
             //throw new NotImplementedException();
             return 0;
         }
 
+        /// <summary>
+        /// TODO Berechnugn der Raumpunkte aus bereits geschriebenen Daten einer Spielfigur
+        /// </summary>
+        /// <param name="figur"></param>
+        /// <returns></returns>
         public static int BerechneRaumpunkte(Spielfigur figur) {
             //throw new NotImplementedException();
             return 0;
         }
 
+        /// <summary>
+        /// Holt alle Spielfiguren eines Kleinfeldes als eine Armee
+        /// </summary>
+        /// <param name="gem"></param>
+        /// <returns></returns>
         public static Armee GetSpielfiguren(KleinfeldPosition gem) {
             Armee result = [];
             var kreaturen = SharedData.Kreaturen?.Where(s => s.gf == gem.gf && s.kf == gem.kf && Plausibilität.IsValid(s));
@@ -54,6 +70,11 @@ namespace PhoenixModel.View {
             return result;
         }
 
+        /// <summary>
+        /// Holt alle Spielfiguren einer Nation als Armee
+        /// </summary>
+        /// <param name="nation"></param>
+        /// <returns></returns>
         public static Armee GetSpielfiguren(Nation? nation) {
             if (nation == null)
                 return [];

@@ -55,14 +55,14 @@ namespace PhoenixModel.dbZugdaten {
         public void Insert(DbCommand command) {
             command.CommandText = $@"
         INSERT INTO {TableName} (
-            Schenkung_bekommen, Schenkung_bekommenID, Schenkung_an, Schenkung_anID, monat, ID
+            Schenkung_bekommen, Schenkung_bekommenID, Schenkung_an, Schenkung_anID, monat
         ) VALUES (
             {this.Schenkung_bekommen}, 
             '{DatabaseConverter.EscapeString(this.Schenkung_bekommenID)}', 
             {this.Schenkung_an}, 
             '{DatabaseConverter.EscapeString(this.Schenkung_anID)}', 
-            {this.monat}, 
-            {this.ID}
+            {this.monat}
+           
         )";
 
             // Execute the command

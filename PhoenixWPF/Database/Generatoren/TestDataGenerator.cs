@@ -14,6 +14,13 @@ using static PhoenixModel.Database.PasswordHolder;
 
 namespace PhoenixWPF.Database.Generatoren {
     internal static class TestDataGenerator {
+
+        /// <summary>
+        /// Die Testdaten werden in den Zug 999 geschrieben, der dafür manuell angelegt werden muss
+        /// es kann eine beliebige Zugdatei des ausgewählten Reiches ab 2020 verwendet werden und in das Verzeichnis Zugdaten/999 kopiert werden
+        /// die darin enthaltenen Daten werden überschrieben
+        /// </summary>
+        /// <exception cref="Exception"></exception>
         public static void GeneriereTestdatenFürZug999() {
             if (ProgramView.SelectedNation == null)
                 throw new Exception("Reich muss ausgewählt sein");
@@ -48,6 +55,8 @@ namespace PhoenixWPF.Database.Generatoren {
                 result = command.ExecuteNonQuery();
                 command.CommandText = "DELETE FROM chars";
                 result = command.ExecuteNonQuery();
+                command.CommandText = "DELETE FROM Schenkungen";
+                result = command.ExecuteNonQuery();
                 var schiffe = GenerateSchiffe(20);
                 var krieger = GenerateKrieger(eigeneGebiet, 20);
                 var reiter = GenerateReiter(eigeneGebiet, 20);
@@ -60,12 +69,14 @@ namespace PhoenixWPF.Database.Generatoren {
                 Save(reiter, command);
                 Save(charakter, command);
                 Save(zauberer, command);
+                var schenkungen = GenerateSchenkungen(8);
+                Save(schenkungen, command);
 
                 // todo schenkungen
             }
         }
 
-        private static void Save(IEnumerable<Spielfigur> figuren, DbCommand command) {
+        private static void Save(IEnumerable<IDatabaseTable> figuren, DbCommand command) {
             foreach (var figur in figuren) {
                 figur.Insert(command);
             }
@@ -92,6 +103,14 @@ namespace PhoenixWPF.Database.Generatoren {
             }
         }
 
+        /// <summary>
+        /// gibt eine Zufallszahl zurück, wenn eine gewisse Wahrscheinlichkeit eintrifft, ansonsten 0
+        /// </summary>
+        /// <param name="random"></param>
+        /// <param name="wahrscheinlichkeit"></param>
+        /// <param name="minValue"></param>
+        /// <param name="maxValue"></param>
+        /// <returns></returns>
         private static int Zufall(Random random, int wahrscheinlichkeit, int minValue, int maxValue) {
             return random?.Next(1, 100) < wahrscheinlichkeit ? random.Next(minValue, maxValue) : 0;
         }
@@ -100,6 +119,11 @@ namespace PhoenixWPF.Database.Generatoren {
             figur.PutOnKleinfeld(kf);  
         }
 
+        /// <summary>
+        /// füllt die allgemeinen Werte einer Truppenspielfigur (Schiffe, Reiter, Kreaturen, Krieger)
+        /// </summary>
+        /// <param name="figur"></param>
+        /// <param name="kf"></param>
         private static void Fill(ref TruppenSpielfigur figur, KleinFeld kf) {
             Random random = new();
             int lKP = Zufall(random, 20, 1, 20);
@@ -124,6 +148,9 @@ namespace PhoenixWPF.Database.Generatoren {
             figur.skp_alt = sKP;
         }
 
+        /// <summary>
+        /// einfache Namen für Spieler
+        /// </summary>
         private static readonly string[] GermanNames =
         {
             // Male Names
@@ -141,6 +168,9 @@ namespace PhoenixWPF.Database.Generatoren {
             "Leonie Schmitt", "Lieselotte Schäfer", "Margarete Hartmann", "Marianne Bauer", "Sabine Meyer"
         };
 
+        /// <summary>
+        /// Namen für Held*innen
+        /// </summary>
         private static readonly string[] HeroNames =
         {
             // Male Names
@@ -157,6 +187,9 @@ namespace PhoenixWPF.Database.Generatoren {
             "Phaedra Flammenherz", "Quenara Frostflüstern", "Rhiannon Schattenflamme", "Selene Sternenspeer", "Talia Sonnenweber",
             "Ulyssia Dunkelmond", "Vespera Nachtdorn", "Wynora Silberbach", "Xanthe Feuerschlag", "Zyra Sturmjäger"
         };
+        /// <summary>
+        /// Namen für Zauberer*innen
+        /// </summary>
         private static readonly string[] WizardNames =
         {
             // Male Wizards
@@ -174,6 +207,11 @@ namespace PhoenixWPF.Database.Generatoren {
             "Ulyssia Dunkelmantel", "Vespera Nachtzauber", "Wynora Silberbann", "Xanthe Feuermythos", "Zyra Sturmglanz"
         };
 
+        /// <summary>
+        /// Füllt die Daten von Zauberern und Charaktern
+        /// </summary>
+        /// <param name="figur"></param>
+        /// <param name="kf"></param>
         private static void Fill(ref NamensSpielfigur figur, KleinFeld kf) {
             Random random = new();
             figur.GP_ges = Zufall(random, 10, 32, 70);
@@ -193,7 +231,14 @@ namespace PhoenixWPF.Database.Generatoren {
                 figur.GP_akt = random.Next(figur.GP_ges - 4, figur.GP_ges);
                 // TODO 
             }
-            else {
+            else if (figur is Character hero) { 
+                figur.CharakterName = HeroNames[random.Next(HeroNames.Length)];
+                var kategorie = CharacterView.GetAssumedCharacterKategorie(hero);
+                if (kategorie != null) {
+                    figur.Beschriftung = kategorie.Abkürzung.Replace("#", random.Next(1000).ToString()); ;
+                }
+                else figur.Beschriftung = "???";
+                figur.GP_akt = figur.GP_ges;
                 figur.CharakterName = HeroNames[random.Next(HeroNames.Length)];
             }
             figur.SpielerName = GermanNames[random.Next(GermanNames.Length)];
@@ -201,16 +246,32 @@ namespace PhoenixWPF.Database.Generatoren {
             Fill(ref spielfigur, kf);
         }
 
+        /// <summary>
+        /// Berechnet die aktuellen Baupunkte und Bewegungspunkte von Truppen
+        /// </summary>
+        /// <param name="figur"></param>
+        /// <param name="kf"></param>
         private static void Calculate(ref TruppenSpielfigur figur, KleinFeld kf) {
             figur.bp = SpielfigurenView.BerechneBewegungspunkte(figur);
             figur.rp = SpielfigurenView.BerechneRaumpunkte(figur);
         }
 
+        /// <summary>
+        /// Berechnet die aktuellen Baupunkte und Bewegungspunkte von Zauberern und Charakteren
+        /// </summary>
+        /// <param name="figur"></param>
+        /// <param name="kf"></param>
         private static void Calculate(ref NamensSpielfigur figur, KleinFeld kf) {
             figur.bp = SpielfigurenView.BerechneBewegungspunkte(figur);
             figur.rp = SpielfigurenView.BerechneRaumpunkte(figur);
         }
 
+        /// <summary>
+        /// erzeuge eine Anzahl von Schiffen an die Küste der aktuell ausgewählten Nation
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         private static List<Schiffe> GenerateSchiffe(int count) {
             Random random = new();
             if (SharedData.Map == null)
@@ -242,6 +303,13 @@ namespace PhoenixWPF.Database.Generatoren {
             return list;
         }
 
+        /// <summary>
+        /// erzeuge eine Anzahl von Kriegern in das Staatsgebiet der aktuelll ausgewählten Nation
+        /// Katapulte werden auf die Rüstorte verteilt
+        /// </summary>
+        /// <param name="eigeneGebiet"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
         private static List<Krieger> GenerateKrieger(KleinFeld[] eigeneGebiet, int count) {
             Random random = new();
             List<Krieger> list = [];
@@ -260,6 +328,12 @@ namespace PhoenixWPF.Database.Generatoren {
             return list;
         }
 
+        /// <summary>
+        /// erzeuge eine Anzahl von Reitern in das Staatsgebiet der aktuelll ausgewählten Nation
+        /// </summary>
+        /// <param name="eigeneGebiet"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
         private static List<Reiter> GenerateReiter(KleinFeld[] eigeneGebiet, int count) {
             Random random = new();
             List<Reiter> list = [];
@@ -278,6 +352,12 @@ namespace PhoenixWPF.Database.Generatoren {
             return list;
         }
 
+      /// <summary>
+      /// erzeuge eine Anzahl von Charakteren in das Staatsgebiet der aktuelll ausgewählten Nation
+      /// </summary>
+      /// <param name="eigeneGebiet"></param>
+      /// <param name="count"></param>
+      /// <returns></returns>
         private static List<Character> GenerateCharacter(KleinFeld[] eigeneGebiet, int count) {
             Random random = new();
             List<Character> list = [];
@@ -295,7 +375,13 @@ namespace PhoenixWPF.Database.Generatoren {
             }
             return list;
         }
-
+        
+        /// <summary>
+        /// erzeuge eine Anzahl von Zauperbern in das Staatsgebiet der aktuelll ausgewählten Nation
+        /// </summary>
+        /// <param name="eigeneGebiet"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
         private static List<Zauberer> GenerateZauberer(KleinFeld[] eigeneGebiet, int count) {
             Random random = new();
             List<Zauberer> list = [];
@@ -312,6 +398,31 @@ namespace PhoenixWPF.Database.Generatoren {
                 list.Add(wizard);
             }
             return list;
+        }
+
+        private static List<Schenkungen> GenerateSchenkungen(int count) {
+            Random random = new();
+            List<Schenkungen> schenkungens = [];
+            for (int i = 0; i < count; ++i) {
+                Schenkungen schenkung = new Schenkungen();
+                if (SharedData.Nationen == null || ProgramView.SelectedNation == null)
+                    continue;
+                schenkung.monat =i*8 + random.Next(7);
+                var reich = SharedData.Nationen.ElementAt(random.Next(SharedData.Nationen.Count -1));
+                if (random.Next(47) % 2 > 0) {
+                    schenkung.Schenkung_an = random.Next(1, 10) * 1000;
+                    schenkung.Schenkung_anID = reich.DBname;
+                    schenkung.Schenkung_bekommenID = ProgramView.SelectedNation.DBname;
+                }
+                else {
+                    schenkung.Schenkung_bekommen = random.Next(1, 10) * 1000;
+                    schenkung.Schenkung_bekommenID = reich.DBname;
+                    schenkung.Schenkung_anID = ProgramView.SelectedNation.DBname;
+                }
+                schenkungens.Add(schenkung);
+
+            }
+            return schenkungens;
         }
     }
 }

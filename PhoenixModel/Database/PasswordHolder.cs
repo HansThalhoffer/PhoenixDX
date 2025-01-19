@@ -5,25 +5,37 @@ using System.Text.Json.Serialization;
 
 namespace PhoenixModel.Database
 {
+    /// <summary>
+    /// Verwaltet verschlüsselte Passwörter und bietet Methoden zur Verschlüsselung und Entschlüsselung.
+    /// </summary>
     public class PasswordHolder
     {
+        /// <summary>
+        /// Eine Klasse zur Speicherung eines verschlüsselten Strings.
+        /// </summary>
         public class EncryptedString
         {
             [JsonInclude] 
             protected string _value = string.Empty;
-            
+
+            /// <summary>
+            /// Erstellt eine Instanz von EncryptedString mit einem leeren Wert.
+            /// </summary>
             public EncryptedString() { _value = string.Empty; }
 
+            /// <summary>
+            /// Erstellt eine Instanz von EncryptedString mit einem gegebenen Wert.
+            /// </summary>
+            /// <param name="value">Der zu speichernde verschlüsselte Wert.</param>
             public EncryptedString(string? value)
             {
                 if (value!= null)
                     this._value = value;
             }
             /// <summary>
-            /// konvertierung von EncryptedString zu string
-            /// erlaubt die Benutzung wie ein normaler String zb bei string.IsNullOrEmpty
+            /// Implizite Konvertierung von EncryptedString zu string.
+            /// Erlaubt die Benutzung wie ein normaler String, z. B. bei string.IsNullOrEmpty.
             /// </summary>
-            /// <param name="d"></param>
             public static implicit operator string(EncryptedString? d)
             {
                 if (d == null) 
@@ -31,15 +43,17 @@ namespace PhoenixModel.Database
                 return d._value;
             }
             /// <summary>
-            /// konvertierung von string zu EncryptedString
+            /// Implizite Konvertierung von string zu EncryptedString.
             /// </summary>
-            /// <param name="d"></param>
             public static implicit operator EncryptedString(string? d)
             {
                 return new EncryptedString(d);
             }
         }
-        
+        /// <summary>
+        /// Schnittstelle zur Bereitstellung eines Passworts.
+        /// </summary>
+
         public interface IPasswordProvider
         {
             EncryptedString Password { get; }
@@ -48,20 +62,34 @@ namespace PhoenixModel.Database
         [JsonIgnore] 
         private EncryptedString _encryptedPasswordBase64;
 
+        /// <summary>
+        /// Erstellt eine neue Instanz von PasswordHolder mit einem leeren Passwort.
+        /// </summary>
         public PasswordHolder()
         { _encryptedPasswordBase64 = string.Empty; }
 
+        /// <summary>
+        /// Erstellt eine neue Instanz von PasswordHolder mit einem NICHT verschlüsselten Passwort.
+        /// </summary>
+        /// <param name="plainPassword">Das unverschlüsselte Passwort.</param>
         public PasswordHolder(string plainPassword)
         { 
             _encryptedPasswordBase64 = EncryptPassword(plainPassword); 
         }
-
+        /// <summary>
+        /// Erstellt eine neue Instanz von PasswordHolder mit einem verschlüsselten Passwort.
+        /// </summary>
+        /// <param name="plainPassword">Das unverschlüsselte Passwort.</param>
         public PasswordHolder(EncryptedString password)
         {
             _encryptedPasswordBase64 = password;
         }
 
-        // Constructor that accepts a password
+        /// <summary>
+        /// Erstellt eine neue Instanz von PasswordHolder mit einer Passwortquelle.
+        /// </summary>
+        /// <param name="password">Das Passwort, falls bereits vorhanden.</param>
+        /// <param name="provider">Die Quelle für das Passwort, falls es nicht angegeben wurde.</param>
         public PasswordHolder(EncryptedString? password, IPasswordProvider provider)
         {
             if (password == null || string.IsNullOrEmpty(password))
@@ -76,6 +104,12 @@ namespace PhoenixModel.Database
                 _encryptedPasswordBase64 = password;
             }
         }
+        /// <summary>
+        /// Verschlüsselt ein Passwort mit einem angegebenen Schlüssel.
+        /// </summary>
+        /// <param name="password">Das zu verschlüsselnde Passwort.</param>
+        /// <param name="passkey">Der Schlüssel für die Verschlüsselung.</param>
+        /// <returns>Das verschlüsselte Passwort als Base64-String.</returns>
 
         public static string Encrypt(string password, string passkey)
         {
@@ -114,14 +148,18 @@ namespace PhoenixModel.Database
             }
         }
 
-        // Method to encrypt password using computer name
+        /// <summary>
+        /// Verschlüsselt ein Passwort unter Verwendung des Rechnernamens als Schlüssel.
+        /// </summary>
         private string EncryptPassword(string password)
         {
             // Get computer name
             return Encrypt(password, Environment.MachineName);
         }
 
-
+        /// <summary>
+        /// Gibt das entschlüsselte Passwort zurück.
+        /// </summary>
         public string DecryptedPassword
         {
             get
@@ -129,8 +167,10 @@ namespace PhoenixModel.Database
                 return Decrypt(_encryptedPasswordBase64, Environment.MachineName);
             }
         }
-            
-        // Method to decrypt password
+
+        /// <summary>
+        /// Entschlüsselt ein Passwort.
+        /// </summary>
         public static string Decrypt(string encryptedPasswordBase64, string passkey)
         {
             try
@@ -175,7 +215,11 @@ namespace PhoenixModel.Database
         }
 
         
-        // Method to derive key from string
+        /// <summary>
+        /// erzeugt einen Schlüssen für die Verschlüsselung
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         private static byte[] DeriveKeyFromString(string input)
         {
             // Use a fixed salt value (consider using a unique salt in production)
@@ -192,7 +236,9 @@ namespace PhoenixModel.Database
             return key;
         }
 
-        // Property for JSON serialization/deserialization
+        /// <summary>
+        /// Property for JSON serialization/deserialization
+        /// </summary>
         [JsonInclude]
         public EncryptedString EncryptedPasswordBase64
         {

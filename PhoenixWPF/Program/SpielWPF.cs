@@ -88,13 +88,13 @@ namespace PhoenixWPF.Program {
                     }
                 }*/
                 /// TEST - nachbarn markieren
-                KleinfeldView.UnMark();
+                /*KleinfeldView.UnMark();
                 var nachbarn = KleinfeldView.GetNachbarn(gem, 2);
                 if (nachbarn != null) {
                     foreach (var g in nachbarn) {
                         KleinfeldView.Mark(g, MarkerType.Fatality, true);
                     }
-                }
+                }*/
             }
         }
 

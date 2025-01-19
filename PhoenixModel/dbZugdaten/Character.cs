@@ -5,6 +5,9 @@ using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
 using PhoenixModel.ViewModel;
 namespace PhoenixModel.dbZugdaten {
+
+    public enum Characterklasse { HF, BUH, STH, FSH, HER, none }
+
     public class Character : NamensSpielfigur, IDatabaseTable, IEigenschaftler {
         private static string _datebaseName = string.Empty;
         public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
