@@ -1,15 +1,15 @@
 ﻿using PhoenixDX;
 using PhoenixModel.Database;
+using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbErkenfara;
-using PhoenixModel.dbZugdaten;
 using PhoenixModel.EventsAndArgs;
+using PhoenixModel.ExternalTables;
 using PhoenixModel.Program;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using PhoenixWPF.Database;
 using PhoenixWPF.Dialogs;
 using PhoenixWPF.Helper;
-using System.Collections.Concurrent;
 using System.IO;
 using System.Windows;
 using System.Windows.Threading;
@@ -87,6 +87,7 @@ namespace PhoenixWPF.Program {
             LoadKarte(true);
             if (SelectReich()) {
                 LoadZugdaten(true);
+                LoadFeinderkennung(true);
             }
             else {
                 Application.Current.Shutdown();
@@ -98,6 +99,9 @@ namespace PhoenixWPF.Program {
             _backgroundSave.Tick += PerformSave;
         }
 
+        /// <summary>
+        /// den Zug wechseln, ohne die Anwendung zu beenden
+        /// </summary>
         public void Zugwechsel() {
 
             /// gibt  es noch was zum Speichern?
@@ -281,6 +285,17 @@ namespace PhoenixWPF.Program {
         public void UpdateKleinfeld(KleinFeld gem) {
             SharedData.UpdateQueue.Enqueue(gem);
         }
+
+        /// <summary>
+        /// Ein Kleinfeld soll neu gezeichnet werden
+        /// </summary>
+        /// <param name="gem"></param>
+        public void UpdateKleinfeld(KleinfeldPosition pos) {
+            KleinFeld? kleinFeld = null;
+            if ( SharedData.Map != null && SharedData.Map.TryGetValue(pos.CreateBezeichner(), out kleinFeld)) {
+                SharedData.UpdateQueue.Enqueue(kleinFeld);
+            }
+        }
         #endregion
 
         /// <summary>
@@ -365,6 +380,8 @@ namespace PhoenixWPF.Program {
             Load(ref databaseLocation, ref encryptedPassword, CreateCrossRef, dbCrossRef, inBackground ? OnLoadCompleted : null);
             Settings.UserSettings.DatabaseLocationCrossRef = databaseLocation;
             Settings.UserSettings.PasswordCrossRef = encryptedPassword;
+            if (string.IsNullOrEmpty(Settings.DataRootPath))
+                Settings.DataRootPath = StorageSystem.ExtractBasePath(databaseLocation, "_Data");
         }
 
 
@@ -419,6 +436,29 @@ namespace PhoenixWPF.Program {
             Load(ref databaseLocation, ref encryptedPassword, CreateZugdaten, $"{reich.DBname}", inBackground ? OnLoadCompleted : null);
             Settings.UserSettings.DatabaseLocationZugdaten = databaseLocation;
             Settings.UserSettings.PasswordReich = encryptedPassword;
+        }
+
+        /// <summary>
+        /// lädt aus der Feindaufklaerung.dat die Daten und legt diese an
+        /// </summary>
+        /// <param name="inBackground"></param>
+        public void LoadFeinderkennung(bool inBackground = false) {
+            if (Settings == null || SharedData.Nationen == null || Settings.UserSettings.SelectedReich < 0)
+                return;
+            string databaseLocation = Settings.UserSettings.DatabaseLocationFeindaufklärung;
+            if (string.IsNullOrEmpty(databaseLocation) && string.IsNullOrEmpty(Settings.DataRootPath) == false)
+                databaseLocation = Path.Combine(Settings.DataRootPath, AppSettings.DatabaseLocationFeindaufklärung);
+            var reich = ProgramView.SelectedNation;
+            if (reich == null) {
+                SpielWPF.LogError("Zugdaten: Es wurde kein Reich ausgewählt", "Beim Laden ist ein Fehler aufgetregten, da kein Reich ausgewählt wurde. Daher können die Feinde nicht erkannt werden.");
+                return;
+            }
+            Feinde.LoadFeinderkennung(databaseLocation);
+            if (SharedData.Feinde != null) {
+                foreach (var k in SharedData.Feinde) {
+                    UpdateKleinfeld(k);
+                }
+            }
         }
         #endregion
 

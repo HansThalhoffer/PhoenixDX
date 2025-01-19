@@ -3,12 +3,13 @@ using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbPZE;
 using PhoenixModel.dbZugdaten;
+using PhoenixModel.ExternalTables;
 using System.Collections.Concurrent;
 
 namespace PhoenixModel.ViewModel {
 
     public static class SharedData {
-       
+
         /// <summary>
         /// In dieser Queue werden die Objekte abgelegt, die in der Datenbank gespeichert werden sollen. Das geschieht asynchron
         /// </summary>
@@ -22,7 +23,7 @@ namespace PhoenixModel.ViewModel {
 
         // PZE
         public static BlockingCollection<Nation>? Nationen = null;
-        public static BlockingCollection<Feindaufklaerung>? Feindaufklaerung = null;
+        // ist nicht aktuell public static BlockingCollection<Feindaufklaerung>? Feindaufklaerung = null;
         public static BlockingCollection<Handout>? Handout = null;
         public static BlockingCollection<Infolog>? Infolog = null;
 
@@ -64,5 +65,7 @@ namespace PhoenixModel.ViewModel {
         public static BlockingCollection<Units>? Units_Zugdaten = null;
         public static BlockingCollection<Zauberer>? Zauberer = null;
 
+        // Feinderkennung - aus der Textdatei
+        public static BlockingCollection<Feinde>? Feinde = null;
     }
 }

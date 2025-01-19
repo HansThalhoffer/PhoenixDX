@@ -74,7 +74,7 @@ namespace PhoenixDX.Structures {
                 // alte Reichszugehörigkeit entfernen, falls vorhanden
                 if (Layer_0 != null) {
                     var alteReiche = Layer_0.Where(item => item is Reich);
-                    foreach(var alte in alteReiche)
+                    foreach (var alte in alteReiche)
                         Layer_0.Remove(alte);
                 }
                 Layer_0.Insert(0, value);
@@ -225,12 +225,22 @@ namespace PhoenixDX.Structures {
             }
 
             var spielfiguren = gem.Truppen;
-            if (spielfiguren != null && spielfiguren.Count > 0) {
+            var feinde = gem.Feinde;
+            if ((spielfiguren != null && spielfiguren.Count > 0) ||
+                (feinde != null && feinde.Count > 0)) {
                 try {
                     List<Truppen.Figur> truppen = [];
-                    foreach (var figur in spielfiguren) {
-                        Microsoft.Xna.Framework.Color color = Kolor.Convert(figur.Nation.Farbe);
-                        truppen.Add(new Truppen.Figur(figur.Typ, color));
+                    if (spielfiguren != null) {
+                        foreach (var figur in spielfiguren) {
+                            Microsoft.Xna.Framework.Color color = Kolor.Convert(figur.Nation.Farbe);
+                            truppen.Add(new Truppen.Figur(figur.Typ, color));
+                        }
+                    }
+                    if (feinde != null) {
+                        foreach (var figur in feinde) {
+                            Microsoft.Xna.Framework.Color color = Kolor.Convert(figur.Nation.Farbe);
+                            truppen.Add(new Truppen.Figur(figur.Typ, color));
+                        }
                     }
                     if (truppen.Count > 0) {
                         Layer_1.Add(new Truppen(truppen));
@@ -264,7 +274,7 @@ namespace PhoenixDX.Structures {
 
             if (mousePos.X > _mapCoords.X + Width * _scale.X * 0.85f || mousePos.Y > _mapCoords.Y + Height * _scale.Y * 0.85f)
                 return false;
-                
+
             /* Hier könnte eine Berechnung des HEX Feldes erfolgen, ist aber praktisch nicht notwendig
              * PointF[] hexVertices = {
                  new PointF(_mapCoords.X, _mapCoords.Y - Height / 2f), // top

@@ -234,6 +234,10 @@ namespace PhoenixModel.dbErkenfara {
             get { return SpielfigurenView.GetSpielfiguren(this); }
         }
 
+        public Gegner Feinde {
+            get { return ExternalTables.Feinde.GetFeinde(this); }
+        }
+
         public void Save(DbCommand command)
         {
             command.CommandText = $@"UPDATE {TableName} SET

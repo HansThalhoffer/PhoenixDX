@@ -1,12 +1,33 @@
 ﻿using PhoenixModel.dbZugdaten;
+using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PhoenixModel.ViewModel {
+
+    public class Gegner: List<Feinde>, IEigenschaftler {
+
+        /// <summary>
+        /// IEigenschaftler Anforderung
+        /// </summary>
+        public string Bezeichner => "Gegner";
+        /// <summary>
+        /// IEigenschaftler Anforderung
+        ///  dieses Property wird für die Anzeige in den Eigenschaften eines Kleinfeldes genutzt, die Darstellung in der Truppenliste wird in der Page selbst erzeugt
+        /// </summary>
+        public List<Eigenschaft> Eigenschaften {
+            get {
+                List<Eigenschaft> eigenschaften = [];
+                foreach (var figur in this) {
+                    eigenschaften.Add(new Eigenschaft("Fremdtruppen", $"{figur.Typ}({figur.Reich}/{figur.Nation.Reich})", false, this));
+                }
+                return eigenschaften;
+            }
+        }
+
+
+    }
+
+
 
     /// <summary>
     /// Armee wird als Listenklasse der Spielfiguren benutzt

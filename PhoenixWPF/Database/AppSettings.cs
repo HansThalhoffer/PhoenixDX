@@ -49,7 +49,7 @@ namespace PhoenixWPF.Database {
         /// <summary>
         /// Der Pfad zur Feindaufklärungsdatenbank.
         /// </summary>
-        public const string DatabaseLocationFeinde = "Feindaufklaerung\\Feindaufklaerung.dat";
+        public const string DatabaseLocationFeindaufklärung = "Feindaufklaerung\\Feindaufklaerung.dat";
 
         string UserFilename;
 

@@ -17,7 +17,7 @@
         private string _passwordCrossRef = string.Empty;
         private string _databaseLocationZugdaten = string.Empty;
         private string _passwordReich = string.Empty;
-        private string _databaseLocationFeinde = string.Empty;
+        private string _databaseLocationFeindaufklärung = string.Empty;
         private int _selectedReich = -1;
         private int _selectedZug = -1;
         private bool _showKüstenRegel = true;
@@ -158,6 +158,16 @@
                 if (_databaseLocationZugdaten != value) {
                     _databaseLocationZugdaten = value;
                     OnPropertyChanged(nameof(DatabaseLocationZugdaten));
+                }
+            }
+        }
+
+        public string DatabaseLocationFeindaufklärung {
+            get => _databaseLocationFeindaufklärung;
+            set {
+                if (_databaseLocationFeindaufklärung != value) {
+                    _databaseLocationFeindaufklärung = value;
+                    OnPropertyChanged(nameof(DatabaseLocationFeindaufklärung));
                 }
             }
         }
