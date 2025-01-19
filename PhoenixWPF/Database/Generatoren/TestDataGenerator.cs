@@ -61,7 +61,7 @@ namespace PhoenixWPF.Database.Generatoren {
                 var krieger = GenerateKrieger(eigeneGebiet, 20);
                 var reiter = GenerateReiter(eigeneGebiet, 20);
                 var zauberer = GenerateZauberer(eigeneGebiet, 20);
-                var charakter = GenerateCharacter(eigeneGebiet, 20);
+                var charakter = GenerateCharacter(eigeneGebiet, 12);
                 PutOnSchiffe(schiffe, krieger, 5);
                 PutOnSchiffe(schiffe, reiter, 5);
                 Save(schiffe, command);
@@ -400,6 +400,11 @@ namespace PhoenixWPF.Database.Generatoren {
             return list;
         }
 
+        /// <summary>
+        /// erzeuge Schenkungen für und von dem Reich
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
         private static List<Schenkungen> GenerateSchenkungen(int count) {
             Random random = new();
             List<Schenkungen> schenkungens = [];

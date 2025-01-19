@@ -50,6 +50,7 @@ namespace PhoenixWPF.Pages {
             if (SharedData.Gebäude != null && ProgramView.SelectedNation != null &&
                 (e.EventType == ViewEventArgs.ViewEventType.EverythingLoaded || e.EventType == ViewEventArgs.ViewEventType.UpdateSpielfiguren))
             {
+                EigenschaftlerDataGrid.ItemsSource = null;
                 EigenschaftlerList.Clear();
                 var list = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation);
                 if (list != null)
