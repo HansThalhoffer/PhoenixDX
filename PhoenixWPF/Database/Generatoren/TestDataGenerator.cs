@@ -140,7 +140,7 @@ namespace PhoenixWPF.Database.Generatoren {
             }
             Spielfigur spielfigur = figur as Spielfigur;
             Fill(ref spielfigur, kf);
-            figur.staerke = (random.Next(500, 6000) / 1000) * (figur is Reiter ? 500 : 1000);
+            figur.staerke = (random.Next(500, 6000) / 1000) * (figur is Schiffe? 200:(figur is Reiter ? 500 : 1000));
             figur.hf = random.Next(1, 20);
             figur.LKP = lKP;
             figur.lkp_alt = lKP;

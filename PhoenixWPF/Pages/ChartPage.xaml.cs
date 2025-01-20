@@ -148,7 +148,7 @@ namespace PhoenixWPF.Pages
                 lineValues[1].Add(item.KriegerHF);
                 lineValues[2].Add(item.Reiter/500);
                 lineValues[3].Add(item.ReiterHF);
-                lineValues[4].Add(item.Schiffe/10);
+                lineValues[4].Add(item.Schiffe/100);
                 lineValues[5].Add(item.LKS);
                 lineValues[6].Add(item.SKS);
                 lineValues[7].Add(item.LKP);
@@ -212,7 +212,7 @@ namespace PhoenixWPF.Pages
             // schiffe
             SeriesCollection?.Add(new LineSeries
             {
-                Title = "Schiffe (50)",
+                Title = "Schiffe (100)",
                 Values = lineValues[4],
                 Stroke = new SolidColorBrush
                 {
@@ -279,7 +279,7 @@ namespace PhoenixWPF.Pages
             Frame? frame = Helper.VisualTreeHelperExtensions.FindParent<Frame>(this);
             if (frame != null && frame.Tag != null)
             {
-                if (frame.Tag.ToString() == "Schatzkammer")
+                if (frame.Tag.ToString() == "FinanzEntwicklung")
                     ZeigeSchatzkammer();
                 else
                     ZeigeTruppenStatistik();

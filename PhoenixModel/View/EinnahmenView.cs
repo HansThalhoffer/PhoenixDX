@@ -16,15 +16,6 @@ namespace PhoenixModel.View
             if (gem.Terrain != null)
             {
                 return gem.Terrain.Einnahmen;
-                /*
-                if (gem.Terrain.Name != null && EinwohnerUndEinnahmenTabelle.EinwohnerUndEinnahmen.ContainsKey(gem.Terrain.Name))
-                {
-                    return EinwohnerUndEinnahmenTabelle.EinwohnerUndEinnahmen[gem.Terrain.Name].Einnahmen;
-                }
-                else
-                {
-                    ProgramView.LogError(gem.gf, gem.kf, $"Das Gelände {gem.Terrain.Name} hat keine Einahmen in der EinnahmenView Tabelle","Durch einen Datenbankfehler hat das Kleinfeld ein Terrain ohne Eintrag in der Einnahmentabelle");
-                }*/
             }
             return 0;
         }

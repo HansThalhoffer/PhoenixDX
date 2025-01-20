@@ -12,7 +12,7 @@
                 <Frame x:Name="ErwarteteEinkommen"  Source="/Pages/ExpectedIncomePage.xaml" Tag="ErwarteteEinkommen"/>
             </TabItem>
             <TabItem Header="Historische Bilanzen" Tag="Entwicklung">
-                <Frame x:Name="HistorischeBilanzen"  Source="/Pages/ChartPage.xaml" Tag="Entwicklung"/>
+                <Frame x:Name="HistorischeBilanzen"  Source="/Pages/ChartPage.xaml" Tag="FinanzEntwicklung"/>
             </TabItem>
             <TabItem Header="Schenkungen"  Tag="Schenkungen">
                 <Frame x:Name="Schenkungen"  Source="/Pages/EigenschaftlerListGridPage.xaml" Tag="Schenkungen"/>

@@ -357,14 +357,19 @@ namespace PhoenixWPF.Program {
             if (Settings == null)
                 return;
 
-            databaseLocation = StorageSystem.LocateFile(databaseLocation);
-            PasswordHolder pwdHolder = new PasswordHolder(encryptedPassword, new PasswortProvider(databaseName));
-            encryptedPassword = pwdHolder.EncryptedPasswordBase64;
-            using (ILoadableDatabase db = dbCreator(databaseLocation, encryptedPassword)) {
-                if (loadCompletedDelegate != null)
-                    db.BackgroundLoad(loadCompletedDelegate);
-                else
-                    db.Load();
+            try {
+                databaseLocation = StorageSystem.LocateFile(databaseLocation, $"Datenbank {databaseName}");
+                PasswordHolder pwdHolder = new PasswordHolder(encryptedPassword, new PasswortProvider(databaseName));
+                encryptedPassword = pwdHolder.EncryptedPasswordBase64;
+                using (ILoadableDatabase db = dbCreator(databaseLocation, encryptedPassword)) {
+                    if (loadCompletedDelegate != null)
+                        db.BackgroundLoad(loadCompletedDelegate);
+                    else
+                        db.Load();
+                }
+            }
+            catch (Exception ex) {
+                SpielWPF.LogError($"Die Datenbank {databaseName} konnte nicht geladen werden", ex.Message);
             }
         }
 

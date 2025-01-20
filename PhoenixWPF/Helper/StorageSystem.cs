@@ -111,7 +111,7 @@ namespace PhoenixWPF.Helper {
         /// If not found, opens a file picker to let the user locate the file.
         /// </summary>
         /// <returns>True if the file is found or selected; otherwise, false.</returns>
-        public static string LocateFile(string relativePath) {
+        public static string LocateFile(string relativePath, string windowText) {
             string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
             string fileName = Path.GetFileName(relativePath);
             string fullPath = Path.Combine(appDirectory, relativePath);
@@ -130,7 +130,7 @@ namespace PhoenixWPF.Helper {
                 // File not found, open file picker
                 OpenFileDialog openFileDialog = new OpenFileDialog {
                     Filter = filter,
-                    Title = "Locate " + fileName
+                    Title = windowText
                 };
 
                 bool? result = openFileDialog.ShowDialog();

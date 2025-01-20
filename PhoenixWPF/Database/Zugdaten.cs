@@ -244,7 +244,7 @@ namespace PhoenixWPF.Database {
                             int kriegerHF = zugDaten.GetSum(connector, "Krieger", "hf");
                             int reiter = zugDaten.GetSum(connector, "Reiter", "staerke");
                             int reiterHF = zugDaten.GetSum(connector, "Reiter", "hf");
-                            int Schiffe = zugDaten.GetSum(connector, "Schiffe", "staerke", "LKP=0 AND SKP=0");
+                            int Schiffe = zugDaten.GetSum(connector, "Schiffe", "staerke");
                             int LKS = zugDaten.GetSum(connector, "Schiffe", "LKP");
                             int SKS = zugDaten.GetSum(connector, "Schiffe", "SKP");
                             int LKP = zugDaten.GetSum(connector, "Krieger", "LKP");
