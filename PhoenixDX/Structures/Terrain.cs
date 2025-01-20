@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Drawing;
 using PhoenixModel.ExternalTables;
+using PhoenixModel.Program;
 using System;
 using System.Collections.Generic;
 
@@ -10,7 +11,7 @@ namespace PhoenixDX.Structures {
     /// Repräsentiert ein Geländeobjekt mit einer zugehörigen Textur.
     /// </summary>
     internal class Gelaende : GeländeTabelle {
-        private SimpleTexture hexTexture;
+        private OpacityTexture hexTexture;
         private List<Texture2D> hexTextures = [];
 
         /// <summary>
@@ -23,7 +24,7 @@ namespace PhoenixDX.Structures {
             base(source.Typ, source.Name, source.Höhe, source.Einwohner, source.Einnahmen, source.Farbe, source.IsWasser) {
             try {
                 const string folder = "Images/TilesetV/";
-                hexTexture = new SimpleTexture(contentManager.Load<Texture2D>(folder + image));
+                hexTexture = new OpacityTexture(contentManager.Load<Texture2D>(folder + image),1f);
             }
             catch (Exception ex) {
                 MappaMundi.Log(0, 0, $"Die Textur für {source.Name} konnte nicht geladen werden", ex);
@@ -34,7 +35,7 @@ namespace PhoenixDX.Structures {
         /// Gibt die Textur des Geländes zurück.
         /// </summary>
         /// <returns>Die SimpleTexture des Geländes.</returns>
-        public SimpleTexture GetTexture() {
+        public OpacityTexture GetTexture() {
             return hexTexture;
         }
 
@@ -44,6 +45,23 @@ namespace PhoenixDX.Structures {
         /// Gibt an, ob das Gelände geladen wurde.
         /// </summary>
         public static bool IsLoaded { get { return _isLoaded; } }
+ 
+        public static void ChangeOpacity(float opacity) {
+            if (!IsLoaded) {
+                MappaMundi.Log(new LogEntry(LogEntry.LogType.Error,"Die Transparenz kann nicht gesetzt werden", "Die Terraindaten wurden noch nicht geladen"));
+                return;
+            }
+            if (opacity < 0 || opacity > 1) {
+                MappaMundi.Log(new LogEntry(LogEntry.LogType.Error, $"Der übergebene Wert {opacity} für Transparenz ist ungültig", "Bitte den Programmierfehler beheben. Der Wert muss > 0  und <1 sein."));
+                return;
+            }
+            foreach (var gel in GeländeTabelle.Terrains) {
+                var terrain = gel as Gelaende;
+                if (terrain != null) {
+                    terrain.GetTexture().Opacity = opacity;
+                }
+            }
+        }
 
         /// <summary>
         /// Lädt die Geländetexturen aus den definierten Ressourcen.

@@ -121,7 +121,7 @@ namespace PhoenixDX.Structures {
             string cacheKey = $"Truppen:{truppen.Count}";
             foreach (var figur in truppen)
             {
-                cacheKey += $" {truppen[0].Color.PackedValue}, {figur.Typ.ToString()}, ";
+                cacheKey += $" {truppen[0].Color.PackedValue}|{figur.Typ.ToString()}";
             }
 
             BaseTexture baseTexture = null;
@@ -169,7 +169,7 @@ namespace PhoenixDX.Structures {
                     {
                         int index = (int)figur.Typ;
                         var texture = isDark? FigurImages[index].InvertedTexture: FigurImages[index].Texture;
-                        string colorKey = $"Figur: {figur.Color.PackedValue}, {figur.Typ}";
+                        string colorKey = $"Figur: {figur.Color.PackedValue}|{figur.Typ}";
                         if (TextureCache.TryGet(colorKey, out baseTexture))
                             texture = baseTexture.Texture;
                         else {

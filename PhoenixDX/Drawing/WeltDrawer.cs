@@ -87,6 +87,8 @@ namespace PhoenixDX.Drawing {
                     foreach (var baseTexture in listTexture) {
                         if (baseTexture is ColoredTexture colored)
                             spriteBatch.Draw(baseTexture.Texture, rScreenG, null, inKleinfeld ? Color.Plum : colored.Color);
+                        else if (baseTexture is OpacityTexture opacity)
+                            spriteBatch.Draw(baseTexture.Texture, rScreenG, null, inKleinfeld ? Color.Plum * opacity.Opacity : Color.White * opacity.Opacity);
                         else
                             spriteBatch.Draw(baseTexture.Texture, rScreenG, null, inKleinfeld ? Color.Plum : Color.White);
                     }
@@ -116,6 +118,8 @@ namespace PhoenixDX.Drawing {
                     foreach (var baseTexture in listTexture) {
                         if (baseTexture is ColoredTexture colored)
                             spriteBatch.Draw(baseTexture.Texture, rScreenG, null, inKleinfeld ? Color.Plum : colored.Color);
+                        else if (baseTexture is OpacityTexture opacity)
+                            spriteBatch.Draw(baseTexture.Texture, rScreenG, null, inKleinfeld ? Color.Plum * opacity.Opacity: Color.White * opacity.Opacity);
                         else
                             spriteBatch.Draw(baseTexture.Texture, rScreenG, null, inKleinfeld ? Color.Plum : Color.White);
                     }

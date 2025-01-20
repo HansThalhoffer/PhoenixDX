@@ -9,20 +9,29 @@
       Title="Einstellungen">
 
     <Grid>
-        <StackPanel Orientation="Vertical" Margin="20">
-            <CheckBox Content="Reichszugehörigkeit sichtbar" 
+        <StackPanel Orientation="Vertical" Margin="0,20,0,0" >
+            <CheckBox Content="Reichszugehörigkeit sichtbar" Margin="5"
                       IsChecked="{Binding IsReichszugehorigkeitSichtbar}" 
                       FontSize="14" />
-            <CheckBox Content="Küstenvorteil sichtbar" 
+            <CheckBox Content="Küstenvorteil sichtbar"  Margin="5"
                 IsChecked="{Binding IsKüstenregelSichtbar}" 
                 FontSize="14" />
-            <TextBlock Foreground="Wheat" FontSize="12" FontStyle="Italic" Width="200" HorizontalAlignment="Left">
-                <Run Text="Zoom: " />
+
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <TextBlock Foreground="Wheat" FontSize="12" FontStyle="Italic" Width="80" HorizontalAlignment="Left">
+                    <Run Text="Zoom: " />
                 </TextBlock>
-            <StackPanel Orientation="Horizontal">
-            <Slider x:Name="sldZoom"  Maximum="260" Minimum="20"
-                    Margin="0,2,0,4" Width="200"  ValueChanged="sldZoom_ValueChanged"
+                <Slider x:Name="sldZoom"  Maximum="260" Minimum="20"
+                    Margin="5,0,0,0" Width="200"  ValueChanged="sldZoom_ValueChanged"
                     Orientation="Horizontal" IsEnabled="True" Height="18" HorizontalAlignment="Left"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <TextBlock Foreground="Wheat" FontSize="12" FontStyle="Italic" Width="80" HorizontalAlignment="Left">
+                    <Run Text="Transparenz: " />
+                </TextBlock>
+                <Slider x:Name="sldOpacity"  Maximum="1" Minimum="0.1"
+                     Margin="0,2,0,4" Width="200"  ValueChanged="sldOpacity_ValueChanged"
+                     Orientation="Horizontal" IsEnabled="True" Height="18" HorizontalAlignment="Left"/>
             </StackPanel>
 
         </StackPanel>

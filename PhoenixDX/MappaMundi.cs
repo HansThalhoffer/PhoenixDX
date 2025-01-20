@@ -132,6 +132,31 @@ namespace PhoenixDX {
             _game?.Goto(pos);
         }
 
+
+        /// <summary>
+        /// Zoom change von WPF zu DirectX, beispielsweise aus den UserSettings oder aus dem Sliden von den Optionen
+        /// </summary>
+        /// <param name="val"></param>
+        public void SetTerrainOpacity(float val) {
+            if (val < 0 || val > 1) {
+                Log(new LogEntry(LogEntry.LogType.Error, $"Der übergebene Wert {val} für Transparenz ist ungültig", "Bitte den Programmierfehler beheben. Der Wert muss > 0  und <1 sein."));
+                return;
+            }
+            if (_game != null)
+                _game.Opacity = val;
+        }
+
+        /// <summary>
+        /// Zoom change von WPF zu DirectX, beispielsweise aus den UserSettings oder aus dem Sliden von den Optionen
+        /// </summary>
+        /// <param name="val"></param>
+        public float GetTerrainOpacity() {
+            
+            if (_game != null)
+                return _game.Opacity;
+            return 1f;
+        }
+
         /// <summary>
         /// Zoom change von WPF zu DirectX, beispielsweise aus den UserSettings oder aus dem Sliden von den Optionen
         /// </summary>

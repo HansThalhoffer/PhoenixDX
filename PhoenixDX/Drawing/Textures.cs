@@ -176,6 +176,35 @@ namespace PhoenixDX.Drawing {
     }
 
     /// <summary>
+    /// Repräsentiert eine farbige Textur, die eine zusätzliche Farbkomponente unterstützt.
+    /// Damit können neutrale Texturen farbig dargestellt werden.
+    /// </summary>
+    internal class OpacityTexture : SimpleTexture {
+        /// <summary>
+        /// Die Farbe, die auf die Textur angewendet wird.
+        /// </summary>
+        public float Opacity { get; set; }
+
+        /// <summary>
+        /// Erstellt eine neue Instanz von OpacityedTexture mit einer spezifischen Farbe.
+        /// </summary>
+        /// <param name="texture">Die zu verwendende Texture2D.</param>
+        /// <param name="Opacity">Die gewünschte Farbe.</param>
+        public OpacityTexture(Texture2D texture, float opacity) : base(texture) {
+            this.Opacity = opacity;
+        }
+
+        /// <summary>
+        /// Erstellt eine neue Instanz von OpacityedTexture mit der Standardfarbe Weiß.
+        /// </summary>
+        /// <param name="texture">Die zu verwendende Texture2D.</param>
+        public OpacityTexture(Texture2D texture) : base(texture) {
+            this.Opacity = 1f;
+        }
+
+    }
+
+    /// <summary>
     /// Verwaltet Texturen für Windrichtungsdarstellungen.
     /// Diese Klasse ist nicht von BaseTexture abgeleitet, da sie eine andere Funktionalität besitzt.
     /// </summary>

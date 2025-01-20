@@ -4,6 +4,7 @@ using PhoenixDX.Drawing;
 using PhoenixDX.Helper;
 using PhoenixDX.Structures;
 using PhoenixModel.EventsAndArgs;
+using PhoenixModel.ExternalTables;
 using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Concurrent;
@@ -63,6 +64,10 @@ namespace PhoenixDX.Program {
         /// Zoomfaktor - Backing member für das Property
         /// </summary>
         float _zoom = 0f;
+        /// <summary>
+        /// Tranzparenz der Terrainfelder - Backing member für das Property
+        /// </summary>
+        private float _opacity = 1f;
         /// <summary>
         /// die Batch zum Zeichnen in DirectX
         /// </summary>
@@ -463,6 +468,24 @@ namespace PhoenixDX.Program {
             _updateFunction();
 
             base.Update(gameTime);
+        }
+
+
+        /// <summary>
+        /// Steuerung des Zoom-Faktors mit Begrenzung der Werte.
+        /// </summary>
+        public float Opacity {
+            get => _opacity;
+            set { 
+                if (value < 0 || value > 1 || _opacity == value)
+                    return;
+
+                _opacity = value;
+                EnqueueAction(() =>
+                {
+                    Gelaende.ChangeOpacity(Opacity);
+                });
+            }
         }
 
         /// <summary>

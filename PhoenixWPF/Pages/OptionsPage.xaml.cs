@@ -62,12 +62,26 @@ namespace PhoenixWPF.Pages
                 Main.Map.SetZoom((float)e.NewValue / 100);
         }
 
+        private void sldOpacity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
+            if (Main.Map != null && _self == false) {
+                float opacity = (float)e.NewValue;
+                if (opacity > 1) 
+                    opacity = 1;
+                if (opacity < 0.1f)
+                    opacity = 0.1f; ;
+                Main.Map.SetTerrainOpacity(opacity);
+                Main.Instance.Settings.UserSettings.Opacity = opacity;
+            }
+        }
+
         public OptionsPage()
         {
             InitializeComponent();
             DataContext = this;
             Main.Instance.Options = this;
             IsKüstenregelSichtbar = Main.Instance.Settings.UserSettings.ShowKüstenregel;
+            sldOpacity.Value = Main.Instance.Settings.UserSettings.Opacity;
         }
+        
     }
 }

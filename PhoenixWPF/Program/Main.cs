@@ -93,6 +93,9 @@ namespace PhoenixWPF.Program {
                 Application.Current.Shutdown();
             }
 
+            if (Map != null)
+                Map.SetTerrainOpacity(Main.Instance.Settings.UserSettings.Opacity);
+
             _backgroundSave = new DispatcherTimer {
                 Interval = TimeSpan.FromSeconds(1)
             };

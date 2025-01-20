@@ -21,6 +21,7 @@
         private int _selectedReich = -1;
         private int _selectedZug = -1;
         private bool _showKüstenRegel = true;
+        private float _opacity = 1f;
 
 
         /// <summary>
@@ -199,6 +200,18 @@
             }
 
         }
+        /// <summary>
+        /// Zoom-Faktor der Karte
+        /// </summary>
+        public float Opacity {
+            get => _opacity;
+            set {
+                _opacity = value;
+                OnPropertyChanged(nameof(Opacity));
+            }
+
+        }
+
         #endregion
 
         public UserSettings() { }
