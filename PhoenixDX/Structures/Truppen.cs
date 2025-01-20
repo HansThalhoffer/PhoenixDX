@@ -8,6 +8,7 @@ using PhoenixModel.Helper;
 using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Generic;
+using static PhoenixDX.Structures.Truppen;
 
 namespace PhoenixDX.Structures {
     /// <summary>
@@ -107,7 +108,7 @@ namespace PhoenixDX.Structures {
                 return null;
 
             // der key für den Cache ist Farbe und dann die Typen
-            string cacheKey = string.Empty;
+            string cacheKey = truppen[0].Color.ToString();
             foreach (var figur in truppen)
             {
                 cacheKey += $"{figur.Typ.ToString()}, ";

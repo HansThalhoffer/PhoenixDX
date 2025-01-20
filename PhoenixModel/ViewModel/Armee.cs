@@ -18,7 +18,7 @@ namespace PhoenixModel.ViewModel {
             get {
                 List<Eigenschaft> eigenschaften = [];
                 foreach (var figur in this) {
-                    eigenschaften.Add(new Eigenschaft("Fremdtruppen", $"{figur.Typ}({figur.Reich}/{figur.Nation.Reich})", false, this));
+                    eigenschaften.Add(new Eigenschaft($"{figur.Typ}", $"{figur.Reich} #{figur.Nummer} {figur.Notiz}", false, this));
                 }
                 return eigenschaften;
             }
