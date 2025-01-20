@@ -24,6 +24,7 @@ namespace PhoenixDX.Structures {
             public FigurType Typ = FigurType.NaN;
             public string FileName = string.Empty;
             public Texture2D Texture = null;
+            public Texture2D InvertedTexture = null;
             public int Index = 0;
             public FigurImage(int index, FigurType typ, string fileName)
             {
@@ -84,9 +85,11 @@ namespace PhoenixDX.Structures {
         /// <param name="contentManager">Der Content-Manager zum Laden der Texturen.</param>
         public static void LoadContent(ContentManager contentManager)
         {
+            var graphicsDevice = SpielDX.Instance.Graphics.GraphicsDevice;
             foreach (var item in FigurImages)
             {
                 item.Texture = contentManager.Load<Texture2D>($"Images/Symbol/{item.FileName}");
+                item.InvertedTexture = BaseTexture.InvertTexture(item.Texture, graphicsDevice);
             }
         }
         /// <summary>
@@ -146,12 +149,14 @@ namespace PhoenixDX.Structures {
                     SpriteBatch spriteBatch = new SpriteBatch(graphicsDevice);
                     spriteBatch.Begin();
 
+                    bool isDark = ColoredTexture.IsDarkColor(truppen[0].Color);
+
                     // Draw each texture in the list on top of each other
                     int i = 0;
                     foreach (var figur in truppen)
                     {
                         int index = (int)figur.Typ;
-                        var texture = FigurImages[index].Texture;
+                        var texture = isDark? FigurImages[index].InvertedTexture: FigurImages[index].Texture;
                         Rectangle rScreenG = new Rectangle(pos[i].X, pos[i].Y, Convert.ToInt32(figurWidth / 4), Convert.ToInt32(figurHeight /4));
                         spriteBatch.Draw(texture, rScreenG, null, Color.White); // figur.Color);
                         if (++i > pos.Length - 1)

@@ -12,6 +12,44 @@ namespace PhoenixDX.Drawing {
         /// Gibt die zugehörige Texture2D zurück.
         /// </summary>
         public abstract Texture2D Texture { get; }
+
+        /// <summary>
+        /// invertiert die Farben einer Textur
+        /// </summary>
+        /// <param name="originalTexture"></param>
+        /// <param name="graphicsDevice"></param>
+        /// <returns></returns>
+        public static Texture2D InvertTexture(Texture2D originalTexture, GraphicsDevice graphicsDevice) {
+            // 1. Get the pixel data from the original texture
+            Color[] originalPixels = new Color[originalTexture.Width * originalTexture.Height];
+            originalTexture.GetData(originalPixels);
+            // 2. Create an array to hold the inverted pixels
+            Color[] invertedPixels = new Color[originalPixels.Length];
+
+            for (int i = 0; i < originalPixels.Length; i++) {
+                Color pixel = originalPixels[i];
+
+                // Only invert if the pixel is not fully transparent, 
+                // or invert everything - depending on your use case
+                if (pixel.A > 0) {
+                    // Preserve alpha
+                    invertedPixels[i] = new Color((byte)(255 - pixel.R), (byte)(255 - pixel.G), (byte)(255 - pixel.B), pixel.A);
+                }
+                else {
+                    // Keep fully transparent pixels as-is
+                    invertedPixels[i] = pixel;
+                }
+            }
+
+            // 3. Create a new texture (you could overwrite the original if you want)
+            Texture2D invertedTexture = new Texture2D(graphicsDevice, originalTexture.Width, originalTexture.Height);
+
+            // 4. Set the inverted pixel data
+            invertedTexture.SetData(invertedPixels);
+
+            return invertedTexture;
+        }
+
     }
 
     /// <summary>
@@ -59,6 +97,29 @@ namespace PhoenixDX.Drawing {
         /// <param name="texture">Die zu verwendende Texture2D.</param>
         public ColoredTexture(Texture2D texture) : base(texture) {
             this.Color = Color.White;
+        }
+
+        /// <summary>
+        /// ist das eine dunkle Textur?
+        /// </summary>
+        /// <param name="texture">Die zu verwendende Texture2D.</param>
+        public bool IsDark{
+            get { return IsDarkColor(this.Color); }
+        }
+
+        /// <summary>
+        /// findet raus, ob die Farbe dunkel ist
+        /// </summary>
+        /// <param name="color"></param>
+        /// <returns></returns>
+        public static bool IsDarkColor(Color color) {
+            // Calculate a weighted luminosity that approximates human perception:
+            // (These coefficients come from the Rec. 601 luma formula, often used as a quick approximation)
+            float luminosity = (0.299f * color.R) + (0.587f * color.G) + (0.114f * color.B);
+
+            // Compare to a midpoint (128) out of 255
+            // If it's less than 128, we consider it a "dark" color
+            return luminosity < 64f;
         }
     }
 
