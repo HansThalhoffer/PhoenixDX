@@ -50,6 +50,40 @@ namespace PhoenixDX.Drawing {
             return invertedTexture;
         }
 
+        /// <summary>
+        /// invertiert die Farben einer Textur
+        /// </summary>
+        /// <param name="originalTexture"></param>
+        /// <param name="graphicsDevice"></param>
+        /// <returns></returns>
+        public static Texture2D ColorTexture(Texture2D originalTexture, GraphicsDevice graphicsDevice, Color replaceGrey) {
+            // 1. Get the pixel data from the original texture
+            Color[] originalPixels = new Color[originalTexture.Width * originalTexture.Height];
+            originalTexture.GetData(originalPixels);
+            // 2. Create an array to hold the inverted pixels
+            Color[] invertedPixels = new Color[originalPixels.Length];
+
+            for (int i = 0; i < originalPixels.Length; i++) {
+                Color pixel = originalPixels[i];
+
+                //visible and grey
+                if (pixel.A > 200 && pixel.R == pixel.G && pixel.G == pixel.B) {
+                    invertedPixels[i] = new Color(replaceGrey.R + pixel.R, replaceGrey.G + pixel.G, replaceGrey.B + pixel.B, pixel.A);
+                }
+                else {
+                    invertedPixels[i] = pixel;
+                }
+            }
+
+            // 3. Create a new texture (you could overwrite the original if you want)
+            Texture2D invertedTexture = new Texture2D(graphicsDevice, originalTexture.Width, originalTexture.Height);
+
+            // 4. Set the inverted pixel data
+            invertedTexture.SetData(invertedPixels);
+
+            return invertedTexture;
+        }
+
     }
 
     /// <summary>
@@ -103,7 +137,7 @@ namespace PhoenixDX.Drawing {
         /// ist das eine dunkle Textur?
         /// </summary>
         /// <param name="texture">Die zu verwendende Texture2D.</param>
-        public bool IsDark{
+        public bool IsDark {
             get { return IsDarkColor(this.Color); }
         }
 
@@ -119,7 +153,7 @@ namespace PhoenixDX.Drawing {
 
             // Compare to a midpoint (128) out of 255
             // If it's less than 128, we consider it a "dark" color
-            return luminosity < 64f;
+            return luminosity < 96f;
         }
     }
 

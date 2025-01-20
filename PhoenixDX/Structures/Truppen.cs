@@ -88,8 +88,16 @@ namespace PhoenixDX.Structures {
             var graphicsDevice = SpielDX.Instance.Graphics.GraphicsDevice;
             foreach (var item in FigurImages)
             {
-                item.Texture = contentManager.Load<Texture2D>($"Images/Symbol/{item.FileName}");
-                item.InvertedTexture = BaseTexture.InvertTexture(item.Texture, graphicsDevice);
+                string f = $"Images/Symbol/{item.FileName}";
+                try {
+                    item.Texture = contentManager.Load<Texture2D>(f);
+                    f = $"Images/Symbol/i{item.FileName}";
+                    item.InvertedTexture = contentManager.Load<Texture2D>(f);
+                }
+                catch (Exception ex) {
+                    MappaMundi.Log($"Die Datei {f} wurde nicht gefunden", ex);
+                }
+                //item.InvertedTexture = BaseTexture.InvertTexture(item.Texture, graphicsDevice);
             }
         }
         /// <summary>
@@ -150,6 +158,7 @@ namespace PhoenixDX.Structures {
                     spriteBatch.Begin();
 
                     bool isDark = ColoredTexture.IsDarkColor(truppen[0].Color);
+                    bool isBlack = truppen[0].Color.R <= 10 && truppen[0].Color.G <= 10 && truppen[0].Color.B <= 0;
 
                     // Draw each texture in the list on top of each other
                     int i = 0;
@@ -157,6 +166,8 @@ namespace PhoenixDX.Structures {
                     {
                         int index = (int)figur.Typ;
                         var texture = isDark? FigurImages[index].InvertedTexture: FigurImages[index].Texture;
+                        if (isDark)
+                            texture = ColoredTexture.ColorTexture(texture,graphicsDevice, figur.Color);
                         Rectangle rScreenG = new Rectangle(pos[i].X, pos[i].Y, Convert.ToInt32(figurWidth / 4), Convert.ToInt32(figurHeight /4));
                         spriteBatch.Draw(texture, rScreenG, null, Color.White); // figur.Color);
                         if (++i > pos.Length - 1)
@@ -174,7 +185,7 @@ namespace PhoenixDX.Structures {
                     Color[] data = new Color[width * height];
                     renderTarget.GetData(data);
                     result.SetData(data);
-                    ColoredTexture gameTexture = new ColoredTexture(result, truppen[0].Color);
+                    ColoredTexture gameTexture = new ColoredTexture(result, isDark? Color.White: truppen[0].Color);
                     TextureCache.Set(cacheKey, gameTexture);
                     return gameTexture;
                 }
