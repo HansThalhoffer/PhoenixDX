@@ -146,7 +146,7 @@ namespace PhoenixWPF.Database
         /// <returns>A DataTable containing the result set.</returns>
         public DbCommand OpenDBCommand()
         {
-            return _connection.CreateCommand();
+            return new DbCommandFacade(_connection.CreateCommand());
         }
 
         /// <summary>

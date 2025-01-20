@@ -93,6 +93,8 @@ namespace PhoenixWPF.Program {
                 Application.Current.Shutdown();
             }
 
+            DatabaseLog.Cache.Enqueue($"Progammstart: {DateTime.Now.ToString()} \n\r");
+
             if (Map != null)
                 Map.SetTerrainOpacity(Main.Instance.Settings.UserSettings.Opacity);
 
@@ -206,6 +208,15 @@ namespace PhoenixWPF.Program {
                             db.Save(data);
                         }
                     }
+                }
+
+                while (DatabaseLog.Cache.Count > 0) {
+                    string? line;
+                    if (DatabaseLog.Cache.TryDequeue(out line)) {
+                        List<string> strings = [line];
+                        strings.Append(Environment.NewLine);
+                        File.AppendAllLinesAsync("SQL.log", strings);
+                     }
                 }
             }
             catch (Exception ex) {

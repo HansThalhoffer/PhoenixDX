@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.Windows.Threading;
 
-public class Backgroundsave
+/*public class Backgroundsave
 {
     private readonly DispatcherTimer _idleTimer;
   
@@ -26,4 +26,4 @@ public class Backgroundsave
     {
        
     }
-}
+}*/
