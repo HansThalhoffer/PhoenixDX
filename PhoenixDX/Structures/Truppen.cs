@@ -14,8 +14,7 @@ namespace PhoenixDX.Structures {
     /// <summary>
     /// Die Klasse Truppen stellt eine Gruppe von Spielfiguren dar, die als Adorner gezeichnet werden können.
     /// </summary>
-    internal class Truppen : ColorAdorner
-    {
+    internal class Truppen : SimpleAdorner {
         /// <summary>
         /// Repräsentiert eine Bildreferenz für eine bestimmte Figur.
         /// </summary>
@@ -104,7 +103,7 @@ namespace PhoenixDX.Structures {
         /// Erstellt eine Textur für die Truppen.
         /// </summary>
         /// <returns>Die erstellte Textur.</returns>
-        public override ColoredTexture CreateTexture()
+        public override SimpleTexture CreateTexture()
         {
             return CreateTexture(_truppen);
         }
@@ -113,21 +112,21 @@ namespace PhoenixDX.Structures {
         /// hier werden die Figuren in eine Texture zusammengefügt
         /// </summary>
         /// <returns>Die erstellte Textur.</returns>
-        private static ColoredTexture CreateTexture(List<Figur> truppen)
+        private static SimpleTexture CreateTexture(List<Figur> truppen)
         {
             if (SpielDX.Instance.Graphics == null || truppen.Count == 0)
                 return null;
 
             // der key für den Cache ist Farbe und dann die Typen
-            string cacheKey = truppen[0].Color.ToString();
+            string cacheKey = $"Truppen:{truppen.Count}";
             foreach (var figur in truppen)
             {
-                cacheKey += $"{figur.Typ.ToString()}, ";
+                cacheKey += $" {truppen[0].Color.PackedValue}, {figur.Typ.ToString()}, ";
             }
 
             BaseTexture baseTexture = null;
             if (TextureCache.TryGet(cacheKey, out baseTexture))
-                return baseTexture as ColoredTexture;
+                return baseTexture as SimpleTexture;
 
             var graphicsDevice = SpielDX.Instance.Graphics.GraphicsDevice;
             float faktor = truppen.Count > 1 ? 1.2f :0.8f;
@@ -142,6 +141,9 @@ namespace PhoenixDX.Structures {
                 new Position(-8, 140),
                 new Position(140, 140),
                 new Position(70, 70),
+                new Position(70, 0),
+                new Position(140, 70),
+                new Position(70, 140),
             ];
 
             try
@@ -167,14 +169,12 @@ namespace PhoenixDX.Structures {
                     {
                         int index = (int)figur.Typ;
                         var texture = isDark? FigurImages[index].InvertedTexture: FigurImages[index].Texture;
-                        if (isDark) {
-                            string colorKey = $"{figur.Color}, {figur.Typ}";
-                            if (TextureCache.TryGet(cacheKey, out baseTexture))
-                                texture = baseTexture.Texture;
-                            else {
-                                texture = ColoredTexture.ColorTexture(texture, graphicsDevice, figur.Color);
-                                TextureCache.Set(cacheKey, texture);
-                            }
+                        string colorKey = $"Figur: {figur.Color.PackedValue}, {figur.Typ}";
+                        if (TextureCache.TryGet(colorKey, out baseTexture))
+                            texture = baseTexture.Texture;
+                        else {
+                            texture = ColoredTexture.ColorTexture(texture, graphicsDevice, figur.Color, !isDark);
+                            TextureCache.Set(colorKey, texture);
                         }
                         Rectangle rScreenG = new Rectangle(pos[i].X, pos[i].Y, Convert.ToInt32(figurWidth / 4), Convert.ToInt32(figurHeight /4));
                         spriteBatch.Draw(texture, rScreenG, null, Color.White); // figur.Color);
@@ -193,7 +193,7 @@ namespace PhoenixDX.Structures {
                     Color[] data = new Color[width * height];
                     renderTarget.GetData(data);
                     result.SetData(data);
-                    ColoredTexture gameTexture = new ColoredTexture(result, isDark? Color.White: truppen[0].Color);
+                    var gameTexture = new SimpleTexture(result); 
                     TextureCache.Set(cacheKey, gameTexture);
                     return gameTexture;
                 }

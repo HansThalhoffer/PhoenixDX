@@ -49,7 +49,7 @@ namespace PhoenixModel.ExternalTables {
         }
 
         /// <summary>
-        /// hole alle Feinde eines Kleinfeldes
+        /// hole alle Fremd eines Kleinfeldes
         /// </summary>
         /// <param name="pos"></param>
         /// <returns></returns>

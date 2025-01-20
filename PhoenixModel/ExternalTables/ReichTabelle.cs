@@ -43,7 +43,7 @@ namespace PhoenixModel.ExternalTables
                 new ReichTabelle( 7, ["helborn"],"schwarz", "#000000") ,
                 new ReichTabelle( 8, ["eoganachta", "eoganochta"], "lila", "#A020F0") ,
                 new ReichTabelle( 9, ["piraten", "choson", "pirat", "purple puppy pirates", "ppp"],"blau", "#4040FF"),
-                new ReichTabelle( 10, ["o'har", "ohar"], "rot", "#FF3030") ,
+                new ReichTabelle( 10, ["o'har", "ohar"], "rot", "#DD1010") ,
                 new ReichTabelle( 11, ["consortium commertialis", "consortium", "konsortium", "gilde"],"gold", "#D4AF37") ,
                 new ReichTabelle( 12, ["spielleitung", "sl"],"spielleitung", "#FF1493")
             };

@@ -56,7 +56,7 @@ namespace PhoenixDX.Drawing {
         /// <param name="originalTexture"></param>
         /// <param name="graphicsDevice"></param>
         /// <returns></returns>
-        public static Texture2D ColorTexture(Texture2D originalTexture, GraphicsDevice graphicsDevice, Color replaceGrey) {
+        public static Texture2D ColorTexture(Texture2D originalTexture, GraphicsDevice graphicsDevice, Color replaceGrey, bool replaceWhite) {
             // 1. Get the pixel data from the original texture
             Color[] originalPixels = new Color[originalTexture.Width * originalTexture.Height];
             originalTexture.GetData(originalPixels);
@@ -66,9 +66,27 @@ namespace PhoenixDX.Drawing {
             for (int i = 0; i < originalPixels.Length; i++) {
                 Color pixel = originalPixels[i];
 
-                //visible and grey
+                //visible and all colors are equal == grey
                 if (pixel.A > 200 && pixel.R == pixel.G && pixel.G == pixel.B) {
-                    invertedPixels[i] = new Color(replaceGrey.R + pixel.R, replaceGrey.G + pixel.G, replaceGrey.B + pixel.B, pixel.A);
+                    if (replaceWhite) {
+                        // do not replace black
+                        if (pixel.R == 0)
+                            invertedPixels[i] = pixel;
+                        else {
+                            var r= replaceGrey.R + pixel.R;
+                            var g = replaceGrey.G + pixel.G;
+                            var b = replaceGrey.B + pixel.B;
+                            if (r > 128)
+                                r -= 128;
+                            if (g > 128)
+                                g -= 128;
+                            if (b > 128)
+                                b -= 128;
+                            invertedPixels[i] = new Color(r, g, b, pixel.A);
+                        }
+                    }
+                    else
+                        invertedPixels[i] = new Color(replaceGrey.R + pixel.R, replaceGrey.G + pixel.G, replaceGrey.B + pixel.B, pixel.A);
                 }
                 else {
                     invertedPixels[i] = pixel;

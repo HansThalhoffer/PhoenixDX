@@ -450,7 +450,7 @@ namespace PhoenixWPF.Program {
                 databaseLocation = Path.Combine(Settings.DataRootPath, AppSettings.DatabaseLocationFeindaufklärung);
             var reich = ProgramView.SelectedNation;
             if (reich == null) {
-                SpielWPF.LogError("Zugdaten: Es wurde kein Reich ausgewählt", "Beim Laden ist ein Fehler aufgetregten, da kein Reich ausgewählt wurde. Daher können die Feinde nicht erkannt werden.");
+                SpielWPF.LogError("Zugdaten: Es wurde kein Reich ausgewählt", "Beim Laden ist ein Fehler aufgetregten, da kein Reich ausgewählt wurde. Daher können die Fremd nicht erkannt werden.");
                 return;
             }
             Feinde.LoadFeinderkennung(databaseLocation);

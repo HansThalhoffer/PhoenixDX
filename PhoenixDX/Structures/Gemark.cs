@@ -225,7 +225,7 @@ namespace PhoenixDX.Structures {
             }
 
             var spielfiguren = gem.Truppen;
-            var feinde = gem.Feinde;
+            var feinde = gem.Fremd;
             if ((spielfiguren != null && spielfiguren.Count > 0) ||
                 (feinde != null && feinde.Count > 0)) {
                 try {

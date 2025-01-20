@@ -234,7 +234,7 @@ namespace PhoenixModel.dbErkenfara {
             get { return SpielfigurenView.GetSpielfiguren(this); }
         }
 
-        public Gegner Feinde {
+        public Gegner Fremd {
             get { return ExternalTables.Feinde.GetFeinde(this); }
         }
 
