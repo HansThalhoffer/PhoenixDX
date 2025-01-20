@@ -3,9 +3,6 @@ using PhoenixModel.ViewModel;
 using System.Windows.Controls;
 
 namespace PhoenixWPF.Pages {
-
-
-
     /// <summary>
     /// Interaktionslogik für TruppenStatusPage.xaml
     /// </summary>

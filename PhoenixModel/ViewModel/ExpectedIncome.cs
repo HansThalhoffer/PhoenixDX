@@ -32,12 +32,18 @@ namespace PhoenixModel.ViewModel {
         public int FestungsHauptstädte { get; set; }
         public int FestungsHauptstädteEinkommen { get; set; }
 
+        /// <summary>
+        /// erwartete Einnahmen des Reiches
+        /// </summary>
+        /// <param name="reich"></param>
         public ExpectedIncome(Nation reich) {
             this.Reich = reich.Reich;
             if (SharedData.Map != null) {
                 var kleinfelder = SharedData.Map.Values.Where(k => k.Nation == reich);
                 this.BergFelder = kleinfelder.Where(k => k.Terrain.Typ == TerrainType.Bergland).Count();
                 this.BergEinkommen = BergFelder * Terrains[(int)TerrainType.Bergland].Einnahmen;
+
+                // jedes Kleinfeld hat Terrain, Gebäude usw. schon als Member. Mit einer foreach lassen sich die Daten auch sammeln - siehe auch EinnahmenView
             }
 
         }

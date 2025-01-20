@@ -3,6 +3,7 @@ using PhoenixModel.ExternalTables;
 using PhoenixModel.ViewModel;
 using PhoenixModel.Program;
 using System;
+using PhoenixModel.dbCrossRef;
 
 
 namespace PhoenixModel.View
@@ -14,33 +15,42 @@ namespace PhoenixModel.View
         {
             if (gem.Terrain != null)
             {
+                return gem.Terrain.Einnahmen;
+                /*
                 if (gem.Terrain.Name != null && EinwohnerUndEinnahmenTabelle.EinwohnerUndEinnahmen.ContainsKey(gem.Terrain.Name))
                 {
-                    return EinwohnerUndEinnahmenTabelle.EinwohnerUndEinnahmen[gem.Terrain.Name].MultiplikatorEinnahmen;
+                    return EinwohnerUndEinnahmenTabelle.EinwohnerUndEinnahmen[gem.Terrain.Name].Einnahmen;
                 }
                 else
                 {
                     ProgramView.LogError(gem.gf, gem.kf, $"Das Gelände {gem.Terrain.Name} hat keine Einahmen in der EinnahmenView Tabelle","Durch einen Datenbankfehler hat das Kleinfeld ein Terrain ohne Eintrag in der Einnahmentabelle");
-                }
+                }*/
             }
             return 0;
         }
 
         public static int GetGebäudeEinnahmen(KleinFeld gem)
         {
-            Gebäude? gebäude = gem.Gebäude;
+            Rüstort? gebäude = BauwerkeView.GetRüstortNachKarte(gem);
             if (gebäude != null)
             {
-                if (gebäude.Bauwerknamen != null && EinwohnerUndEinnahmenTabelle.EinwohnerUndEinnahmen.ContainsKey(gebäude.Bauwerknamen))
-                {
-                    return EinwohnerUndEinnahmenTabelle.EinwohnerUndEinnahmen[gebäude.Bauwerknamen].MultiplikatorEinnahmen;
-                }
-                else
-                {
-                    ProgramView.LogError(gem.gf, gem.kf, $"Das Gebäude {gebäude.Bauwerknamen} hat keine Einahmen in der EinnahmenView Tabelle", "Durch einen Datenbankfehler hat das Gebäude keinen Eintrag in der Einnahmentabelle");
-                }
+                return GetGebäudeEinnahmen(gebäude);
             }
             return 0;
+        }
+
+        public static int GetGebäudeEinnahmen(BauwerkBasis bauwerk) {
+            
+            EinwohnerUndEinnahmenTabelle.Werte einwohnerUndEinnahmenTabelle;
+            if (EinwohnerUndEinnahmenTabelle.EinwohnerUndEinnahmen.TryGetValue(bauwerk.Bauwerk, out einwohnerUndEinnahmenTabelle))
+                return einwohnerUndEinnahmenTabelle.Einnahmen;
+            ProgramView.LogError($"Das Gebäude {bauwerk.Bauwerk} hat keine Einahmen in der EinnahmenView Tabelle", "Durch einen Datenbankfehler hat das Gebäude keinen Eintrag in der Einnahmentabelle");
+            return 0;
+        }
+
+        public static int GetGesamtEinnahmen(KleinFeld gem) {
+            
+            return GetTerrainEinnahmen(gem) + GetGebäudeEinnahmen(gem);
         }
 
         public static int GetReichEinnahmen(int reich)
@@ -48,18 +58,10 @@ namespace PhoenixModel.View
             int summe = 0;
             if (SharedData.Map != null) 
             {
-                int einnahmenTerrain =0;
-                int einnahmenGebäude =0;
-                foreach (var gemark in SharedData.Map.Values) 
+                foreach (var gemark in SharedData.Map.Values.Where( gem => gem.Reich == reich)) 
                 {
-                    if (gemark.Reich == reich)
-                    {
-                        einnahmenTerrain += GetTerrainEinnahmen(gemark);
-                        einnahmenGebäude += GetTerrainEinnahmen(gemark);
-                    }
+                    summe += GetGesamtEinnahmen(gemark);
                 }
-                summe += einnahmenTerrain;
-                summe += einnahmenGebäude;
             }
            
             return summe;

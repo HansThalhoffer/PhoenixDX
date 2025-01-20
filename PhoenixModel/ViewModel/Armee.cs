@@ -112,14 +112,17 @@ namespace PhoenixModel.ViewModel {
                     else if (figur is Zauberer) {
                         var k = figur as Zauberer;
                         if (k != null) {
-                            string wert = $"{k.Bezeichner} {k.Beschriftung} {k.charname} GP {k.GP_akt}";
-                            eigenschaften.Add(new Eigenschaft("Zauberer", wert, false, this));
+                            string wert = $"{k.Beschriftung} {k.charname} GP {k.GP_akt}/{k.GP_ges}";
+                            if (figur.Typ == FigurType.CharakterZauberer )
+                                eigenschaften.Add(new Eigenschaft("Charakter Zauberer", wert, false, this));
+                            else
+                                eigenschaften.Add(new Eigenschaft("Zauberer", wert, false, this));
                         }
                     }
                     else if (figur is Character) {
                         var k = figur as Character;
                         if (k != null) {
-                            string wert = $"{k.Bezeichner} {k.Beschriftung} {k.Charname} GP {k.GP_akt}";
+                            string wert = $"{k.Beschriftung} {k.Charname} GP {k.GP_akt}/{k.GP_ges}";
                             eigenschaften.Add(new Eigenschaft("Charakter", wert, false, this));
                         }
                     }

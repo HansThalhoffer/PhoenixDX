@@ -23,7 +23,7 @@ namespace PhoenixModel.dbCrossRef {
 
         public int? Nummer { get; set; }
         public int? Baupunkte { get; set; }
-        public string? Bauwerk { get; set; }
+        public string Bauwerk { get; set; } = string.Empty; 
 
         private static readonly string[] PropertiestoIgnore = ["DatabaseName"];
         public virtual List<Eigenschaft> Eigenschaften

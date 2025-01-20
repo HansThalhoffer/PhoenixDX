@@ -23,7 +23,7 @@ namespace PhoenixModel.dbErkenfara {
         public const string TableName = "Karte";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner { get => CreateBezeichner(); }
-        private static readonly string[] PropertiestoIgnore = { "Gebäude", "Index", "DatabaseName", "x", "y", "Rand", "db_xy", "ph_xy", "krieger_text", "TerrainType", "Key", "Reich", "Gelaendetyp", "Mark", "IsWasser" };
+        private static readonly string[] PropertiestoIgnore = { "Gebäude", "Index", "DatabaseName", "x", "y", "Rand", "db_xy", "ph_xy", "krieger_text", "TerrainType", "Key", "Reich", "Gelaendetyp", "Mark", "IsWasser", "IsKüste" };
         public List<Eigenschaft> Eigenschaften => PropertyProcessor.CreateProperties(this, PropertiestoIgnore);
         #endregion
 
@@ -137,6 +137,7 @@ namespace PhoenixModel.dbErkenfara {
             }
         }
 
+        public int Einnahmen { get { return EinnahmenView.GetGesamtEinnahmen(this); } }
 
         public MarkerType Mark { get; set; }
 

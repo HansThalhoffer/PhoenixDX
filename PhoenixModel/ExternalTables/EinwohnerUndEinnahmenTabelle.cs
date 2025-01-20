@@ -12,12 +12,12 @@ namespace PhoenixModel.ExternalTables
         public struct Werte
         {
             public int Einwohner = 0;
-            public int MultiplikatorEinnahmen = 1;
+            public int Einnahmen = 1;
 
-            public Werte(int einwohner, int multiplikatorEinnahmen)
+            public Werte(int einwohner, int einnahmen)
             {
                 this.Einwohner = einwohner;
-                this.MultiplikatorEinnahmen = multiplikatorEinnahmen;
+                this.Einnahmen = einnahmen;
             }
         }
 
@@ -45,6 +45,7 @@ namespace PhoenixModel.ExternalTables
             { "Festung", new Werte ( 70000, 3000 ) },
             { "Hauptstadt", new Werte ( 100000, 5000 ) },
             { "Festungshauptstadt", new Werte ( 100000, 6000 ) },
+            { "Audvacar", new Werte ( 0, 0 ) },
             // sonstige EinnahmenView
             {"Kampfeinnahmen", new Werte( 0, 1) },
             {"Pluenderungen", new Werte( 0, 1) },
@@ -52,7 +53,6 @@ namespace PhoenixModel.ExternalTables
             {"eroberte_staedte", new Werte( 0, 1) },
             {"eroberte_festungen", new Werte( 0, 1) },
             {"eroberte_hauptstadt", new Werte( 0, 1) },
-            {"eroberte_festungshauptstadt", new Werte( 0, 1) },
             {"eroberte_festungshauptstadt", new Werte( 0, 1) },
         };
 
