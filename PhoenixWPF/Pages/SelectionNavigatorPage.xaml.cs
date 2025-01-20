@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.dbZugdaten;
+using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using PhoenixWPF.Helper;
 using PhoenixWPF.Program;
@@ -34,6 +35,12 @@ namespace PhoenixWPF.Pages {
             Back.IsEnabled = Main.Instance.SelectionHistory.CanNavigateBack();
             Forward.IsEnabled = Main.Instance.SelectionHistory.CanNavigateForward();
             Display.Text = Main.Instance.SelectionHistory.CurrentDisplay;
+            var marked = KleinfeldView.GetMarked(MarkerType.User);
+            if (marked != null && marked.Count() > 0) {
+                Mehrfachauswahl.Text = $"{marked.Count()} Kleinfelder ausgewählt";
+            }
+            else
+                Mehrfachauswahl.Text = string.Empty;
         }
 
         private void BackButton_Click(object sender, System.Windows.RoutedEventArgs e)

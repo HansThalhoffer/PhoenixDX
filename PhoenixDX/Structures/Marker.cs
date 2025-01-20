@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Drawing;
+using PhoenixDX.Helper;
 using PhoenixModel.View;
 using System;
 
@@ -36,9 +37,10 @@ namespace PhoenixDX.Structures {
             try
             {
                 _hexTexture = contentManager.Load<Texture2D>("Images/TilesetV/Info");
-                coloredTextures[0] = new ColoredTexture(_hexTexture, Color.White);
-                coloredTextures[1] = new ColoredTexture(_hexTexture, Color.Orange);
-                coloredTextures[2] = new ColoredTexture(_hexTexture, Color.Red);
+                coloredTextures[0] = new ColoredTexture(_hexTexture, Color.Turquoise);
+                coloredTextures[1] = new ColoredTexture(_hexTexture, Color.Yellow);
+                coloredTextures[2] = new ColoredTexture(_hexTexture, Color.Orange);
+                coloredTextures[3] = new ColoredTexture(_hexTexture, Color.Red);
             }
             catch (Exception ex)
             {
@@ -56,12 +58,14 @@ namespace PhoenixDX.Structures {
             {
                 case MarkerType.None:
                     return null;
-                case MarkerType.Info:
+                case MarkerType.User:
                     return coloredTextures[0];
-                case MarkerType.Warning:
+                case MarkerType.Info:
                     return coloredTextures[1];
-                case MarkerType.Fatality:
+                case MarkerType.Warning:
                     return coloredTextures[2];
+                case MarkerType.Fatality:
+                    return coloredTextures[3];
                 default: return null;
             }
         }

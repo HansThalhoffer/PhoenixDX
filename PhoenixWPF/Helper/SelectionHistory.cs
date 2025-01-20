@@ -77,16 +77,17 @@ namespace PhoenixWPF.Helper
             }
             set
             {
-                if (value != null && value.Select() &&  Current != value)
+                if (value != null && value.Select() )
                 {
-                    if (_index >= 0)
-                    {
-                        // hiser soll abgeschnitten werden bis zum aktuellen Eintrag, falls bereits zurücknavigiert wurde
-                        while (this.Count > _index + 1)
-                            this.RemoveAt(this.Count-1);
+                    if (Current != value) {
+                        if (_index >= 0) {
+                            // hiser soll abgeschnitten werden bis zum aktuellen Eintrag, falls bereits zurücknavigiert wurde
+                            while (this.Count > _index + 1)
+                                this.RemoveAt(this.Count - 1);
+                        }
+                        this.Add(value);
+                        NavigateForward();
                     }
-                    this.Add(value);
-                    NavigateForward();
                     _OnSelectionChange(Current);
                 }
             }

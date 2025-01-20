@@ -1,8 +1,10 @@
-﻿using PhoenixModel.EventsAndArgs;
+﻿using PhoenixModel.dbErkenfara;
+using PhoenixModel.EventsAndArgs;
 using PhoenixModel.Program;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using PhoenixWPF.Pages;
+using System.Windows.Input;
 using static PhoenixModel.Program.LogEntry;
 
 namespace PhoenixWPF.Program {
@@ -77,8 +79,13 @@ namespace PhoenixWPF.Program {
 
                 var bezeichner = KleinfeldPosition.CreateBezeichner(e.GF, e.KF);
                 var gem = SharedData.Map[bezeichner];
-                Main.Instance.SelectionHistory.Current = gem;
+                if (gem.Nation == ProgramView.SelectedNation && Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) {
+                    MarkerType mark = (gem.Mark == MarkerType.None) ? MarkerType.User : MarkerType.None;
+                    KleinfeldView.Mark(gem, mark, true);
+                }
 
+                Main.Instance.SelectionHistory.Current = gem;
+               
                 // Test Pfad sichtbar machen
                 /*IEnumerable<KleinFeld>? list = KleinfeldView.GetPath(gem, "SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO");
                 if (list != null) {
@@ -103,6 +110,7 @@ namespace PhoenixWPF.Program {
                 Main.Map?.Goto(pos);
                 if (pos is ISelectable select)
                     Main.Instance.SelectionHistory.Current = select;
+               
             }
             
         }

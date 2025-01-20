@@ -1510,15 +1510,3 @@
 /processorParam:TextureFormat=Color
 /build:Images/TilesetV/wand_w.png
 
-#begin Images/TilesetV/Warning.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Images/TilesetV/Warning.png
-

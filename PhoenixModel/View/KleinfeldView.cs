@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 namespace PhoenixModel.View {
 
     public enum MarkerType {
-        None, Info, Warning, Fatality
+        None, User, Info, Warning, Fatality
     }
 
     public static class KleinfeldView {
@@ -54,8 +54,25 @@ namespace PhoenixModel.View {
                 UnMark();
 
             kf.Mark = type;
-            _markedQueue.Enqueue(kf);
+            if (type != MarkerType.None) {
+                _markedQueue.Enqueue(kf);
+            }
+            else {
+                // aus der Queue raus, was nicht mehr markiert ist
+               var temp = _markedQueue.Where(kf => kf.Mark != MarkerType.None).ToArray();
+                _markedQueue.Clear();
+                foreach (var f in temp)
+                    _markedQueue.Enqueue(f);
+            }
+
             SharedData.UpdateQueue.Enqueue(kf);
+        }
+
+        /// <summary>
+        /// entfernt alle bisher markierten
+        /// </summary>
+        public static void UnMark(KleinFeld kleinFeld) {
+            Mark(kleinFeld, MarkerType.None);
         }
 
         /// <summary>
@@ -70,6 +87,14 @@ namespace PhoenixModel.View {
                 }
             }
         }
+
+        /// <summary>
+        /// holte alle Markierten
+        /// </summary>
+        public static IEnumerable<KleinFeld> GetMarked(MarkerType mark) {
+            return _markedQueue.Where(item => item.Mark == mark);
+        }
+
 
         /// <summary>
         /// verfolgt einen Pfad wie  "NO N SO S W SO O"

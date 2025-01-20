@@ -28,6 +28,12 @@
                    HorizontalAlignment="Center" 
                    VerticalAlignment="Center"
                    FontSize="15" />
+        <TextBlock x:Name="Mehrfachauswahl" Text="dd" 
+           Grid.Column="1" 
+           Foreground= "DarkGray"
+           HorizontalAlignment="Right" 
+           VerticalAlignment="Center"
+           FontSize="10" />
 
         <Button x:Name="Forward" Content="&gt;&gt;"
                 Click="ForwardButton_Click"
