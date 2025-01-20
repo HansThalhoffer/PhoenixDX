@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PhoenixModel.dbZugdaten;
+using PhoenixModel.ExternalTables;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -45,7 +47,7 @@ namespace PhoenixModel.ViewModel {
         /// Da die Datenbank für Charname zwei Schreibweisen kennt und die Abbildung 1:1 zur AccessDB sein soll, wird dieser Wert gedoppelt.
         /// </summary>
         private string _charname = string.Empty;
-        internal string Charname { get => _charname; set { if (value != null) _charname = value; } }
+        public string Charname { get => _charname; set { if (value != null) _charname = value; } }
         internal string charname { get => _charname; set { if (value != null) _charname = value; } }
         
         /// <summary>
@@ -111,6 +113,18 @@ namespace PhoenixModel.ViewModel {
         /// Zugehörige Einheit der Spielfigur.
         /// </summary>
         public string einheit { get; set; } = string.Empty;
+
+        public bool IsSpielerFigur {
+            get {
+                if (this is Zauberer)
+                    return Typ == FigurType.CharakterZauberer;
+                /* if (Beschriftung.StartsWith("HF"))
+                    return false;*/
+                if (string.IsNullOrEmpty(Spielername) == false) 
+                    return true;
+                return false;
+            }
+        }
 
         /// <summary>
         /// Gibt eine Liste mit Eigenschaften der Spielfigur zurück.

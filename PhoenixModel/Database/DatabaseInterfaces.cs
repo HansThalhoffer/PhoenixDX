@@ -48,7 +48,7 @@ namespace PhoenixModel.Database {
         /// <summary>
         /// Name der zugehörigen Datenbank.
         /// </summary>
-        public abstract string DatabaseName { get; set; }
+        public abstract string Database { get; set; }
 
         /// <summary>
         /// Eindeutige Kennung oder Bezeichnung der Tabelle.

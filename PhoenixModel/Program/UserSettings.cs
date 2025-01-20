@@ -1,6 +1,5 @@
-﻿namespace PhoenixModel.Program {
-    using System.ComponentModel;
-
+﻿using System.ComponentModel;
+namespace PhoenixModel.Program {
     /// <summary>
     /// die Settings werden automatisch gespeichert, wenn Änderungen stattfinden.
     /// Die Klasse kann einfach erweitert werden. Einfach ein neues Property mit Backing Field hinzufügen und den Change Event aufrufen. Fertig.

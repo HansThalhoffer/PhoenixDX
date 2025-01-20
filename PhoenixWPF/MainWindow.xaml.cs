@@ -63,7 +63,7 @@ namespace PhoenixWPF
                     return;
                 switch (tag)
                 {
-                    // Truppendialog
+                    // Militär
                     case "Truppen":
                         new TruppenEntwicklungDialog().Show("Status");
                         break;
@@ -71,7 +71,15 @@ namespace PhoenixWPF
                         new TruppenEntwicklungDialog().Show("Entwicklung");
                         break;
 
-                    // Schatzkammerdialog
+                    // Hofhaltung
+                    case "LehenVerwalten":
+                        new LehenDialog().Show("LehenVerwalten");
+                        break;
+                    case "LehenAnlegen":
+                        new LehenDialog().Show("LehenAnlegen");
+                        break;
+
+                    // Schatzkammer
                     case "ErwarteteEinkommen":
                         new SchatzkammerDialog().Show("ErwarteteEinkommen");
                         break;

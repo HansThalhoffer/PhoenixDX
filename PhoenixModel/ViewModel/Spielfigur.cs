@@ -303,7 +303,7 @@ namespace PhoenixModel.ViewModel {
         /// <summary>
         /// Die Felder, die nicht in der Eigenschaften Liste für den Benutzer sichtbar sein sollen
         /// </summary>
-        private static readonly string[] PropertiestoIgnore = ["DatabaseName", "Bezeichner", "Nation", "GS_alt", "Kampfeinnahmen_alt", "Nummer", "gf_von", "kf_von", "gf", "kf", "gf_nach", "kf_nach", "ph_xy", "Key"];
+        private static readonly string[] PropertiestoIgnore = ["DatabaseName", "Database", "Bezeichner", "Nation", "GS_alt", "Kampfeinnahmen_alt", "Nummer", "gf_von", "kf_von", "gf", "kf", "gf_nach", "kf_nach", "ph_xy", "Key"];
         /// <summary>
         /// Implementierung von IEigenschaftler
         /// </summary>

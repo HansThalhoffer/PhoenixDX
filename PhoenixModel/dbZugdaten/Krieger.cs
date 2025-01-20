@@ -9,8 +9,8 @@ using System.Data.Common;
 namespace PhoenixModel.dbZugdaten {
     public class Krieger : TruppenSpielfigur, IDatabaseTable, IEigenschaftler
     {
-        private static string _datebaseName = string.Empty;
-        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
+        public static string DatabaseName { get; set;  } = string.Empty;
+        public string Database { get { return DatabaseName; } set { DatabaseName = value; } }
         public const string TableName = "Krieger";
         string IDatabaseTable.TableName => TableName;
         public const int StartNummer = 100;

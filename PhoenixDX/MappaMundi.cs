@@ -10,7 +10,6 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 namespace PhoenixDX {
     // stellt die API zur Verfügung für die WPF Welt
     public class MappaMundi {
-
         /// <summary>
         /// die DirectX Engine
         /// </summary>

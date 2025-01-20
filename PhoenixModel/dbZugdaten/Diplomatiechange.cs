@@ -8,8 +8,8 @@ namespace PhoenixModel.dbZugdaten
 {
     public class Diplomatiechange :  ReichCrossref, IDatabaseTable
     {
-        private static string _datebaseName = string.Empty;
-        public override string DatabaseName { get { return Diplomatiechange._datebaseName; } set { Diplomatiechange._datebaseName = value; } }
+        public static new string DatabaseName { get; set;  } = string.Empty;
+        public override string Database { get { return DatabaseName; } set { DatabaseName = value; } }
         public new const string TableName = "Diplomatiechange";
         protected override string GetTableName() { return TableName; }
 

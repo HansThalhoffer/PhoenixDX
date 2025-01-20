@@ -23,7 +23,9 @@ public class DbCommandFacade : DbCommand {
     /// </summary>
     public override string CommandText {
         get => dbCommand.CommandText;
+#pragma warning disable CS8765 // Die NULL-Zulässigkeit des Typs des Parameters entspricht (möglicherweise aufgrund von Attributen für die NULL-Zulässigkeit) nicht dem überschriebenen Member.
         set => dbCommand.CommandText = value;
+#pragma warning restore CS8765 // Die NULL-Zulässigkeit des Typs des Parameters entspricht (möglicherweise aufgrund von Attributen für die NULL-Zulässigkeit) nicht dem überschriebenen Member.
     }
 
     /// <summary>

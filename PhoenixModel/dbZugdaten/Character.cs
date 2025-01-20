@@ -9,8 +9,8 @@ namespace PhoenixModel.dbZugdaten {
     public enum Characterklasse { HF, BUH, STH, FSH, HER, none }
 
     public class Character : NamensSpielfigur, IDatabaseTable, IEigenschaftler {
-        private static string _datebaseName = string.Empty;
-        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
+        public static string DatabaseName { get; set;  } = string.Empty;
+        public string Database { get { return DatabaseName; } set { DatabaseName = value; } }
         public const string TableName = "chars";
         public const int StartNummer = 600;
 

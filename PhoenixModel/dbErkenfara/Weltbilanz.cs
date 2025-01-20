@@ -7,8 +7,8 @@ using PhoenixModel.ViewModel;
 namespace PhoenixModel.dbErkenfara {
     public class Weltbilanz :  IDatabaseTable, IEigenschaftler
     {
-        private static string _datebaseName = string.Empty;
-        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
+        public static string DatabaseName { get; set;  } = string.Empty;
+        public string Database { get { return DatabaseName; } set { DatabaseName = value; } }
         public const string TableName = "Weltbilanz";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => ReichId ?? "unbekanntes Nation";

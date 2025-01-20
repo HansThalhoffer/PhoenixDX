@@ -19,33 +19,27 @@ namespace PhoenixWPF.Database {
         /// Benutzerdefinierte Einstellungen, die im Programm verwendet werden.
         /// </summary>
         public UserSettings UserSettings { get; private set; }
-
         /// <summary>
         /// Das sollte auf den absoluten Pfad _Data zeigen, der als Speicherort für Daten dient.
         /// </summary>
         public string DataRootPath { get; set; } = string.Empty;
-
         /// <summary>
         /// Hier stehen die relativen Pfade zu den Datenbanken ab dem Verzeichnis _Data.
         /// Die absoluten Pfade werden dann im UserSettings gespeichert.
         /// </summary>
         public const string DatabaseLocationKarte = "Kartendaten\\Erkenfarakarte.mdb";
-
         /// <summary>
         /// Der Pfad zur PZE-Datenbank.
         /// </summary>
         public const string DatabaseLocationPZE = "Database\\PZE.mdb";
-
         /// <summary>
         /// Standardwerte für Reicheinstellungen, gespeichert in einer Textdatei.
         /// </summary>
         public const string DefaultValuesReiche = "EinstellungenReiche.txt";
-
         /// <summary>
         /// Der Pfad zur Cross-Referenzdatenbank.
         /// </summary>
         public const string DatabaseLocationCrossRef = "Crossreferenzen\\crossref.mdb";
-
         /// <summary>
         /// Der Pfad zur Feindaufklärungsdatenbank.
         /// </summary>

@@ -7,8 +7,8 @@ using PhoenixModel.ViewModel;
 namespace PhoenixModel.dbZugdaten {
     public class Lehensvergabe :  IDatabaseTable, IEigenschaftler
     {
-        private static string _datebaseName = string.Empty;
-        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
+        public static string DatabaseName { get; set;  } = string.Empty;
+        public string Database { get { return DatabaseName; } set { DatabaseName = value; } }
         public const string TableName = "Lehensvergabe";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => ID.ToString();
@@ -16,15 +16,15 @@ namespace PhoenixModel.dbZugdaten {
         private static readonly string[] PropertiestoIgnore = ["DatabaseName"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
-        public int ID { get; set; }
-        public int gf { get; set; }
-        public int kf { get; set; }
-        public string? Ruestort { get; set; }
-        public string? Ruestortname { get; set; }
-        public string? Charname { get; set; }
-        public string? Charrang { get; set; }
-        public int x { get; set; }
-        public int y { get; set; }
+        public int ID { get; set; } = 0;
+        public int gf { get; set; } = 0;
+        public int kf { get; set; } = 0;
+        public string Ruestort { get; set; } = string.Empty;
+        public string Ruestortname { get; set; } = string.Empty ;
+        public string Charname { get; set; } = string.Empty;
+        public string Charrang { get; set; } = string.Empty;
+        public int x { get; set; } = 0;
+        public int y { get; set; } = 0;
 
         public enum Felder
         {
@@ -57,16 +57,17 @@ namespace PhoenixModel.dbZugdaten {
             y = {this.y}
         WHERE ID = {this.ID}";
 
-            command.ExecuteNonQuery();
+           if ( command.ExecuteNonQuery() == 0)
+                Insert(command);
         }
 
 
         public void Insert(DbCommand command) {
             command.CommandText = $@"
         INSERT INTO {TableName} (
-            ID, gf, kf, Ruestort, Ruestortname, Charname, Charrang, x, y
+            gf, kf, Ruestort, Ruestortname, Charname, Charrang, x, y
         ) VALUES (
-            {this.ID}, {this.gf}, {this.kf}, 
+            {this.gf}, {this.kf}, 
             '{DatabaseConverter.EscapeString(this.Ruestort)}', 
             '{DatabaseConverter.EscapeString(this.Ruestortname)}', 
             '{DatabaseConverter.EscapeString(this.Charname)}', 

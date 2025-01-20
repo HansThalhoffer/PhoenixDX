@@ -103,6 +103,23 @@ namespace PhoenixModel.View {
             return result;
         }
 
+
+        /// <summary>
+        /// Hole alle Charaktere und Zauberer, die Spielernamen haben oder Spieler sein können
+        /// </summary>
+        /// <param name="figur"></param>
+        /// <returns></returns>
+        public static List<NamensSpielfigur> HoleSpielerfiguren() {
+            List<NamensSpielfigur> result = [];
+            var charaktere = SharedData.Character?.Where(s => s.IsSpielerFigur == true && Plausibilität.IsValid(s));
+            if (charaktere != null)
+                result.AddRange(charaktere);
+            var zauberer = SharedData.Zauberer?.Where(s => s.IsSpielerFigur == true && Plausibilität.IsValid(s));
+            if (zauberer != null)
+                result.AddRange(zauberer);
+            return result;
+        }
+
         /// <summary>
         /// eine klare Zuordnung zu einer Klasse ist hier schwierig, daher die Weiterleitung
         /// </summary>

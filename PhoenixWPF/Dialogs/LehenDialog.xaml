@@ -1,0 +1,19 @@
+﻿<Window x:Class="PhoenixWPF.Dialogs.LehenDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PhoenixWPF.Dialogs"
+        mc:Ignorable="d"
+        Title="Lehen" Height="450" Width="800">
+    <Grid>
+        <TabControl x:Name="Tabulator" TabStripPlacement="Bottom">
+            <TabItem Header="Lehen verwalten"  Tag="LehenVerwalten">
+                <Frame x:Name="LehenVerwalten"  Source="/Pages/LehenVerwaltenPage.xaml" Tag="LehenVerwalten"/>
+            </TabItem>
+            <TabItem Header="Lehen neu anlegen" Tag="LehenAnlegen">
+                <Frame x:Name="LehenAnlegen"  Source="/Pages/LehenAnlegenPage.xaml" Tag="LehenAnlegen"/>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

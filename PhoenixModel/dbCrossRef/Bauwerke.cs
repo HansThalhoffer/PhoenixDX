@@ -41,8 +41,8 @@ namespace PhoenixModel.dbCrossRef {
     // kosten von Wall etc
     public class Bauwerk : BauwerkBasis, IDatabaseTable, IEigenschaftler
     {
-        private static string _datebaseName = string.Empty;
-        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
+        public static string DatabaseName { get; set;  } = string.Empty;
+        public string Database { get { return DatabaseName; } set { DatabaseName = value; } }
         public const string TableName = "Bauwerke_crossref";
         string IDatabaseTable.TableName => TableName;
 
@@ -71,8 +71,8 @@ namespace PhoenixModel.dbCrossRef {
     // referenzliste
     public class Rüstort : BauwerkBasis, IDatabaseTable, IEigenschaftler
     {
-        private static string _datebaseName = string.Empty;
-        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
+        public static string DatabaseName { get; set;  } = string.Empty;
+        public string Database { get { return DatabaseName; } set { DatabaseName = value; } }
         public const string TableName = "ruestort_crossref";
         string IDatabaseTable.TableName => TableName;
         public static Dictionary<int, Rüstort> NachBaupunkten = [];

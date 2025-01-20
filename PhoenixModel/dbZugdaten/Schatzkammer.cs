@@ -6,8 +6,8 @@ using PhoenixModel.ViewModel;
 
 namespace PhoenixModel.dbZugdaten {
     public class Schatzkammer : IDatabaseTable, IEigenschaftler {
-        private static string _datebaseName = string.Empty;
-        public string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
+        public static string DatabaseName { get; set;  } = string.Empty;
+        public string Database { get { return DatabaseName; } set { DatabaseName = value; } }
         public const string TableName = "Schatzkammer";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => $"Monat {monat} {schenkung_bekommen} {schenkung_getaetigt}";

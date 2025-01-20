@@ -14,15 +14,6 @@ namespace PhoenixWPF.Database
       
         protected delegate T LoadObject<T>(DbDataReader reader);
 
-        private void SetDatabaseName<T>(T obj, AccessDatabase? connector)
-        {
-            if (obj is IDatabaseTable table)
-            {
-                if (connector != null)
-                    table.DatabaseName = connector.DatabaseName;
-            }
-        }
-
         /// <summary>
         /// Lädt die objekte in eine Collection
         /// Wichtig: das erst genannte Feld im String Array bestimmt die Sortierung
@@ -41,7 +32,7 @@ namespace PhoenixWPF.Database
                 collection = new BlockingCollection<T>();
                 string felderListe = string.Join(", ", felder);
                 string tableName = PropertyProcessor.GetConstValue<T>("TableName");
-                
+                PropertyProcessor.SetStaticValue<T>("DatabaseName", connector.DatabaseName);
                 string query = $"SELECT {felderListe} FROM {tableName} ORDER BY {felder[0]}";
                 try
                 {
@@ -50,7 +41,6 @@ namespace PhoenixWPF.Database
                         while (reader != null && reader.Read())
                         {
                             T obj = new T();
-                            SetDatabaseName(obj, connector);
                             typeof(T).GetMethod("Load")?.Invoke(obj, [reader]);
                             collection.Add(obj);
                         }
@@ -76,12 +66,12 @@ namespace PhoenixWPF.Database
             string felderListe = string.Join(", ", felder);
             T obj = new T();
             string tableName = PropertyProcessor.GetConstValue<T>("TableName");
+            PropertyProcessor.SetStaticValue<T>("DatabaseName", connector.DatabaseName);
             using (DbDataReader? reader = connector?.OpenReader($"SELECT {felderListe} FROM {tableName} ORDER BY {felder[0]}"))
             {
                 while (reader != null && reader.Read())
                 {
                     obj = new T();
-                    SetDatabaseName(obj, connector);
                     typeof(T).GetMethod("Load")?.Invoke(obj, [reader]);
                     string key = PropertyProcessor.GetPropertyValue(obj, "Bezeichner");
                     collection.Add(key, obj);

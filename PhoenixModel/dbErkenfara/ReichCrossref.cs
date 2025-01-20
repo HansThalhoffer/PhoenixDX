@@ -9,8 +9,8 @@ using PhoenixModel.ViewModel;
 namespace PhoenixModel.dbErkenfara {
     public class ReichCrossref : IDatabaseTable, IEigenschaftler
     {
-        private static string _datebaseName = string.Empty;
-        public virtual string DatabaseName { get { return _datebaseName; } set { _datebaseName = value; } }
+        public static string DatabaseName { get; set;  } = string.Empty;
+        public virtual string Database { get { return DatabaseName; } set { DatabaseName = value; } }
 
         public const string TableName = "Reich_crossref";
         string IDatabaseTable.TableName => ReichCrossref.TableName;
@@ -19,7 +19,7 @@ namespace PhoenixModel.dbErkenfara {
         protected virtual string GetTableName () { return TableName; }
 
         // IEigenschaftler
-        private static readonly string[] PropertiestoIgnore = ["DBname", "Nummer", "DatabaseName", "Flottenkey", "ReferenzNation", "Nation"];
+        private static readonly string[] PropertiestoIgnore = ["DBname", "Nummer", "DatabaseName", "Database", "Flottenkey", "ReferenzNation", "Nation"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
         public int Nummer { get; set; }
         public string Geber { get => ReferenzNation.Reich; }

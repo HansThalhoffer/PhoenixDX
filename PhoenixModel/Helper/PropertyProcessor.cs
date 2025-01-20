@@ -48,6 +48,17 @@ namespace PhoenixModel.Helper {
         }
 
         /// <summary>
+        /// Retrieves the value of a constant field by its name from a specified type.
+        /// </summary>
+        /// <typeparam name="T">The type containing the constant field.</typeparam>
+        /// <param name="name">The name of the constant field.</param>
+        /// <returns>The value of the constant field as a string, or an empty string if the field does not exist.</returns>
+        public static void SetStaticValue<T>(string name, string value) {
+            var info = typeof(T).GetProperty(name, BindingFlags.Public | BindingFlags.Static);
+            info?.SetValue(null, value);
+        }
+
+        /// <summary>
         /// Creates a list of <see cref="Eigenschaft"/> objects based on the properties of a given data object.
         /// </summary>
         /// <typeparam name="T">The type of the data object.</typeparam>

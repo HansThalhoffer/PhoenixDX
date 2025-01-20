@@ -4,25 +4,28 @@ Dieses Verzeichnis gehört zum **PhoenixModel**-Projekt innerhalb der **PhoenixD
 
 ## Übersicht der Dateien
 
-### 1. BauwerkeView.cs
+### BauwerkeView.cs
 Diese Klasse verwaltet die Darstellung von Bauwerken im Spiel. Sie enthält Methoden zur Visualisierung und zur Verwaltung von Bauwerken in der Spielwelt.
 
-### 2.CharacterView.cs
+### CharacterView.cs
 Diese Klasse verwaltet die Darstellung und Steuerung von Charaktern innerhalb des Spiels. 
 
-### 3. EinnahmenView.cs
+### EinnahmenView.cs
 Diese Klasse ist für die Berechnung und Darstellung von Einnahmen der Spieler verantwortlich. Sie aggregiert relevante Daten und stellt sie für die GUI oder andere Module bereit.
 
-### 4. KleinfeldView.cs
+### KleinfeldView.cs
 Verwaltet die Darstellung einzelner Kleinfelder in der Spielwelt. Diese Klasse wird zur Anzeige und Interaktion mit den kleinsten Spielfeldeinheiten verwendet.
 
-### 5. NationenView.cs
+### LehenView.cs
+Unterstützt bei der Verwaltung und der Anlage von Lehen. Liefert eine Liste von Charakteren, die noch kein Lehen haben.
+
+### NationenView.cs
 Bietet eine Übersicht über die verschiedenen Nationen im Spiel und stellt deren Eigenschaften für die Anzeige bereit.
 
-### 6. SpielfigurenView.cs
+### SpielfigurenView.cs
 Enthält die Logik zur Darstellung und Verwaltung von Spielfiguren. Dies umfasst das Laden, Aktualisieren und Anzeigen von Charakteren und Truppen.
 
-### 7. ZaubererView.cs
+### ZaubererView.cs
 Diese Klasse verwaltet die Darstellung und Steuerung von Zauberern innerhalb des Spiels. 
 
 ## Zweck dieses Verzeichnisses

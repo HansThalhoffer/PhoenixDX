@@ -19,6 +19,18 @@ namespace PhoenixModel.View {
         /// <param name="figur"></param>
         /// <returns></returns>
         public static CrossrefCharaktere? GetAssumedCharacterKategorie(Character figur) {
+            string beschriftung = figur.Beschriftung.ToUpper();
+            if (beschriftung.StartsWith("HF"))
+                return CrossrefCharaktere.Kategorien[(int)Characterklasse.HF];
+            else if (beschriftung.StartsWith("BUH"))
+                return CrossrefCharaktere.Kategorien[(int)Characterklasse.BUH];
+            else if (beschriftung.StartsWith("STH"))
+                return CrossrefCharaktere.Kategorien[(int)Characterklasse.STH];
+            else if (beschriftung.StartsWith("FSH"))
+                return CrossrefCharaktere.Kategorien[(int)Characterklasse.FSH];
+            else if (beschriftung.StartsWith("HER"))
+                return CrossrefCharaktere.Kategorien[(int)Characterklasse.HER];
+
             foreach (var f in CrossrefCharaktere.Kategorien.Reverse()) {
                 if (f.MinGutPunkte <= figur.GP_ges) {
                     return f;

@@ -9,7 +9,6 @@ using System.Collections.Concurrent;
 namespace PhoenixModel.ViewModel {
 
     public static class SharedData {
-
         /// <summary>
         /// In dieser Queue werden die Objekte abgelegt, die in der Datenbank gespeichert werden sollen. Das geschieht asynchron
         /// </summary>

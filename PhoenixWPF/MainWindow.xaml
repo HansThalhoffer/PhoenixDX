@@ -23,9 +23,14 @@
                 <MenuItem Header="Auswahl Figuren" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="FigurenAuswahl" />
                 <MenuItem Header="Auswahl Rüstorte" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="RüstortAuswahl" />
             </MenuItem>
+            <MenuItem Header="Hofhaltung">
+                <MenuItem Header="Lehen verwalten" IsCheckable="False"  Click="MenuItem_Click" Tag="LehenVerwalten" />
+                <MenuItem Header="Lehen neu anlegen" IsCheckable="False"  Click="MenuItem_Click" Tag="LehenAnlegen" />
+            </MenuItem>
             <MenuItem Header="Schatzkammer">
                 <MenuItem Header="Bericht des Kämmerers" IsCheckable="False"  Click="MenuItem_Click" Tag="ErwarteteEinkommen" />
                 <MenuItem Header="Bericht der Historiker" IsCheckable="False"  Click="MenuItem_Click" Tag="Entwicklung" />
+                <Separator/>
                 <MenuItem Header="Bisherige Schenkungen" IsCheckable="False"  Click="MenuItem_Click" Tag="Schenkungen" />
                 <MenuItem Header="Geld verschenken" IsCheckable="False"  Click="MenuItem_Click" Tag="Schenken" />
             </MenuItem>

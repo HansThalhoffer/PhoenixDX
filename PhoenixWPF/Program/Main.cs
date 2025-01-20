@@ -189,20 +189,20 @@ namespace PhoenixWPF.Program {
                     SharedData.StoreQueue.TryDequeue(out var data);
                     if (data != null) {
                         ILoadableDatabase? db = null;
-                        if (data.DatabaseName == Settings.UserSettings.DatabaseLocationCrossRef) {
-                            db = CreateCrossRef(data.DatabaseName, Settings.UserSettings.PasswordCrossRef);
+                        if (data.Database == Settings.UserSettings.DatabaseLocationCrossRef) {
+                            db = CreateCrossRef(data.Database, Settings.UserSettings.PasswordCrossRef);
                         }
-                        else if (data.DatabaseName == Settings.UserSettings.DatabaseLocationKarte) {
-                            db = CreateKarte(data.DatabaseName, Settings.UserSettings.PasswordKarte);
+                        else if (data.Database == Settings.UserSettings.DatabaseLocationKarte) {
+                            db = CreateKarte(data.Database, Settings.UserSettings.PasswordKarte);
                         }
-                        else if (data.DatabaseName == Settings.UserSettings.DatabaseLocationZugdaten) {
-                            db = CreateZugdaten(data.DatabaseName, Settings.UserSettings.PasswordReich);
+                        else if (data.Database == Settings.UserSettings.DatabaseLocationZugdaten) {
+                            db = CreateZugdaten(data.Database, Settings.UserSettings.PasswordReich);
                         }
-                        else if (data.DatabaseName == Settings.UserSettings.DatabaseLocationPZE) {
-                            db = CreatePZE(data.DatabaseName, Settings.UserSettings.PasswordPZE);
+                        else if (data.Database == Settings.UserSettings.DatabaseLocationPZE) {
+                            db = CreatePZE(data.Database, Settings.UserSettings.PasswordPZE);
                         }
                         else {
-                            SpielWPF.LogError($"Die Datenbank {data.DatabaseName} ist unbenkannt", $"Die daten können nicht in der Tabelle {data.TableName} gespeichert werden, wenn die Datenbank nicht bekannt ist");
+                            SpielWPF.LogError($"Die Datenbank {data.Database} ist unbenkannt", $"Die daten können nicht in der Tabelle {data.TableName} gespeichert werden, wenn die Datenbank nicht bekannt ist");
                         }
                         if (db != null) {
                             db.Save(data);

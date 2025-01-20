@@ -10,19 +10,15 @@ using System.Data.Common;
 namespace PhoenixModel.dbErkenfara {
     public class Gebäude : KleinfeldPosition, IEigenschaftler, IDatabaseTable, ISelectable
     {
-        private static string _datebaseName = string.Empty;
-        public string DatabaseName { get { return _datebaseName; } 
-            set { 
-                _datebaseName = value; 
-            } 
-        }
+        public static string DatabaseName { get; set;  } = string.Empty;
+        public string Database { get { return DatabaseName; } set { DatabaseName = value; } }
 
         // IDatabaseTable
         public const string TableName = "bauwerksliste";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner { get => CreateBezeichner(); }
         // IEigenschaftler
-        private static readonly string[] PropertiestoIgnore = ["DatabaseName", "Key","gf","kf"];
+        private static readonly string[] PropertiestoIgnore = ["DatabaseName", "Database", "Key","gf","kf"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
 
