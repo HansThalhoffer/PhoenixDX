@@ -125,8 +125,9 @@ namespace PhoenixDX.Structures {
                 cacheKey += $"{figur.Typ.ToString()}, ";
             }
 
-            if (TextureCache.Contains(cacheKey))
-                return TextureCache.Get(cacheKey) as ColoredTexture;
+            BaseTexture baseTexture = null;
+            if (TextureCache.TryGet(cacheKey, out baseTexture))
+                return baseTexture as ColoredTexture;
 
             var graphicsDevice = SpielDX.Instance.Graphics.GraphicsDevice;
             float faktor = truppen.Count > 1 ? 1.2f :0.8f;
@@ -166,8 +167,15 @@ namespace PhoenixDX.Structures {
                     {
                         int index = (int)figur.Typ;
                         var texture = isDark? FigurImages[index].InvertedTexture: FigurImages[index].Texture;
-                        if (isDark)
-                            texture = ColoredTexture.ColorTexture(texture,graphicsDevice, figur.Color);
+                        if (isDark) {
+                            string colorKey = $"{figur.Color}, {figur.Typ}";
+                            if (TextureCache.TryGet(cacheKey, out baseTexture))
+                                texture = baseTexture.Texture;
+                            else {
+                                texture = ColoredTexture.ColorTexture(texture, graphicsDevice, figur.Color);
+                                TextureCache.Set(cacheKey, texture);
+                            }
+                        }
                         Rectangle rScreenG = new Rectangle(pos[i].X, pos[i].Y, Convert.ToInt32(figurWidth / 4), Convert.ToInt32(figurHeight /4));
                         spriteBatch.Draw(texture, rScreenG, null, Color.White); // figur.Color);
                         if (++i > pos.Length - 1)

@@ -23,6 +23,15 @@ namespace PhoenixModel.Helper {
         }
 
         /// <summary>
+        /// Überprüft, ob eine Textur mit dem angegebenen Schlüssel existiert.
+        /// </summary>
+        /// <param name="key">Der Schlüssel der zu überprüfenden Textur.</param>
+        /// <returns>True, wenn die Textur existiert, andernfalls false.</returns>
+        public static bool TryGet(string key, out BaseTexture texture) {
+            return _instance.TryGetValue(key, out texture);
+        }
+        
+        /// <summary>
         /// Ruft eine Textur aus dem Cache ab.
         /// </summary>
         /// <param name="key">Der Schlüssel der abzurufenden Textur.</param>
