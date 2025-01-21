@@ -81,7 +81,7 @@ namespace PhoenixWPF.Helper
                 {
                     if (Current != value) {
                         if (_index >= 0) {
-                            // hiser soll abgeschnitten werden bis zum aktuellen Eintrag, falls bereits zurücknavigiert wurde
+                            // hier soll abgeschnitten werden bis zum aktuellen Eintrag, falls bereits zurücknavigiert wurde
                             while (this.Count > _index + 1)
                                 this.RemoveAt(this.Count - 1);
                         }

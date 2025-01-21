@@ -1,39 +1,42 @@
 using System;
 using System.Data.Common;
 using PhoenixModel.Database;
+using PhoenixModel.dbPZE;
 using PhoenixModel.Helper;
 using PhoenixModel.ViewModel;
 
 namespace PhoenixModel.dbZugdaten {
-    public class ZugdatenSettings:  IDatabaseTable, IEigenschaftler
+    public class ZugdatenSettings: PzeSettingsMaster, IDatabaseTable, IEigenschaftler
     {
-        public static string DatabaseName { get; set;  } = string.Empty;
-        public string Database { get { return DatabaseName; } set { DatabaseName = value; } }
-        public const string TableName = "settings";
+        public static new string DatabaseName { get; set;  } = string.Empty;
+        public new string Database { get { return DatabaseName; } set { DatabaseName = value; } }
+        public new const string TableName = "settings";
         string IDatabaseTable.TableName => TableName;
-        public string Bezeichner => id.ToString();
         // IEigenschaftler
         private static readonly string[] PropertiestoIgnore = ["DatabaseName"];
-        public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
+        public override List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
-
+        /// <summary>
+        /// fortlaufende Nummer
+        /// </summary>
         public int id { get; set; }
-        public int Monat { get; set; }
-        public int Reich { get; set; }
-        public string? Reichsname { get; set; }
-        public string? dbversion { get; set; }
-        public int Ruestmonat { get; set; }
-        public int Invasorflag { get; set; }
-        public int Audvacargeld { get; set; }
+        /// <summary>
+        /// Der aktuelle Zugmonat, für die diese Datenbank gilt
+        /// </summary>
         public int Piratenflag { get; set; }
+        /// <summary>
+        /// In welcher Phase befindet sich der Zug
+        /// 0 - Rüstphase
+        /// 1 - Bewegungsphase
+        /// </summary>
         public int Phase { get; set; }
 
-        public enum Felder
+        public new enum Felder
         {
             id, Monat, Reich, Reichsname, dbversion, Ruestmonat, Invasorflag, Audvacargeld, Piratenflag, Phase,
         }
 
-        public void Load(DbDataReader reader)
+        public override void Load(DbDataReader reader)
         {
             this.id = DatabaseConverter.ToInt32(reader[(int) Felder.id]);
             this.Monat = DatabaseConverter.ToInt32(reader[(int) Felder.Monat]);
@@ -47,12 +50,12 @@ namespace PhoenixModel.dbZugdaten {
             this.Phase = DatabaseConverter.ToInt32(reader[(int) Felder.Phase]);
         }
 
-        public void Save(DbCommand reader)
+        public override void Save(DbCommand reader)
         {
             throw new NotImplementedException();
         }
 
-        public void Insert(DbCommand reader)
+        public override void Insert(DbCommand reader)
         {
             throw new NotImplementedException();
         }

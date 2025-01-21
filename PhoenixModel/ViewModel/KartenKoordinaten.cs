@@ -9,6 +9,13 @@ namespace PhoenixModel.ViewModel {
         NW = 0, NO = 1, O = 2, SO = 3, SW = 4, W = 5
     }
 
+    /// <summary>
+    /// Windrichtungen für die Texturen in Langform
+    /// </summary>
+    public enum DirectionNames {
+        Nordwesten = Direction.NW, Nordosten = Direction.NO, Osten = Direction.NO, Südosten = Direction.SO, Südwesten = Direction.SW, Westen = Direction.W
+    }
+
     public class KartenKoordinaten : KleinfeldPosition {
 
         public int dbx;

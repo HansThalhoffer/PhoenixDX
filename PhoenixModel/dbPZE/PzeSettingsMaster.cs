@@ -15,13 +15,35 @@ namespace PhoenixModel.dbPZE {
         public string Bezeichner => $"{this.Monat} {this.Reich}";
         // IEigenschaftler
         private static readonly string[] PropertiestoIgnore = ["DatabaseName"];
-        public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
+        public virtual List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
+
+        /// <summary>
+        /// Der aktuelle Zugmonat, für die diese Datenbank gilt
+        /// </summary>
         public int Monat { get; set; }
+        /// <summary>
+        /// Das Reich, für die diese Datenbank gilt
+        /// </summary>
         public int Reich { get; set; }
+        /// <summary>
+        /// Name des Reiches 
+        /// </summary>
         public string? Reichsname { get; set; }
+        /// <summary>
+        /// Versionsnummer für die Altanwendung = 3.1
+        /// </summary>
         public string? dbversion { get; set; }
+        /// <summary>
+        /// ist der aktuelle Monat ein Rüstmonat = 1 ansonsten 0
+        /// </summary>
         public int Ruestmonat { get; set; }
+        /// <summary>
+        /// Ist das Reich ein Invasor = 1 ansonsten 0
+        /// </summary>
         public int Invasorflag { get; set; }
+        /// <summary>
+        /// Erhält das Reich Geld aus der Audvarcar Regel
+        /// </summary>
         public int Audvacargeld { get; set; }
 
         public enum Felder
@@ -29,7 +51,7 @@ namespace PhoenixModel.dbPZE {
             Monat, Reich, Reichsname, dbversion, Ruestmonat, Invasorflag, Audvacargeld,
         }
 
-        public void Load(DbDataReader reader)
+        public virtual void Load(DbDataReader reader)
         {
             this.Monat = DatabaseConverter.ToInt32(reader[(int)Felder.Monat]);
             this.Reich = DatabaseConverter.ToInt32(reader[(int)Felder.Reich]);
@@ -40,12 +62,12 @@ namespace PhoenixModel.dbPZE {
             this.Audvacargeld = DatabaseConverter.ToInt32(reader[(int)Felder.Audvacargeld]);
         }
 
-        public void Save(DbCommand reader)
+        public virtual void Save(DbCommand reader)
         {
             throw new NotImplementedException();
         }
 
-        public void Insert(DbCommand reader)
+        public virtual void Insert(DbCommand reader)
         {
             throw new NotImplementedException();
         }
