@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using PhoenixModel.dbCrossRef;
+using static PhoenixModel.Commands.ConstructCommand;
 
 namespace PhoenixModel.Commands {
 
@@ -17,7 +18,7 @@ namespace PhoenixModel.Commands {
     ///    - "Errichte Brücke im Süden von 444/22"
     ///    - "Errichte Brücke im Norden von 47/11"
     /// </summary>
-    public class ConstructCommand: DefaultCommand, ICommandParser, ICommand {
+    public class ConstructCommand: DefaultCommand, ICommand {
         public enum ConstructionElement {
             None,Bruecke,Strasse,Wall
         }       
@@ -27,47 +28,8 @@ namespace PhoenixModel.Commands {
         public KleinfeldPosition? Location { get; set; } = null;
         public Kosten? Kosten = null;
 
-        private static readonly Regex ConstructRegexErrichte = new Regex(
-             @"^Errichte\s+(?<what>\w+)\s+im\s+(?<direction>\w+)\s+von\s+(?<loc>[^\s]+)$",
-             RegexOptions.IgnoreCase | RegexOptions.Compiled
-            );
-        
-        private static readonly Regex ConstructRegexBaue = new Regex(
-             @"^Baue\s+(?<what>\w+)\s+auf\s+(?<loc>[^\s]+)\s+eine\s+(?<direction>\w+)$",
-             RegexOptions.IgnoreCase | RegexOptions.Compiled
-            );
-
         public ConstructCommand(string commandString, KleinfeldPosition? pos) :base(commandString) {
             Location = pos;
-        }
-
-        private ConstructionElement parseConstructionElement(string input) {
-            return input.ToLower()
-            switch {
-                "wall" => ConstructionElement.Wall,
-                "strasse" => ConstructionElement.Strasse,
-                "straße" => ConstructionElement.Strasse,
-                "brücke" => ConstructionElement.Bruecke,
-                _ => ConstructionElement.None
-            };
-        }
-
-        public bool ParseCommand(string commandString, out ICommand? command) {
-            var match = ConstructRegexErrichte.Match(commandString);
-            if (!match.Success) {
-                match = ConstructRegexBaue.Match(commandString);
-                if (!match.Success) 
-                    return Fail(out command);
-            }
-            command = new ConstructCommand(commandString, CommandParser.ParseLocation(match.Groups["loc"].Value)) {
-                What = parseConstructionElement(match.Groups["what"].Value),
-                Direction = CommandParser.ParseDirection(match.Groups["direction"].Value),
-            };
-            return true;        
-        }
-
-        public static string GenerateCommand(KleinfeldPosition pos, ConstructionElement what, Direction direction) {
-            return $"Errichte {what} im {(DirectionNames)direction} von {pos.CreateBezeichner()}";
         }
 
         /// <summary>
@@ -113,7 +75,7 @@ namespace PhoenixModel.Commands {
         /// </summary>
         public override CommandResult UndoCommand() {
             RuestungBauwerke? bauwerk = CreateRuestungBauwerke();
-            if (bauwerk != null && SharedData.RuestungBauwerke != null) { 
+            if (bauwerk != null && SharedData.RuestungBauwerke != null) {
                 var existing = SharedData.RuestungBauwerke.Where(bw => bw.Equals(bauwerk)).First();
                 if (existing == null)
                     return new CommandResultError("Der Auftrag für dieses Bauwerk existiert nicht und kann daher nicht rückgänig gemacht werden", $"Der Befehl kann nicht rückgängig gemacht werden, da er nicht in den Zugdaten gespeichert wurde\r\n {this.CommandString}");
@@ -121,7 +83,7 @@ namespace PhoenixModel.Commands {
                 SharedData.StoreQueue.Delete(existing);
             }
 
-            return new CommandResultError("Fehler","Keine Ahnung warum");
+            return new CommandResultError("Fehler", "Keine Ahnung warum");
         }
 
         /// <summary>
@@ -138,6 +100,54 @@ namespace PhoenixModel.Commands {
 
             return new CommandResultError("Fehler", "Keine Ahnung warum");
         }
+    }
+    
+    public class ConstructCommandParser : ICommandParser{
+
+        private static readonly Regex ConstructRegexErrichte = new Regex(
+            @"^Errichte\s+(?<what>\w+)\s+im\s+(?<direction>\w+)\s+von\s+(?<loc>[^\s]+)$",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled
+           );
+
+        private static readonly Regex ConstructRegexBaue = new Regex(
+             @"^Baue\s+(?<what>\w+)\s+auf\s+(?<loc>[^\s]+)\s+eine\s+(?<direction>\w+)$",
+             RegexOptions.IgnoreCase | RegexOptions.Compiled
+            );
+        
+        private static bool Fail(out ICommand? command) {
+            command = null;
+            return false;
+        }
+
+        private ConstructionElement parseConstructionElement(string input) {
+            return input.ToLower()
+            switch {
+                "wall" => ConstructionElement.Wall,
+                "strasse" => ConstructionElement.Strasse,
+                "straße" => ConstructionElement.Strasse,
+                "brücke" => ConstructionElement.Bruecke,
+                _ => ConstructionElement.None
+            };
+        }
+        public bool ParseCommand(string commandString, out ICommand? command) {
+            var match = ConstructRegexErrichte.Match(commandString);
+            if (!match.Success) {
+                match = ConstructRegexBaue.Match(commandString);
+                if (!match.Success) 
+                    return Fail(out command);
+            }
+            command = new ConstructCommand(commandString, CommandParser.ParseLocation(match.Groups["loc"].Value)) {
+                What = parseConstructionElement(match.Groups["what"].Value),
+                Direction = CommandParser.ParseDirection(match.Groups["direction"].Value),
+            };
+            return true;        
+        }
+
+        public static string GenerateCommand(KleinfeldPosition pos, ConstructionElement what, Direction direction) {
+            return $"Errichte {what} im {(DirectionNames)direction} von {pos.CreateBezeichner()}";
+        }
+
+       
 
     }
 }

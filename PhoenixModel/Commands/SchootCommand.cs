@@ -1,4 +1,5 @@
-﻿using PhoenixModel.Commands.Parser;
+﻿using PhoenixModel.Commands;
+using PhoenixModel.Commands.Parser;
 using PhoenixModel.dbCrossRef;
 using PhoenixModel.ViewModel;
 using System;
@@ -7,9 +8,63 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static PhoenixModel.Commands.SchootCommand;
 
 namespace PhoenixModel.Commands {
-    public class SchootCommand: DefaultCommand, ICommandParser, ICommand {
+
+    public class SchootCommand : DefaultCommand, ICommand {
+        /// <summary>
+        /// die Namen entsprechen der Kostentabelle in crossref.mdb
+        /// </summary>
+        public enum ConstructionElement {
+            None,
+            LKP,// Leichte Katapulte
+            SKP,// Schwere Katapulte
+            LKS,// Leichte Kriegsschiffe 
+            SKS,// Schwere Kriegsschiffe
+        }
+
+        public ConstructionElement With { get; set; } = ConstructionElement.None;
+        public KleinfeldPosition? TargetLocation { get; set; } = null;
+        public KleinfeldPosition? SourceLocation { get; set; } = null;
+        public int? Nummer { get; set; }
+
+
+        public SchootCommand(string commandString) : base(commandString) {
+        }
+
+        
+
+
+        /// <summary>
+        /// <see cref="ICommand"/>
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public override CommandResult ExecuteCommand() {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="ICommand"/>
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public override CommandResult CheckPreconditions() {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="ICommand"/>
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public override CommandResult UndoCommand() {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class SchootCommandParser : ICommandParser {
         private static readonly Regex AttackRegex = new Regex(
               // Explanation:
               // ^Beschieße\s+(?<targetLoc>[^\s]+)\s+      : "Beschieße <LOC>"
@@ -19,26 +74,11 @@ namespace PhoenixModel.Commands {
               // \s+von\s+(?<sourceLoc>[^\s]+)$           : "von <LOC>" at the end
               @"^Beschieße\s+(?<targetLoc>[^\s]+)\s+mit\s+(?<equipment>[^\d]+)(\s+(?<unitId>\d+))?\s+von\s+(?<sourceLoc>[^\s]+)$",
               RegexOptions.IgnoreCase | RegexOptions.Compiled
-          );
+        );
 
-        /// <summary>
-        /// die Namen entsprechen der Kostentabelle in crossref.mdb
-        /// </summary>
-        public enum ConstructionElement {
-            None,          
-            LKP,// Leichte Katapulte
-            SKP,// Schwere Katapulte
-            LKS,// Leichte Kriegsschiffe 
-            SKS,// Schwere Kriegsschiffe
-        }
-
-        public ConstructionElement With { get; set; } = ConstructionElement.None;     
-        public KleinfeldPosition? TargetLocation { get; set; } = null;
-        public KleinfeldPosition? SourceLocation { get; set; } = null;
-        public int? Nummer { get; set; }
-        
-        
-        public SchootCommand(string commandString) : base(commandString) {
+        private static bool Fail(out ICommand? command) {
+            command = null;
+            return false;
         }
 
         private ConstructionElement parseConstructionElement(string input) {
@@ -72,36 +112,9 @@ namespace PhoenixModel.Commands {
                 With = parseConstructionElement(match.Groups["unitType"].Value),
                 Nummer = nummer,
                 TargetLocation = CommandParser.ParseLocation(match.Groups["targetLoc"].Value),
-                SourceLocation = CommandParser.ParseLocation(match.Groups["sourceLoc"].Value),                
+                SourceLocation = CommandParser.ParseLocation(match.Groups["sourceLoc"].Value),
             };
             return true;
-        }
-
-        /// <summary>
-        /// <see cref="ICommand"/>
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public override CommandResult ExecuteCommand() {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// <see cref="ICommand"/>
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public override CommandResult CheckPreconditions() {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// <see cref="ICommand"/>
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public override CommandResult UndoCommand() {
-            throw new NotImplementedException();
         }
     }
 }
