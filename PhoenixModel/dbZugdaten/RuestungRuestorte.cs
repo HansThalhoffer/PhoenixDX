@@ -5,8 +5,7 @@ using PhoenixModel.Helper;
 using PhoenixModel.ViewModel;
 
 namespace PhoenixModel.dbZugdaten {
-    public class RuestungRuestorte :  IDatabaseTable, IEigenschaftler
-    {
+    public class RuestungRuestorte :  IDatabaseTable, IEigenschaftler, IEquatable<RuestungRuestorte> {
         public static string DatabaseName { get; set;  } = string.Empty;
         public string Database { get { return DatabaseName; } set { DatabaseName = value; } }
         public const string TableName = "ruestung_ruestorte";
@@ -70,6 +69,23 @@ namespace PhoenixModel.dbZugdaten {
 
             // Execute the delete command
             command.ExecuteNonQuery();
+        }
+
+        public bool Equals(RuestungRuestorte? other) {
+            if (other == null) return false;
+
+            return GF == other.GF &&
+                   KF == other.KF &&
+                   BP_rep == other.BP_rep &&
+                   BP_up == other.BP_up;
+        }
+
+        public override bool Equals(object? obj) {
+            return Equals(obj as RuestungRuestorte);
+        }
+
+        public override int GetHashCode() {
+            return HashCode.Combine(GF, KF, BP_rep, BP_up);
         }
     }
 }

@@ -93,13 +93,9 @@ namespace PhoenixModel.Commands {
             return new CommandResultSuccess("Das ConstructCommand kann ausgeführt werden", $"Der Befehl kann ausgeführt werden:\r\n {this.CommandString}");
         }
 
-        /// <summary>
-        /// Versucht den Befehl rückgäng zu machen
-        /// Wenn in der Datenbank etwas geschrieben werden musste, wird es auch gelöscht
-        /// </summary>
-        public override CommandResult UndoCommand() {
-            if (Kosten != null && Location != null   && SharedData.RuestungBauwerke  != null && CheckPreconditions() == true) {
-                RuestungBauwerke bauwerk = new RuestungBauwerke() {
+        private RuestungBauwerke? CreateRuestungBauwerke() {
+            if (Kosten != null && Location != null && CheckPreconditions() == true) {
+                return new RuestungBauwerke() {
                     GF = Location.gf,
                     KF = Location.kf,
                     Art = $"{What.ToString()}_{Direction.ToString()}",
@@ -107,36 +103,36 @@ namespace PhoenixModel.Commands {
                     BP_neu = Kosten.BauPunkte,
                     Kosten = Kosten.GS,
                 };
+            }
+            return null;
+        }
 
-                var existing = SharedData.RuestungBauwerke.Where(bw => bw.GF == bauwerk.GF && bw.KF == bauwerk.KF && bw.Kosten == bauwerk.Kosten && bw.BP_rep == bauwerk.BP_rep
-                                                && bw.BP_neu == bauwerk.BP_neu && bw.Art == bauwerk.Art).First();
+        /// <summary>
+        /// Versucht den Befehl rückgäng zu machen
+        /// Wenn in der Datenbank etwas geschrieben werden musste, wird es auch gelöscht
+        /// </summary>
+        public override CommandResult UndoCommand() {
+            RuestungBauwerke? bauwerk = CreateRuestungBauwerke();
+            if (bauwerk != null && SharedData.RuestungBauwerke != null) { 
+                var existing = SharedData.RuestungBauwerke.Where(bw => bw.Equals(bauwerk)).First();
                 if (existing == null)
                     return new CommandResultError("Der Auftrag für dieses Bauwerk existiert nicht und kann daher nicht rückgänig gemacht werden", $"Der Befehl kann nicht rückgängig gemacht werden, da er nicht in den Zugdaten gespeichert wurde\r\n {this.CommandString}");
                 SharedData.RuestungBauwerke.Remove(existing);
-                SharedData.StoreQueue.Enqueue(bauwerk);
+                SharedData.StoreQueue.Delete(existing);
             }
 
             return new CommandResultError("Fehler","Keine Ahnung warum");
         }
-
 
         /// <summary>
         /// Führt den Befehl aus und gibt das Ergebnis zurück. 
         /// Wenn in der Datenbank etwas geschrieben werden musste, wird es auch geschrieben
         /// </summary>
         public override CommandResult ExecuteCommand() {
-            if (Kosten != null && Location != null && SharedData.RuestungBauwerke != null && CheckPreconditions() == true) {
-                RuestungBauwerke bauwerk = new RuestungBauwerke() {
-                    GF = Location.gf,
-                    KF = Location.kf,
-                    Art = $"{What.ToString()}_{Direction.ToString()}",
-                    BP_rep = 0,
-                    BP_neu = Kosten.BauPunkte,
-                    Kosten = Kosten.GS,
-                };
-
+            RuestungBauwerke? bauwerk = CreateRuestungBauwerke();
+            if (bauwerk != null && SharedData.RuestungBauwerke != null) {
                 SharedData.RuestungBauwerke.Add(bauwerk);
-                SharedData.StoreQueue.Enqueue(bauwerk);
+                SharedData.StoreQueue.Insert(bauwerk);
                 return new CommandResultSuccess("Das ConstructCommand wurde ausgeführt", $"Der Befehl wurde ausgeführt:\r\n {this.CommandString}");
             }
 

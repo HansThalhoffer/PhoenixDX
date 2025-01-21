@@ -56,6 +56,7 @@ namespace PhoenixModel.ViewModel {
         public static BlockingCollection<Lehensvergabe>? Lehensvergabe = null;
         // public static BlockingCollection<Personal>? Personal = null;
         public static BlockingCollection<Reiter>? Reiter = null;
+        public static BlockingCollection<Ruestung>? Ruestung = null;
         public static BlockingCollection<RuestungBauwerke>? RuestungBauwerke = null;
         public static BlockingCollection<RuestungRuestorte>? RuestungRuestorte = null;
         public static BlockingCollection<Schatzkammer>? Schatzkammer = null;

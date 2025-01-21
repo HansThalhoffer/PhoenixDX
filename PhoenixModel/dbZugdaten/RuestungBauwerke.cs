@@ -6,7 +6,7 @@ using PhoenixModel.Helper;
 using PhoenixModel.ViewModel;
 
 namespace PhoenixModel.dbZugdaten {
-    public class RuestungBauwerke :  IDatabaseTable, IEigenschaftler
+    public class RuestungBauwerke :  IDatabaseTable, IEigenschaftler, IEquatable<RuestungBauwerke>
     {
         public static string DatabaseName { get; set;  } = string.Empty;
         public string Database { get { return DatabaseName; } set { DatabaseName = value; } }
@@ -95,6 +95,26 @@ namespace PhoenixModel.dbZugdaten {
             // hole die ID
             if (command is DbCommandFacade facade)
             this.ID = facade.GetLastInsertedId();
-        }       
+        }
+
+
+        public bool Equals(RuestungBauwerke? other) {
+            if (other == null) return false;
+
+            return GF == other.GF &&
+                   KF == other.KF &&
+                   BP_rep == other.BP_rep &&
+                   BP_neu == other.BP_neu &&
+                   Kosten == other.Kosten &&
+                   Art == other.Art; // String comparison (null-safe)
+        }
+
+        public override bool Equals(object? obj) {
+            return Equals(obj as RuestungBauwerke);
+        }
+
+        public override int GetHashCode() {
+            return HashCode.Combine(GF, KF, BP_rep, BP_neu, Art, Kosten);
+        }
     }
 }

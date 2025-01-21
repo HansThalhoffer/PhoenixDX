@@ -5,8 +5,7 @@ using PhoenixModel.Helper;
 using PhoenixModel.ViewModel;
 
 namespace PhoenixModel.dbZugdaten {
-    public class Ruestung : KleinfeldPosition, IDatabaseTable, IEigenschaftler
-    {
+    public class Ruestung : KleinfeldPosition, IDatabaseTable, IEigenschaftler, IEquatable<Ruestung> {
         public static string DatabaseName { get; set;  } = string.Empty;
         public string Database { get { return DatabaseName; } set { DatabaseName = value; } }
         public const string TableName = "ruestung";
@@ -139,7 +138,43 @@ namespace PhoenixModel.dbZugdaten {
             command.ExecuteNonQuery();
         }
 
+        public bool Equals(Ruestung? other) {
+            if (other == null) return false;
 
+            return HF == other.HF &&
+                   Z == other.Z &&
+                   K == other.K &&
+                   R == other.R &&
+                   P == other.P &&
+                   LKS == other.LKS &&
+                   SKS == other.SKS &&
+                   LKP == other.LKP &&
+                   SKP == other.SKP &&
+                   GP_akt == other.GP_akt &&
+                   GP_ges == other.GP_ges &&
+                   Garde == other.Garde &&
+                   ZB == other.ZB &&
+                   S == other.S &&
+                   Neuruestung == other.Neuruestung &&
+                   KF_Flotte == other.KF_Flotte &&
+                   GF_Flotte == other.GF_Flotte &&
+                   Name_x == other.Name_x &&
+                   Beschriftung == other.Beschriftung &&
+                   besRuestung == other.besRuestung;
+        }
+
+        public override bool Equals(object? obj) {
+            return Equals(obj as Ruestung);
+        }
+
+        public override int GetHashCode() {
+            return HashCode.Combine(
+                HashCode.Combine(HF, Z, K, R, P),
+                HashCode.Combine(LKS, SKS, LKP, SKP),
+                HashCode.Combine(GP_akt, GP_ges, Garde, ZB, S, Neuruestung, KF_Flotte, GF_Flotte),
+                HashCode.Combine(Name_x, Beschriftung, besRuestung)
+            );
+        }
 
     }
 }
