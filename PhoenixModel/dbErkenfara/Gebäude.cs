@@ -101,6 +101,10 @@ namespace PhoenixModel.dbErkenfara {
 
         }
 
+        public void Delete(DbCommand reader) {
+            throw new NotImplementedException();
+        }
+
         public bool Select()
         {
             return ProgramView.BelongsToUser(this);

@@ -63,5 +63,6 @@ namespace PhoenixModel.dbErkenfara {
             command.ExecuteNonQuery();
         }
 
+        public void Delete(DbCommand reader) => throw new NotImplementedException();
     }
 }

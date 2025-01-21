@@ -38,5 +38,8 @@ namespace PhoenixModel.dbCrossRef {
         {
             throw new NotImplementedException();
         }
+
+        public void Delete(DbCommand reader) => throw new NotImplementedException();
+
     }
 }

@@ -8,14 +8,16 @@ using System.Data.Common;
 /// </summary>
 public class DbCommandFacade : DbCommand {
     private readonly DbCommand dbCommand;
+    private readonly string QueryIdentityAfterInsert;
 
     /// <summary>
     /// Erstellt eine neue Instanz von <see cref="DbCommandFacade"/>.
     /// </summary>
     /// <param name="command">Das zu verwendende <see cref="DbCommand"/>-Objekt.</param>
     /// <exception cref="ArgumentNullException">Wird ausgelöst, wenn <paramref name="command"/> null ist.</exception>
-    public DbCommandFacade(DbCommand command) {
+    public DbCommandFacade(DbCommand command, string queryIdentityAfterInsert) {
         dbCommand = command ?? throw new ArgumentNullException(nameof(command));
+        QueryIdentityAfterInsert = queryIdentityAfterInsert ?? throw new ArgumentNullException(nameof(queryIdentityAfterInsert));
     }
 
     /// <summary>
@@ -93,6 +95,15 @@ public class DbCommandFacade : DbCommand {
     public override int ExecuteNonQuery() {
         DatabaseLog.Log(dbCommand);
         return dbCommand.ExecuteNonQuery();
+    }
+
+    /// <summary>
+    /// Holt die gerade eingefügte ID, wenn ein autoincrement vorhanden ist
+    /// </summary>
+    /// <returns></returns>
+    public int GetLastInsertedId() {
+        dbCommand.CommandText = QueryIdentityAfterInsert;
+        return Convert.ToInt32(dbCommand.ExecuteScalar());
     }
 
     /// <summary>

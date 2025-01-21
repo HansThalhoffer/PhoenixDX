@@ -74,24 +74,15 @@ namespace PhoenixModel.dbZugdaten {
 
         public void Save(DbCommand command)
         {
-            command.CommandText = $@"
-        UPDATE {DatabaseConverter.EscapeString(TableName)} SET
-            GF = {this.gf},
-            KF = {this.kf},
-            HF = {this.HF},
-            Z = {this.Z},
-            K = {this.K},
-            R = {this.R},
-            P = {this.P},
-            LKS = {this.LKS},
-            SKS = {this.SKS},
-            LKP = {this.LKP},
-            SKP = {this.SKP},
-            GP_akt = {this.GP_akt},
-            GP_ges = {this.GP_ges},
-            ZB = {this.ZB},
-            S = {this.S},
-            Neuruestung = {this.Neuruestung},
+            command.CommandText = $@" UPDATE {DatabaseConverter.EscapeString(TableName)} SET
+            GF = {this.gf}, KF = {this.kf},
+            HF = {this.HF}, Z = {this.Z},
+            K = {this.K}, R = {this.R},
+            P = {this.P}, LKS = {this.LKS},
+            SKS = {this.SKS}, LKP = {this.LKP},
+            SKP = {this.SKP}, GP_akt = {this.GP_akt},
+            GP_ges = {this.GP_ges}, ZB = {this.ZB},
+            S = {this.S}, Neuruestung = {this.Neuruestung},
             KF_Flotte = {this.KF_Flotte},
             GF_Flotte = {this.GF_Flotte},
             Garde = {this.Garde},
@@ -107,62 +98,47 @@ namespace PhoenixModel.dbZugdaten {
 
         public void Insert(DbCommand command)
         {
-            command.CommandText = $@"
-        INSERT INTO {DatabaseConverter.EscapeString(TableName)} (
-            GF,
-            KF,
-            Nummer,
-            HF,
-            Z,
-            K,
-            R,
-            P,
-            LKS,
-            SKS,
-            LKP,
-            SKP,
-            GP_akt,
-            GP_ges,
-            ZB,
-            S,
-            Neuruestung,
-            KF_Flotte,
-            GF_Flotte,
-            Garde,
-            Name_x,
-            Beschriftung,
-            id,
-            besRuestung
-        ) VALUES (
-            {this.gf},
-            {this.kf},
-            {this.Nummer},
-            {this.HF},
-            {this.Z},
-            {this.K},
-            {this.R},
-            {this.P},
-            {this.LKS},
-            {this.SKS},
-            {this.LKP},
-            {this.SKP},
-            {this.GP_akt},
-            {this.GP_ges},
-            {this.ZB},
-            {this.S},
-            {this.Neuruestung},
-            {this.KF_Flotte},
-            {this.GF_Flotte},
-            {this.Garde},
-            '{DatabaseConverter.EscapeString(this.Name_x)}',
-            '{DatabaseConverter.EscapeString(this.Beschriftung)}',
-            {this.id},
-            {this.besRuestung}
-        )";
-
+            command.CommandText = $@"INSERT INTO {DatabaseConverter.EscapeString(TableName)} 
+            (GF,KF,Nummer,HF,Z,K,R,P,LKS,SKS,LKP,SKP,GP_akt,GP_ges,ZB,S,Neuruestung,KF_Flotte,GF_Flotte,Garde,Name_x,Beschriftung, besRuestung) 
+            VALUES ({this.gf},{this.kf},{this.Nummer},{this.HF},{this.Z},{this.K},{this.R},{this.P},{this.LKS},{this.SKS},{this.LKP},{this.SKP},{this.GP_akt},{this.GP_ges},{this.ZB},{this.S},
+                    {this.Neuruestung},{this.KF_Flotte},{this.GF_Flotte},{this.Garde},'{DatabaseConverter.EscapeString(this.Name_x)}','{DatabaseConverter.EscapeString(this.Beschriftung)}',
+                    {this.besRuestung})";
             // Execute the command
             command.ExecuteNonQuery();
         }
+
+        public void Delete(DbCommand command) {
+            command.CommandText = $@"
+        DELETE FROM {DatabaseConverter.EscapeString(TableName)}
+        WHERE 
+            GF = {this.gf} AND
+            KF = {this.kf} AND
+            HF = {this.HF} AND
+            Z = {this.Z} AND
+            K = {this.K} AND
+            R = {this.R} AND
+            P = {this.P} AND
+            LKS = {this.LKS} AND
+            SKS = {this.SKS} AND
+            LKP = {this.LKP} AND
+            SKP = {this.SKP} AND
+            GP_akt = {this.GP_akt} AND
+            GP_ges = {this.GP_ges} AND
+            ZB = {this.ZB} AND
+            S = {this.S} AND
+            Neuruestung = {this.Neuruestung} AND
+            KF_Flotte = {this.KF_Flotte} AND
+            GF_Flotte = {this.GF_Flotte} AND
+            Garde = {this.Garde} AND
+            Name_x = '{DatabaseConverter.EscapeString(this.Name_x)}' AND
+            Beschriftung = '{DatabaseConverter.EscapeString(this.Beschriftung)}' AND
+            besRuestung = {this.besRuestung} AND
+            Nummer = {this.Nummer}";
+
+            // Execute the delete command
+            command.ExecuteNonQuery();
+        }
+
 
 
     }

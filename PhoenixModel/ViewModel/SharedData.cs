@@ -12,7 +12,7 @@ namespace PhoenixModel.ViewModel {
         /// <summary>
         /// In dieser Queue werden die Objekte abgelegt, die in der Datenbank gespeichert werden sollen. Das geschieht asynchron
         /// </summary>
-        public static ConcurrentQueue<IDatabaseTable> StoreQueue = [];
+        public static DatabaseQueue StoreQueue = [];
         public static ConcurrentQueue<KleinFeld> UpdateQueue = [];
 
         // Karte
@@ -63,6 +63,7 @@ namespace PhoenixModel.ViewModel {
         public static BlockingCollection<Schiffe>? Schiffe = null;
         public static BlockingCollection<Units>? Units_Zugdaten = null;
         public static BlockingCollection<Zauberer>? Zauberer = null;
+        public static BlockingCollection<ZugdatenSettings>? ZugdatenSettings = null;   
 
         // Feinderkennung - aus der Textdatei
         public static BlockingCollection<Feinde>? Feinde = null;

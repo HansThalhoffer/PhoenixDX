@@ -34,5 +34,13 @@ namespace PhoenixModel.Commands {
             command = null;
             return false;
         }
+
+        public virtual CommandResult CheckPreconditions() {
+            throw new NotImplementedException("Wer die Klasse DefaultCommand ableitet, muss auch CheckPreconditions überschreiben");
+        }
+
+        public virtual CommandResult UndoCommand() {
+            throw new NotImplementedException("Wer die Klasse DefaultCommand ableitet, muss auch UndoCommand überschreiben");
+        }
     }
 }

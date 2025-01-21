@@ -24,10 +24,22 @@ namespace PhoenixModel.Database {
         public void Load();
 
         /// <summary>
-        /// Speichert eine Tabelle in der Datenbank.
+        /// Speichert einen Eintrag in einer Tabelle in der Datenbank.
         /// </summary>
         /// <param name="table">Die zu speichernde Datenbanktabelle.</param>
         public void Save(IDatabaseTable table);
+
+        /// <summary>
+        /// Fügt einen Eintrag in eine Tabelle in der Datenbank.
+        /// </summary>
+        /// <param name="table">Die zu speichernde Datenbanktabelle.</param>
+        public void Insert(IDatabaseTable table);
+
+        /// <summary>
+        /// Löscht einen Eintrag in einer Tabelle in der Datenbank.
+        /// </summary>
+        /// <param name="table">Die zu speichernde Datenbanktabelle.</param>
+        public void Delete(IDatabaseTable table);
 
         /// <summary>
         /// Lädt die Datenbank im Hintergrund und ruft nach Abschluss den angegebenen Delegate auf.
@@ -64,13 +76,19 @@ namespace PhoenixModel.Database {
         /// <summary>
         /// Speichert die Tabellendaten in die Datenbank.
         /// </summary>
-        /// <param name="reader">Datenbankbefehl zur Speicherung der Daten.</param>
-        public abstract void Save(DbCommand reader);
+        /// <param name="command">Datenbankbefehl zur Speicherung der Daten.</param>
+        public abstract void Save(DbCommand command);
 
         /// <summary>
         /// Fügt neue Daten in die Tabelle ein.
         /// </summary>
-        /// <param name="reader">Datenbankbefehl für das Einfügen neuer Datensätze.</param>
-        public abstract void Insert(DbCommand reader);
+        /// <param name="command">Datenbankbefehl für das Einfügen neuer Datensätze.</param>
+        public abstract void Insert(DbCommand command);
+
+        /// <summary>
+        /// Löscht einen Wert, der dem Obekt 100% entspricht
+        /// </summary>
+        /// <param name="command">Datenbankbefehl für das Löschen von Datensätze.</param>
+        public abstract void Delete(DbCommand command);
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.Design;
 using System.Data.Common;
 using PhoenixModel.Database;
 using PhoenixModel.Helper;
@@ -56,6 +57,25 @@ namespace PhoenixModel.dbZugdaten {
             command.ExecuteNonQuery();
         }
 
+        public void Delete(DbCommand command) {
+            if (ID == 0) {
+            command.CommandText = $@"
+            DELETE FROM {TableName}
+            WHERE 
+                GF = {this.GF} AND
+                KF = {this.KF} AND
+                BP_rep = {this.BP_rep} AND
+                BP_neu = {this.BP_neu} AND
+                Art = '{DatabaseConverter.EscapeString(this.Art)}' AND
+                Kosten = {this.Kosten}";
+                }
+            else {
+                command.CommandText = $@"DELETE FROM {TableName} WHERE ID = {this.ID}";
+            }
+            // Execute the command
+            command.ExecuteNonQuery();
+        }
+
         public void Insert(DbCommand command)
         {
             command.CommandText = $@"
@@ -72,6 +92,9 @@ namespace PhoenixModel.dbZugdaten {
 
             // Execute the command
             command.ExecuteNonQuery();
+            // hole die ID
+            if (command is DbCommandFacade facade)
+            this.ID = facade.GetLastInsertedId();
         }       
     }
 }

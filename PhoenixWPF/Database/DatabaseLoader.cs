@@ -6,6 +6,7 @@ using PhoenixModel.EventsAndArgs;
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Data.Common;
+using static PhoenixModel.Database.PasswordHolder;
 
 namespace PhoenixWPF.Database
 {
@@ -164,6 +165,61 @@ namespace PhoenixWPF.Database
                 SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Öffnen der Tabelle {tableName}: ", $"{query} erzeugte den Fehler: /n/r{ex.Message}"));
             }
             return total;
+        }
+
+
+        protected void Save(IDatabaseTable table, EncryptedString encryptedpassword, string databaseFileName) {
+            PasswordHolder holder = new(encryptedpassword);
+            using (AccessDatabase connector = new(databaseFileName, holder.DecryptedPassword)) {
+                if (connector?.Open() == false)
+                    return;
+                try {
+                    if (connector != null) {
+                        var command = connector.OpenDBCommand();
+                        table.Save(command);
+                    }
+                }
+                catch (Exception ex) {
+                    SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Öffnen der Datenbank {databaseFileName}", ex.Message));
+                }
+                connector?.Close();
+            }
+        }
+
+        protected void Insert(IDatabaseTable table, EncryptedString encryptedpassword, string databaseFileName) {
+            PasswordHolder holder = new(encryptedpassword);
+            using (AccessDatabase connector = new(databaseFileName, holder.DecryptedPassword)) {
+                if (connector?.Open() == false)
+                    return;
+                try {
+                    if (connector != null) {
+                        var command = connector.OpenDBCommand();
+                        table.Insert(command);
+                    }
+                }
+                catch (Exception ex) {
+                    SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Speichern in der Datenbank {databaseFileName}", ex.Message));
+                }
+                connector?.Close();
+            }
+        }
+
+        protected void Delete(IDatabaseTable table, EncryptedString encryptedpassword, string databaseFileName) {
+            PasswordHolder holder = new(encryptedpassword);
+            using (AccessDatabase connector = new(databaseFileName, holder.DecryptedPassword)) {
+                if (connector?.Open() == false)
+                    return;
+                try {
+                    if (connector != null) {
+                        var command = connector.OpenDBCommand();
+                        table.Delete(command);
+                    }
+                }
+                catch (Exception ex) {
+                    SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Löschen in der Datenbank {databaseFileName}", ex.Message));
+                }
+                connector?.Close();
+            }
         }
     }
 }

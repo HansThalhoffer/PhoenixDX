@@ -175,5 +175,8 @@ namespace PhoenixModel.dbZugdaten {
             // Execute the command
             command.ExecuteNonQuery();
         }
+
+        public void Delete(DbCommand reader) => throw new NotImplementedException();
+
     }
 }

@@ -77,5 +77,21 @@ namespace PhoenixModel.dbZugdaten {
             command.ExecuteNonQuery();
         }
 
+        public void Delete(DbCommand command) {
+            command.CommandText = $@"
+        DELETE FROM {TableName}
+        WHERE 
+            Vorname = '{DatabaseConverter.EscapeString(this.Vorname)}' AND
+            Nachname = '{DatabaseConverter.EscapeString(this.Nachname)}' AND
+            Spielername = '{DatabaseConverter.EscapeString(this.Spielername)}' AND
+            Pos = '{DatabaseConverter.EscapeString(this.Pos)}' AND
+            Anschrift = '{DatabaseConverter.EscapeString(this.Anschrift)}' AND
+            Tel = '{DatabaseConverter.EscapeString(this.Tel)}' AND
+            Email = '{DatabaseConverter.EscapeString(this.Email)}'";
+
+            // Execute the delete command
+            command.ExecuteNonQuery();
+        }
+
     }
 }

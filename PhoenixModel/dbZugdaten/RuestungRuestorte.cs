@@ -48,6 +48,7 @@ namespace PhoenixModel.dbZugdaten {
             // Execute the command
             command.ExecuteNonQuery();
         }
+
         public void Insert(DbCommand command)
         {
             command.CommandText = $@"
@@ -55,6 +56,19 @@ namespace PhoenixModel.dbZugdaten {
         VALUES ({this.GF}, {this.KF}, {this.BP_rep}, {this.BP_up})";
 
             // Execute the command
+            command.ExecuteNonQuery();
+        }
+
+        public void Delete(DbCommand command) {
+            command.CommandText = $@"
+        DELETE FROM {TableName}
+        WHERE 
+            GF = {this.GF} AND
+            KF = {this.KF} AND
+            BP_rep = {this.BP_rep} AND
+            BP_up = {this.BP_up}";
+
+            // Execute the delete command
             command.ExecuteNonQuery();
         }
     }

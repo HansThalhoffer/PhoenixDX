@@ -40,5 +40,7 @@ namespace PhoenixModel.dbErkenfara {
         {
             throw new NotImplementedException();
         }
+        public void Delete(DbCommand reader) => throw new NotImplementedException();
+
     }
 }

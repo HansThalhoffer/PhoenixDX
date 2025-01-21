@@ -36,6 +36,18 @@ namespace PhoenixModel.dbCrossRef {
         }
         
         public string Bezeichner { get => Bauwerk ?? "Gebäude"; }
+
+        public virtual void Save(DbCommand reader) {
+            throw new NotImplementedException();
+        }
+
+        public virtual void Insert(DbCommand reader) {
+            throw new NotImplementedException();
+        }
+
+        public virtual void Delete(DbCommand reader) {
+            throw new NotImplementedException();
+        }
     }
 
     // kosten von Wall etc
@@ -57,15 +69,7 @@ namespace PhoenixModel.dbCrossRef {
             Bauwerk = DatabaseConverter.ToString(reader[(int)Felder.Bauwerk]);
         }
 
-        public void Save(DbCommand reader)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Insert(DbCommand reader)
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 
     // referenzliste

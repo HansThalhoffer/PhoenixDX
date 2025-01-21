@@ -14,6 +14,18 @@ namespace PhoenixModel.Commands.Parser {
         /// </summary>
         /// <returns>Ein Objekt vom Typ CommandResult.</returns>
         CommandResult ExecuteCommand();
+
+        /// <summary>
+        /// überprüft, ob die Vorbedingungen gegeben sind, das Kommando auszuführen - das Kommando wird aber noch nicht ausgeführt
+        /// </summary>
+        /// <returns></returns>
+        CommandResult CheckPreconditions();
+
+        /// <summary>
+        /// Versucht den Befehl rückgängig zu machen.
+        /// </summary>
+        /// <returns>Ein Objekt vom Typ CommandResult.</returns>
+        CommandResult UndoCommand();
     }
 
     /// <summary>

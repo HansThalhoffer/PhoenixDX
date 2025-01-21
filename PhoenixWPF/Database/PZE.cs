@@ -39,28 +39,18 @@ namespace PhoenixWPF.Database
             }
         }
 
-        public void Save(IDatabaseTable table)
-        {
-            PasswordHolder holder = new(_encryptedpassword);
-            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptedPassword))
-            {
-                if (connector?.Open() == false)
-                    return;
-                try
-                {
-                    if (connector != null)
-                    {
-                        var command = connector.OpenDBCommand();
-                        table.Save(command);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Öffnen der Datenbank {_databaseFileName}", ex.Message));
-                }
-                connector?.Close();
-            }
+        public void Save(IDatabaseTable table) {
+            Save(table, _encryptedpassword, _databaseFileName);
         }
+
+        public void Insert(IDatabaseTable table) {
+            Insert(table, _encryptedpassword, _databaseFileName);
+        }
+
+        public void Delete(IDatabaseTable table) {
+            Delete(table, _encryptedpassword, _databaseFileName);
+        }
+
         public void Dispose()
         {
         }

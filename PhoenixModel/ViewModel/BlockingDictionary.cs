@@ -22,4 +22,35 @@ namespace PhoenixModel.ViewModel {
         // Elemente haben sich geändert
         public bool IsUpdated { get => _isUpdated; set => _isUpdated = value; }
     }
+
+    public static class BlockingCollectionExtension{
+        
+        /// <summary>
+        /// Entfernt einen Wert aus der Collection
+        /// </summary>
+        public static int Remove<T>(this BlockingCollection<T> collection, T item) {
+            if (collection == null) throw new ArgumentNullException(nameof(collection));
+
+            var tempQueue = new ConcurrentQueue<T>();
+            int removedCount = 0;
+
+            // Remove the specified item from the collection
+            while (collection.TryTake(out T? currentItem)) {
+                if (EqualityComparer<T>.Default.Equals(currentItem, item)) {
+                    removedCount++;
+                }
+                else {
+                    tempQueue.Enqueue(currentItem);
+                }
+            }
+
+            // Re-add the remaining items back to the BlockingCollection
+            foreach (var remainingItem in tempQueue) {
+                collection.Add(remainingItem);
+            }
+
+            return removedCount;
+        }
+
+    }
 }

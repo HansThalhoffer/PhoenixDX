@@ -48,7 +48,7 @@ namespace PhoenixModel.Helper {
         }
 
         /// <summary>
-        /// Retrieves the value of a constant field by its name from a specified type.
+        /// sets the value of a static field by its name from a specified type.
         /// </summary>
         /// <typeparam name="T">The type containing the constant field.</typeparam>
         /// <param name="name">The name of the constant field.</param>

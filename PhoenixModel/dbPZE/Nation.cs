@@ -31,7 +31,7 @@ namespace PhoenixModel.dbPZE {
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
         #endregion
 
-        #region DatenbankFelder
+        #region Datenbank
         public HashSet<string>? Alias { get; set; }
         public string? Farbname { get; set; }
         public Color? Farbe { get; set; }
@@ -99,6 +99,8 @@ namespace PhoenixModel.dbPZE {
             // Execute the command
             command.ExecuteNonQuery();
         }
+
+        public void Delete(DbCommand reader) => throw new NotImplementedException();
 
         #endregion
 

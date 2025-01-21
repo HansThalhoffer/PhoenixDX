@@ -39,6 +39,8 @@ namespace PhoenixWPF.Database
             return "No Microsoft.ACE.OLEDB provider installed.";
         }
 
+        static string QueryIdentityAfterInsert =  "SELECT @@IDENTITY;";
+
         public AccessDatabase(string databaseFilePath, string? pw)
         {
             if (string.IsNullOrWhiteSpace(databaseFilePath))
@@ -146,7 +148,7 @@ namespace PhoenixWPF.Database
         /// <returns>A DataTable containing the result set.</returns>
         public DbCommand OpenDBCommand()
         {
-            return new DbCommandFacade(_connection.CreateCommand());
+            return new DbCommandFacade(_connection.CreateCommand(), QueryIdentityAfterInsert);
         }
 
         /// <summary>

@@ -71,5 +71,7 @@ namespace PhoenixModel.dbPZE {
         {
             throw new NotImplementedException();
         }
+
+        public virtual void Delete(DbCommand reader) => throw new NotImplementedException();
     }
 }

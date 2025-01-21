@@ -69,5 +69,19 @@ namespace PhoenixModel.dbZugdaten {
             command.ExecuteNonQuery();
         }
 
+        public void Delete(DbCommand command) {
+            command.CommandText = $@"
+        DELETE FROM {TableName}
+        WHERE 
+            Schenkung_bekommen = {this.Schenkung_bekommen} AND
+            Schenkung_bekommenID = '{DatabaseConverter.EscapeString(this.Schenkung_bekommenID)}' AND
+            Schenkung_an = {this.Schenkung_an} AND
+            Schenkung_anID = '{DatabaseConverter.EscapeString(this.Schenkung_anID)}' AND
+            monat = {this.monat}";
+
+            // Execute the delete command
+            command.ExecuteNonQuery();
+        }
+
     }
 }
