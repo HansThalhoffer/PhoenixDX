@@ -75,7 +75,7 @@ namespace PhoenixModel.ViewModel {
         public int isbanned { get; set; }
 
         /// <summary>
-        /// Befindet sich ein Heer auf einer Flotte oder Schifft sich dort ein oder aus, dann steht hier die Nummer der Flotte abgelegt
+        /// Befindet sich ein Heer auf einer Flotte oder Schifft sich dort ein oder aus, dann steht hier die TargetID der Flotte abgelegt
         /// gleichzeitig wird auf der Flotte die Nummern aller Einheiten hinterlegt, die sich auf den Schiffen befinden
         /// Einschiffen und Ausschiffen wird in Befehl_bew hinterlegt
         /// </summary>
@@ -109,9 +109,9 @@ namespace PhoenixModel.ViewModel {
         /// #AGZ:205 - wenn sich das Kriegerheer 102 durch Aufsitzen auf ausreichend Pferde in ein Reiterheer verwandelt => Kriegerheer evtl. aufgelöst bzw abgespalten zu einem Reiterheer 205
         ///            Bei den Reitern steht dann #AGZ: 102
         ///            Die Befehle lassen sich kombinieren und verketten. So können die Pferde den Besitzer wechseln, indem erst aufgesessen, dann wieder abgesessen wird
-        /// #SCE:    - wenn Krieger oder Reiter einschiffen, dann steht dort die Nummer der Flotte. Gleichzeitig wird auch bei beiden Einheiten <see cref="auf_Flotte"/> aktualisiert
+        /// #SCE:    - wenn Krieger oder Reiter einschiffen, dann steht dort die TargetID der Flotte. Gleichzeitig wird auch bei beiden Einheiten <see cref="auf_Flotte"/> aktualisiert
         ///            bei den Schiffen steht dann #SCA:[Truppe]
-        /// #SCA:    - wenn Krieger oder Reiter ausschiffen, dann steht dort die Nummer der Flotte. Gleichzeitig wird auch bei beiden Einheiten <see cref="auf_Flotte"/> aktualisiert
+        /// #SCA:    - wenn Krieger oder Reiter ausschiffen, dann steht dort die TargetID der Flotte. Gleichzeitig wird auch bei beiden Einheiten <see cref="auf_Flotte"/> aktualisiert
         ///            bei den Schiffen steht dann #SCA:[Truppe]
         /// "#SCEA   - heißt (vermutlich) auf die Flotte und gleich wieder runter im selben Zug
         /// </summary>

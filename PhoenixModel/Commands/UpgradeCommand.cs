@@ -1,19 +1,15 @@
 ﻿using PhoenixModel.Commands.Parser;
 using PhoenixModel.dbCrossRef;
+using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace PhoenixModel.Commands {
     /// <summary>
     /// baut einen Rüstort aus
     ///    - "Verstärke Rüstort 202/33"
     /// </summary>
-    public class UpgradeCommand : DefaultCommand, ICommand {
+    public class UpgradeCommand : SimpleCommand, ICommand {
         public KleinfeldPosition? Location { get; set; } = null;
         public Kosten? Kosten = null;
 
@@ -49,26 +45,25 @@ namespace PhoenixModel.Commands {
         }
     }
 
-    public class UpgradeCommandParser : ICommandParser {
+    public class UpgradeCommandParser : SimpleParser {
         private static readonly Regex UpgradeRegex = new Regex(
             @"^Verstärke\s+Rüstort\s+(?<loc>[^\s]+)$",
             RegexOptions.IgnoreCase | RegexOptions.Compiled
         );
 
-        private static bool Fail(out ICommand? command) {
-            command = null;
-            return false;
-        }
-        public bool ParseCommand(string commandString, out ICommand? command) {
+        public override bool ParseCommand(string commandString, out ICommand? command) {
             var match = UpgradeRegex.Match(commandString);
-            if (!match.Success) {
+            if (!match.Success) 
                 return Fail(out command);
+            
+            try {
+                command = new UpgradeCommand(commandString, ParseLocation(match.Groups["loc"].Value)) { };
             }
-
-            int? nummer = null;
-            try { nummer = int.Parse(match.Groups["unitId"].Value); } catch { };
-            command = new UpgradeCommand(commandString, CommandParser.ParseLocation(match.Groups["loc"].Value)) {
-            };
+            catch (Exception ex) {
+                ProgramView.LogError("Beim Lesen des UpgradeCommands gab es einen Fehler", ex.Message);
+                command = null;
+                return false;
+            }
             return true;
         }
     }

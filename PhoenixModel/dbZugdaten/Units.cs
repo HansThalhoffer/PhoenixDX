@@ -179,7 +179,7 @@ namespace PhoenixModel.dbZugdaten {
             Chars = '{DatabaseConverter.EscapeString(this.Chars)}',
             bp_max = {this.bp_max},
             isbanned = {this.isbanned}
-        WHERE Nummer = {this.Nummer}";
+        WHERE TargetID = {this.Nummer}";
 
             // Execute the command
             command.ExecuteNonQuery();
@@ -188,7 +188,7 @@ namespace PhoenixModel.dbZugdaten {
         public void Insert(DbCommand command) {
             command.CommandText = $@"
         INSERT INTO {TableName} (
-            Nummer, staerke_alt, staerke, hf_alt, hf, LKP_alt, LKP, SKP_alt, SKP,
+            TargetID, staerke_alt, staerke, hf_alt, hf, LKP_alt, LKP, SKP_alt, SKP,
             pferde_alt, Pferde, gf_von, kf_von, gf_nach, kf_nach, rp, bp, ph_xy,
             Garde, Befehl_bew, Befehl_ang, Befehl_erobert, GS, GS_alt, Kampfeinnahmen,
             Kampfeinnahmen_alt, x1, y1, x2, y2, x3, y3, hoehenstufen, schritt,

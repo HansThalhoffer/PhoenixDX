@@ -89,7 +89,7 @@ namespace PhoenixModel.dbZugdaten {
             Beschriftung = '{DatabaseConverter.EscapeString(this.Beschriftung)}',
             id = {this.id},
             besRuestung = {this.besRuestung}
-        WHERE Nummer = {this.Nummer}";
+        WHERE TargetID = {this.Nummer}";
 
             // Execute the command
             command.ExecuteNonQuery();
@@ -98,7 +98,7 @@ namespace PhoenixModel.dbZugdaten {
         public void Insert(DbCommand command)
         {
             command.CommandText = $@"INSERT INTO {DatabaseConverter.EscapeString(TableName)} 
-            (GF,KF,Nummer,HF,Z,K,R,P,LKS,SKS,LKP,SKP,GP_akt,GP_ges,ZB,S,Neuruestung,KF_Flotte,GF_Flotte,Garde,Name_x,Beschriftung, besRuestung) 
+            (GF,KF,TargetID,HF,Z,K,R,P,LKS,SKS,LKP,SKP,GP_akt,GP_ges,ZB,S,Neuruestung,KF_Flotte,GF_Flotte,Garde,Name_x,Beschriftung, besRuestung) 
             VALUES ({this.gf},{this.kf},{this.Nummer},{this.HF},{this.Z},{this.K},{this.R},{this.P},{this.LKS},{this.SKS},{this.LKP},{this.SKP},{this.GP_akt},{this.GP_ges},{this.ZB},{this.S},
                     {this.Neuruestung},{this.KF_Flotte},{this.GF_Flotte},{this.Garde},'{DatabaseConverter.EscapeString(this.Name_x)}','{DatabaseConverter.EscapeString(this.Beschriftung)}',
                     {this.besRuestung})";
@@ -132,7 +132,7 @@ namespace PhoenixModel.dbZugdaten {
             Name_x = '{DatabaseConverter.EscapeString(this.Name_x)}' AND
             Beschriftung = '{DatabaseConverter.EscapeString(this.Beschriftung)}' AND
             besRuestung = {this.besRuestung} AND
-            Nummer = {this.Nummer}";
+            TargetID = {this.Nummer}";
 
             // Execute the delete command
             command.ExecuteNonQuery();

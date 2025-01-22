@@ -65,7 +65,7 @@ namespace PhoenixWPF.Pages {
 
             if (EigenschaftlerList == null || EigenschaftlerList.Count == 0)
                 return;
-            string[] toIgnore = { "Nation", "Reich", "Nation.Farbname", "Nation.Reich", "Rüstort.Bauwerk", "Rüstort.Nummer", "Zerstört" , "InBau", "IsNew"};
+            string[] toIgnore = { "Nation", "Reich", "Nation.Farbname", "Nation.Reich", "Rüstort.Bauwerk", "Rüstort.TargetID", "Zerstört" , "InBau", "IsNew"};
             // string[] toIgnore = { };
             List<Eigenschaft> eigList = EigenschaftlerList[0].Eigenschaften;
             List<Eigenschaft> columns = eigList.Where(prop => !toIgnore.Contains(prop.Name)).ToList();

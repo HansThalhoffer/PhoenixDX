@@ -20,7 +20,7 @@ namespace PhoenixModel.dbZugdaten {
         public override List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
         /// <summary>
-        /// fortlaufende Nummer
+        /// fortlaufende TargetID
         /// </summary>
         public int id { get; set; }
         /// <summary>

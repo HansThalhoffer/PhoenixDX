@@ -1,30 +1,15 @@
-﻿using PhoenixModel.Commands;
-using PhoenixModel.Commands.Parser;
-using PhoenixModel.dbCrossRef;
+﻿using PhoenixModel.Commands.Parser;
+using PhoenixModel.ExternalTables;
+using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using static PhoenixModel.Commands.SchootCommand;
 
 namespace PhoenixModel.Commands {
 
-    public class SchootCommand : DefaultCommand, ICommand {
-        /// <summary>
-        /// die Namen entsprechen der Kostentabelle in crossref.mdb
-        /// </summary>
-        public enum ConstructionElement {
-            None,
-            LKP,// Leichte Katapulte
-            SKP,// Schwere Katapulte
-            LKS,// Leichte Kriegsschiffe 
-            SKS,// Schwere Kriegsschiffe
-        }
-
-        public ConstructionElement With { get; set; } = ConstructionElement.None;
+    public class SchootCommand : SimpleCommand, ICommand {
+        
+        public FigurType With { get; set; } 
         public KleinfeldPosition? TargetLocation { get; set; } = null;
         public KleinfeldPosition? SourceLocation { get; set; } = null;
         public int? Nummer { get; set; }
@@ -33,7 +18,7 @@ namespace PhoenixModel.Commands {
         public SchootCommand(string commandString) : base(commandString) {
         }
 
-        
+
 
 
         /// <summary>
@@ -64,8 +49,8 @@ namespace PhoenixModel.Commands {
         }
     }
 
-    public class SchootCommandParser : ICommandParser {
-        private static readonly Regex AttackRegex = new Regex(
+    public class SchootCommandParser : SimpleParser {
+        private static readonly Regex SchootRegex = new Regex(
               // Explanation:
               // ^Beschieße\s+(?<targetLoc>[^\s]+)\s+      : "Beschieße <LOC>"
               // mit\s+                                   : "mit"
@@ -76,44 +61,24 @@ namespace PhoenixModel.Commands {
               RegexOptions.IgnoreCase | RegexOptions.Compiled
         );
 
-        private static bool Fail(out ICommand? command) {
-            command = null;
-            return false;
-        }
-
-        private ConstructionElement parseConstructionElement(string input) {
-            return input.ToLower()
-            switch {
-                "lkp" => ConstructionElement.LKP,
-                "leichte katapulte" => ConstructionElement.LKP,
-                "leichte kp" => ConstructionElement.LKP,
-                "skp" => ConstructionElement.SKP,
-                "schwere katapulte" => ConstructionElement.SKP,
-                "schwere kp" => ConstructionElement.SKP,
-                "lks" => ConstructionElement.LKS,
-                "leichte kriegsschiffe" => ConstructionElement.LKS,
-                "leichte ks" => ConstructionElement.LKS,
-                "sks" => ConstructionElement.SKS,
-                "schwere kriegsschiffe" => ConstructionElement.SKS,
-                "schwere ks" => ConstructionElement.SKS,
-                _ => ConstructionElement.None
-            };
-        }
-
-        public bool ParseCommand(string commandString, out ICommand? command) {
-            var match = AttackRegex.Match(commandString);
-            if (!match.Success) {
+        public override bool ParseCommand(string commandString, out ICommand? command) {
+            var match = SchootRegex.Match(commandString);
+            if (!match.Success) 
                 return Fail(out command);
+            
+            try {
+                command = new SchootCommand(commandString) {
+                    With = ParseUnitType(match.Groups["unitType"].Value),
+                    Nummer = ParseInt(match.Groups["unitId"].Value),
+                    TargetLocation = ParseLocation(match.Groups["targetLoc"].Value),
+                    SourceLocation = ParseLocation(match.Groups["sourceLoc"].Value),
+                };
             }
-
-            int? nummer = null;
-            try { nummer = int.Parse(match.Groups["unitId"].Value); } catch { };
-            command = new SchootCommand(commandString) {
-                With = parseConstructionElement(match.Groups["unitType"].Value),
-                Nummer = nummer,
-                TargetLocation = CommandParser.ParseLocation(match.Groups["targetLoc"].Value),
-                SourceLocation = CommandParser.ParseLocation(match.Groups["sourceLoc"].Value),
-            };
+            catch (Exception ex) {
+                ProgramView.LogError("Beim Lesen des SchootCommand gab es einen Fehler", ex.Message);
+                command = null;
+                return false;
+            }
             return true;
         }
     }

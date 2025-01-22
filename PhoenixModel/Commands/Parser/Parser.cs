@@ -3,6 +3,7 @@ using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -15,7 +16,7 @@ namespace PhoenixModel.Commands.Parser {
     /// <summary>
     /// CommandParser-Klasse zur Registrierung und Verarbeitung von Befehlen.
     /// </summary>
-    public partial class CommandParser {
+    public class CommandParser {
         private static List<CommandParser> parsers = [];
         private static CommandParser _parser = new CommandParser();
 
@@ -58,66 +59,8 @@ namespace PhoenixModel.Commands.Parser {
             return false;
         }
 
-        private const string locationPattern = @"(\d+)/(\d+)";
-        [GeneratedRegex(locationPattern)]
-        public static partial Regex LocationRegex();
+      
 
-        /// <summary>
-        /// Analysiert eine Eingabe und extrahiert eine Kleinfeld-Position.
-        /// </summary>
-        /// <param name="input">Der zu analysierende Eingabestring.</param>
-        /// <returns>Die extrahierte Kleinfeld-Position oder null, falls ungültig.</returns>
-        public static KleinfeldPosition? ParseLocation(string input) {
-            var match = LocationRegex().Match(input);
-            if (match.Success && match.Groups.Count == 3) {
-                int gf = int.Parse(match.Groups[1].Value);
-                int kf = int.Parse(match.Groups[2].Value);
-                return new KleinfeldPosition(gf, kf);
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Analysiert eine Eingabe und gibt den entsprechenden Einheitstyp zurück.
-        /// </summary>
-        /// <param name="input">Der eingegebene Einheitstyp als String.</param>
-        /// <returns>Der erkannte Einheitstyp.</returns>
-        public static FigurType ParseUnitType(string input) {
-            return input.ToLower() switch {
-                "reiter" => FigurType.Reiter,
-                "krieger" => FigurType.Krieger,
-                "schiff" => FigurType.Schiff,
-                _ => FigurType.NaN,
-            };
-        }
-
-        /// <summary>
-        /// Analysiert eine Eingabe und gibt den entsprechenden Einheitstyp zurück.
-        /// </summary>
-        /// <param name="input">Der eingegebene Einheitstyp als String.</param>
-        /// <returns>Der erkannte Einheitstyp.</returns>
-        public static Direction? ParseDirection(string input) {
-            return input.ToLower() switch {
-                "no" => Direction.NO,
-                "nordost" => Direction.NO,
-                "nordosten" => Direction.NO,
-                "o" => Direction.O,
-                "ost" => Direction.O,
-                "osten" => Direction.O,
-                "so" => Direction.SO,
-                "südost" => Direction.SO,
-                "südosten" => Direction.SO,
-                "sw" => Direction.SW,
-                "südwest" => Direction.SW,
-                "südwesten" => Direction.SW,
-                "w" => Direction.W,
-                "west" => Direction.W,
-                "westen" => Direction.W,
-                "nw" => Direction.NW,
-                "nordwest" => Direction.NW,
-                "nordwesten" => Direction.NW,
-                _ => null,
-            };
-        }
+       
     }
 }

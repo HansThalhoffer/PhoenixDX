@@ -19,7 +19,7 @@ namespace PhoenixModel.dbErkenfara {
         protected virtual string GetTableName () { return TableName; }
 
         // IEigenschaftler
-        private static readonly string[] PropertiestoIgnore = ["DBname", "Nummer", "DatabaseName", "Database", "Flottenkey", "ReferenzNation", "Nation"];
+        private static readonly string[] PropertiestoIgnore = ["DBname", "TargetID", "DatabaseName", "Database", "Flottenkey", "ReferenzNation", "Nation"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
         public int Nummer { get; set; }
         public string Geber { get => ReferenzNation.Reich; }
@@ -78,7 +78,7 @@ namespace PhoenixModel.dbErkenfara {
                 Kuestenrecht = {this.Kuestenrecht},
                 Kuestenrecht_von = {this.Kuestenrecht_von},
                 Flottenkey = {this.Flottenkey}
-            WHERE Nummer = {this.Nummer}";
+            WHERE TargetID = {this.Nummer}";
 
             command.ExecuteNonQuery();
         }
@@ -88,7 +88,7 @@ namespace PhoenixModel.dbErkenfara {
         {
             command.CommandText = $@"
             INSERT INTO {GetTableName()} (
-                Nummer, Reich, Referenzreich, Wegerecht, Wegerecht_von, DBname, 
+                TargetID, Reich, Referenzreich, Wegerecht, Wegerecht_von, DBname, 
                 Kuestenrecht, Kuestenrecht_von, Flottenkey
             ) VALUES (
                 {this.Nummer}, 

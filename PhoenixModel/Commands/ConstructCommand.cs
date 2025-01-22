@@ -1,13 +1,8 @@
 ﻿using PhoenixModel.Commands.Parser;
-using PhoenixModel.ViewModel;
-using PhoenixModel.dbZugdaten;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using PhoenixModel.dbCrossRef;
+using PhoenixModel.dbZugdaten;
+using PhoenixModel.ViewModel;
+using System.Text.RegularExpressions;
 using static PhoenixModel.Commands.ConstructCommand;
 
 namespace PhoenixModel.Commands {
@@ -18,17 +13,17 @@ namespace PhoenixModel.Commands {
     ///    - "Errichte Brücke im Süden von 444/22"
     ///    - "Errichte Brücke im Norden von 47/11"
     /// </summary>
-    public class ConstructCommand: DefaultCommand, ICommand {
+    public class ConstructCommand : SimpleCommand, ICommand {
         public enum ConstructionElement {
-            None,Bruecke,Strasse,Wall
-        }       
-        
+            None, Bruecke, Strasse, Wall
+        }
+
         public ConstructionElement What { get; set; } = ConstructionElement.None;      // "Wand", "Brücke"
         public Direction? Direction { get; set; } = null; // "Nordosten", "Süden", "Norden", etc.
         public KleinfeldPosition? Location { get; set; } = null;
         public Kosten? Kosten = null;
 
-        public ConstructCommand(string commandString, KleinfeldPosition? pos) :base(commandString) {
+        public ConstructCommand(string commandString, KleinfeldPosition? pos) : base(commandString) {
             Location = pos;
         }
 
@@ -101,8 +96,8 @@ namespace PhoenixModel.Commands {
             return new CommandResultError("Fehler", "Keine Ahnung warum");
         }
     }
-    
-    public class ConstructCommandParser : ICommandParser{
+
+    public class ConstructCommandParser : SimpleParser {
 
         private static readonly Regex ConstructRegexErrichte = new Regex(
             @"^Errichte\s+(?<what>\w+)\s+im\s+(?<direction>\w+)\s+von\s+(?<loc>[^\s]+)$",
@@ -113,11 +108,6 @@ namespace PhoenixModel.Commands {
              @"^Baue\s+(?<what>\w+)\s+auf\s+(?<loc>[^\s]+)\s+eine\s+(?<direction>\w+)$",
              RegexOptions.IgnoreCase | RegexOptions.Compiled
             );
-        
-        private static bool Fail(out ICommand? command) {
-            command = null;
-            return false;
-        }
 
         private ConstructionElement parseConstructionElement(string input) {
             return input.ToLower()
@@ -129,25 +119,32 @@ namespace PhoenixModel.Commands {
                 _ => ConstructionElement.None
             };
         }
-        public bool ParseCommand(string commandString, out ICommand? command) {
+        public override bool ParseCommand(string commandString, out ICommand? command) {
             var match = ConstructRegexErrichte.Match(commandString);
             if (!match.Success) {
                 match = ConstructRegexBaue.Match(commandString);
-                if (!match.Success) 
+                if (!match.Success)
                     return Fail(out command);
             }
-            command = new ConstructCommand(commandString, CommandParser.ParseLocation(match.Groups["loc"].Value)) {
-                What = parseConstructionElement(match.Groups["what"].Value),
-                Direction = CommandParser.ParseDirection(match.Groups["direction"].Value),
-            };
-            return true;        
+            try {
+                command = new ConstructCommand(commandString, ParseLocation(match.Groups["loc"].Value)) {
+                    What = parseConstructionElement(match.Groups["what"].Value),
+                    Direction = ParseDirection(match.Groups["direction"].Value),
+                };
+            }
+            catch (Exception ex) {
+                Program.ProgramView.LogError("Beim Lesen des ConstructCommand gab es einen Fehler", ex.Message);
+                command = null;
+                return false;
+            }
+            return true;
         }
 
         public static string GenerateCommand(KleinfeldPosition pos, ConstructionElement what, Direction direction) {
             return $"Errichte {what} im {(DirectionNames)direction} von {pos.CreateBezeichner()}";
         }
 
-       
+
 
     }
 }
