@@ -57,16 +57,20 @@ namespace Tests {
         public static void Setup() {
             if (Application.Current == null) {
                 new Application();
-                // DispatchUI();
             }
-            ProgramView.SelectedNation = NationenView.GetNationFromString("Theostelos");
         }
 
-        public static void LoadCrossRef() {
+        public static void LoadCrossRef(bool resetPasssword, bool resetDB) {
             AppSettings settings = new AppSettings("Tests.jpk");
             settings.InitializeSettings();
-            settings.UserSettings.DatabaseLocationCrossRef = StorageSystem.LocateFile(settings.UserSettings.DatabaseLocationCrossRef, "CrossRef.mdb");
 
+            if (resetPasssword)
+                settings.UserSettings.PasswordCrossRef = string.Empty;
+            if (resetDB)
+                settings.UserSettings.DatabaseLocationCrossRef = string.Empty;
+
+            settings.UserSettings.DatabaseLocationCrossRef = StorageSystem.LocateFile(settings.UserSettings.DatabaseLocationCrossRef, "CrossRef.mdb");
+      
             // Arrange
             PasswordHolder pwdHolder = new PasswordHolder(settings.UserSettings.PasswordCrossRef, new TestPasswortProvider("CrossRef.mdb"));
             settings.UserSettings.PasswordCrossRef = pwdHolder.EncryptedPasswordBase64;
@@ -84,9 +88,18 @@ namespace Tests {
             }
         }
 
-        public static void LoadPZE() {
+        /// <summary>
+        /// mit der PZE kann ProgramView.SelectedNation erst gesetzt werden
+        /// </summary>
+        public static void LoadPZE(bool resetPasssword, bool resetDB) {
             AppSettings settings = new AppSettings("Tests.jpk");
             settings.InitializeSettings();
+
+            if (resetPasssword)
+                settings.UserSettings.PasswordPZE = string.Empty;
+            if (resetDB)
+                settings.UserSettings.DatabaseLocationPZE = string.Empty;
+
             settings.UserSettings.DatabaseLocationPZE = StorageSystem.LocateFile(settings.UserSettings.DatabaseLocationPZE, "PZE.mdb");
 
             // Arrange
@@ -104,6 +117,7 @@ namespace Tests {
                 db.Load();
                 db.LoadBackgroundSynchronous();
             }
+            ProgramView.SelectedNation = NationenView.GetNationFromString("Theostelos");
         }
 
         public static void LoadKarte() {

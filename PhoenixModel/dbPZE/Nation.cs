@@ -1,4 +1,5 @@
-﻿using PhoenixModel.Database;
+﻿using PhoenixModel.Commands;
+using PhoenixModel.Database;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
@@ -13,8 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PhoenixModel.dbPZE {
-    public class Nation :  IDatabaseTable, IEigenschaftler
-    {
+    public class Nation :  IDatabaseTable, IEigenschaftler, IEquatable<Nation> {
         public Nation() { }
         public Nation(string name) { Reich = name; }
         
@@ -102,6 +102,24 @@ namespace PhoenixModel.dbPZE {
 
         public void Delete(DbCommand reader) => throw new NotImplementedException();
 
+        // Implementing IEquatable<Nation>
+        public bool Equals(Nation? other) {
+            if (other is null)
+                return false;
+
+            return Nummer == other.Nummer &&
+                   Reich == other.Reich &&
+                   DBname == other.DBname &&
+                   DBpass == other.DBpass;
+        }
+
+        // Override Equals for object comparison
+        public override bool Equals(object? obj) {
+            if (obj is Nation otherNation)
+                return Equals(otherNation);
+
+            return false;
+        }
         #endregion
 
     }

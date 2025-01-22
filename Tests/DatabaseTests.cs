@@ -63,7 +63,7 @@ namespace Tests
         [STAThread]
         public void LoadPZETest() {
             TestSetup.Setup();
-            TestSetup.LoadPZE();
+            TestSetup.LoadPZE(false, false);
             Assert.NotNull(SharedData.Nationen);
             Assert.NotEmpty(SharedData.Nationen);
         }
@@ -72,7 +72,7 @@ namespace Tests
         [STAThread]
         public void LoadCrossRefTest() {
             TestSetup.Setup();
-            TestSetup.LoadCrossRef();
+            TestSetup.LoadCrossRef(false, false);
             Assert.NotNull(SharedData.Kosten);
             Assert.NotEmpty(SharedData.Kosten);
         }

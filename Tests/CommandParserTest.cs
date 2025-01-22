@@ -96,7 +96,7 @@ namespace Tests {
                 },
             ];
             TestSetup.Setup();
-            TestSetup.LoadCrossRef();
+            TestSetup.LoadCrossRef(false, false);
         
             foreach (var testCommand in testCommands) {
                 ICommand? command = ParseCommand(testCommand.CommandString);
@@ -136,7 +136,7 @@ namespace Tests {
                 },
             ];
             TestSetup.Setup();
-            TestSetup.LoadCrossRef();
+            TestSetup.LoadPZE(false,false);
 
             foreach (var testCommand in testCommands) {
                 ICommand? command = ParseCommand(testCommand.CommandString);
