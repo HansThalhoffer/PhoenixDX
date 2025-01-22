@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.Commands.Parser;
+using PhoenixModel.dbPZE;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,14 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.Commands {
     public class DiplomacyCommand : SimpleCommand, ICommand {
+       public enum BewegungsRecht { None, Küstenrecht, Wegerecht}
+        
+        public Nation? ReferenzNation { get; set; }
+        public Nation? Nation { get; set; }
+        public BewegungsRecht Recht { get; set; } = BewegungsRecht.None;
+        public bool? RemoveRecht { get; set; } = null;
+
+
         public DiplomacyCommand(string commandString) : base(commandString) {
         }
 

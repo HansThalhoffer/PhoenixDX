@@ -4,6 +4,7 @@ using PhoenixModel.ViewModel;
 using PhoenixWPF.Dialogs;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -78,6 +79,10 @@ namespace PhoenixWPF.Pages {
 
         public static void AddToLog(LogEntry logentry)
         {
+            // Wenn Tests durchgeführt werden, dann die Logs nicht in den Dispatcher schicken, da keine GUI da
+            if (Application.Current.GetType() == typeof(System.Windows.Application))
+                return;
+
             if (string.IsNullOrWhiteSpace(logentry.Titel)) 
                 return;
             

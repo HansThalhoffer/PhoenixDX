@@ -2,6 +2,8 @@
 using PhoenixModel.Commands.Parser;
 using PhoenixModel.Database;
 using PhoenixModel.ExternalTables;
+using PhoenixModel.Program;
+using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using PhoenixWPF.Database;
 using PhoenixWPF.Dialogs;
@@ -9,6 +11,7 @@ using PhoenixWPF.Helper;
 using PhoenixWPF.Program;
 using System.CodeDom;
 using System.Windows;
+using static PhoenixModel.Commands.DiplomacyCommand;
 using static PhoenixModel.Database.PasswordHolder;
 
 namespace Tests {
@@ -16,44 +19,6 @@ namespace Tests {
 
     public class CommandParserTest {
         
-        class TestPasswortProvider : PasswordHolder.IPasswordProvider {
-            public EncryptedString Password {
-                get {
-                    PasswordDialog dialog = new PasswordDialog("Das Passwort für die UnitTest bitte eingeben");
-                    dialog.ShowDialog();
-                    return dialog.ProvidePassword();
-                }
-            }
-        }
-
-        private static void Setup() {
-            if (Application.Current == null) {
-                new Application();
-            }
-        }
-
-        private void LoadCrossRef() {
-            AppSettings settings = new AppSettings("Tests.jpk");
-            settings.InitializeSettings();
-            settings.UserSettings.DatabaseLocationCrossRef = StorageSystem.LocateFile(settings.UserSettings.DatabaseLocationCrossRef, "CrossRef.mdb");
-
-            // Arrange
-            PasswordHolder pwdHolder = new PasswordHolder(settings.UserSettings.PasswordCrossRef, new TestPasswortProvider());
-            settings.UserSettings.PasswordCrossRef = pwdHolder.EncryptedPasswordBase64;
-            string? databasePassword = pwdHolder.DecryptedPassword;
-            Assert.NotNull(databasePassword);
-            Assert.NotEmpty(databasePassword);
-
-            if (Application.Current == null) {
-                new Application();
-            }
-
-            using (var db= new CrossRef(settings.UserSettings.DatabaseLocationCrossRef, settings.UserSettings.PasswordCrossRef)) {
-                db.Load();
-                db.LoadBackgroundSynchronous();
-            }
-        }
-      
         private ICommand? ParseCommand(string commandString) {
             ICommand? command = null;
             CommandParser.ParseCommand(commandString, out command);
@@ -130,9 +95,49 @@ namespace Tests {
                     Kosten = new PhoenixModel.dbCrossRef.Kosten{ GS = 50000, BauPunkte = 1000, RP = 0, Unittyp = "Burg" },
                 },
             ];
-            Setup();
-            LoadCrossRef();
+            TestSetup.Setup();
+            TestSetup.LoadCrossRef();
         
+            foreach (var testCommand in testCommands) {
+                ICommand? command = ParseCommand(testCommand.CommandString);
+                Assert.NotNull(command);
+                Assert.True(command.GetType() == testCommand.GetType());
+                Assert.True(testCommand.Equals(command));
+            }
+        }
+
+        [StaFact]
+        public void ParsingDiplomacyCommanddTest() {
+
+            DiplomacyCommand[] testCommands = [
+                new DiplomacyCommand("Gebe Yaromo Küstenrecht"){
+                    Recht = BewegungsRecht.Küstenrecht,
+                    RemoveRecht = false,
+                    Nation = NationenView.GetNationFromString("Yaromo"),
+                    ReferenzNation = ProgramView.SelectedNation
+                },
+                new DiplomacyCommand("Entziehe Yaromo Küstenrecht"){
+                    Recht = BewegungsRecht.Küstenrecht,
+                    RemoveRecht = true,
+                    Nation = NationenView.GetNationFromString("Yaromo"),
+                    ReferenzNation = ProgramView.SelectedNation
+                },
+                 new DiplomacyCommand("Gebe Helborn Wegerecht"){
+                    Recht = BewegungsRecht.Küstenrecht,
+                    RemoveRecht = false,
+                    Nation = NationenView.GetNationFromString("Helborn"),
+                    ReferenzNation = ProgramView.SelectedNation
+                },
+                new DiplomacyCommand("Entziehe Helborn Wegerecht"){
+                    Recht = BewegungsRecht.Küstenrecht,
+                    RemoveRecht = true,
+                    Nation = NationenView.GetNationFromString("Helborn"),
+                    ReferenzNation = ProgramView.SelectedNation
+                },
+            ];
+            TestSetup.Setup();
+            TestSetup.LoadCrossRef();
+
             foreach (var testCommand in testCommands) {
                 ICommand? command = ParseCommand(testCommand.CommandString);
                 Assert.NotNull(command);

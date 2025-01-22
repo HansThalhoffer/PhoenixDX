@@ -9,6 +9,7 @@ using static PhoenixModel.Database.PasswordHolder;
 using PhoenixWPF.Helper;
 using System.Windows.Controls;
 using System.Windows;
+using PhoenixModel.ViewModel;
 
 namespace Tests
 {
@@ -48,43 +49,34 @@ namespace Tests
             Assert.Equal(userSettings.ShowWindowDiplomacy, loadedSettings.ShowWindowDiplomacy);
         }
         
-        private static void Setup() {
-            if (Application.Current == null) {
-                new Application();
-            }
-        }
-
-        class TestPasswortProvider : PasswordHolder.IPasswordProvider {
-            public EncryptedString Password {
-                get {
-                    PasswordDialog dialog = new PasswordDialog("Das Passwort für die UnitTest bitte eingeben");
-                    dialog.ShowDialog();
-                    return dialog.ProvidePassword();
-                }
-            }
+        [StaFact]
+        [STAThread]
+        public void LoadKarteTest()
+        {
+            TestSetup.Setup();
+            TestSetup.LoadKarte();
+            Assert.NotNull(SharedData.Map);
+            Assert.NotEmpty(SharedData.Map);
         }
 
         [StaFact]
-        public void LoadKarteTest()
-        {
-            Setup();
-            AppSettings settings = new AppSettings("Tests.jpk");
-            settings.InitializeSettings();
-            settings.UserSettings.DatabaseLocationKarte = StorageSystem.LocateFile(settings.UserSettings.DatabaseLocationKarte,"Datenbank Erkenfara");
-
-            // Arrange
-            PasswordHolder pwdHolder = new PasswordHolder(settings.UserSettings.PasswordKarte, new TestPasswortProvider());
-            settings.UserSettings.PasswordKarte = pwdHolder.EncryptedPasswordBase64;
-            string? databasePassword = pwdHolder.DecryptedPassword;
-            Assert.NotNull(databasePassword);
-            Assert.NotEmpty(databasePassword);
-
-            using (ErkenfaraKarte karte = new ErkenfaraKarte(settings.UserSettings.DatabaseLocationKarte, settings.UserSettings.PasswordKarte))
-            {
-                karte.Load();
-               
-            }
+        [STAThread]
+        public void LoadPZETest() {
+            TestSetup.Setup();
+            TestSetup.LoadPZE();
+            Assert.NotNull(SharedData.Nationen);
+            Assert.NotEmpty(SharedData.Nationen);
         }
+
+        [StaFact]
+        [STAThread]
+        public void LoadCrossRefTest() {
+            TestSetup.Setup();
+            TestSetup.LoadCrossRef();
+            Assert.NotNull(SharedData.Kosten);
+            Assert.NotEmpty(SharedData.Kosten);
+        }
+
 
         [StaFact]
         public void EncryptDecryptPassword_ShouldReturnOriginalPassword()
@@ -111,12 +103,12 @@ namespace Tests
         public void AppSettingsTest()
         {
             // Arrange
-            var settings1 = new AppSettings("Test.jpk");
+            var settings1 = new AppSettings("Test_settings1.jpk");
 
             settings1.InitializeSettings();
             settings1.UserSettings.DatabaseLocationKarte = "ABC";
 
-            var settings2 = new AppSettings("Test.jpk");
+            var settings2 = new AppSettings("Test_settings1.jpk");
             settings2.InitializeSettings();
 
             // Assert

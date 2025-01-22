@@ -121,6 +121,11 @@ namespace PhoenixWPF.Program {
         {
         }
 
+
+        public void LoadBackgroundSynchronous() {
+            LoadInBackground();
+        }
+
         protected override void LoadInBackground()
         {
             PasswordHolder holder = new(_encryptedpassword);
