@@ -1,9 +1,9 @@
 ﻿using PhoenixModel.Commands.Parser;
 using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbZugdaten;
+using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using System.Text.RegularExpressions;
-using static PhoenixModel.Commands.ConstructCommand;
 
 namespace PhoenixModel.Commands {
 
@@ -13,18 +13,14 @@ namespace PhoenixModel.Commands {
     ///    - "Errichte Brücke im Süden von 444/22"
     ///    - "Errichte Brücke im Norden von 47/11"
     /// </summary>
-    public class ConstructCommand : SimpleCommand, ICommand {
-        public enum ConstructionElement {
-            None, Bruecke, Strasse, Wall
-        }
-
-        public ConstructionElement What { get; set; } = ConstructionElement.None;      // "Wand", "Brücke"
+    public class ConstructCommand : SimpleCommand, ICommand, IEquatable<ConstructCommand> {
+       
+        public ConstructionElementType What { get; set; } = ConstructionElementType.None;      // "Wand", "Brücke"
         public Direction? Direction { get; set; } = null; // "Nordosten", "Süden", "Norden", etc.
         public KleinfeldPosition? Location { get; set; } = null;
         public Kosten? Kosten = null;
 
-        public ConstructCommand(string commandString, KleinfeldPosition? pos) : base(commandString) {
-            Location = pos;
+        public ConstructCommand(string commandString) : base(commandString) {
         }
 
         /// <summary>
@@ -32,7 +28,7 @@ namespace PhoenixModel.Commands {
         /// </summary>
         /// </summary>
         public override CommandResult CheckPreconditions() {
-            if (What == ConstructionElement.None)
+            if (What == ConstructionElementType.None)
                 return new CommandResultError("Es wurde kein zu errichtendes Bauwerk angegeben", $"In dem Befehl konnte das Bauwerk (Straße, Brücke, Wall) nicht gefunden werden \r\n {this.CommandString}");
             if (Direction == null)
                 return new CommandResultError("Es wurde keine Richtung angegeben", $"In dem Befehl konnte die Richtung (Nordosten, Westen, etc) nicht gefunden werden \r\n {this.CommandString}");
@@ -95,6 +91,42 @@ namespace PhoenixModel.Commands {
 
             return new CommandResultError("Fehler", "Keine Ahnung warum");
         }
+
+        public bool Equals(ConstructCommand? other) {
+            if (other == null)
+                return false;
+            if (What != other.What) 
+                return false;
+            if (Direction != other.Direction) 
+                return false;
+            if ((Location == null && other.Location == null) == false) {
+                if (Location == null || other.Location == null)
+                    return false;
+                if (Location.Equals(other.Location) == false)
+                    return false;
+            }
+            if ((Kosten == null && other.Kosten == null) == false) {
+                if (Kosten == null || other.Kosten == null)
+                    return false;
+                if (Kosten.Equals(other.Kosten) == false)
+                    return false;
+            }
+            return true;
+
+        }
+
+        /// <summary>
+        /// Überprüft die Gleichheit mit einem anderen Objekt.
+        /// </summary>
+        /// <param name="obj">Das zu vergleichende Objekt.</param>
+        /// <returns>True, wenn die Objekte gleich sind, sonst false.</returns>
+        public override bool Equals(object? obj) {
+            return Equals(obj as ConstructCommand);
+        }
+
+        public override int GetHashCode() {
+            return HashCode.Combine(What, Direction, Location, CommandString);
+        }
     }
 
     public class ConstructCommandParser : SimpleParser {
@@ -105,20 +137,10 @@ namespace PhoenixModel.Commands {
            );
 
         private static readonly Regex ConstructRegexBaue = new Regex(
-             @"^Baue\s+(?<what>\w+)\s+auf\s+(?<loc>[^\s]+)\s+eine\s+(?<direction>\w+)$",
+             @"^Errichte\s+(?<what>\w+)\s+auf\s+(?<loc>[^\s]+)$",
              RegexOptions.IgnoreCase | RegexOptions.Compiled
             );
 
-        private ConstructionElement parseConstructionElement(string input) {
-            return input.ToLower()
-            switch {
-                "wall" => ConstructionElement.Wall,
-                "strasse" => ConstructionElement.Strasse,
-                "straße" => ConstructionElement.Strasse,
-                "brücke" => ConstructionElement.Bruecke,
-                _ => ConstructionElement.None
-            };
-        }
         public override bool ParseCommand(string commandString, out ICommand? command) {
             var match = ConstructRegexErrichte.Match(commandString);
             if (!match.Success) {
@@ -127,9 +149,13 @@ namespace PhoenixModel.Commands {
                     return Fail(out command);
             }
             try {
-                command = new ConstructCommand(commandString, ParseLocation(match.Groups["loc"].Value)) {
-                    What = parseConstructionElement(match.Groups["what"].Value),
+                var bauwerk = parseConstructionElement(match.Groups["what"].Value);
+
+                command = new ConstructCommand(commandString) {
+                    Location = ParseLocation(match.Groups["loc"].Value),
+                    What = bauwerk,
                     Direction = ParseDirection(match.Groups["direction"].Value),
+                    Kosten = KostenView.GetKosten(bauwerk.ToString()),
                 };
             }
             catch (Exception ex) {
@@ -140,11 +166,9 @@ namespace PhoenixModel.Commands {
             return true;
         }
 
-        public static string GenerateCommand(KleinfeldPosition pos, ConstructionElement what, Direction direction) {
+        public static string GenerateCommand(KleinfeldPosition pos, ConstructionElementType what, Direction direction) {
             return $"Errichte {what} im {(DirectionNames)direction} von {pos.CreateBezeichner()}";
         }
-
-
 
     }
 }

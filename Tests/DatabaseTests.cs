@@ -7,6 +7,8 @@ using PhoenixWPF.Dialogs;
 
 using static PhoenixModel.Database.PasswordHolder;
 using PhoenixWPF.Helper;
+using System.Windows.Controls;
+using System.Windows;
 
 namespace Tests
 {
@@ -46,12 +48,15 @@ namespace Tests
             Assert.Equal(userSettings.ShowWindowDiplomacy, loadedSettings.ShowWindowDiplomacy);
         }
         
-        class PasswortProvider : PasswordHolder.IPasswordProvider
-        {
-            public EncryptedString Password
-            {
-                get
-                {
+        private static void Setup() {
+            if (Application.Current == null) {
+                new Application();
+            }
+        }
+
+        class TestPasswortProvider : PasswordHolder.IPasswordProvider {
+            public EncryptedString Password {
+                get {
                     PasswordDialog dialog = new PasswordDialog("Das Passwort für die UnitTest bitte eingeben");
                     dialog.ShowDialog();
                     return dialog.ProvidePassword();
@@ -60,14 +65,15 @@ namespace Tests
         }
 
         [StaFact]
-        public void LoadKarte()
+        public void LoadKarteTest()
         {
+            Setup();
             AppSettings settings = new AppSettings("Tests.jpk");
             settings.InitializeSettings();
             settings.UserSettings.DatabaseLocationKarte = StorageSystem.LocateFile(settings.UserSettings.DatabaseLocationKarte,"Datenbank Erkenfara");
 
             // Arrange
-            PasswordHolder pwdHolder = new PasswordHolder(settings.UserSettings.PasswordKarte, new PasswortProvider());
+            PasswordHolder pwdHolder = new PasswordHolder(settings.UserSettings.PasswordKarte, new TestPasswortProvider());
             settings.UserSettings.PasswordKarte = pwdHolder.EncryptedPasswordBase64;
             string? databasePassword = pwdHolder.DecryptedPassword;
             Assert.NotNull(databasePassword);
@@ -83,18 +89,18 @@ namespace Tests
         [StaFact]
         public void EncryptDecryptPassword_ShouldReturnOriginalPassword()
         {
-            // PasswordHolder pwdHolderDialog = new PasswordHolder(null, new PasswortProvider());
-          
-            // Arrange
-            EncryptedString expected = "MySecurePassword123!";
-            PasswordHolder pwdHolder = new PasswordHolder(expected);
+           // Arrange
+            string expected = "MySecurePassword123!";
+            PasswordHolder pwdHolder1 = new PasswordHolder(expected);
+            var encrypted = pwdHolder1.EncryptedPasswordBase64;
 
-            string? actual  = pwdHolder.DecryptedPassword;
+            PasswordHolder pwdHolder2 = new PasswordHolder(encrypted);
+            string? actual  = pwdHolder2.DecryptedPassword;
 
             // Assert
             Assert.Equal(expected, actual);
 
-            string json = System.Text.Json.JsonSerializer.Serialize(pwdHolder);
+            string json = System.Text.Json.JsonSerializer.Serialize(pwdHolder2);
             PasswordHolder? deserializedPwdHolder = System.Text.Json.JsonSerializer.Deserialize<PasswordHolder>(json);
 
             actual = deserializedPwdHolder?.DecryptedPassword;
@@ -102,7 +108,7 @@ namespace Tests
         }
 
         [Fact]
-        public void AppSettings()
+        public void AppSettingsTest()
         {
             // Arrange
             var settings1 = new AppSettings("Test.jpk");

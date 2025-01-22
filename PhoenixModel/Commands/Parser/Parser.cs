@@ -1,29 +1,16 @@
-﻿using PhoenixModel.ExternalTables;
-using PhoenixModel.Program;
-using PhoenixModel.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using static PhoenixModel.Database.PasswordHolder;
-
-namespace PhoenixModel.Commands.Parser {
+﻿namespace PhoenixModel.Commands.Parser {
 
     /// <summary>
     /// CommandParser-Klasse zur Registrierung und Verarbeitung von Befehlen.
     /// </summary>
     public class CommandParser {
-        private static List<CommandParser> parsers = [];
+        private static List<ICommandParser> parsers = [];
         private static CommandParser _parser = new CommandParser();
 
         /// <summary>
         /// Privater Konstruktor, der alle verfügbaren Befehls-CommandParser registriert.
         /// </summary>
-        private CommandParser() {
+        public CommandParser() {
             RegisterAllCommandParsers();
         }
 
@@ -31,13 +18,14 @@ namespace PhoenixModel.Commands.Parser {
         /// Registriert alle Klassen, die das Interface CommandParser implementieren.
         /// </summary>
         private static void RegisterAllCommandParsers() {
-            var parserTypes = Assembly.GetExecutingAssembly()
-               .GetTypes()
-               .Where(t => t.IsClass && !t.IsAbstract && typeof(CommandParser).IsAssignableFrom(t))
-               .ToList();
+            var interfaceType = typeof(ICommandParser);
+
+            var parserTypes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(assembly => assembly.GetTypes())
+                .Where(type => interfaceType.IsAssignableFrom(type) && type.IsClass && !type.IsAbstract);
 
             foreach (var type in parserTypes) {
-                if (Activator.CreateInstance(type) is CommandParser parser) {
+                if (Activator.CreateInstance(type) is ICommandParser parser) {
                     parsers.Add(parser);
                 }
             }

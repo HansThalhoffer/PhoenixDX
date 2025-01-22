@@ -48,7 +48,8 @@ namespace PhoenixWPF.Dialogs
                 _nationen.Add(nation.Bezeichner, nation);
             }
             ReichsAuswahl.ItemsSource = _nationen.Keys;
-            Owner = Application.Current.MainWindow; // Set the owner to the current window
+            if (App.Current != null && App.Current.MainWindow != null && App.Current.MainWindow != this)
+                Owner = Application.Current.MainWindow; // Set the owner to the current window
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
             ReichsAuswahl.SelectedItem = selectedNation;

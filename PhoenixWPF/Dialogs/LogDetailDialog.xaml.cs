@@ -19,7 +19,8 @@ namespace PhoenixWPF.Dialogs
             _showErrorsOnly = showErrorsOnly;
             Instance = this;
             InitializeComponent();
-            Owner = Application.Current.MainWindow; // Set the owner to the current window
+            if (App.Current != null && App.Current.MainWindow != null && App.Current.MainWindow != this)
+                Owner = Application.Current.MainWindow; // Set the owner to the current window
             WindowStartupLocation = WindowStartupLocation.CenterOwner; InitializeComponent();
             LogListFrame.LoadCompleted += LogListFrame_LoadCompleted;
             UpdateDetail(selectedLogEntry);

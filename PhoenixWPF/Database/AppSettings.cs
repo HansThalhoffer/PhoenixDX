@@ -89,7 +89,8 @@ namespace PhoenixWPF.Database {
             // wird der Pfad basierend auf den Benutzereinstellungen extrahiert.
             if (e.PropertyName != null && e.PropertyName.StartsWith("DatabaseLocation") && string.IsNullOrEmpty(DataRootPath)) {
                 string path = PropertyProcessor.GetPropertyValue(UserSettings, e.PropertyName);
-                DataRootPath = StorageSystem.ExtractBasePath(path, "_Data");
+                if (path.IndexOf("_Data", StringComparison.OrdinalIgnoreCase) >= 0)
+                    DataRootPath = StorageSystem.ExtractBasePath(path, "_Data");
             }
             UpdateSetting();
         }

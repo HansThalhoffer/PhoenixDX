@@ -18,26 +18,7 @@ namespace PhoenixModel.Commands {
     /// - Rüste 300 Reiter mit 7 Heerführern in Rüstort 506/17
     /// - Rüste 500 Krieger mit 10 Pferden und 3 Heerführern und 2 Schweren Katapulten in Rüstort 123/45
     /// </summary>
-    public class EquipCommand : SimpleCommand, ICommand {
-
-        /// <summary>
-        /// die Namen entsprechen der Kostentabelle in crossref.mdb
-        /// </summary>
-        public enum ConstructionElementType {
-            None,
-            K, // Krieger
-            S, // Schiffe
-            R, // Reiter
-            P, // PFerde
-            LKP,// Leichte Katapulte
-            SKP,// Schwere Katapulte
-            LKS,// Leichte Kriegsschiffe 
-            SKS,// Schwere Kriegsschiffe
-            HF, // HF 
-            ZA, // Zauberer Klasse A
-            ZB, // Zauberer Klasse A
-        }
-
+    public class EquipCommand : SimpleCommand, ICommand {        
         public struct ConstructionElement {
             ConstructionElementType constructionElementType = ConstructionElementType.None;
             public int Count = 0;
@@ -150,43 +131,6 @@ namespace PhoenixModel.Commands {
     /// </summary>
     public class EquipCommandParser : SimpleParser {
        
-
-        private ConstructionElementType parseConstructionElement(string input) {
-            return input.ToLower()
-            switch {
-                "k" => ConstructionElementType.K,
-                "krieger" => ConstructionElementType.K,
-                "kriegern" => ConstructionElementType.K,
-                "r" => ConstructionElementType.R,
-                "reiter" => ConstructionElementType.R,
-                "reitern" => ConstructionElementType.R,
-                "s" => ConstructionElementType.S,
-                "schiff" => ConstructionElementType.S,
-                "schiffe" => ConstructionElementType.S,
-                "schiffen" => ConstructionElementType.S,
-                "pferde" => ConstructionElementType.P,
-                "lkp" => ConstructionElementType.LKP,
-                "leichte katapulte" => ConstructionElementType.LKP,
-                "leichte kp" => ConstructionElementType.LKP,
-                "skp" => ConstructionElementType.SKP,
-                "schwere katapulte" => ConstructionElementType.SKP,
-                "schwere kp" => ConstructionElementType.SKP,
-                "lks" => ConstructionElementType.LKS,
-                "leichte kriegsschiffe" => ConstructionElementType.LKS,
-                "leichte ks" => ConstructionElementType.LKS,
-                "sks" => ConstructionElementType.SKS,
-                "schwere kriegsschiffe" => ConstructionElementType.SKS,
-                "schwere ks" => ConstructionElementType.SKS,
-                "heerführer" => ConstructionElementType.HF,
-                "hf" => ConstructionElementType.HF,
-                "za" => ConstructionElementType.ZA,
-                "zauberer klasse a" => ConstructionElementType.ZA,
-                "zb" => ConstructionElementType.ZB,
-                "zauberer klasse b" => ConstructionElementType.ZB,
-                _ => ConstructionElementType.None
-            };
-        }
-
         private static readonly Regex EquipSiegeRegex = new Regex(
                 @"^Rüste\s+(?<strength>\d+)\s+(?<equipment>[\w\s]+)\s+zu\s+den\s+(?<unitType>\w+)\s+(?<unitId>\d+)\s+in\s+Rüstort\s+(?<loc>[^\s]+)$",
                 RegexOptions.IgnoreCase | RegexOptions.Compiled

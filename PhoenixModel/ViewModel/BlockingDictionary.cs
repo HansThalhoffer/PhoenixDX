@@ -24,7 +24,6 @@ namespace PhoenixModel.ViewModel {
     }
 
     public static class BlockingCollectionExtension{
-        
         /// <summary>
         /// Entfernt einen Wert aus der Collection
         /// </summary>

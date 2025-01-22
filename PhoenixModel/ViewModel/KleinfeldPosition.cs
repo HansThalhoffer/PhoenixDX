@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PhoenixModel.Commands;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 namespace PhoenixModel.ViewModel {
 
     [DebuggerDisplay("{CreateBezeichner()}")]
-    public class KleinfeldPosition {
+    public class KleinfeldPosition: IEquatable<KleinfeldPosition> {
         /// <summary>
         ///  Provinz / Großfeld
         /// </summary>
@@ -37,6 +38,22 @@ namespace PhoenixModel.ViewModel {
             return $"{pos.gf}/{pos.kf}";
         }
 
+        public bool Equals(KleinfeldPosition? other) {
+            return (other != null && other.gf == gf && other.kf == kf);
+        }
+
+        /// <summary>
+        /// Überprüft die Gleichheit mit einem anderen Objekt.
+        /// </summary>
+        /// <param name="obj">Das zu vergleichende Objekt.</param>
+        /// <returns>True, wenn die Objekte gleich sind, sonst false.</returns>
+        public override bool Equals(object? obj) {
+            return Equals(obj as KleinfeldPosition);
+        }
+
+        public override int GetHashCode() {
+            return HashCode.Combine(Key);
+        }
         public int Key {
             get { return gf * 100 + kf; }
         }

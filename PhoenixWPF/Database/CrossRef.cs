@@ -55,6 +55,10 @@ namespace PhoenixWPF.Database
         {
         }
 
+        public void LoadBackgroundSynchronous() {
+            LoadInBackground();
+        }
+
         protected override void LoadInBackground()
         {
             PasswordHolder holder = new(_encryptedpassword);

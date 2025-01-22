@@ -5,6 +5,33 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PhoenixModel.Commands.Parser {
+
+
+    /// <summary>
+    /// die Namen entsprechen 1:1 der Kostentabelle in crossref.mdb
+    /// </summary>
+    public enum ConstructionElementType {
+        None,
+        K, // Krieger
+        S, // Schiffe
+        R, // Reiter
+        P, // PFerde
+        LKP,// Leichte Katapulte
+        SKP,// Schwere Katapulte
+        LKS,// Leichte Kriegsschiffe 
+        SKS,// Schwere Kriegsschiffe
+        HF, // HF 
+        ZA, // Zauberer Klasse A
+        ZB, // Zauberer Klasse A
+        Strasse,
+        Bruecke, 
+        Wall, 
+        Burg,
+        ausbau
+    }
+
+
+
     /// <summary>
     /// Definiert eine Schnittstelle für ausführbare Befehle.
     /// </summary>

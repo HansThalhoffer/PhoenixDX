@@ -155,7 +155,7 @@ namespace PhoenixWPF.Helper {
                 return fullPath.Substring(0, index + folderName.Length);
             }
             else {
-                throw new ArgumentException($"The folder name '{folderName}' was not found in the path '{fullPath}'.");
+                throw new ArgumentException($"ExtractBasePath: Das Verzeichnis '{folderName}' wurde im Pfad '{fullPath}' nicht gefunden.");
             }
         }
 

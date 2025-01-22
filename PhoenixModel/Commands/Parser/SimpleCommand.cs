@@ -9,10 +9,12 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.Commands.Parser {
     public abstract class SimpleCommand : ICommand {
-        protected string CommandString;
+        protected readonly string _CommandString;
 
         /// <param name="commandString">Der nicht erkannte Befehl.</param>
-        public SimpleCommand(string commandString) { CommandString = commandString; }
+        public SimpleCommand(string commandString) { _CommandString = commandString; }
+
+        public string CommandString => _CommandString;
 
         public abstract CommandResult CheckPreconditions();
 
@@ -28,19 +30,16 @@ namespace PhoenixModel.Commands.Parser {
         }
         public abstract bool ParseCommand(string commandString, out ICommand? command);
         
-        private static Regex locationRegex = new Regex(@"(\d+)/(\d+)", RegexOptions.Compiled);
-
+       
         /// <summary>
         /// Analysiert eine Eingabe und extrahiert eine Kleinfeld-Position.
         /// </summary>
         /// <param name="input">Der zu analysierende Eingabestring.</param>
         /// <returns>Die extrahierte Kleinfeld-Position oder null, falls ungültig.</returns>
         public static KleinfeldPosition? ParseLocation(string input) {
-            var match = locationRegex.Match(input);
-            if (match.Success && match.Groups.Count == 3) {
-                int gf = int.Parse(match.Groups[1].Value);
-                int kf = int.Parse(match.Groups[2].Value);
-                return new KleinfeldPosition(gf, kf);
+            var numbers = input.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            if (numbers.Length == 2) {
+                return new KleinfeldPosition(ParseInt(numbers[0]), ParseInt(numbers[1]));
             }
             return null;
         }
@@ -58,10 +57,10 @@ namespace PhoenixModel.Commands.Parser {
                 "zauberer" => FigurType.Zauberer,
                 "charakter" => FigurType.Charakter,
                 "charakterzauberer" => FigurType.CharakterZauberer,
-                "LKP" => FigurType.LeichteArtillerie,
-                "SKP" => FigurType.SchwereArtillerie,
-                "LKS" => FigurType.LeichtesKriegsschiff,
-                "SKS" => FigurType.SchweresKriegsschiff,
+                "lkp" => FigurType.LeichteArtillerie,
+                "skp" => FigurType.SchwereArtillerie,
+                "lks" => FigurType.LeichtesKriegsschiff,
+                "sks" => FigurType.SchweresKriegsschiff,
                 "leichtes katapult" => FigurType.LeichteArtillerie,
                 "leichtem katapult" => FigurType.LeichteArtillerie,
                 "leichten katapulten" => FigurType.LeichteArtillerie,
@@ -151,8 +150,56 @@ namespace PhoenixModel.Commands.Parser {
         /// <param name="input"></param>
         /// <returns></returns>
         public static int ParseInt(string input) {
-            try { return int.Parse(input); } catch { };
+            try {
+                input = input.Trim();
+                if (string.IsNullOrEmpty(input))
+                    return 0;
+                if (input.All(char.IsDigit) == false)
+                    return 0;
+                return int.Parse(input); } 
+            catch { };
             return 0;
+        }
+
+        public ConstructionElementType parseConstructionElement(string input) {
+            return input.ToLower()
+            switch {
+                "k" => ConstructionElementType.K,
+                "krieger" => ConstructionElementType.K,
+                "kriegern" => ConstructionElementType.K,
+                "r" => ConstructionElementType.R,
+                "reiter" => ConstructionElementType.R,
+                "reitern" => ConstructionElementType.R,
+                "s" => ConstructionElementType.S,
+                "schiff" => ConstructionElementType.S,
+                "schiffe" => ConstructionElementType.S,
+                "schiffen" => ConstructionElementType.S,
+                "pferde" => ConstructionElementType.P,
+                "lkp" => ConstructionElementType.LKP,
+                "leichte katapulte" => ConstructionElementType.LKP,
+                "leichte kp" => ConstructionElementType.LKP,
+                "skp" => ConstructionElementType.SKP,
+                "schwere katapulte" => ConstructionElementType.SKP,
+                "schwere kp" => ConstructionElementType.SKP,
+                "lks" => ConstructionElementType.LKS,
+                "leichte kriegsschiffe" => ConstructionElementType.LKS,
+                "leichte ks" => ConstructionElementType.LKS,
+                "sks" => ConstructionElementType.SKS,
+                "schwere kriegsschiffe" => ConstructionElementType.SKS,
+                "schwere ks" => ConstructionElementType.SKS,
+                "heerführer" => ConstructionElementType.HF,
+                "hf" => ConstructionElementType.HF,
+                "za" => ConstructionElementType.ZA,
+                "zauberer klasse a" => ConstructionElementType.ZA,
+                "zb" => ConstructionElementType.ZB,
+                "zauberer klasse b" => ConstructionElementType.ZB,
+                "wall" => ConstructionElementType.Wall,
+                "strasse" => ConstructionElementType.Strasse,
+                "straße" => ConstructionElementType.Strasse,
+                "brücke" => ConstructionElementType.Bruecke,
+                "burg" => ConstructionElementType.Burg,
+                _ => ConstructionElementType.None
+            };
         }
     }
 }

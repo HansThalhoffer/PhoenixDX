@@ -1,17 +1,19 @@
 using System;
 using System.Data.Common;
+using System.Diagnostics;
 using PhoenixModel.Database;
 using PhoenixModel.Helper;
 using PhoenixModel.ViewModel;
 
 namespace PhoenixModel.dbCrossRef {
-    public class Kosten :  IDatabaseTable, IEigenschaftler
-    {
+    [DebuggerDisplay("{Bezeichner}")]
+    public class Kosten :  IDatabaseTable, IEigenschaftler, IEquatable<Kosten> {
+    
         public static string DatabaseName { get; set;  } = string.Empty;
         public string Database { get { return DatabaseName; } set { DatabaseName = value; } }
         public const string TableName = "Kosten";
         string IDatabaseTable.TableName => TableName;
-        public string Bezeichner => Unittyp ?? "unbekannte Kosten";
+        public string Bezeichner => $"{Unittyp} GS {GS} BP {BauPunkte} RP {RP}";
         // IEigenschaftler
         private static readonly string[] PropertiestoIgnore = ["DatabaseName"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
@@ -45,5 +47,17 @@ namespace PhoenixModel.dbCrossRef {
 
         public void Delete(DbCommand reader) => throw new NotImplementedException();
 
+        public bool Equals(Kosten? other) {
+            if (ReferenceEquals(null, other)) 
+                return false;
+            if (ReferenceEquals(this, other)) 
+                return true;
+            if (other == null) return false;
+            if( Unittyp != other.Unittyp ) return false;
+            if( GS != other.GS ) return false;
+            if (BauPunkte != other.BauPunkte ) return false;
+            if (RP != other.RP ) return false;
+            return true;
+        }
     }
 }
