@@ -20,13 +20,13 @@ namespace PhoenixModel.Commands {
             string result = $"Verstärke Rüstort {Location}";
             return result;
         }
-
+        
         /// <summary>
         /// <see cref="ICommand"/>
         /// </summary>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public override CommandResult ExecuteCommand() {
+        public override CommandResult CheckPreconditions() {
             throw new NotImplementedException();
         }
 
@@ -35,7 +35,10 @@ namespace PhoenixModel.Commands {
         /// </summary>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public override CommandResult CheckPreconditions() {
+        public override CommandResult ExecuteCommand() {
+            CommandResult result = CheckPreconditions();
+            if (result.HasErrors)
+                return result;
             throw new NotImplementedException();
         }
 

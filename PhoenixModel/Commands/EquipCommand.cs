@@ -66,7 +66,7 @@ namespace PhoenixModel.Commands {
         }
 
         private Ruestung? CreateRuestung() {
-            if (Kosten != null && Location != null && CheckPreconditions() == true) {
+            if (Kosten != null && Location != null) {
                 return new Ruestung() {
                     Nummer = 0,
                     HF = 0,
@@ -100,6 +100,9 @@ namespace PhoenixModel.Commands {
         /// Wenn in der Datenbank etwas geschrieben werden musste, wird es auch gelöscht
         /// </summary>
         public override CommandResult UndoCommand() {
+            CommandResult result = CheckPreconditions();
+            if (result.HasErrors)
+                return result;
             Ruestung? ruest = CreateRuestung();
             if (ruest != null && SharedData.Ruestung != null) {
                 var existing = SharedData.Ruestung.Where(r => r.Equals(ruest)).First();

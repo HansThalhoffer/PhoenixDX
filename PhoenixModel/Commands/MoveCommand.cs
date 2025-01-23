@@ -68,6 +68,9 @@ namespace PhoenixModel.Commands {
         /// </summary>
         /// <returns>Das Ergebnis der Befehlsausführung.</returns>
         public override CommandResult ExecuteCommand() {
+            CommandResult result = CheckPreconditions();
+            if (result.HasErrors)
+                return result;
             throw new NotImplementedException();
         }
 

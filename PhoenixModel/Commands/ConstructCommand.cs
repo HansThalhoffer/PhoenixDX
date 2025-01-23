@@ -51,7 +51,7 @@ namespace PhoenixModel.Commands {
         }
 
         private RuestungBauwerke? CreateRuestungBauwerke() {
-            if (Kosten != null && Location != null && CheckPreconditions() == true) {
+            if (Kosten != null && Location != null) {
                 return new RuestungBauwerke() {
                     GF = Location.gf,
                     KF = Location.kf,
@@ -86,6 +86,9 @@ namespace PhoenixModel.Commands {
         /// Wenn in der Datenbank etwas geschrieben werden musste, wird es auch geschrieben
         /// </summary>
         public override CommandResult ExecuteCommand() {
+            CommandResult result = CheckPreconditions();
+            if ( result.HasErrors ) 
+                return result;
             RuestungBauwerke? bauwerk = CreateRuestungBauwerke();
             if (bauwerk != null && SharedData.RuestungBauwerke != null) {
                 SharedData.RuestungBauwerke.Add(bauwerk);

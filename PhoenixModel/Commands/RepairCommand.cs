@@ -31,6 +31,9 @@ namespace PhoenixModel.Commands {
         }
 
         public override CommandResult ExecuteCommand() {
+            CommandResult result = CheckPreconditions();
+            if (result.HasErrors)
+                return result;
             throw new NotImplementedException();
         }
 
