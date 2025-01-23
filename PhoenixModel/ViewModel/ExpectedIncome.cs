@@ -1,5 +1,7 @@
-﻿using PhoenixModel.dbPZE;
+﻿using PhoenixModel.dbErkenfara;
+using PhoenixModel.dbPZE;
 using PhoenixModel.ExternalTables;
+using PhoenixModel.View;
 using static PhoenixModel.ExternalTables.GeländeTabelle;
 
 namespace PhoenixModel.ViewModel {
@@ -40,9 +42,33 @@ namespace PhoenixModel.ViewModel {
             this.Reich = reich.Reich;
             if (SharedData.Map != null) {
                 var kleinfelder = SharedData.Map.Values.Where(k => k.Nation == reich);
+                this.GesamtEinkommen = EinnahmenView.GetReichEinnahmen(reich);
+                // Einnahmen der Felder
                 this.BergFelder = kleinfelder.Where(k => k.Terrain.Typ == TerrainType.Bergland).Count();
                 this.BergEinkommen = BergFelder * Terrains[(int)TerrainType.Bergland].Einnahmen;
-
+                this.TieflandFelder = kleinfelder.Where(k => k.TerrainType == TerrainType.Tiefland).Count();
+                this.TieflandEinkommen = TieflandFelder * Terrains[(int)TerrainType.Tiefland].Einnahmen;
+                this.TieflandwaldFelder = kleinfelder.Where(k => k.TerrainType == TerrainType.Wald).Count();
+                this.TieflandwaldEinkommen = TieflandwaldFelder * Terrains[(int)TerrainType.Wald].Einnahmen;
+                this.TieflandwüsteFelder = kleinfelder.Where(k => k.TerrainType == TerrainType.Wüste).Count();
+                this.TieflandwüsteEinkommen = TieflandwüsteFelder * Terrains[(int)TerrainType.Wüste].Einnahmen;
+                this.TieflandsumpfFelder = kleinfelder.Where(k => k.TerrainType == TerrainType.Sumpf).Count();
+                this.TieflandsumpfEinkommen = TieflandsumpfFelder * Terrains[(int)TerrainType.Sumpf].Einnahmen;
+                this.HochlandFelder = kleinfelder.Where(k => k.TerrainType == TerrainType.Hochland).Count();
+                this.HochlandFelder = HochlandFelder * Terrains[(int)TerrainType.Tiefland].Einnahmen;
+                this.GebirgFelder = kleinfelder.Where(k => k.TerrainType == TerrainType.Gebirge).Count();
+                this.GebirgEinkommen = GebirgFelder * Terrains[(int)TerrainType.Gebirge].Einnahmen;
+                // Einnahmen der Bauten 
+                foreach (KleinFeld k in kleinfelder) {
+                    if (k.Gebäude == null) { continue; }
+                    else if (k.Gebäude.Rüstort.Bauwerk.Equals("Burg")){ this.Burgen++; this.BurgenEinkommen += EinnahmenView.GetGebäudeEinnahmen(k); }
+                    else if (k.Gebäude.Rüstort.Bauwerk.Equals("Stadt")) { this.Städte++; this.StädteEinkommen += EinnahmenView.GetGebäudeEinnahmen(k); }
+                    else if (k.Gebäude.Rüstort.Bauwerk.Equals("Festung")) { this.Festungen++; this.FestungenEinkommen += EinnahmenView.GetGebäudeEinnahmen(k); }
+                    else if (k.Gebäude.Rüstort.Bauwerk.Equals("Hauptstadt")) { this.Hauptstädte++; this.HauptstädteEinkommen += EinnahmenView.GetGebäudeEinnahmen(k); }
+                    else if (k.Gebäude.Rüstort.Bauwerk.Equals("Festungshauptstadt")) { this.FestungsHauptstädte++ ; this.FestungsHauptstädteEinkommen += EinnahmenView.GetGebäudeEinnahmen(k); }
+                }
+                
+                
                 // jedes Kleinfeld hat Terrain, Gebäude usw. schon als Member. Mit einer foreach lassen sich die Daten auch sammeln - siehe auch EinnahmenView
             }
 

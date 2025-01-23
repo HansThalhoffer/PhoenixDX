@@ -4,6 +4,7 @@ using PhoenixModel.ViewModel;
 using PhoenixModel.Program;
 using System;
 using PhoenixModel.dbCrossRef;
+using PhoenixModel.dbPZE;
 
 
 namespace PhoenixModel.View
@@ -44,12 +45,12 @@ namespace PhoenixModel.View
             return GetTerrainEinnahmen(gem) + GetGebäudeEinnahmen(gem);
         }
 
-        public static int GetReichEinnahmen(int reich)
+        public static int GetReichEinnahmen(Nation reich)
         {
             int summe = 0;
             if (SharedData.Map != null) 
             {
-                foreach (var gemark in SharedData.Map.Values.Where( gem => gem.Reich == reich)) 
+                foreach (var gemark in SharedData.Map.Values.Where( gem => gem.Nation == reich)) 
                 {
                     summe += GetGesamtEinnahmen(gemark);
                 }
