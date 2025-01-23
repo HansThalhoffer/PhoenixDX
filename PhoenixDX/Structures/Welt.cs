@@ -175,8 +175,7 @@ namespace PhoenixDX.Structures {
         /// <returns>Das entsprechende Kleinfeld oder null, falls nicht vorhanden.</returns>
         internal Gemark GetKleinfeld(int gf, int kf)
         {
-            Provinz provinz;
-            if (Provinzen.TryGetValue(gf, out provinz))
+            if (Provinzen.TryGetValue(gf, out Provinz provinz))
             {
                 return provinz.GetKleinfeld(kf);
             }
@@ -189,8 +188,7 @@ namespace PhoenixDX.Structures {
         /// <returns>Die entsprechende Provinz oder null, falls nicht vorhanden.</returns>
         internal Provinz GetProviz(int gf)
         {
-            Provinz provinz;
-            if (Provinzen.TryGetValue(gf, out provinz))
+            if (Provinzen.TryGetValue(gf, out Provinz provinz))
             {
                 return provinz;
             }
@@ -205,8 +203,7 @@ namespace PhoenixDX.Structures {
         /// <returns>Die Position als Vector2 oder null, falls nicht vorhanden.</returns>
         public Vector2? GetPosition(int gf, int kf, Vector2 scale)
         {
-            Provinz provinz;
-            if (Provinzen.TryGetValue(gf, out provinz))
+            if (Provinzen.TryGetValue(gf, out Provinz provinz))
             {
                return provinz.GetMapPosition(scale);
             }

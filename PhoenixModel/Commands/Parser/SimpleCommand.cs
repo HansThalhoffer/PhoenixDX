@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 namespace PhoenixModel.Commands.Parser {
     public abstract class SimpleCommand : ICommand {
         protected readonly string _CommandString;
+        public bool IsExecuted { get; protected set; }
 
         /// <param name="commandString">Der nicht erkannte Befehl.</param>
         public SimpleCommand(string commandString) { _CommandString = commandString; }
@@ -21,6 +22,12 @@ namespace PhoenixModel.Commands.Parser {
         public abstract CommandResult ExecuteCommand();
 
         public abstract CommandResult UndoCommand();
+
+        /// <summary>
+        /// Versucht den Befehl rückgängig zu machen.
+        /// </summary>
+        /// <returns>Ein Objekt vom Typ CommandResult.</returns>
+        public abstract override string ToString();
     }
 
     public abstract class SimpleParser : ICommandParser {
@@ -29,8 +36,8 @@ namespace PhoenixModel.Commands.Parser {
             return false;
         }
         public abstract bool ParseCommand(string commandString, out ICommand? command);
-        
-       
+
+
         /// <summary>
         /// Analysiert eine Eingabe und extrahiert eine Kleinfeld-Position.
         /// </summary>
@@ -156,10 +163,40 @@ namespace PhoenixModel.Commands.Parser {
                     return 0;
                 if (input.All(char.IsDigit) == false)
                     return 0;
-                return int.Parse(input); } 
+                return int.Parse(input);
+            }
             catch { };
             return 0;
         }
+
+        /// <summary>
+        /// die Namen entsprechen 1:1 der Kostentabelle in crossref.mdb
+        /// </summary>
+        public static string ConstructionElementTypeToString(ConstructionElementType type) {
+            return type
+            switch {
+                ConstructionElementType.None => "",
+                ConstructionElementType.K => "Krieger", // Krieger
+                ConstructionElementType.S => "Schiffe", // 
+                ConstructionElementType.R => "Reiter", // Reiter
+                ConstructionElementType.P => "PFerde", // PFerde
+                ConstructionElementType.LKP => "Leichte Katapulte",// 
+                ConstructionElementType.SKP => "Schwere Katapulte",// 
+                ConstructionElementType.LKS => "Leichte Kriegsschiffe ",// 
+                ConstructionElementType.SKS => "Schwere Kriegsschiffe",// 
+                ConstructionElementType.HF => "Heerführer", // HF 
+                ConstructionElementType.ZA => "Zauberer Klasse A", // Zauberer Klasse A
+                ConstructionElementType.ZB => "Zauberer Klasse B", // Zauberer Klasse B
+                ConstructionElementType.Strasse => "Straße",
+                ConstructionElementType.Bruecke => "Brücke",
+                ConstructionElementType.Wall => "Wall",
+                ConstructionElementType.Burg => "Burg",
+                ConstructionElementType.ausbau => "ausbau",
+                _ => string.Empty,
+            };
+        }
+
+
 
         public ConstructionElementType parseConstructionElement(string input) {
             return input.ToLower()
@@ -197,6 +234,7 @@ namespace PhoenixModel.Commands.Parser {
                 "strasse" => ConstructionElementType.Strasse,
                 "straße" => ConstructionElementType.Strasse,
                 "brücke" => ConstructionElementType.Bruecke,
+                "bruecke" => ConstructionElementType.Bruecke,
                 "burg" => ConstructionElementType.Burg,
                 _ => ConstructionElementType.None
             };

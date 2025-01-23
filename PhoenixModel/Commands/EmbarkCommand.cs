@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.Commands.Parser;
+using PhoenixModel.dbPZE;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Program;
@@ -24,6 +25,12 @@ namespace PhoenixModel.Commands {
         public int ShipId { get; set; }
         public KleinfeldPosition? ShipLocation { get; set; }
         public KleinfeldPosition? LandLocation { get; set; }
+
+        public override string ToString() {
+            string mode = Mode == Modus.ausschiffen ? "aus von" : "ein auf";
+            string wasser  = Mode == Modus.ausschiffen ? $" nach {LandLocation}" : string.Empty;
+            return $"Schiffe {Figur} {UnitId} {mode} Schiff {ShipId} auf {ShipLocation}{wasser}";
+        }
 
         public EmbarkCommand(string commandString) : base(commandString) {
         }

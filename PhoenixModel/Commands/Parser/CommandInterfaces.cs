@@ -22,7 +22,7 @@ namespace PhoenixModel.Commands.Parser {
         SKS,// Schwere Kriegsschiffe
         HF, // HF 
         ZA, // Zauberer Klasse A
-        ZB, // Zauberer Klasse A
+        ZB, // Zauberer Klasse B
         Strasse,
         Bruecke, 
         Wall, 
@@ -53,6 +53,12 @@ namespace PhoenixModel.Commands.Parser {
         /// </summary>
         /// <returns>Ein Objekt vom Typ CommandResult.</returns>
         CommandResult UndoCommand();
+
+        /// <summary>
+        /// Versucht den Befehl rückgängig zu machen.
+        /// </summary>
+        /// <returns>Ein Objekt vom Typ CommandResult.</returns>
+        string ToString();
     }
 
     /// <summary>

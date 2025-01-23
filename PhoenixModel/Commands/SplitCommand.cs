@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.Commands.Parser;
+using PhoenixModel.dbZugdaten;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Program;
 using System;
@@ -10,16 +11,19 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.Commands {
     /// <summary>
-    /// Teile Reiter 220 mit 10 Heerführern auf in 220 mit 7 Heerführern und 221 mit 3 Heerführern
+    /// Spalte von Reiter 220 ab 400 Reiter mit 4 Heerführern
     /// </summary>
     public class SplitCommand : SimpleCommand, ICommand {
         public FigurType Figur { get; set; }
         public int OriginalUnitId { get; set; } = 0;
-        public int OriginalHeerführerCount { get; set; } = 0;
-        public int NewUnitId_0 { get; set; } = 0;
-        public int NewHeerführerCount_0 { get; set; } = 0;
-        public int NewUnitId_1 { get; set; } = 0;
-        public int NewHeerführerCount_1 { get; set; } = 0;
+        public int SeparatedUnitId { get; set; } = 0;
+        public int SeparatedCount{ get; set; } = 0;
+        public int SeparatedHeerführerCount { get; set; } = 0;
+
+        public override string ToString() {
+            string result = $"Spalte von {Figur} {OriginalUnitId} ab {SeparatedCount} mit {SeparatedHeerführerCount} Heerführern als {SeparatedUnitId}";
+            return result;
+        }
 
         public SplitCommand(string commandString) : base(commandString) {
         }
@@ -39,7 +43,7 @@ namespace PhoenixModel.Commands {
 
     public class SplitCommandParser : SimpleParser {
         private static readonly Regex SplitCommandRegex = new Regex(
-             @"^Teile\s+(?<type>\w+)\s+(?<origId>\d+)\s+mit\s+(?<origCount>\d+)\s+Heerführern\s+auf\s+in\s+(?<newId1>\d+)\s+mit\s+(?<newCount1>\d+)\s+Heerführern\s+und\s+(?<newId2>\d+)\s+mit\s+(?<newCount2>\d+)\s+Heerführern$",
+             @"^Spalte\s+von\s+(?<Figur>\w+)\s+(?<OriginalUnitId>\d+)\s+ab\s+(?<SeparatedCount>\d+)\s+mit\s+auf\s+in\s+(?<SeparatedCount>\d+)\s+mit\s+(?<SeparatedHeerführerCount>\d+)\s+Heerführern\s+als\s+(?<SeparatedUnitId>\d+)$",
              RegexOptions.IgnoreCase | RegexOptions.Compiled
          );
 
@@ -50,13 +54,11 @@ namespace PhoenixModel.Commands {
             
             try {
                 command = new SplitCommand(commandString) {
-                    Figur = ParseUnitType(match.Groups["type"].Value),
-                    OriginalUnitId = ParseInt(match.Groups["origId"].Value),
-                    OriginalHeerführerCount = ParseInt(match.Groups["origCount"].Value),
-                    NewUnitId_0 = ParseInt(match.Groups["newId1"].Value),
-                    NewHeerführerCount_0 = ParseInt(match.Groups["newCount1"].Value),
-                    NewUnitId_1 = ParseInt(match.Groups["newId2"].Value),
-                    NewHeerführerCount_1 = ParseInt(match.Groups["newCount2"].Value),
+                    Figur = ParseUnitType(match.Groups["Figur"].Value),
+                    OriginalUnitId = ParseInt(match.Groups["OriginalUnitId"].Value),
+                    SeparatedUnitId = ParseInt(match.Groups["SeparatedUnitId"].Value),
+                    SeparatedCount = ParseInt(match.Groups["SeparatedCount"].Value),
+                    SeparatedHeerführerCount = ParseInt(match.Groups["SeparatedHeerführerCount"].Value),                 
                 };
             }
             catch (Exception ex) {

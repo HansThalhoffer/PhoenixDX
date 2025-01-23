@@ -42,6 +42,19 @@ namespace PhoenixModel.Commands {
         /// <param name="commandString">Der Befehlsstring.</param>
         public MoveCommand(string commandString) : base(commandString) { }
 
+        public override string ToString() {
+            string result = $"Bewege {Figur} {UnitId} von {FromLocation} nach {ToLocation}";
+            if (ViaLocations != null && ViaLocations.Count > 0) {
+                result += " via";
+                foreach (var via in ViaLocations) {
+                    
+                    result += $" {via},";
+                }
+                return result.Substring(0, result.Length - 1);
+            }
+            return result;
+        }
+
         /// <summary>
         /// Überprüft die Vorbedingungen für den Befehl.
         /// </summary>
@@ -121,7 +134,7 @@ namespace PhoenixModel.Commands {
             hash = hash * 31 + (ToLocation?.GetHashCode() ?? 0);
             hash = hash * 31 + (ViaLocations != null ? ViaLocations.Aggregate(0, (acc, item) => acc ^ item.GetHashCode()) : 0);
             return hash;
-        }       
+        }
     }
 
 
@@ -142,9 +155,9 @@ namespace PhoenixModel.Commands {
 
         public override bool ParseCommand(string commandString, out ICommand? command) {
             var match = MoveCommandRegex.Match(commandString);
-            if (!match.Success) 
+            if (!match.Success)
                 return Fail(out command);
-           
+
             try {
                 List<KleinfeldPosition> via = [];
                 if (match.Groups["via"].Success) {
@@ -162,7 +175,7 @@ namespace PhoenixModel.Commands {
                     UnitId = ParseInt(match.Groups["unitId"].Value),
                     FromLocation = ParseLocation(match.Groups["from"].Value),
                     ToLocation = ParseLocation(match.Groups["to"].Value),
-                    ViaLocations = via.Count > 0?via:null,
+                    ViaLocations = via.Count > 0 ? via : null,
                 };
             }
             catch (Exception ex) {

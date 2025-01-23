@@ -221,8 +221,7 @@ namespace PhoenixWPF.Program {
                 }
 
                 while (DatabaseLog.Cache.Count > 0) {
-                    string? line;
-                    if (DatabaseLog.Cache.TryDequeue(out line)) {
+                    if (DatabaseLog.Cache.TryDequeue(out string? line)) {
                         List<string> strings = [line];
                         strings.Append(Environment.NewLine);
                         File.AppendAllLinesAsync("SQL.log", strings);
@@ -315,8 +314,7 @@ namespace PhoenixWPF.Program {
         /// </summary>
         /// <param name="gem"></param>
         public void UpdateKleinfeld(KleinfeldPosition pos) {
-            KleinFeld? kleinFeld = null;
-            if ( SharedData.Map != null && SharedData.Map.TryGetValue(pos.CreateBezeichner(), out kleinFeld)) {
+            if ( SharedData.Map != null && SharedData.Map.TryGetValue(pos.CreateBezeichner(), out KleinFeld? kleinFeld)) {
                 SharedData.UpdateQueue.Enqueue(kleinFeld);
             }
         }

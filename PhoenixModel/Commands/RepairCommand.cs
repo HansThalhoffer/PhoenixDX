@@ -1,5 +1,8 @@
 ﻿using PhoenixModel.Commands.Parser;
+using PhoenixModel.dbCrossRef;
+using PhoenixModel.dbZugdaten;
 using PhoenixModel.Program;
+using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +12,17 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.Commands {
     public class RepairCommand : SimpleCommand, ICommand {
+
+        public Kosten? Kosten = null;
+        public KleinfeldPosition? Location { get; set; }
+        public int Baupunkte { get; set; } = 0;
+
+        public override string ToString() {            
+            string result = $"Repariere {Baupunkte} an dem Bauwerk auf {Location}";
+            //if (Kosten != null) result = $"{result} für {Kosten.GS}";
+            return result ; 
+        }
+
         public RepairCommand(string commandString) : base(commandString) {
         }
 
@@ -23,11 +37,12 @@ namespace PhoenixModel.Commands {
         public override CommandResult UndoCommand() {
             throw new NotImplementedException();
         }
+        
     }
 
     public class RepairCommandParser : SimpleParser {
         private static readonly Regex UpgradeRegex = new Regex(
-            @"^Verstärke\s+Rüstort\s+(?<loc>[^\s]+)$",
+            @"^Repariere\s+(?<Baupunkte>\d+)\s+Baupunktet\s+an\s+dem\s+Bauwerk\s+auf\s+(?<loc>[^\s]+)$",
             RegexOptions.IgnoreCase | RegexOptions.Compiled
         );
 
@@ -37,7 +52,9 @@ namespace PhoenixModel.Commands {
                 return Fail(out command);
             
             try {
-                command = new UpgradeCommand(commandString, ParseLocation(match.Groups["loc"].Value)) {
+                command = new RepairCommand(commandString) {
+                    Location = ParseLocation(match.Groups["loc"].Value),
+                    Baupunkte = ParseInt(match.Groups["Baupunkte"].Value),
                 };
             }
             catch (Exception ex) {

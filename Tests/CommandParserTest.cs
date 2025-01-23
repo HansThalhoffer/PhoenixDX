@@ -10,6 +10,7 @@ using PhoenixWPF.Dialogs;
 using PhoenixWPF.Helper;
 using PhoenixWPF.Program;
 using System.CodeDom;
+using System.Collections.Generic;
 using System.Windows;
 using static PhoenixModel.Commands.DiplomacyCommand;
 using static PhoenixModel.Database.PasswordHolder;
@@ -20,14 +21,32 @@ namespace Tests {
     public class CommandParserTest {
         
         private ICommand? ParseCommand(string commandString) {
-            ICommand? command = null;
-            CommandParser.ParseCommand(commandString, out command);
-            return command;
+            CommandParser.ParseCommand(commandString, out ICommand? actualCommand);
+            return actualCommand;
         }
+
+        private void DoTest(IEnumerable<SimpleCommand> expectedCommands) {
+            // Testvergleich mit den expected
+            foreach (var expectedCommand in expectedCommands) {
+                ICommand? actualCommand = ParseCommand(expectedCommand.CommandString);
+                Assert.NotNull(actualCommand);
+                Assert.True(actualCommand.GetType() == expectedCommand.GetType());
+                Assert.True(expectedCommand.Equals(actualCommand));
+            }
+            /// Test als Roundtrip
+            foreach (var expectedCommand in expectedCommands) {
+                string cmd = expectedCommand.ToString();
+                ICommand? actualCommand = ParseCommand(cmd);
+                Assert.NotNull(actualCommand);
+                Assert.True(actualCommand.GetType() == expectedCommand.GetType());
+                Assert.True(expectedCommand.Equals(actualCommand));
+            }
+        }
+
 
         [Fact]
         public void ParsingMoveCommandTest() {
-            MoveCommand[] testCommands = [
+            MoveCommand[] expectedCommands = [
                 new MoveCommand("Bewege Reiter 220 von 503/22 nach 504/07 via 503/21, 503/16, 503/ 4, 603/27"){
                     Figur = FigurType.Reiter,
                     UnitId = 220,
@@ -58,18 +77,13 @@ namespace Tests {
                 }
             ];
 
-            foreach (var testCommand in testCommands) {
-                ICommand? command = ParseCommand(testCommand.CommandString);
-                Assert.NotNull(command);
-                Assert.True(command is MoveCommand);
-                Assert.True(testCommand.Equals(command));
-            }
+            DoTest(expectedCommands);
         }
 
         [StaFact]
         public void ParsingConstructCommandTest() {
            
-            ConstructCommand[] testCommands = [
+            ConstructCommand[] expectedCommands = [
                 new ConstructCommand("Errichte Wall im Nordosten von 202/33"){
                     Location = new(202,33),
                     What = ConstructionElementType.Wall,
@@ -97,19 +111,15 @@ namespace Tests {
             ];
             TestSetup.Setup();
             TestSetup.LoadCrossRef(false, false);
-        
-            foreach (var testCommand in testCommands) {
-                ICommand? command = ParseCommand(testCommand.CommandString);
-                Assert.NotNull(command);
-                Assert.True(command.GetType() == testCommand.GetType());
-                Assert.True(testCommand.Equals(command));
-            }
+            DoTest(expectedCommands);
         }
 
         [StaFact]
         public void ParsingDiplomacyCommanddTest() {
+            TestSetup.Setup();
+            TestSetup.LoadPZE(false, false);
 
-            DiplomacyCommand[] testCommands = [
+            DiplomacyCommand[] expectedCommands = [
                 new DiplomacyCommand("Gebe Yaromo Küstenrecht"){
                     Recht = BewegungsRecht.Küstenrecht,
                     RemoveRecht = false,
@@ -123,27 +133,19 @@ namespace Tests {
                     ReferenzNation = ProgramView.SelectedNation
                 },
                  new DiplomacyCommand("Gebe Helborn Wegerecht"){
-                    Recht = BewegungsRecht.Küstenrecht,
+                    Recht = BewegungsRecht.Wegerecht,
                     RemoveRecht = false,
                     Nation = NationenView.GetNationFromString("Helborn"),
                     ReferenzNation = ProgramView.SelectedNation
                 },
                 new DiplomacyCommand("Entziehe Helborn Wegerecht"){
-                    Recht = BewegungsRecht.Küstenrecht,
+                    Recht = BewegungsRecht.Wegerecht,
                     RemoveRecht = true,
                     Nation = NationenView.GetNationFromString("Helborn"),
                     ReferenzNation = ProgramView.SelectedNation
                 },
             ];
-            TestSetup.Setup();
-            TestSetup.LoadPZE(false,false);
-
-            foreach (var testCommand in testCommands) {
-                ICommand? command = ParseCommand(testCommand.CommandString);
-                Assert.NotNull(command);
-                Assert.True(command.GetType() == testCommand.GetType());
-                Assert.True(testCommand.Equals(command));
-            }
+            DoTest(expectedCommands);
         }
     }
 }

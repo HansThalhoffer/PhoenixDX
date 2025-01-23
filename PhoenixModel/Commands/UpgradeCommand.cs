@@ -13,8 +13,12 @@ namespace PhoenixModel.Commands {
         public KleinfeldPosition? Location { get; set; } = null;
         public Kosten? Kosten = null;
 
-        public UpgradeCommand(string commandString, KleinfeldPosition? pos) : base(commandString) {
-            Location = pos;
+        public UpgradeCommand(string commandString) : base(commandString) {
+        }
+
+        public override string ToString() {
+            string result = $"Verstärke Rüstort {Location}";
+            return result;
         }
 
         /// <summary>
@@ -57,7 +61,9 @@ namespace PhoenixModel.Commands {
                 return Fail(out command);
             
             try {
-                command = new UpgradeCommand(commandString, ParseLocation(match.Groups["loc"].Value)) { };
+                command = new UpgradeCommand(commandString) { 
+                    Location = ParseLocation(match.Groups["loc"].Value),
+                };
             }
             catch (Exception ex) {
                 ProgramView.LogError("Beim Lesen des UpgradeCommands gab es einen Fehler", ex.Message);

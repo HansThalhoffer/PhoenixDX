@@ -23,27 +23,31 @@ namespace PhoenixModel.Commands {
         public ConstructCommand(string commandString) : base(commandString) {
         }
 
+        public override string ToString() {
+            return (Direction != null)? $"Errichte {SimpleParser.ConstructionElementTypeToString(What)} im {Direction} von {Location}" : $"Errichte {SimpleParser.ConstructionElementTypeToString(What)} auf {Location}"; ;
+        }
+
         /// <summary>
         /// überprüft, ob die Vorbedingungen gegeben sind, das Kommando auszuführen - das Kommando wird aber noch nicht ausgeführt
         /// </summary>
         /// </summary>
         public override CommandResult CheckPreconditions() {
             if (What == ConstructionElementType.None)
-                return new CommandResultError("Es wurde kein zu errichtendes Bauwerk angegeben", $"In dem Befehl konnte das Bauwerk (Straße, Brücke, Wall) nicht gefunden werden \r\n {this.CommandString}");
+                return new CommandResultError("Es wurde kein zu errichtendes Bauwerk angegeben", $"In dem Befehl konnte das Bauwerk (Straße, Brücke, Wall) nicht gefunden werden \r\n {this.CommandString}",this);
             if (Direction == null)
-                return new CommandResultError("Es wurde keine Richtung angegeben", $"In dem Befehl konnte die Richtung (Nordosten, Westen, etc) nicht gefunden werden \r\n {this.CommandString}");
+                return new CommandResultError("Es wurde keine Richtung angegeben", $"In dem Befehl konnte die Richtung (Nordosten, Westen, etc) nicht gefunden werden \r\n {this.CommandString}", this);
             if (Location == null)
-                return new CommandResultError("Es wurde kein Kleinfeld angegeben", $"In dem Befehl konnte das Kleinfeld zB '701/22' nicht gefunden werden \r\n {this.CommandString}");
+                return new CommandResultError("Es wurde kein Kleinfeld angegeben", $"In dem Befehl konnte das Kleinfeld zB '701/22' nicht gefunden werden \r\n {this.CommandString}", this);
             if (SharedData.Kosten == null)
-                return new CommandResultError("Die Kostentabelle wurde nicht geladen", $"Der Befehl kann nicht ausgeführt werden, da die Kostentabelle aus der crossref.mdb nicht geladen wurden \r\n {this.CommandString}");
+                return new CommandResultError("Die Kostentabelle wurde nicht geladen", $"Der Befehl kann nicht ausgeführt werden, da die Kostentabelle aus der crossref.mdb nicht geladen wurden \r\n {this.CommandString}", this);
             if (SharedData.RuestungBauwerke == null)
-                return new CommandResultError("Die RuestungBauwerke wurde nicht geladen", $"Der Befehl kann nicht ausgeführt werden, da die RuestungBauwerke aus der Zugdaten Datenbank nicht geladen wurden \r\n {this.CommandString}");
+                return new CommandResultError("Die RuestungBauwerke wurde nicht geladen", $"Der Befehl kann nicht ausgeführt werden, da die RuestungBauwerke aus der Zugdaten Datenbank nicht geladen wurden \r\n {this.CommandString}", this);
 
             var kosten = SharedData.Kosten.Where(kosten => kosten.Unittyp == What.ToString()).First();
             if (kosten == null)
-                return new CommandResultError($"Die Kostentablle enthält keinen Wert für {What}", $"Der Befehl kann nicht ausgeführt werden, da die Kostentabelle im Feld Unittyp das genannte Bauwerk nicht kennen \r\n {this.CommandString}");
+                return new CommandResultError($"Die Kostentablle enthält keinen Wert für {What}", $"Der Befehl kann nicht ausgeführt werden, da die Kostentabelle im Feld Unittyp das genannte Bauwerk nicht kennen \r\n {this.CommandString}", this);
 
-            return new CommandResultSuccess("Das ConstructCommand kann ausgeführt werden", $"Der Befehl kann ausgeführt werden:\r\n {this.CommandString}");
+            return new CommandResultSuccess("Das ConstructCommand kann ausgeführt werden", $"Der Befehl kann ausgeführt werden:\r\n {this.CommandString}", this);
         }
 
         private RuestungBauwerke? CreateRuestungBauwerke() {
@@ -69,12 +73,12 @@ namespace PhoenixModel.Commands {
             if (bauwerk != null && SharedData.RuestungBauwerke != null) {
                 var existing = SharedData.RuestungBauwerke.Where(bw => bw.Equals(bauwerk)).First();
                 if (existing == null)
-                    return new CommandResultError("Der Auftrag für dieses Bauwerk existiert nicht und kann daher nicht rückgänig gemacht werden", $"Der Befehl kann nicht rückgängig gemacht werden, da er nicht in den Zugdaten gespeichert wurde\r\n {this.CommandString}");
+                    return new CommandResultError("Der Auftrag für dieses Bauwerk existiert nicht und kann daher nicht rückgänig gemacht werden", $"Der Befehl kann nicht rückgängig gemacht werden, da er nicht in den Zugdaten gespeichert wurde\r\n {this.CommandString}", this);
                 SharedData.RuestungBauwerke.Remove(existing);
                 SharedData.StoreQueue.Delete(existing);
             }
 
-            return new CommandResultError("Fehler", "Keine Ahnung warum");
+            return new CommandResultError("Fehler", "Keine Ahnung warum", this);
         }
 
         /// <summary>
@@ -86,10 +90,10 @@ namespace PhoenixModel.Commands {
             if (bauwerk != null && SharedData.RuestungBauwerke != null) {
                 SharedData.RuestungBauwerke.Add(bauwerk);
                 SharedData.StoreQueue.Insert(bauwerk);
-                return new CommandResultSuccess("Das ConstructCommand wurde ausgeführt", $"Der Befehl wurde ausgeführt:\r\n {this.CommandString}");
+                return new CommandResultSuccess("Das ConstructCommand wurde ausgeführt", $"Der Befehl wurde ausgeführt:\r\n {this.CommandString}", this);
             }
 
-            return new CommandResultError("Fehler", "Keine Ahnung warum");
+            return new CommandResultError("Fehler", "Keine Ahnung warum", this);
         }
 
         public bool Equals(ConstructCommand? other) {

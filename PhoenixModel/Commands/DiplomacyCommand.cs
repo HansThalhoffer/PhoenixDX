@@ -2,6 +2,7 @@
 using PhoenixModel.dbPZE;
 using PhoenixModel.Program;
 using PhoenixModel.View;
+using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,10 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PhoenixModel.Commands {
+    /// <summary>
+    /// Gebe Yaromo Küstenrecht
+    /// Entziehe Helborn Wegerecht
+    /// </summary>
     public class DiplomacyCommand : SimpleCommand, ICommand, IEquatable<DiplomacyCommand> {
         public enum BewegungsRecht { None, Küstenrecht, Wegerecht }
 
@@ -18,6 +23,11 @@ namespace PhoenixModel.Commands {
         public BewegungsRecht Recht { get; set; } = BewegungsRecht.None;
         public bool? RemoveRecht { get; set; } = null;
 
+        public override string ToString() {
+
+            string reich = this.Nation != null && Nation.DBname != null? Nation.DBname : string.Empty;
+            return RemoveRecht != null && RemoveRecht == true? $"Entziehe {reich} {Recht}": $"Gebe {reich} {Recht}";
+        }
 
         public DiplomacyCommand(string commandString) : base(commandString) {
         }

@@ -1,4 +1,5 @@
-﻿using PhoenixModel.Program;
+﻿using PhoenixModel.dbZugdaten;
+using PhoenixModel.Program;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,13 +18,18 @@ namespace PhoenixModel.Commands.Parser {
         /// <param name="commandString">Der nicht erkannte Befehl.</param>
         public DefaultCommand(string commandString) :base(commandString) { }
 
+        public override string ToString() {
+           
+            return _CommandString;
+        }
+
         /// <summary>
         /// Führt den Standardbefehl aus und gibt eine Fehlermeldung zurück.
         /// </summary>
         public override CommandResult ExecuteCommand() {
             if (GetType() == typeof(DefaultCommand)) {
                 return new CommandResultError("Das übergebene Kommando wurde nicht verstanden",
-                    $"'{CommandString}' \r\n konnte von keinem registrierten CommandParser interpretiert werden");
+                    $"'{CommandString}' \r\n konnte von keinem registrierten CommandParser interpretiert werden", this);
             }
             throw new NotImplementedException("Wer die Klasse DefaultCommand ableitet, muss auch ExecuteCommand überschreiben");
         }

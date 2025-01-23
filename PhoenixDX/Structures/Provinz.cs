@@ -92,8 +92,7 @@ namespace PhoenixDX.Structures {
         /// <param name="kf">Die ID der Gemarkung.</param>
         /// <returns>Die entsprechende Gemarkung oder null, falls sie nicht existiert.</returns>
         public Gemark GetKleinfeld(int kf) {
-            Gemark gemark = null;
-            if (Felder.TryGetValue(kf, out gemark))
+            if (Felder.TryGetValue(kf, out Gemark gemark))
                 return gemark;
             return null;
         }
@@ -104,8 +103,7 @@ namespace PhoenixDX.Structures {
         /// <param name="kf">Die ID der Gemarkung.</param>
         /// <returns>Die existierende oder neu erstellte Gemarkung.</returns>
         public Gemark GetOrCreateKleinfeld(int kf) {
-            Gemark gemark = null;
-            if (Felder.TryGetValue(kf, out gemark))
+            if (Felder.TryGetValue(kf, out Gemark gemark))
                 return gemark;
             gemark = new Gemark(GF, kf);
             Felder.Add(kf, gemark);

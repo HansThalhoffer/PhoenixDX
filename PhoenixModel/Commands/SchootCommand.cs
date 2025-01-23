@@ -12,14 +12,16 @@ namespace PhoenixModel.Commands {
         public FigurType With { get; set; } 
         public KleinfeldPosition? TargetLocation { get; set; } = null;
         public KleinfeldPosition? SourceLocation { get; set; } = null;
-        public int? Nummer { get; set; }
+        public int? UnitId { get; set; }
 
 
         public SchootCommand(string commandString) : base(commandString) {
         }
 
-
-
+        public override string ToString() {
+            string result = $"Beschieße {TargetLocation} mit {With} {UnitId} von {SourceLocation}";
+            return result;
+        }
 
         /// <summary>
         /// <see cref="ICommand"/>
@@ -69,7 +71,7 @@ namespace PhoenixModel.Commands {
             try {
                 command = new SchootCommand(commandString) {
                     With = ParseUnitType(match.Groups["unitType"].Value),
-                    Nummer = ParseInt(match.Groups["unitId"].Value),
+                    UnitId = ParseInt(match.Groups["unitId"].Value),
                     TargetLocation = ParseLocation(match.Groups["targetLoc"].Value),
                     SourceLocation = ParseLocation(match.Groups["sourceLoc"].Value),
                 };

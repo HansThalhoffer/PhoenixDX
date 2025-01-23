@@ -124,8 +124,7 @@ namespace PhoenixDX.Structures {
                 cacheKey += $" {truppen[0].Color.PackedValue}|{figur.Typ.ToString()}";
             }
 
-            BaseTexture baseTexture = null;
-            if (TextureCache.TryGet(cacheKey, out baseTexture))
+            if (TextureCache.TryGet(cacheKey, out BaseTexture baseTexture))
                 return baseTexture as SimpleTexture;
 
             var graphicsDevice = SpielDX.Instance.Graphics.GraphicsDevice;

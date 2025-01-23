@@ -57,6 +57,8 @@ namespace PhoenixModel.ViewModel {
         public int Key {
             get { return gf * 100 + kf; }
         }
+
+        public override string? ToString() => CreateBezeichner();
     }
 }
 

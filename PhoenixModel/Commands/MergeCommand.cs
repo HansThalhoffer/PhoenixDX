@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.Commands {
     /// <summary>
-    /// Vereinige Reiter 221 mit 3 Heerführern mit 244 mit 2 Heerführern zu 221 mit 5 Heerführern
+    /// Vereinige Reiter 221 mit 3 Heerführern und 244 mit 2 Heerführern zu 221 mit 5 Heerführern
     /// </summary>
     public class MergeCommand : SimpleCommand, ICommand {
         public FigurType Figur { get; set; }
@@ -20,6 +20,10 @@ namespace PhoenixModel.Commands {
         public int SourceHeerführerCount_0 { get; set; }
         public int SourceUnitId_1 { get; set; }
         public int SourceHeerführerCount_1 { get; set; }
+
+        public override string ToString() {
+            return $"Vereinige {Figur} {SourceUnitId_0} mit {SourceHeerführerCount_0} und {SourceUnitId_0} mit {SourceHeerführerCount_0} zu {TargetUnitId} mit {TargetHeerführerCount}";
+        }
 
         public MergeCommand(string commandString) : base(commandString) {
         }
@@ -39,7 +43,7 @@ namespace PhoenixModel.Commands {
 
     public class MergeCommandParser : SimpleParser {
         private static readonly Regex MergeCommandRegex = new Regex(
-             @"^Vereinige\s+(?<type>\w+)\s+(?<sourceID_0>\d+)\s+mit\s+(?<sourceCount_0>\d+)\s+Heerführern\s+mit\s+(?<sourceID_1>\d+)\s+mit\s+(?<sourceCount_1>\d+)\s+Heerführern\s+zu\s+(?<targetID>\d+)\s+mit\s+(?<targetCount>\d+)\s+Heerführern$",
+             @"^Vereinige\s+(?<type>\w+)\s+(?<sourceID_0>\d+)\s+mit\s+(?<sourceCount_0>\d+)\s+Heerführern\s+mit\s+(?<sourceID_1>\d+)\s+und\s+(?<sourceCount_1>\d+)\s+Heerführern\s+zu\s+(?<targetID>\d+)\s+mit\s+(?<targetCount>\d+)\s+Heerführern$",
              RegexOptions.IgnoreCase | RegexOptions.Compiled
          );
 

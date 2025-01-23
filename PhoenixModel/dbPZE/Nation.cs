@@ -120,6 +120,10 @@ namespace PhoenixModel.dbPZE {
 
             return false;
         }
+
+        public override int GetHashCode() {
+            return HashCode.Combine(Nummer, Reich, DBname, DBpass);
+        }
         #endregion
 
     }

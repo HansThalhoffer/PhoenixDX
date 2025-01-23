@@ -4,27 +4,21 @@ using PhoenixModel.dbZugdaten;
 using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
 using System.Text.RegularExpressions;
+using static PhoenixModel.Commands.EmbarkCommand;
 using static PhoenixModel.Commands.EquipCommand;
 
 namespace PhoenixModel.Commands {
 
     /// <summary>
     /// Das Rüsten von Rüstgütern als neue Armee und zu einer Armee hinzu oder einfach nur eine Armee mit und ohne Zeug rüsten
-    /// - Rüste Krieger 115 in Rüstort 506/17 mit der Stärke 1000 und 3 Heerführern
-    /// - Rüste 6 Leichte Katapulte zu den Kriegern 115 in Rüstort 506/17
-    /// - Rüste 3 Heeführer zu den Kriegern 115 in Rüstort 506/17
-    /// - Rüste 1000 Krieger mit 3 Heerführern und 2 Leichten Katapulten in Rüstort 506/17
-    /// - Rüste 1000 Krieger mit 200 Pferden und 1 Heerführer in Rüstort 506/17
-    /// - Rüste 300 Reiter mit 7 Heerführern in Rüstort 506/17
-    /// - Rüste 500 Krieger mit 10 Pferden und 3 Heerführern und 2 Schweren Katapulten in Rüstort 123/45
-    /// </summary>
+     /// </summary>
     public class EquipCommand : SimpleCommand, ICommand {        
         public struct ConstructionElement {
-            ConstructionElementType constructionElementType = ConstructionElementType.None;
+            public ConstructionElementType ConstructionElementType = ConstructionElementType.None;
             public int Count = 0;
 
             public ConstructionElement(ConstructionElementType constructionElementType, int count) {
-                this.constructionElementType = constructionElementType;
+                this.ConstructionElementType = constructionElementType;
                 Count = count;
             }
         }
@@ -34,7 +28,17 @@ namespace PhoenixModel.Commands {
         public KleinfeldPosition? Location { get; set; } = null;
         public Kosten? Kosten = null;
         public List<ConstructionElement> Equipment = [];
-        public int? Heerführer { get; set; }
+    
+        public override string ToString() {
+            string rüste = $"Rüste {Equipment[0].Count} {SimpleParser.ConstructionElementTypeToString(Equipment[0].ConstructionElementType)}";
+            if (Equipment.Count > 1) {
+                for (int i = 1; i < Equipment.Count; i++)
+                    rüste = $"{rüste} und {Equipment[i].Count} {SimpleParser.ConstructionElementTypeToString(Equipment[i].ConstructionElementType)}";
+            }
+            if (Target != ConstructionElementType.None)
+                rüste = $"{rüste} zu {Target} {TargetID}";
+           return $"{rüste} in Rüstort {Location}";
+        }
 
         public EquipCommand(string commandString, KleinfeldPosition? pos) : base(commandString) {
             Location = pos;
@@ -45,27 +49,27 @@ namespace PhoenixModel.Commands {
         /// </summary>
         /// </summary>
         public override CommandResult CheckPreconditions() {
-            if (Target == ConstructionElementType.None)
-                return new CommandResultError("Es wurde kein zu rüstendes Element angegeben", $"In dem Befehl konnte das Element (Krieger, Reiter) nicht gefunden werden \r\n {this.CommandString}");
+            if (Equipment.Count == 0)
+                return new CommandResultError("Es wurde kein zu rüstendes Element angegeben", $"In dem Befehl konnte das Element (Krieger, Reiter) nicht gefunden werden \r\n {this.CommandString}", this);
             if (Location == null)
-                return new CommandResultError("Es wurde kein Kleinfeld angegeben", $"In dem Befehl konnte das Kleinfeld zB '701/22' nicht gefunden werden \r\n {this.CommandString}");
+                return new CommandResultError("Es wurde kein Kleinfeld angegeben", $"In dem Befehl konnte das Kleinfeld zB '701/22' nicht gefunden werden \r\n {this.CommandString}", this);
             if (SharedData.Kosten == null)
-                return new CommandResultError("Die Kostentabelle wurde nicht geladen", $"Der Befehl kann nicht ausgeführt werden, da die Kostentabelle aus der crossref.mdb nicht geladen wurden \r\n {this.CommandString}");
+                return new CommandResultError("Die Kostentabelle wurde nicht geladen", $"Der Befehl kann nicht ausgeführt werden, da die Kostentabelle aus der crossref.mdb nicht geladen wurden \r\n {this.CommandString}", this);
             if (SharedData.Ruestung == null)
-                return new CommandResultError("Die Ruestung wurde nicht geladen", $"Der Befehl kann nicht ausgeführt werden, da die Ruestung aus der Zugdaten Datenbank nicht geladen wurden \r\n {this.CommandString}");
+                return new CommandResultError("Die Ruestung wurde nicht geladen", $"Der Befehl kann nicht ausgeführt werden, da die Ruestung aus der Zugdaten Datenbank nicht geladen wurden \r\n {this.CommandString}", this);
 
             /*var kosten = SharedData.Kosten.Where(kosten => kosten.Unittyp == What.ToString()).First();
             if (kosten == null)
                 return new CommandResultError($"Die Kostentablle enthält keinen Wert für {What}", $"Der Befehl kann nicht ausgeführt werden, da die Kostentabelle im Feld Unittyp das genannte Bauwerk nicht kennen \r\n {this.CommandString}");
             */
-            return new CommandResultSuccess("Das ConstructCommand kann ausgeführt werden", $"Der Befehl kann ausgeführt werden:\r\n {this.CommandString}");
+            return new CommandResultSuccess("Das ConstructCommand kann ausgeführt werden", $"Der Befehl kann ausgeführt werden:\r\n {this.CommandString}", this);
         }
 
         private Ruestung? CreateRuestung() {
             if (Kosten != null && Location != null && CheckPreconditions() == true) {
                 return new Ruestung() {
                     Nummer = 0,
-                    HF = Heerführer != null ? (int)Heerführer : 0,
+                    HF = 0,
                     Z = 0,
                     K = 0,
                     R = 0,
@@ -100,12 +104,12 @@ namespace PhoenixModel.Commands {
             if (ruest != null && SharedData.Ruestung != null) {
                 var existing = SharedData.Ruestung.Where(r => r.Equals(ruest)).First();
                 if (existing == null)
-                    return new CommandResultError("Der Auftrag für diese Rüstung existiert nicht und kann daher nicht rückgänig gemacht werden", $"Der Befehl kann nicht rückgängig gemacht werden, da er nicht in den Zugdaten gespeichert wurde\r\n {this.CommandString}");
+                    return new CommandResultError("Der Auftrag für diese Rüstung existiert nicht und kann daher nicht rückgänig gemacht werden", $"Der Befehl kann nicht rückgängig gemacht werden, da er nicht in den Zugdaten gespeichert wurde\r\n {this.CommandString}", this);
                 SharedData.Ruestung.Remove(existing);
                 SharedData.StoreQueue.Delete(existing);
             }
 
-            return new CommandResultError("Fehler", "Keine Ahnung warum");
+            return new CommandResultError("Fehler", "Keine Ahnung warum", this);
         }
 
 
@@ -119,68 +123,49 @@ namespace PhoenixModel.Commands {
 
                 SharedData.Ruestung.Add(ruest);
                 SharedData.StoreQueue.Insert(ruest);
-                return new CommandResultSuccess("Die Rüstung wurde ausgeführt", $"Der Befehl wurde ausgeführt:\r\n {this.CommandString}");
+                return new CommandResultSuccess("Die Rüstung wurde ausgeführt", $"Der Befehl wurde ausgeführt:\r\n {this.CommandString}", this);
             }
 
-            return new CommandResultError("Fehler", "Keine Ahnung warum");
+            return new CommandResultError("Fehler", "Keine Ahnung warum", this);
         }
     }
 
     /// <summary>
-    /// Der Parser zu dem Befehl des Dazu-Rüstens
+    /// Der Parser zu dem Befehl des Rüstens
+    /// - Rüste 6 Leichte Katapulte zu Krieger 115 in Rüstort 506/17
+    /// - Rüste 3 Heeführer zu Krieger 115 in Rüstort 506/17
+    /// - Rüste 1000 Krieger und 3 Heerführer und 2 Leichten Katapulten in Rüstort 506/17
+    /// - Rüste 1000 Krieger und 200 Pferde und 1 Heerführer in Rüstort 506/17
+    /// - Rüste 300 Reiter und 7 Heerführer in Rüstort 506/17
+    /// - Rüste 500 Krieger und 10 Pferde und 3 Heerführern und 2 Schwere Katapulte in Rüstort 123/45
+
     /// </summary>
     public class EquipCommandParser : SimpleParser {
        
-        private static readonly Regex EquipSiegeRegex = new Regex(
-                @"^Rüste\s+(?<strength>\d+)\s+(?<equipment>[\w\s]+)\s+zu\s+den\s+(?<unitType>\w+)\s+(?<unitId>\d+)\s+in\s+Rüstort\s+(?<loc>[^\s]+)$",
+        private static readonly Regex EquipExistingRegex = new Regex(
+                @"^Rüste\s+(?<gear>[\w\s]+)\s+in\s+Rüstort\s+(?<loc>[^\s]+)\s+zu\s+(?<unitType>\w+)\s+(?<unitId>\d+)$",
                 RegexOptions.IgnoreCase | RegexOptions.Compiled
         );
 
-        private bool ParseEquipCommand(string commandString, out ICommand? command) {
-            var match = EquipSiegeRegex.Match(commandString);
-                if (!match.Success)
-                    return Fail(out command);
-        
-            try {
-                command = new EquipCommand(commandString, ParseLocation(match.Groups["loc"].Value)) {
-                    Target = parseConstructionElement(match.Groups["unitType"].Value),
-                    TargetID = ParseInt(match.Groups["unitId"].Value),
-                    Heerführer = ParseInt(match.Groups["hf"].Value),
-                    Location = ParseLocation(match.Groups["loc"].Value),
-
-                };
-                if (command is EquipCommand eq && match.Groups.ContainsKey("equipment")) {
-                    eq.Equipment.Add( new ConstructionElement(parseConstructionElement(match.Groups["equipment"].Value), ParseInt(match.Groups["strength"].Value)));
-                }
-            }
-            catch (Exception ex) {
-                ProgramView.LogError("Beim Lesen des EquipCommand gab es einen Fehler", ex.Message);
-                command = null;
-                return false;
-            }
-            return true;
-        }
-
-        private static readonly Regex FlexibleEquipRegex = new Regex(
+        private static readonly Regex CreateRegex = new Regex(
            // Explanation:
            //   Rüste <strength> <unitType> mit <gear> in Rüstort <loc>
            //   where <gear> can be anything up to "in Rüstort", including
            //   multiple "und" parts, e.g. "3 Heerführern und 2 Leichten Katapulten"
-           @"^Rüste\s+(?<strength>\d+)\s+(?<unitType>\w+)\s+mit\s+(?<gear>.*?)\s+in\s+Rüstort\s+(?<loc>[^\s]+)$",
+           @"^Rüste\s+(?<gear>.*?)\s+in\s+Rüstort\s+(?<loc>[^\s]+)$",
            RegexOptions.IgnoreCase | RegexOptions.Compiled
         );
 
         public override bool ParseCommand(string commandString, out ICommand? command) {
-            if (ParseEquipCommand(commandString, out command))
-                return true;
 
-            var match = FlexibleEquipRegex.Match(commandString);
+            var match = EquipExistingRegex.Match(commandString);
+            if (!match.Success)
+                match = CreateRegex.Match(commandString);
             if (!match.Success) 
                     return Fail(out command);
             try {
                 List<ConstructionElement> eq = [];
-                eq.Add(new ConstructionElement(parseConstructionElement(match.Groups["unitType"].Value), ParseInt(match.Groups["strength"].Value)));
-
+           
                 // e.g. "3 Heerführern und 2 Leichten Katapulten"
                 string gearText = match.Groups["gear"].Value.Trim();
                 
@@ -208,7 +193,6 @@ namespace PhoenixModel.Commands {
 
                 command = new EquipCommand(commandString, ParseLocation(match.Groups["loc"].Value)) {
                     Equipment = eq,
-                    Heerführer = ParseInt(match.Groups["hf"].Value),
                     Location = ParseLocation(match.Groups["loc"].Value),
                 };
             }
