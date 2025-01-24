@@ -1,10 +1,11 @@
-﻿using System;
+﻿using PhoenixModel.Commands.Parser;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhoenixModel.Commands.Parser {
+namespace PhoenixModel.Commands {
 
 
     /// <summary>
@@ -24,8 +25,8 @@ namespace PhoenixModel.Commands.Parser {
         ZA, // Zauberer Klasse A
         ZB, // Zauberer Klasse B
         Strasse,
-        Bruecke, 
-        Wall, 
+        Bruecke,
+        Wall,
         Burg,
         ausbau
     }
@@ -65,14 +66,14 @@ namespace PhoenixModel.Commands.Parser {
     /// Definiert eine Schnittstelle für Befehls-CommandParser.
     /// </summary>
     public interface ICommandParser {
-        
+
         /// <summary>
         /// Analysiert einen Befehlsstring und erstellt ein entsprechendes Command-Objekt.
         /// </summary>
         /// <param name="commandString">Der zu analysierende Befehlsstring.</param>
         /// <param name="command">Das resultierende Command-Objekt.</param>
         /// <returns>True, wenn der Befehl erfolgreich analysiert wurde, sonst false.</returns>
-        bool ParseCommand(string commandString, out ICommand? command);      
+        bool ParseCommand(string commandString, out ICommand? command);
     }
 
 }

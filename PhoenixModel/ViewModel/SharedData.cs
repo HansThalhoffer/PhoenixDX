@@ -1,9 +1,11 @@
-﻿using PhoenixModel.Database;
+﻿using PhoenixModel.Commands;
+using PhoenixModel.Database;
 using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbPZE;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.ExternalTables;
+using PhoenixModel.Program;
 using System.Collections.Concurrent;
 
 namespace PhoenixModel.ViewModel {
@@ -14,6 +16,7 @@ namespace PhoenixModel.ViewModel {
         /// </summary>
         public static DatabaseQueue StoreQueue = [];
         public static ConcurrentQueue<KleinFeld> UpdateQueue = [];
+        public static BlockingSet<ISelectable, ICommand> Commands = new();
 
         // Karte
         public static BlockingDictionary<KleinFeld>? Map = null;

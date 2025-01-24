@@ -39,7 +39,7 @@ namespace PhoenixModel.dbPZE {
         public int? Nummer { get; set; }
         public string Reich { get; set; } = string.Empty;
         public string Name => Reich;
-        public string? DBname { get; set; }
+        public string DBname { get; set; } = string.Empty;
         public string? DBpass { get; set; }
 
         // Datenbankfelder
@@ -123,6 +123,10 @@ namespace PhoenixModel.dbPZE {
 
         public override int GetHashCode() {
             return HashCode.Combine(Nummer, Reich, DBname, DBpass);
+        }
+
+        public override string ToString() {
+            return Reich;
         }
         #endregion
 

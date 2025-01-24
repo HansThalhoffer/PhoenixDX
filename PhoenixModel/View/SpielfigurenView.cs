@@ -114,7 +114,9 @@ namespace PhoenixModel.View {
             public enum Search {
                 None,
                 Gold,
-                Fernkampf
+                Fernkampf,
+                OhneBefehl,
+                MitBefehlen,
             }
 
             public readonly Search SearchFor = Search.None;
@@ -174,11 +176,11 @@ namespace PhoenixModel.View {
                         break;
                 }
             }
-            // erlaubt die Filter zu kombinieren, sofern der Konstruktor des Filters das zulässt
-            if (result.Count == 0)
-                result = GetSpielfiguren(nation);
-
+      
             if (filter.SearchFor != Search.None) {
+                // erlaubt die Filter zu kombinieren, sofern der Konstruktor des Filters das zulässt
+                if (result.Count == 0)
+                    result = GetSpielfiguren(nation);
                 switch (filter.SearchFor) {
                     case Search.Fernkampf:
                         var fernkämpfer = result.Where(figur => figur.LeichteKP > 0 || figur.SchwereKP > 0).ToArray();
@@ -189,6 +191,16 @@ namespace PhoenixModel.View {
                         var kapitalisten = result.Where(figur => figur.Gold > 0).ToArray();
                         result.Clear();
                         result.AddRange(kapitalisten);
+                        break;
+                    case Search.OhneBefehl:
+                        var befehlslos = result.Where(figur => figur.HasCommands == false).ToArray();
+                        result.Clear();
+                        result.AddRange(befehlslos);
+                        break;
+                    case Search.MitBefehlen:
+                        var kommandiert = result.Where(figur => figur.HasCommands == true).ToArray();
+                        result.Clear();
+                        result.AddRange(kommandiert);
                         break;
                 }
             }

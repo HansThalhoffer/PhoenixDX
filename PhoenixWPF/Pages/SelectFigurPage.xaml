@@ -18,6 +18,25 @@
           CellEditEnding="EigenschaftlerDataGrid_CellEditEnding" MouseRightButtonDown="EigenschaftlerDataGrid_MouseRightButtonDown">
             <DataGrid.ContextMenu>
                 <ContextMenu>
+                    <MenuItem Header="Alle zeigen" Click="FilterMenuItem_Click" IsChecked="True" x:Name="Alle" IsCheckable="True"/>
+                    <MenuItem Header="Alle ohne Befehl zeigen" Click="FilterMenuItem_Click" IsCheckable="True"/>
+                    <Separator/>
+                    <MenuItem Header="Nur Charaktere" Click="FilterMenuItem_Click" IsCheckable="True"/>
+                    <MenuItem Header="Nur Kreaturen" Click="FilterMenuItem_Click" IsCheckable="True"/>
+                    <MenuItem Header="Nur Krieger" Click="FilterMenuItem_Click" IsCheckable="True" />
+                    <MenuItem Header="Nur Reiter" Click="FilterMenuItem_Click" IsCheckable="True"/>
+                    <MenuItem Header="Nur Schiffe" Click="FilterMenuItem_Click" IsCheckable="True"/>
+                    <MenuItem Header="Nur Zauberer" Click="FilterMenuItem_Click" IsCheckable="True"/>
+                    <Separator/>
+                    <MenuItem Header="Nur Fernkämpfer" Click="FilterMenuItem_Click" IsCheckable="True"/>
+                    <MenuItem Header="Nur Truppen mit Gold" Click="FilterMenuItem_Click" IsCheckable="True"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+            <!--<DataGrid.Resources>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="ContextMenu">
+                        <Setter.Value>
+                            <ContextMenu>
                     <MenuItem Header="Alle zeigen" Click="FilterMenuItem_Click" />
                     <MenuItem Header="Alle ohne Befehl zeigen" Click="FilterMenuItem_Click" />
                     <Separator/>
@@ -30,7 +49,12 @@
                     <MenuItem Header="Nur Fernkämpfer" Click="FilterMenuItem_Click" />
                     <MenuItem Header="NUr Truppen mit Gold" Click="FilterMenuItem_Click" />
                 </ContextMenu>
-            </DataGrid.ContextMenu>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="Background" Value="DarkGray" />
+                    <Setter Property="Foreground" Value="Wheat" />
+                </Style>
+            </DataGrid.Resources> -->
             <DataGrid.CellStyle>
                 <Style TargetType="DataGridCell">
                     <Setter Property="Background">

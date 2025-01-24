@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.EventsAndArgs;
+using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
 using PhoenixModel.View;
@@ -12,6 +13,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using static PhoenixModel.View.SpielfigurenView;
 
 namespace PhoenixWPF.Pages {
     /// <summary>
@@ -203,7 +205,7 @@ namespace PhoenixWPF.Pages {
         // Ensure the context menu only opens when clicking a column header
         private void EigenschaftlerDataGrid_ContextMenuOpening(object sender, ContextMenuEventArgs e) {
             // Get the clicked element
-            DependencyObject depObj = e.OriginalSource as DependencyObject;
+            DependencyObject? depObj = e.OriginalSource as DependencyObject;
 
             // Traverse up the Visual Tree to find a DataGridColumnHeader
             while (depObj != null && !(depObj is DataGridColumnHeader)) {
@@ -212,26 +214,58 @@ namespace PhoenixWPF.Pages {
 
             // If we found a column header, show the ContextMenu
             if (depObj is DataGridColumnHeader columnHeader) {
-                columnHeader.ContextMenu.IsOpen = true;
-                e.Handled = true; // Prevents default behavior
+                EigenschaftlerDataGrid.ContextMenu.IsOpen = true;
             }
+            e.Handled = true; // Prevents default behavior
         }
 
         // Context Menu: Filter Item Click Handler
         private void FilterMenuItem_Click(object sender, RoutedEventArgs e) {
             if (sender is MenuItem menuItem) {
                 string? selectedCategory = menuItem.Header.ToString();
-                if (selectedCategory == null || selectedCategory.StartsWith("Alle ")) {
+                foreach (var item in EigenschaftlerDataGrid.ContextMenu.Items) {
+                    if (item is MenuItem mnuItem && mnuItem != menuItem) 
+                        mnuItem.IsChecked = false;
+                }
+                if (selectedCategory == null)
+                    return;
+                Armee? armee = null;
+                if (selectedCategory.EndsWith("zeigen")) {
+                    armee = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation);
+                }
+                else if (selectedCategory.EndsWith("ohne Befehl")) {
+                    armee = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation, new SpielfigurenFilter(SpielfigurenFilter.Search.OhneBefehl));
+                }
+                else if (selectedCategory.EndsWith("Gold")) {
+                    armee = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation, new SpielfigurenFilter(SpielfigurenFilter.Search.Gold));
+                }
+                else if (selectedCategory.EndsWith("Fernkämpfer")) {
+                    armee = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation, new SpielfigurenFilter(SpielfigurenFilter.Search.Fernkampf));
+                }
+                else if (selectedCategory.EndsWith("Charaktere")) {
+                    armee = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation, new SpielfigurenFilter(FigurType.Charakter));
+                }
+                else if (selectedCategory.EndsWith("Kreaturen")) {
+                    armee = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation, new SpielfigurenFilter(FigurType.Kreatur));
+                }
+                else if (selectedCategory.EndsWith("Krieger")) {
+                    armee = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation, new SpielfigurenFilter(FigurType.Krieger));
+                }
+                else if (selectedCategory.EndsWith("Reiter")) {
+                    armee = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation, new SpielfigurenFilter(FigurType.Reiter));
+                }
+                else if (selectedCategory.EndsWith("Schiffe")) {
+                    armee = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation, new SpielfigurenFilter(FigurType.Schiff));
+                }
+                else if (selectedCategory.EndsWith("Zauberer")) {
+                    armee = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation, new SpielfigurenFilter(FigurType.Zauberer));
+                }
+                if (armee != null) {
                     EigenschaftlerDataGrid.ItemsSource = null;
                     EigenschaftlerList.Clear();
-                    var list = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation);
-                    if (list != null)
-                        EigenschaftlerList.AddRange(list);
+                    EigenschaftlerList.AddRange(armee);
                     LoadEigenschaftler();
-                    return;
                 }
-
-                
             }
         }
 

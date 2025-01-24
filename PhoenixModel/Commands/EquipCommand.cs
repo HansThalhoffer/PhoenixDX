@@ -11,7 +11,7 @@ namespace PhoenixModel.Commands {
 
     /// <summary>
     /// Das Rüsten von Rüstgütern als neue Armee und zu einer Armee hinzu oder einfach nur eine Armee mit und ohne Zeug rüsten
-     /// </summary>
+    /// </summary>
     public class EquipCommand : SimpleCommand, ICommand {        
         public struct ConstructionElement {
             public ConstructionElementType ConstructionElementType = ConstructionElementType.None;

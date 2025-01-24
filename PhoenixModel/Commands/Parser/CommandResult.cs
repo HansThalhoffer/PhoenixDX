@@ -1,4 +1,5 @@
-﻿using PhoenixModel.Commands.Parser;
+﻿using PhoenixModel.Commands;
+using PhoenixModel.Commands.Parser;
 
 namespace PhoenixModel.Commands.Parser {
 

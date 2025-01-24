@@ -1,4 +1,6 @@
-﻿using PhoenixModel.Extensions;
+﻿using PhoenixModel.Commands;
+using PhoenixModel.dbPZE;
+using PhoenixModel.Extensions;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
@@ -143,7 +145,7 @@ namespace PhoenixModel.ViewModel {
         /// Der Bezeichner erzugt sich aus Typ und Nummer.
         /// Um den Kleinfeld Bezeichner der Spielfigur zu holen, wird aus der Basisklasse <see cref="KleinfeldPosition"/>.CreateBezeichner() verwendt. Dieser Wert kann direkt in der Map verwendet werden.
         /// </summary>
-        public string Bezeichner => $"{Typ.ToString()} {Nummer.ToString()}";
+        public string Bezeichner => $"{Nation} {Typ} {Nummer}";
         public dbPZE.Nation? Nation { get; set; } = null;
 
         /// <summary>
@@ -216,6 +218,15 @@ namespace PhoenixModel.ViewModel {
         /// </summary>
         public int Gold {
             get => (this is TruppenSpielfigur truppe) ? truppe.GS + truppe.Kampfeinnahmen: 0;
+        }
+
+        /// <summary>
+        /// hat die Figur bereits Commandos erhalten
+        /// </summary>
+        public bool HasCommands{
+            get {
+               return this.GetCommands().Count() > 0;
+            }
         }
 
         /// <summary>

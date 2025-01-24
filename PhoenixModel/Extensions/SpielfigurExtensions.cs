@@ -1,4 +1,5 @@
-﻿using PhoenixModel.dbErkenfara;
+﻿using PhoenixModel.Commands;
+using PhoenixModel.dbErkenfara;
 using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
 
@@ -100,6 +101,10 @@ namespace PhoenixModel.Extensions {
                 throw new InvalidOperationException("Zuerst muss eine Nation ausgewählt sein.");
 
             spielfigur.Nation = ProgramView.SelectedNation;
+        }
+
+        public static IEnumerable<ICommand> GetCommands(this Spielfigur spielfigur) {
+            return SharedData.Commands.GetValues(spielfigur);
         }
     }
 }
