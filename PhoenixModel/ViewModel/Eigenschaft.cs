@@ -1,10 +1,12 @@
 ﻿using PhoenixModel.Helper;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static PhoenixModel.ExternalTables.EinwohnerUndEinnahmenTabelle;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PhoenixModel.ViewModel {
     /// <summary>
@@ -21,6 +23,11 @@ namespace PhoenixModel.ViewModel {
         public Eigenschaft(string name, string? wert, bool editable, IEigenschaftler? source) {
             Name = name;
             _wert = wert;
+            var val = SortValue;
+            if (val != null && val.ToString() == wert) {
+                _wert = Convert.ToInt32(val).ToString("n0");
+            }
+
             IsEditable = editable;
             Source = source;
         }

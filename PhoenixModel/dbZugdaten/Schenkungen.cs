@@ -12,7 +12,7 @@ namespace PhoenixModel.dbZugdaten {
         public const string TableName = "Schenkungen";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => ID.ToString();
-        private static readonly string[] PropertiestoIgnore = ["ID","Bezeichner", "DatabaseName"];
+        private static readonly string[] PropertiestoIgnore = ["ID","Bezeichner", "Database"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
 

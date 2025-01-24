@@ -141,17 +141,22 @@ namespace PhoenixModel.ViewModel {
                 int lineCount = 1;
                 if (LKP > 0) {
                     typ += BaseTyp == FigurType.Schiff ? "\r+ Leichte Kriegsschiffe" : "\r+ Leichte Katapulte";
-                    katapult += "\r+ " + LKP + " LK";
+                    katapult += $"\r+ {LKP} LK";
                     lineCount++;
                 }
                 if (SKP > 0) {
                     typ += BaseTyp == FigurType.Schiff ? "\r+ Schwere Kriegsschiffe" : "\r+ Schwere Katapulte";
-                    katapult += "\r+ " + SKP + " SK";
+                    katapult += $"\r+ {SKP } SK";
+                    lineCount++;
+                }
+                if (Gold > 0) {
+                    typ += $"\r+ Gold";
+                    katapult += $"\r+ {Gold.ToString("n0")}¢";
                     lineCount++;
                 }
                 if (Pferde > 0) {
-                    typ += "\r+ Pferde";
-                    katapult += "\r+ " + Pferde;
+                    typ += $"\r+ Pferde";
+                    katapult += $"\r+ {Pferde} Ps";
                     lineCount++;
                 }
                 list.Add(new Eigenschaft("Typ", typ, false, this));

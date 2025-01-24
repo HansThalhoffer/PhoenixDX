@@ -55,8 +55,8 @@ namespace PhoenixModel.ViewModel {
                         string wert = $"{t.Bezeichner} Str {t.staerke.ToString("n0")} HF {t.hf}";
                         if (t.Garde)
                             wert += " Garde";
-                        if (t.GS > 0 || t.Kampfeinnahmen > 0)
-                            wert += $" Gold {t.GS+t.Kampfeinnahmen}";
+                        if (figur.Gold > 0)
+                            wert += $" Gold {figur.Gold}";
                         if (t.LKP > 0)
                             if (t is Schiffe)
                                 wert += $" LKS {t.LKP}";
