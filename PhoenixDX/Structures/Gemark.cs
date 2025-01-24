@@ -296,7 +296,7 @@ namespace PhoenixDX.Structures {
         /// Beim Layer 0 wird die Textur des Geländes als erstes eingefügt in die Liste
         /// danach folgen die Adorner in der Reihenfolge des Einfügens in die Liste der Adorner
         /// </summary>
-        /// <param name="layer">Die Layer-TargetID.</param>
+        /// <param name="layer">Die Layer-Nummer.</param>
         /// <returns>Eine Liste von Texturobjekten.</returns>
         public List<BaseTexture> GetTextures(int layer) {
             List<BaseTexture> textures = [];

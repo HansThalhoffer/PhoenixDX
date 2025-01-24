@@ -188,7 +188,7 @@ namespace PhoenixModel.dbZugdaten {
             y18 = {this.y18},
             x19 = {this.x19},
             y19 = {this.y19}
-        WHERE TargetID = {this.Nummer}";
+        WHERE Nummer = {this.Nummer}";
 
             // Execute the command
             command.ExecuteNonQuery();
@@ -198,7 +198,7 @@ namespace PhoenixModel.dbZugdaten {
         {
             command.CommandText = $@"
         INSERT INTO {TableName} (
-            TargetID, staerke_alt, staerke, hf_alt, hf, LKP_alt, LKP, SKP_alt, SKP, 
+            Nummer, staerke_alt, staerke, hf_alt, hf, LKP_alt, LKP, SKP_alt, SKP, 
             pferde_alt, Pferde, gf_von, kf_von, gf_nach, kf_nach, rp, bp, 
             ph_xy, Garde, Befehl_bew, Befehl_ang, Befehl_erobert, GS, GS_alt, 
             Kampfeinnahmen, Kampfeinnahmen_alt, x1, y1, x2, y2, x3, y3, 

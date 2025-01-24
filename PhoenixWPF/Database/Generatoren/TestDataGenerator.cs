@@ -146,8 +146,8 @@ namespace PhoenixWPF.Database.Generatoren {
             figur.lkp_alt = lKP;
             figur.SKP = sKP;
             figur.skp_alt = sKP;
-            figur.GS = Zufall(random, 10, 6000, 15000);
-            figur.Kampfeinnahmen = Zufall(random, 10, 6000, 15000);
+            figur.GS = Zufall(random, 20, 6000, 15000);
+            figur.Kampfeinnahmen = Zufall(random, 20, 6000, 15000);
         }
 
         /// <summary>

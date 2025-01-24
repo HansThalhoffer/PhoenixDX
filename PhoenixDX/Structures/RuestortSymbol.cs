@@ -39,7 +39,7 @@ namespace PhoenixDX.Structures {
         /// <summary>
         /// Erstellt eine neue Instanz eines Rüstortsymbols.
         /// </summary>
-        /// <param name="Nummer">Die eindeutige TargetID des Symbols.</param>
+        /// <param name="Nummer">Die eindeutige Nummer des Symbols.</param>
         /// <param name="Name">Der Name des Symbols.</param>
         /// <param name="Image">Der Bildpfad des Symbols.</param>
         public RuestortSymbol(int Nummer, string Name, string Image) {

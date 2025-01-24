@@ -43,7 +43,7 @@ namespace PhoenixModel.ViewModel {
         /// </summary>
         public int Kampfeinnahmen_alt { get; set; } = 0;
         /// <summary>
-        /// Die TargetID wird je nach Einheit vergeben, siehe static Startnummer in den jeweiligen Derivaten
+        /// Die Nummer wird je nach Einheit vergeben, siehe static Startnummer in den jeweiligen Derivaten
         /// </summary>
         public int Nummer { get; set; } = 0;
         /// <summary>
@@ -140,7 +140,7 @@ namespace PhoenixModel.ViewModel {
         public int y19 { get; set; }
 
         /// <summary>
-        /// Der Bezeichner erzugt sich aus Typ und TargetID.
+        /// Der Bezeichner erzugt sich aus Typ und Nummer.
         /// Um den Kleinfeld Bezeichner der Spielfigur zu holen, wird aus der Basisklasse <see cref="KleinfeldPosition"/>.CreateBezeichner() verwendt. Dieser Wert kann direkt in der Map verwendet werden.
         /// </summary>
         public string Bezeichner => $"{Typ.ToString()} {Nummer.ToString()}";
@@ -303,7 +303,7 @@ namespace PhoenixModel.ViewModel {
         /// <summary>
         /// Die Felder, die nicht in der Eigenschaften Liste für den Benutzer sichtbar sein sollen
         /// </summary>
-        private static readonly string[] PropertiestoIgnore = ["DatabaseName", "Database", "Bezeichner", "Nation", "GS_alt", "Kampfeinnahmen_alt", "TargetID", "gf_von", "kf_von", "gf", "kf", "gf_nach", "kf_nach", "ph_xy", "Key"];
+        private static readonly string[] PropertiestoIgnore = ["DatabaseName", "Database", "Bezeichner", "Nation", "GS_alt", "Kampfeinnahmen_alt", "Nummer", "gf_von", "kf_von", "gf", "kf", "gf_nach", "kf_nach", "ph_xy", "Key"];
         /// <summary>
         /// Implementierung von IEigenschaftler
         /// </summary>

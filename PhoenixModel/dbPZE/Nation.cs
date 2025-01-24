@@ -27,7 +27,7 @@ namespace PhoenixModel.dbPZE {
         public string Bezeichner { get => Reich; }
 
         // IEigenschaftler
-        private static readonly string[] PropertiestoIgnore = { "DatabaseName", "Database", "Alias", "DBname", "DBpass", "Farbe", "TargetID", "Name" };
+        private static readonly string[] PropertiestoIgnore = { "DatabaseName", "Database", "Alias", "DBname", "DBpass", "Farbe", "Nummer", "Name" };
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
         #endregion
 
@@ -78,7 +78,7 @@ namespace PhoenixModel.dbPZE {
             Reich = '{DatabaseConverter.EscapeString(this.Reich)}',
             DBname = '{DatabaseConverter.EscapeString(this.DBname)}',
             DBpass = '{DatabaseConverter.EscapeString(this.DBpass)}'
-        WHERE TargetID = {this.Nummer}";
+        WHERE Nummer = {this.Nummer}";
 
             // Execute the command
             command.ExecuteNonQuery();
@@ -88,7 +88,7 @@ namespace PhoenixModel.dbPZE {
         public void Insert(DbCommand command) {
             command.CommandText = $@"
         INSERT INTO {TableName} (
-            TargetID, Reich, DBname, DBpass
+            Nummer, Reich, DBname, DBpass
         ) VALUES (
             {this.Nummer}, 
             '{DatabaseConverter.EscapeString(this.Reich)}', 
