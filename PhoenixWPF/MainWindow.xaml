@@ -4,48 +4,39 @@
         xmlns:local="clr-namespace:PhoenixWPF"
         Title="Phoenix WPF App" Height="1080" Width="1920">
     <Window.Resources>
-        <ResourceDictionary>
-
-        </ResourceDictionary>
+        <Style TargetType="{x:Type MenuItem}">
+            <Setter Property="Margin" Value="10,2,10,2" />
+            <Setter Property="Foreground" Value="LightGray" />
+        </Style>
+        <Style TargetType="{x:Type Menu}">
+            <Setter Property="Background" Value="#202020" />
+            <Setter Property="FontFamily" Value="{DynamicResource {x:Static SystemFonts.MenuFontFamilyKey}}"/>
+            <Setter Property="FontSize" Value="{DynamicResource {x:Static SystemFonts.MenuFontSizeKey}}"/>
+            <Setter Property="FontStyle" Value="{DynamicResource {x:Static SystemFonts.MenuFontStyleKey}}"/>
+            <Setter Property="FontWeight" Value="{DynamicResource {x:Static SystemFonts.MenuFontWeightKey}}"/>
+            <Setter Property="Foreground" Value="DarkGray" />
+            <Setter Property="HorizontalContentAlignment" Value="Right"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Menu}">
+                        <Border
+             Background="{TemplateBinding Background}"
+             BorderBrush="{TemplateBinding BorderBrush}"
+             BorderThickness="{TemplateBinding BorderThickness}"
+             Padding="{TemplateBinding Padding}"
+             SnapsToDevicePixels="True">
+                            <ItemsPresenter
+                 SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
-    <DockPanel>
-        <!-- Menu -->
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="Ansicht">
-                <MenuItem Header="Rüsten von Figuren und Gebäuden" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="BuildPage" />
-                <MenuItem Header="Befehle an Figuren" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="CommandPage" />
-                <MenuItem Header="History" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="HistoryPage" />
-                <MenuItem Header="Optionen" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="Optionen" />
-                <Separator/>
-                <MenuItem Header="Eigenschaften" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="Eigenschaften" />
-                <MenuItem Header="Informationen" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="Informationen" />
-                <MenuItem Header="Auswahl Figuren" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="FigurenAuswahl" />
-                <MenuItem Header="Auswahl Rüstorte" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="RüstortAuswahl" />
-            </MenuItem>
-            <MenuItem Header="Hofhaltung">
-                <MenuItem Header="Lehen verwalten" IsCheckable="False"  Click="MenuItem_Click" Tag="LehenVerwalten" />
-                <MenuItem Header="Lehen neu anlegen" IsCheckable="False"  Click="MenuItem_Click" Tag="LehenAnlegen" />
-            </MenuItem>
-            <MenuItem Header="Schatzkammer">
-                <MenuItem Header="Bericht des Kämmerers" IsCheckable="False"  Click="MenuItem_Click" Tag="ErwarteteEinkommen" />
-                <MenuItem Header="Bericht der Historiker" IsCheckable="False"  Click="MenuItem_Click" Tag="Entwicklung" />
-                <Separator/>
-                <MenuItem Header="Bisherige Schenkungen" IsCheckable="False"  Click="MenuItem_Click" Tag="Schenkungen" />
-                <MenuItem Header="Geld verschenken" IsCheckable="False"  Click="MenuItem_Click" Tag="Schenken" />
-            </MenuItem>
-            <MenuItem Header="Militär">
-                <MenuItem Header="Bericht der Generäle" IsCheckable="False"  Click="MenuItem_Click" Tag="Truppen" />
-                <MenuItem Header="Bericht der Historiker" IsCheckable="False"  Click="MenuItem_Click" Tag="TruppenEntwicklung" />
-            </MenuItem>
-            <MenuItem Header="Extras">
-                <MenuItem Header="Zug Wechseln" IsCheckable="False"  Click="MenuItem_Click" Tag="Zugwechsel" />
-                <Separator/>
-                <MenuItem Header="Erstelle USB Stick für Installation" IsCheckable="False"  Click="MenuItem_Click" Tag="InstallUSB" />
-                <MenuItem Header="Erstelle Testdaten (Zug 999)" IsCheckable="False"  Click="MenuItem_Click" Tag="Zug 999 (Testdaten)" />
-            </MenuItem>
-        </Menu>
-
+   
+      
         <!-- Main Grid -->
         <Grid>
             <Grid.ColumnDefinitions>
@@ -60,10 +51,50 @@
                 <RowDefinition Height="1*" />
                 <RowDefinition Height="16" />
             </Grid.RowDefinitions>
+        <DockPanel Grid.Column="0">
+            <!-- Menu -->
+            <Menu  DockPanel.Dock="Top" HorizontalAlignment="Right" HorizontalContentAlignment="Right">
+
+                <MenuItem Header="Ansicht">
+                    <MenuItem Header="Rüsten von Figuren und Gebäuden" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="BuildPage" />
+                    <MenuItem Header="Befehle an Figuren" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="CommandPage" />
+                    <MenuItem Header="History" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="HistoryPage" />
+                    <MenuItem Header="Optionen" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="Optionen" />
+                    <Separator/>
+                    <MenuItem Header="Eigenschaften" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="Eigenschaften" />
+                    <MenuItem Header="Informationen" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="Informationen" />
+                    <MenuItem Header="Auswahl Figuren" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="FigurenAuswahl" />
+                    <MenuItem Header="Auswahl Rüstorte" IsCheckable="True" IsChecked="True" Checked="MenuItem_Checked" Unchecked="MenuItem_Unchecked" Tag="RüstortAuswahl" />
+                </MenuItem>
+                <!-- Noch nicht vollständig umgesetzt
+      <MenuItem Header="Hofhaltung">
+          <MenuItem Header="Lehen verwalten" IsCheckable="False"  Click="MenuItem_Click" Tag="LehenVerwalten" />
+          <MenuItem Header="Lehen neu anlegen" IsCheckable="False"  Click="MenuItem_Click" Tag="LehenAnlegen" />
+      </MenuItem> -->
+                <MenuItem Header="Schatzkammer">
+                    <MenuItem Header="Bericht des Kämmerers" IsCheckable="False"  Click="MenuItem_Click" Tag="ErwarteteEinkommen" />
+                    <MenuItem Header="Bericht der Historiker" IsCheckable="False"  Click="MenuItem_Click" Tag="Entwicklung" />
+                    <Separator/>
+                    <MenuItem Header="Bisherige Schenkungen" IsCheckable="False"  Click="MenuItem_Click" Tag="Schenkungen" />
+                    <MenuItem Header="Geld verschenken" IsCheckable="False"  Click="MenuItem_Click" Tag="Schenken" />
+                </MenuItem>
+                <MenuItem Header="Militär">
+                    <MenuItem Header="Bericht der Generäle" IsCheckable="False"  Click="MenuItem_Click" Tag="Truppen" />
+                    <MenuItem Header="Bericht der Historiker" IsCheckable="False"  Click="MenuItem_Click" Tag="TruppenEntwicklung" />
+                </MenuItem>
+                <MenuItem Header="Extras">
+                    <MenuItem Header="Zug Wechseln" IsCheckable="False"  Click="MenuItem_Click" Tag="Zugwechsel" />
+                    <Separator/>
+                    <MenuItem Header="Erstelle USB Stick für Installation" IsCheckable="False"  Click="MenuItem_Click" Tag="InstallUSB" />
+                    <MenuItem Header="Erstelle Testdaten (Zug 999)" IsCheckable="False"  Click="MenuItem_Click" Tag="Zug 999 (Testdaten)" />
+                </MenuItem>
+            </Menu>
+
 
             <!-- Left Main Window -->
             <Frame Grid.Column="0" Grid.Row="0"  Source="Erkenfara.xaml"/>
-            <!-- Left-to-Right Splitter -->
+        </DockPanel>
+        <!-- Left-to-Right Splitter -->
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
 
             <!-- Right Grid -->
@@ -128,5 +159,5 @@
                 </Grid>
             </Grid>
         </Grid>
-    </DockPanel>
+
 </Window>
