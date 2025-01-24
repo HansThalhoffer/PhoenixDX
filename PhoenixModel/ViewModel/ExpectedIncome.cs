@@ -58,17 +58,37 @@ namespace PhoenixModel.ViewModel {
                 this.HochlandFelder = HochlandFelder * Terrains[(int)TerrainType.Tiefland].Einnahmen;
                 this.GebirgFelder = kleinfelder.Where(k => k.TerrainType == TerrainType.Gebirge).Count();
                 this.GebirgEinkommen = GebirgFelder * Terrains[(int)TerrainType.Gebirge].Einnahmen;
-                // Einnahmen der Bauten 
+
+                // Einnahmen der Bauten - die Bauten können auch Burg-I etc sein, daher StartsWith
                 foreach (KleinFeld k in kleinfelder) {
-                    if (k.Gebäude == null) { continue; }
-                    else if (k.Gebäude.Rüstort.Bauwerk.Equals("Burg")){ this.Burgen++; this.BurgenEinkommen += EinnahmenView.GetGebäudeEinnahmen(k); }
-                    else if (k.Gebäude.Rüstort.Bauwerk.Equals("Stadt")) { this.Städte++; this.StädteEinkommen += EinnahmenView.GetGebäudeEinnahmen(k); }
-                    else if (k.Gebäude.Rüstort.Bauwerk.Equals("Festung")) { this.Festungen++; this.FestungenEinkommen += EinnahmenView.GetGebäudeEinnahmen(k); }
-                    else if (k.Gebäude.Rüstort.Bauwerk.Equals("Hauptstadt")) { this.Hauptstädte++; this.HauptstädteEinkommen += EinnahmenView.GetGebäudeEinnahmen(k); }
-                    else if (k.Gebäude.Rüstort.Bauwerk.Equals("Festungshauptstadt")) { this.FestungsHauptstädte++ ; this.FestungsHauptstädteEinkommen += EinnahmenView.GetGebäudeEinnahmen(k); }
+                    if (k.Gebäude == null || k.Gebäude.Rüstort == null)
+                        continue;
+                    if (k.Gebäude.Rüstort.Bauwerk.StartsWith("Dorf")) 
+                        continue;
+                    
+                    if (k.Gebäude.Rüstort.Bauwerk.StartsWith("Burg")) {
+                        this.Burgen++;
+                        this.BurgenEinkommen += EinnahmenView.GetGebäudeEinnahmen(k);
+                    }
+                    else if (k.Gebäude.Rüstort.Bauwerk.StartsWith("Stadt")) {
+                        this.Städte++; this.StädteEinkommen += EinnahmenView.GetGebäudeEinnahmen(k);
+                    } // muss vor StartsWith("Festung") stehen 
+                    else if (k.Gebäude.Rüstort.Bauwerk.StartsWith("Festungshauptstadt")) {
+                        this.FestungsHauptstädte++;
+                        this.FestungsHauptstädteEinkommen += EinnahmenView.GetGebäudeEinnahmen(k);
+                    }
+                    else if (k.Gebäude.Rüstort.Bauwerk.StartsWith("Festung")) {
+                        this.Festungen++;
+                        this.FestungenEinkommen += EinnahmenView.GetGebäudeEinnahmen(k);
+                    }
+                    else if (k.Gebäude.Rüstort.Bauwerk.StartsWith("Hauptstadt")) {
+                        this.Hauptstädte++;
+                        this.HauptstädteEinkommen += EinnahmenView.GetGebäudeEinnahmen(k);
+                    }
+
                 }
-                
-                
+
+
                 // jedes Kleinfeld hat Terrain, Gebäude usw. schon als Member. Mit einer foreach lassen sich die Daten auch sammeln - siehe auch EinnahmenView
             }
 
