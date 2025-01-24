@@ -29,4 +29,8 @@
     <ProjectReference Include="..\PhoenixModel\PhoenixModel.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Resource Include="Resources\baustelle.png" />
+  </ItemGroup>
+
 </Project>

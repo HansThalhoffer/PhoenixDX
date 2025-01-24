@@ -50,15 +50,23 @@ namespace PhoenixModel.dbErkenfara {
                 return BauwerkeView.GetBaupunkteNachKarte(this) ?? 0;
             }
         }
-    
+        public Rüstort? Rüstort {
+            get { return BauwerkeView.GetRüstortNachKarte(this); }
+        }
         public string? Bauwerknamen { get; set; }
         // hat 0 Baupunkte in der Karte
         public bool Zerstört { get; set; } = false;
         // existiert nicht in der Bauwerkliste, aber in der Karte
         public bool IsNew { get; set; } = true;
-        public Rüstort? Rüstort {
-            get { return BauwerkeView.GetRüstortNachKarte(this); }
+        public bool InBau {
+            get {
+                var rüstort = this.Rüstort;
+                if (rüstort != null && rüstort.Baupunkte > this.Baupunkte)
+                    return true;
+                return false;
+            }
         }
+        
 
         public enum Felder
         {
