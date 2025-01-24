@@ -14,7 +14,23 @@
     </Page.Resources>
     <Grid>
         <DataGrid Name="EigenschaftlerDataGrid" AutoGenerateColumns="False"  SelectionChanged="EigenschaftlerDataGrid_SelectionChanged"   
+                      ContextMenuOpening="EigenschaftlerDataGrid_ContextMenuOpening"
           CellEditEnding="EigenschaftlerDataGrid_CellEditEnding" MouseRightButtonDown="EigenschaftlerDataGrid_MouseRightButtonDown">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Alle zeigen" Click="FilterMenuItem_Click" />
+                    <MenuItem Header="Alle ohne Befehl zeigen" Click="FilterMenuItem_Click" />
+                    <Separator/>
+                    <MenuItem Header="Nur Charaktere" Click="FilterMenuItem_Click" />
+                    <MenuItem Header="Nur Kreaturen" Click="FilterMenuItem_Click" />
+                    <MenuItem Header="Nur Krieger" Click="FilterMenuItem_Click" />
+                    <MenuItem Header="Nur Reiter" Click="FilterMenuItem_Click" />
+                    <MenuItem Header="Nur Zauberer" Click="FilterMenuItem_Click" />
+                    <Separator/>
+                    <MenuItem Header="Nur Fernkämpfer" Click="FilterMenuItem_Click" />
+                    <MenuItem Header="NUr Truppen mit Gold" Click="FilterMenuItem_Click" />
+                </ContextMenu>
+            </DataGrid.ContextMenu>
             <DataGrid.CellStyle>
                 <Style TargetType="DataGridCell">
                     <Setter Property="Background">

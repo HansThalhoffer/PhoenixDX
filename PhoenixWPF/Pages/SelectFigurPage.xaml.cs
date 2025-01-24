@@ -4,9 +4,11 @@ using PhoenixModel.Program;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using PhoenixWPF.Program;
+using System.ComponentModel;
 using System.Security.Cryptography.Xml;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -195,6 +197,41 @@ namespace PhoenixWPF.Pages {
                     // auch die Spielfigur ist eine Kleinfeldposition
                     Program.Main.Instance.Spiel?.SelectGemark(figur);
                 }
+            }
+        }
+
+        // Ensure the context menu only opens when clicking a column header
+        private void EigenschaftlerDataGrid_ContextMenuOpening(object sender, ContextMenuEventArgs e) {
+            // Get the clicked element
+            DependencyObject depObj = e.OriginalSource as DependencyObject;
+
+            // Traverse up the Visual Tree to find a DataGridColumnHeader
+            while (depObj != null && !(depObj is DataGridColumnHeader)) {
+                depObj = VisualTreeHelper.GetParent(depObj);
+            }
+
+            // If we found a column header, show the ContextMenu
+            if (depObj is DataGridColumnHeader columnHeader) {
+                columnHeader.ContextMenu.IsOpen = true;
+                e.Handled = true; // Prevents default behavior
+            }
+        }
+
+        // Context Menu: Filter Item Click Handler
+        private void FilterMenuItem_Click(object sender, RoutedEventArgs e) {
+            if (sender is MenuItem menuItem) {
+                string? selectedCategory = menuItem.Header.ToString();
+                if (selectedCategory == null || selectedCategory.StartsWith("Alle ")) {
+                    EigenschaftlerDataGrid.ItemsSource = null;
+                    EigenschaftlerList.Clear();
+                    var list = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation);
+                    if (list != null)
+                        EigenschaftlerList.AddRange(list);
+                    LoadEigenschaftler();
+                    return;
+                }
+
+                
             }
         }
 

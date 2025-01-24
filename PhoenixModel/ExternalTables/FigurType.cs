@@ -24,7 +24,7 @@ namespace PhoenixModel.ExternalTables
         PiratenSchweresKriegsschiff,
         PiratenLeichtesKriegsschiff,
         CharakterZauberer,
-        NaN
+        None
     }
 
 }

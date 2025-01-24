@@ -211,6 +211,12 @@ namespace PhoenixModel.ViewModel {
         public int SchwereKP {
             get => (this is TruppenSpielfigur truppe) ? truppe.SKP : 0;
         }
+        /// <summary>
+        /// LeichteKP statt lkp. Für die Listendarstellung
+        /// </summary>
+        public int Gold {
+            get => (this is TruppenSpielfigur truppe) ? truppe.GS + truppe.Kampfeinnahmen: 0;
+        }
 
         /// <summary>
         /// CharakterName statt Charname. Für die Listendarstellung und Bearbeitung

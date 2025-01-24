@@ -92,7 +92,7 @@ namespace PhoenixModel.Commands.Parser {
                 "berittener schwerer artillerie" => FigurType.BeritteneSchwereArtillerie,
                 "berittene leichte artillerie" => FigurType.BeritteneLeichteArtillerie,
                 "berittener leichter artillerie" => FigurType.BeritteneLeichteArtillerie,
-                _ => FigurType.NaN,
+                _ => FigurType.None,
             };
         }
 

@@ -83,7 +83,7 @@ namespace Tests {
         [InlineData("Berittener Schwerer Artillerie", FigurType.BeritteneSchwereArtillerie)]
         [InlineData("Berittene Leichte Artillerie", FigurType.BeritteneLeichteArtillerie)]
         [InlineData("Berittener Leichter Artillerie", FigurType.BeritteneLeichteArtillerie)]
-        [InlineData("Unbekannt", FigurType.NaN)] // Test für nicht erkannte Eingaben
+        [InlineData("Unbekannt", FigurType.None)] // Test für nicht erkannte Eingaben
         public void ParseUnitType_ReturnsCorrectFigurType(string input, FigurType expected) {
             // Act
             var result = SimpleParser.ParseUnitType(input);

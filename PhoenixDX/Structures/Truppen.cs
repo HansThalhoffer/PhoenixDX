@@ -20,7 +20,7 @@ namespace PhoenixDX.Structures {
         /// </summary>
         public class FigurImage
         {
-            public FigurType Typ = FigurType.NaN;
+            public FigurType Typ = FigurType.None;
             public string FileName = string.Empty;
             public Texture2D Texture = null;
             public Texture2D InvertedTexture = null;
@@ -60,7 +60,7 @@ namespace PhoenixDX.Structures {
         /// </summary>
         public class Figur
         {
-            public FigurType Typ = FigurType.NaN;
+            public FigurType Typ = FigurType.None;
             public Color Color = Color.White;
             public Figur(FigurType typ, Color color)
             {

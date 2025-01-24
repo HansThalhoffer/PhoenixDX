@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.ExternalTables {
     public class Feinde : Feindaufklaerung {
-        public FigurType Typ { get; set; } = FigurType.NaN;
+        public FigurType Typ { get; set; } = FigurType.None;
         public Nation? Nation { get; set; } = null;
 
         public Feinde(string zeile) {
