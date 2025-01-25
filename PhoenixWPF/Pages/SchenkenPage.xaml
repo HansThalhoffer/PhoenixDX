@@ -9,6 +9,6 @@
       Title="SchwenkenPage">
 
     <Grid>
-        
+        <DataGrid Name="CommandsDataGrid" AutoGenerateColumns="False" />
     </Grid>
 </Page>

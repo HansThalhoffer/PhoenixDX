@@ -9,6 +9,29 @@
       Title="CommandHistoryPage">
 
     <Grid>
-        <TextBlock Text="History und Undo" Margin="10" />
+        <DataGrid ItemsSource="{Binding Commands}" AutoGenerateColumns="False" CanUserAddRows="False">
+            <DataGrid.Columns>
+                <!-- Readonly Checkbox -->
+                <DataGridCheckBoxColumn Header="Executed"
+                                        Binding="{Binding IsExecuted}"
+                                        IsReadOnly="True"/>
+
+                <!-- Undo Button -->
+                <DataGridTemplateColumn Header="Undo">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Undo" 
+                                    Click="UndoButton_Click"
+                                    IsEnabled="{Binding IsExecuted}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <!-- Command String -->
+                <DataGridTextColumn Header="Command"
+                                    Binding="{Binding CommandString}"
+                                    IsReadOnly="True"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Page>

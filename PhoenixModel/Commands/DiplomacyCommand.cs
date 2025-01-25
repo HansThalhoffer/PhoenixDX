@@ -66,7 +66,9 @@ namespace PhoenixModel.Commands {
                 else {
                     item.Kuestenrecht = RemoveRecht != null && RemoveRecht == true ? 0 : 1;
                 }
+                IsExecuted = true;
                 SharedData.StoreQueue.Enqueue(item);
+                SharedData.Commands.Add(item,this);
                 return new CommandResultSuccess($"Das {this.GetType()} wurde erfolgreich ausgeführt", $"Der Befehl wurde ausgeführt:\r\n {this.CommandString}", this);
             }
             return new CommandResultError($"Das {this.GetType()} konnte nicht ausgeführt werden", $"Keine Ahnung warum:\r\n {this.CommandString}", this);

@@ -11,8 +11,7 @@ namespace PhoenixModel.Commands.Parser {
     public abstract class SimpleCommand : ICommand {
         protected readonly string _CommandString;
         public bool IsExecuted { get; protected set; }
-
-        /// <param name="commandString">Der nicht erkannte Befehl.</param>
+        
         public SimpleCommand(string commandString) { _CommandString = commandString; }
 
         public string CommandString => _CommandString;
