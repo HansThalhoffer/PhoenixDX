@@ -77,7 +77,24 @@ namespace PhoenixModel.Commands {
         }
 
         public override CommandResult UndoCommand() {
-            throw new NotImplementedException();
+            CommandResult result = CheckPreconditions();
+            if (result.HasErrors)
+                return result;
+            if (SharedData.Diplomatiechange != null) {
+                var item = SharedData.Diplomatiechange.Where(d => d.ReferenzNation == ReferenzNation && d.Nation == Nation).First();
+                if (Recht == BewegungsRecht.Wegerecht) {
+                    item.Wegerecht = RemoveRecht != null && RemoveRecht == true ? 1 : 0;
+                }
+                else {
+                    item.Kuestenrecht = RemoveRecht != null && RemoveRecht == true ? 1 : 0;
+                }
+                IsExecuted = true;
+                SharedData.StoreQueue.Enqueue(item);
+                return new CommandResultSuccess($"Undo von {this.GetType()} wurde erfolgreich ausgeführt", $"Der Befehl wurde ausgeführt:\r\n {this.CommandString}", this);
+            }
+            return new CommandResultError($"Undo {this.GetType()} konnte nicht ausgeführt werden", $"Keine Ahnung warum:\r\n {this.CommandString}", this);
+
+
         }
 
         public bool Equals(DiplomacyCommand? other) {

@@ -1,4 +1,6 @@
 ﻿using PhoenixModel.Commands.Parser;
+using PhoenixModel.ViewModel;
+using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,13 +26,17 @@ namespace PhoenixWPF.Pages
         public CommanndHistoryPage()
         {
             InitializeComponent();
+            CommandDataGrid.ItemsSource = SharedData.Commands;
+            
         }
 
         private void UndoButton_Click(object sender, RoutedEventArgs e) {
             if (sender is Button button && button.DataContext is SimpleCommand command) {
-                command.UndoCommand();
-                // Refresh UI
-                ((DataGrid)button.Parent).Items.Refresh();
+                var result = command.UndoCommand();
+                if (result.HasErrors == false) {
+                    CommandDataGrid.Items.Refresh();
+                }
+
             }
         }
       

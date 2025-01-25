@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.Commands;
+using PhoenixModel.Commands.Parser;
 using PhoenixModel.Database;
 using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbErkenfara;
@@ -16,7 +17,7 @@ namespace PhoenixModel.ViewModel {
         /// </summary>
         public static DatabaseQueue StoreQueue = [];
         public static ConcurrentQueue<KleinFeld> UpdateQueue = [];
-        public static BlockingSet<ISelectable, ICommand> Commands = new();
+        public static CommandSet Commands = new();
 
         // Karte
         public static BlockingDictionary<KleinFeld>? Map = null;
