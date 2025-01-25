@@ -139,6 +139,7 @@ namespace PhoenixModel.ViewModel {
                 list.Add(new Eigenschaft("Stärke", str, false, this));
                 list.Add(new Eigenschaft("Katapulte", string.Empty, false, this));
                 list.Add(new Eigenschaft("Koordinaten", CreateBezeichner(), false, this));
+                list.Add(new Eigenschaft("Befehle", HasCommands ? "♥" : "", false, this));
                 list.Add(new Eigenschaft(HeaderBeschriftung, Titel, true, this));
                 list.Add(new Eigenschaft(HeaderCharakterName, CharakterName, true, this));
                 list.Add(new Eigenschaft(HeaderSpielerName, SpielerName, true, this));

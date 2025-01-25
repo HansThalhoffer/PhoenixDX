@@ -51,7 +51,7 @@ namespace PhoenixModel.dbCrossRef {
     }
 
     // kosten von Wall etc
-    public class Bauwerk : BauwerkBasis, IDatabaseTable, IEigenschaftler
+    /*public class Bauwerk : BauwerkBasis, IDatabaseTable, IEigenschaftler
     {
         public static string DatabaseName { get; set;  } = string.Empty;
         public string Database { get { return DatabaseName; } set { DatabaseName = value; } }
@@ -70,7 +70,7 @@ namespace PhoenixModel.dbCrossRef {
         }
 
         
-    }
+    }*/
 
     
 }

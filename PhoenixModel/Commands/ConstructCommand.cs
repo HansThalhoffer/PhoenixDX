@@ -43,7 +43,7 @@ namespace PhoenixModel.Commands {
             if (SharedData.RuestungBauwerke == null)
                 return new CommandResultError("Die RuestungBauwerke wurde nicht geladen", $"Der Befehl kann nicht ausgeführt werden, da die RuestungBauwerke aus der Zugdaten Datenbank nicht geladen wurden \r\n {this.CommandString}", this);
 
-            var kosten = SharedData.Kosten.Where(kosten => kosten.Unittyp == What.ToString()).First();
+            var kosten = KostenView.GetKosten(What.ToString());
             if (kosten == null)
                 return new CommandResultError($"Die Kostentablle enthält keinen Wert für {What}", $"Der Befehl kann nicht ausgeführt werden, da die Kostentabelle im Feld Unittyp das genannte Bauwerk nicht kennen \r\n {this.CommandString}", this);
 

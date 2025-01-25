@@ -44,7 +44,7 @@ namespace PhoenixModel.ViewModel {
         public static BlockingCollection<BEW_Reiter>? BEW_Reiter = null;
         public static BlockingCollection<BEW_SKP>? BEW_SKP = null;
         public static BlockingCollection<BEW_SKS>? BEW_SKS = null;
-        public static BlockingCollection<Kosten>? Kosten = null;
+        public static BlockingDictionary<Kosten>? Kosten = null;
         public static BlockingCollection<Teleportpunkte>? Teleportpunkte = null;
         public static BlockingCollection<Units_crossref>? Units_crossref = null;
         public static BlockingCollection<Wall_crossref>? Wall_crossref = null;

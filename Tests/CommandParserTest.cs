@@ -147,5 +147,28 @@ namespace Tests {
             ];
             DoTest(expectedCommands);
         }
+
+        [StaFact]
+        public void DoNothingCommanddTest() {
+            TestSetup.Setup();
+            DoNothingCommand[] expectedCommands = [
+                new DoNothingCommand("Kreatur 403 auf 405/22 tut nichts diese Runde"){
+                  Figur = FigurType.Kreatur,
+                  UnitId = 403,
+                  Location = new(405,22),
+                },
+                new DoNothingCommand("Schiff 303 auf 777/77 tut nichts diese Runde"){
+                  Figur = FigurType.Schiff,
+                  UnitId = 303,
+                  Location = new(777,77),
+                },
+                new DoNothingCommand("Zauberer 514 auf 123/45 tut nichts diese Runde"){
+                  Figur = FigurType.Zauberer,
+                  UnitId = 514,
+                  Location = new(123,45),
+                },
+            ];
+            DoTest(expectedCommands);
+        }
     }
 }

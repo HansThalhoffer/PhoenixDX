@@ -88,6 +88,34 @@ namespace Tests {
             }
         }
 
+        public static void LoadZugdaten(bool resetPasssword, bool resetDB) {
+            AppSettings settings = new AppSettings("Tests.jpk");
+            settings.InitializeSettings();
+
+            if (resetPasssword)
+                settings.UserSettings.PasswordReich = string.Empty;
+            if (resetDB)
+                settings.UserSettings.DatabaseLocationZugdaten = string.Empty;
+
+            settings.UserSettings.DatabaseLocationZugdaten = StorageSystem.LocateFile(settings.UserSettings.DatabaseLocationZugdaten, "Zugdaten.mdb");
+
+            // Arrange
+            PasswordHolder pwdHolder = new PasswordHolder(settings.UserSettings.PasswordReich, new TestPasswortProvider("Zugdaten.mdb"));
+            settings.UserSettings.PasswordReich = pwdHolder.EncryptedPasswordBase64;
+            string? databasePassword = pwdHolder.DecryptedPassword;
+            Assert.NotNull(databasePassword);
+            Assert.NotEmpty(databasePassword);
+
+            if (Application.Current == null) {
+                new Application();
+            }
+
+            using (var db = new Zugdaten(settings.UserSettings.DatabaseLocationZugdaten, settings.UserSettings.PasswordReich)) {
+                db.Load();
+                db.LoadBackgroundSynchronous();
+            }
+        }
+
         /// <summary>
         /// mit der PZE kann ProgramView.SelectedNation erst gesetzt werden
         /// </summary>

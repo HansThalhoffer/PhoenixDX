@@ -57,13 +57,15 @@ namespace PhoenixModel.ViewModel {
         /// </summary>
         public int kf_von { get; set; } = 0;
         /// <summary>
-        /// Die Startpostion Großfeld am Anfang des Zuges
+        /// wenn die Spielfigur bewegt wurde oder in der Runde stehen bleiben soll, dann steht die aktuelle Position in gf/kf_nach
+        /// Wichtig ist: beim Bewegen danach auch die xy Koordinaten zu nutzen, so lange die Altanwendung nicht ganz weg ist
         /// </summary>
-        public int _gfNach;
+        public int gf_nach { get; set; }
         /// <summary>
-        /// Die Startpostion Kleinfeld am Anfang des Zuges
+        /// wenn die Spielfigur bewegt wurde oder in der Runde stehen bleiben soll, dann steht die aktuelle Position in gf/kf_nach
+        /// Wichtig ist: beim Bewegen danach auch die xy Koordinaten zu nutzen, so lange die Altanwendung nicht ganz weg ist
         /// </summary>
-        public int _kfNach;
+        public int kf_nach { get; set; }
         /// <summary>
         /// Der Raumpunkteverbrauch durch die Spielfigur, die Menge der Raumpunkte sind je nach Beschaffenheit des Kleinfeldes und Rüstortes begrenzt
         /// </summary>
@@ -149,51 +151,22 @@ namespace PhoenixModel.ViewModel {
         public dbPZE.Nation? Nation { get; set; } = null;
 
         /// <summary>
-        /// Implementierung in <see cref="SpielfigurExtensions"/>
         /// wenn die Spielfigur bewegt wurde, dann steht die aktuelle Position in gf/kf_nach
         /// bei der Neuanlage, muss der Wert gf_von auf den ersten übergebenen Wert gesetzt werden
         /// Wichtig ist: beim Bewegen danach auch die xy Koordinaten zu nutzen, so lange die Altanwendung nicht ganz weg ist
         /// </summary>
         public override int gf {
-            get =>  this.GetGf();
-            set {
-                this.SetGf(value);
-            }
+            get { return gf_nach == 0 ? gf_von : gf_nach; }
         }
         /// <summary>
-        /// Implementierung in <see cref="SpielfigurExtensions"/>
         /// wenn die Spielfigur bewegt wurde, dann steht die aktuelle Position in gf/kf_nach
         /// bei der Neuanlage, muss der Wert kf_von auf den ersten übergebenen Wert gesetzt werden
         /// Wichtig ist: beim Bewegen danach auch die xy Koordinaten zu nutzen, so lange die Altanwendung nicht ganz weg ist
         /// </summary>
         public override int kf {
-            get => this.GetKf();
-            set {
-                this.SetKf(value);
-            }
+            get { return kf_nach == 0 ? kf_von : kf_nach; }
         }
-        /// <summary>
-        /// Implementierung in <see cref="SpielfigurExtensions"/>
-        /// wenn die Spielfigur bewegt wurde, dann steht die aktuelle Position in gf/kf_nach
-        /// Wichtig ist: beim Bewegen danach auch die xy Koordinaten zu nutzen, so lange die Altanwendung nicht ganz weg ist
-        /// </summary>
-        public int gf_nach {
-            get => this.GetGfNach();
-            set {
-                this.SetGfNach(value);
-            }
-        }
-        /// <summary>
-        /// Implementierung in <see cref="SpielfigurExtensions"/>
-        /// wenn die Spielfigur bewegt wurde, dann steht die aktuelle Position in gf/kf_nach
-        /// Wichtig ist: beim Bewegen danach auch die xy Koordinaten zu nutzen, so lange die Altanwendung nicht ganz weg ist
-        /// </summary>
-        public int kf_nach {
-            get => this.GetKfNach();
-            set {
-                this.SetKfNach(value);
-            }
-        }
+
 
         /// <summary>
         /// Heerführer statt hf. Für die Listendarstellung
@@ -327,5 +300,7 @@ namespace PhoenixModel.ViewModel {
         public virtual List<Eigenschaft> Eigenschaften {
             get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore);
         }
+
+        public override string? ToString() => $"{BaseTyp} {Nummer} auf {CreateBezeichner()}";
     }  
 }

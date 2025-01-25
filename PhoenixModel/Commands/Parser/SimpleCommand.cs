@@ -60,6 +60,7 @@ namespace PhoenixModel.Commands.Parser {
             return input.ToLower() switch {
                 "reiter" => FigurType.Reiter,
                 "krieger" => FigurType.Krieger,
+                "kreatur" => FigurType.Kreatur,
                 "schiff" => FigurType.Schiff,
                 "zauberer" => FigurType.Zauberer,
                 "charakter" => FigurType.Charakter,

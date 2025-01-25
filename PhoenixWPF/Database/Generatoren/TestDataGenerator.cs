@@ -58,6 +58,7 @@ namespace PhoenixWPF.Database.Generatoren {
                 command.CommandText = "DELETE FROM Schenkungen";
                 result = command.ExecuteNonQuery();
                 var schiffe = GenerateSchiffe(20);
+                var kreaturen = GenerateKreaturen(eigeneGebiet, 20);
                 var krieger = GenerateKrieger(eigeneGebiet, 20);
                 var reiter = GenerateReiter(eigeneGebiet, 20);
                 var zauberer = GenerateZauberer(eigeneGebiet, 20);
@@ -66,6 +67,7 @@ namespace PhoenixWPF.Database.Generatoren {
                 PutOnSchiffe(schiffe, reiter, 5);
                 Save(schiffe, command);
                 Save(krieger, command);
+                Save(kreaturen, command);
                 Save(reiter, command);
                 Save(charakter, command);
                 Save(zauberer, command);
@@ -100,6 +102,9 @@ namespace PhoenixWPF.Database.Generatoren {
                 TruppenSpielfigur truppenSpielfigur = figuren.ElementAt(random.Next(0, anzahlFiguren - 1));
                 schiff.auf_Flotte = $"#{truppenSpielfigur.Nummer}";
                 truppenSpielfigur.auf_Flotte = $"#{schiff.Nummer}";
+                truppenSpielfigur.gf_von = schiff.gf_von;
+                truppenSpielfigur.kf_von = schiff.kf_von;
+                truppenSpielfigur.ph_xy = schiff.ph_xy;
             }
         }
 
@@ -146,8 +151,8 @@ namespace PhoenixWPF.Database.Generatoren {
             figur.lkp_alt = lKP;
             figur.SKP = sKP;
             figur.skp_alt = sKP;
-            figur.GS = Zufall(random, 20, 6000, 15000);
-            figur.Kampfeinnahmen = Zufall(random, 20, 6000, 15000);
+            figur.GS = Zufall(random, 10, 6000, 15000);
+            figur.Kampfeinnahmen = Zufall(random, 10, 6000, 15000);
         }
 
         /// <summary>
@@ -310,6 +315,34 @@ namespace PhoenixWPF.Database.Generatoren {
 
             return list;
         }
+
+        /// <summary>
+        /// erzeuge eine Anzahl von Kriegern in das Staatsgebiet der aktuelll ausgewählten Nation
+        /// Katapulte werden auf die Rüstorte verteilt
+        /// </summary>
+        /// <param name="eigeneGebiet"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        private static List<Kreaturen> GenerateKreaturen(KleinFeld[] eigeneGebiet, int count) {
+            Random random = new();
+            List<Kreaturen> list = [];
+            int nummer = Kreaturen.StartNummer + 1;
+            for (int i = 0; i < count; ++i) {
+                KleinFeld kf = eigeneGebiet[random.Next(0, eigeneGebiet.Length - 1)];
+                // auf Flotte
+                Kreaturen krieger = new Kreaturen() {
+                    Nummer = nummer++
+                };
+                TruppenSpielfigur truppenSpielfigur = krieger as TruppenSpielfigur;
+                Fill(ref truppenSpielfigur, kf);
+                Calculate(ref truppenSpielfigur, kf);
+                krieger.Pferde = Zufall(random, 20, krieger.staerke / 2, krieger.staerke);
+                krieger.Garde = i == 47;
+                list.Add(krieger);
+            }
+            return list;
+        }
+
 
         /// <summary>
         /// erzeuge eine Anzahl von Kriegern in das Staatsgebiet der aktuelll ausgewählten Nation

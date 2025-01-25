@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PhoenixModel.Commands {
-    public class DoNothingCommand : SimpleCommand, ICommand {
+    public class DoNothingCommand : SimpleCommand, ICommand, IEquatable<DoNothingCommand> {
 
         public FigurType Figur = FigurType.None;
         public KleinfeldPosition? Location { get; set; }
@@ -38,16 +38,46 @@ namespace PhoenixModel.Commands {
             return CheckPreconditions();
         }
 
+        // Implementing IEquatable<DoNothingCommand>
+        public bool Equals(DoNothingCommand? other) {
+            if (other is null)
+                return false;
+
+            return Figur == other.Figur &&
+                   UnitId == other.UnitId &&
+                   Equals(Location, other.Location); // Properly comparing nullable Location
+        }
+
+        // Override Equals for object comparison
+        public override bool Equals(object? obj) {
+            if (obj is DoNothingCommand otherCommand)
+                return Equals(otherCommand);
+
+            return false;
+        }
+
+        // Override GetHashCode to include all properties
+        public override int GetHashCode() {
+            return HashCode.Combine(Figur, UnitId, Location);
+        }
+
     }
 
     public class DoNothingCommandParser : SimpleParser {
-        private static readonly Regex UpgradeRegex = new Regex(
-            @"^(?<Figur>\w+)\s+(?<UnitId>\d+)\s+auf\s+(?<Location>[^\s]+)\s+tut\s+nichts\s+diese\s+Runde\s$",
-            RegexOptions.IgnoreCase | RegexOptions.Compiled
-        );
+       
+        private static readonly Regex DoNothingRegex = new Regex(
+      // Explanation:
+      // ^(?<figur>\w+)\s+         : capture figur (a single "word"), e.g. "Kreatur"
+      // (?<unitId>\d+)\s+         : capture numeric unit ID, e.g. 403
+      // auf\s+                    : literal "auf "
+      // (?<x>\d+)\/(?<y>\d+)      : capture location as x/y, e.g. 405/22
+      // \s+tut\s+nichts\s+diese\s+Runde$
+    @"^(?<Figur>\w+)\s+(?<UnitId>\d+)\s+auf\s+(?<Location>[^\s]+)\s+tut\s+nichts\s+diese\s+Runde$",
+RegexOptions.IgnoreCase | RegexOptions.Compiled
+);
 
         public override bool ParseCommand(string commandString, out ICommand? command) {
-            var match = UpgradeRegex.Match(commandString);
+            var match = DoNothingRegex.Match(commandString);
             if (!match.Success)
                 return Fail(out command);
 

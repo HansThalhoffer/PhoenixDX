@@ -13,13 +13,15 @@ namespace PhoenixModel.dbCrossRef {
         public string Database { get { return DatabaseName; } set { DatabaseName = value; } }
         public const string TableName = "Kosten";
         string IDatabaseTable.TableName => TableName;
-        public string Bezeichner => $"{Unittyp} GS {GS} BP {BauPunkte} RP {RP}";
+        public string Bezeichner => Unittyp;
+        public override string ToString()=> $"{Unittyp} GS {GS} BP {BauPunkte} RP {RP}";
         // IEigenschaftler
         private static readonly string[] PropertiestoIgnore = ["DatabaseName"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
-        public string? Unittyp { get; set; }
+        public string Unittyp { get; set; } = string.Empty;
         public int GS { get; set; }
         public int BauPunkte { get; set; }
+        public int Raumpunkte => RP;
         public int RP { get; set; }
 
         public enum Felder
