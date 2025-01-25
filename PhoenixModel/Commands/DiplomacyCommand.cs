@@ -32,12 +32,46 @@ namespace PhoenixModel.Commands {
         public DiplomacyCommand(string commandString) : base(commandString) {
         }
 
+
+        /// <summary>
+        /// überprüft, ob die Vorbedingungen gegeben sind, das Kommando auszuführen - das Kommando wird aber noch nicht ausgeführt
+        /// </summary>
+        /// </summary>
         public override CommandResult CheckPreconditions() {
-            throw new NotImplementedException();
+            if (ReferenzNation == null)
+                return new CommandResultError("Es wurde keine Referenznation angegeben", $"Normalerweise ist die Referenznation das aktuell angemeldete oder von der Spielleitung festgelegte Reich.\r\n {this.CommandString}", this);
+            if (Nation == null)
+                return new CommandResultError("Es wurde keine Nation als Ziel angegeben", $"In dem Befehl konnte das betreffende Element nicht gefunden werden \r\n {this.CommandString}", this);
+            if (Recht == BewegungsRecht.None)
+                return new CommandResultError("Es wurde kein Recht angegeben", $"In dem Befehl konnte das betreffende Element nicht gefunden werden \r\n {this.CommandString}", this);
+            if (RemoveRecht == null)
+                return new CommandResultError("Es wurde kein Befehl (Gebe/Entziehe) angegeben", $"In dem Befehl konnte das betreffende Element nicht gefunden werden \r\n {this.CommandString}", this);
+            if (SharedData.Diplomatiechange == null)
+                return new CommandResultError("Die Tabelle Diplomatiechange wurde nicht geladen", $"Der Befehl kann nicht ausgeführt werden, da die betreffende Tabelle aus der Datenbank nicht geladen wurde \r\n {this.CommandString}", this);
+            var item = SharedData.Diplomatiechange.Where(d => d.ReferenzNation == ReferenzNation && d.Nation == Nation);
+            if (item == null || item.Any() == false)
+                return new CommandResultError("Der Eintrag in der Tabelle Diplomatiechange wurde nicht geladen", $"Der Befehl kann nicht ausgeführt werden, da die betreffende Tabelle aus der Datenbank nicht den entsprechenden Eintrag besitzt\r\n {this.CommandString}", this);
+            return new CommandResultSuccess($"Das {this.GetType()} kann ausgeführt werden", $"Der Befehl kann ausgeführt werden:\r\n {this.CommandString}", this);
         }
 
         public override CommandResult ExecuteCommand() {
-            throw new NotImplementedException();
+            CommandResult result = CheckPreconditions();
+            if (result.HasErrors)
+                return result;
+            if (SharedData.Diplomatiechange != null) {
+                var item = SharedData.Diplomatiechange.Where(d => d.ReferenzNation == ReferenzNation && d.Nation == Nation).First();
+                if (Recht == BewegungsRecht.Wegerecht) {
+                    item.Wegerecht = RemoveRecht!=null && RemoveRecht == true ? 0 : 1;
+                }
+                else {
+                    item.Kuestenrecht = RemoveRecht != null && RemoveRecht == true ? 0 : 1;
+                }
+                SharedData.StoreQueue.Enqueue(item);
+                return new CommandResultSuccess($"Das {this.GetType()} wurde erfolgreich ausgeführt", $"Der Befehl wurde ausgeführt:\r\n {this.CommandString}", this);
+            }
+            return new CommandResultError($"Das {this.GetType()} konnte nicht ausgeführt werden", $"Keine Ahnung warum:\r\n {this.CommandString}", this);
+
+
         }
 
         public override CommandResult UndoCommand() {
@@ -80,7 +114,8 @@ namespace PhoenixModel.Commands {
               RegexOptions.IgnoreCase | RegexOptions.Compiled
           );
 
-        public override bool ParseCommand(string commandString, out ICommand? command) {
+        public override bool ParseCommand(string commandStringUE, out ICommand? command) {
+            string commandString = commandStringUE.Replace("Kuestenrecht", "Küstenrecht");
             var match = DiplomacyRegex.Match(commandString);
             if (!match.Success) {
                 return Fail(out command);

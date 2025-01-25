@@ -29,13 +29,13 @@ namespace PhoenixModel.Commands {
         }
 
         public override CommandResult CheckPreconditions() {
-            CommandResult result = CheckPreconditions();
-            if (result.HasErrors)
-                return result;
             throw new NotImplementedException();
         }
 
         public override CommandResult ExecuteCommand() {
+            CommandResult result = CheckPreconditions();
+            if (result.HasErrors)
+                return result;
             throw new NotImplementedException();
         }
 

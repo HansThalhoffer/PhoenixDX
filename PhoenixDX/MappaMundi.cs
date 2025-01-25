@@ -133,7 +133,7 @@ namespace PhoenixDX {
 
 
         /// <summary>
-        /// Zoom change von WPF zu DirectX, beispielsweise aus den UserSettings oder aus dem Sliden von den Optionen
+        /// Sichtbarkeit change von WPF zu DirectX, beispielsweise aus dem Sliden in den Optionen
         /// </summary>
         /// <param name="val"></param>
         public void SetTerrainOpacity(float val) {
@@ -146,7 +146,7 @@ namespace PhoenixDX {
         }
 
         /// <summary>
-        /// Zoom change von WPF zu DirectX, beispielsweise aus den UserSettings oder aus dem Sliden von den Optionen
+        /// Sichtbarkeit change von WPF abgefragt
         /// </summary>
         /// <param name="val"></param>
         public float GetTerrainOpacity() {
@@ -157,7 +157,7 @@ namespace PhoenixDX {
         }
 
         /// <summary>
-        /// Zoom change von WPF zu DirectX, beispielsweise aus den UserSettings oder aus dem Sliden von den Optionen
+        /// Zoom change von WPF zu DirectX, beispielsweise dem Sliden in den Optionen
         /// </summary>
         /// <param name="val"></param>
         public void SetZoom(float val) {

@@ -46,12 +46,9 @@ namespace PhoenixWPF.Database {
                     SpielWPF.LogError("Daten noch nicht vollständig geladen", "Die Tabelle Reich_crossref aus der Erkenfarakarte fehlt");
                 var keys = SharedData.Diplomatie.Keys.OrderBy(str => str).ToList();
 
-
                 foreach (var diplo in SharedData.Diplomatiechange)
                 {
-
-
-                    if (diplo.Nation != ProgramView.SelectedNation )
+                    if (diplo.ReferenzNation != ProgramView.SelectedNation )
                     {
                         string key = diplo.Bezeichner;
                         if (keys.Contains(key) == false)

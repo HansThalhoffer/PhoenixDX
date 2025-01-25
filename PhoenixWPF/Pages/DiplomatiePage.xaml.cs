@@ -1,4 +1,6 @@
-﻿using PhoenixModel.dbErkenfara;
+﻿using PhoenixModel.Commands;
+using PhoenixModel.Commands.Parser;
+using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.EventsAndArgs;
 using PhoenixModel.Helper;
@@ -101,16 +103,6 @@ namespace PhoenixWPF.Pages {
         }
 
 
-        private void SaveDiplomatieChange(ReichCrossref crossref)
-        {
-            if (crossref != null && crossref is Diplomatiechange change)
-            {
-                SharedData.StoreQueue.Enqueue(change);
-            }
-            else
-                SpielWPF.LogError("Die Diplomatie-Änderung konnte nicht gespeichert werden", $"Mit dem Parameter {crossref} stimmte etwas nicht.");
-        }
-
         /// <summary>
         /// hier werden die checked und unchecked Events der checkboxen gefangen
         /// erhaltene Rechte dürfen nicht geändert werden, der ursprüngliche wert kommt wieder in die Checkbox
@@ -140,12 +132,18 @@ namespace PhoenixWPF.Pages {
                         }
                         else
                         {
-                            var property = crossref.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
-                            if (property != null && property.PropertyType == typeof(int))
-                            {
-                                property.SetValue(crossref, newValue ? 1 : 0);
-                                SaveDiplomatieChange(crossref);
+                            string verb = newValue ? "Gebe" : "Entziehe";
+                            string commandString = $"{verb} {crossref.DBname} {propertyName}";
+                            bool isParsed = CommandParser.ParseCommand(commandString, out var command);
+                            if (isParsed && command != null) {
+                                var result = command.ExecuteCommand();
+                                if (result.HasErrors) {
+                                    SpielWPF.LogError(result.Title, result.Message);
+                                    checkBox.IsChecked = oldValue;
+                                }
                             }
+                            else
+                                SpielWPF.LogError("Das DiplomacyCommando wurde nicht von der Maschine verstanden", $"Kommando: {commandString}");
                         }
                     }
 
