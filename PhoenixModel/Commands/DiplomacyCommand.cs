@@ -1,14 +1,10 @@
 ﻿using PhoenixModel.Commands.Parser;
 using PhoenixModel.dbPZE;
+using PhoenixModel.EventsAndArgs;
 using PhoenixModel.Program;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace PhoenixModel.Commands {
     /// <summary>
@@ -66,9 +62,7 @@ namespace PhoenixModel.Commands {
                 else {
                     item.Kuestenrecht = RemoveRecht != null && RemoveRecht == true ? 0 : 1;
                 }
-                IsExecuted = true;
-                SharedData.StoreQueue.Enqueue(item);
-                SharedData.Commands.Add(item,this);
+                Update(item, ViewEventArgs.ViewEventType.UpdateDiplomatie);
                 return new CommandResultSuccess($"Das {this.GetType()} wurde erfolgreich ausgeführt", $"Der Befehl wurde ausgeführt:\r\n {this.CommandString}", this);
             }
             return new CommandResultError($"Das {this.GetType()} konnte nicht ausgeführt werden", $"Keine Ahnung warum:\r\n {this.CommandString}", this);
@@ -88,8 +82,7 @@ namespace PhoenixModel.Commands {
                 else {
                     item.Kuestenrecht = RemoveRecht != null && RemoveRecht == true ? 1 : 0;
                 }
-                IsExecuted = true;
-                SharedData.StoreQueue.Enqueue(item);
+                Update(item, ViewEventArgs.ViewEventType.UpdateDiplomatie);
                 return new CommandResultSuccess($"Undo von {this.GetType()} wurde erfolgreich ausgeführt", $"Der Befehl wurde ausgeführt:\r\n {this.CommandString}", this);
             }
             return new CommandResultError($"Undo {this.GetType()} konnte nicht ausgeführt werden", $"Keine Ahnung warum:\r\n {this.CommandString}", this);

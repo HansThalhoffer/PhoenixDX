@@ -70,8 +70,8 @@ namespace PhoenixModel.Extensions {
             spielfigur.Nation = ProgramView.SelectedNation;
         }
 
-        public static IEnumerable<ICommand> GetCommands(this Spielfigur spielfigur) {
-            return SharedData.Commands.GetValues(spielfigur);
+        public static IEnumerable<ICommand>? GetCommands(this Spielfigur spielfigur) {
+            return SharedData.Commands.Get(spielfigur);
         }
     }
 }

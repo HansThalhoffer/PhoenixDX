@@ -198,7 +198,8 @@ namespace PhoenixModel.ViewModel {
         /// </summary>
         public bool HasCommands{
             get {
-               return this.GetCommands().Count() > 0;
+                var list = this.GetCommands();
+                return list != null && list.Any();
             }
         }
 

@@ -35,22 +35,22 @@
         </Style>
     </Window.Resources>
 
-   
-      
-        <!-- Main Grid -->
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <!-- Left main window -->
-                <ColumnDefinition Width="5" />
-                <!-- Splitter -->
-                <ColumnDefinition Width="480" />
-                <!-- Right split -->
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="1*" />
-                <RowDefinition Height="16" />
-            </Grid.RowDefinitions>
+
+
+    <!-- Main Grid -->
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <!-- Left main window -->
+            <ColumnDefinition Width="5" />
+            <!-- Splitter -->
+            <ColumnDefinition Width="480" />
+            <!-- Right split -->
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="16" />
+        </Grid.RowDefinitions>
         <DockPanel Grid.Column="0">
             <!-- Menu -->
             <Menu  DockPanel.Dock="Top" HorizontalAlignment="Right" HorizontalContentAlignment="Right">
@@ -96,69 +96,69 @@
             <Frame Grid.Column="0" Grid.Row="0"  Source="Erkenfara.xaml"/>
         </DockPanel>
         <!-- Left-to-Right Splitter -->
-            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
+        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
 
-            <!-- Right Grid -->
-            <Grid Grid.Column="2">
-                <Grid.RowDefinitions>
-                    <!-- Top TabControl -->
-                    <RowDefinition Height="1*" />
-                    <!-- Splitter  -->
-                    <RowDefinition Height="5" />
-                    <!-- Bottom TabControl -->
-                    <RowDefinition Height="2*" />
-
-                </Grid.RowDefinitions>
-
+        <!-- Right Grid -->
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
                 <!-- Top TabControl -->
-                <TabControl Grid.Row="0" Margin="5" Name="TopTabControl">
-                    <TabItem Header="Diplomatie" Name="Diplomatie">
-                        <Frame Source="Pages/DiplomatiePage.xaml" />
+                <RowDefinition Height="1*" />
+                <!-- Splitter  -->
+                <RowDefinition Height="5" />
+                <!-- Bottom TabControl -->
+                <RowDefinition Height="2*" />
+
+            </Grid.RowDefinitions>
+
+            <!-- Top TabControl -->
+            <TabControl Grid.Row="0" Margin="5" Name="TopTabControl">
+                <TabItem Header="Rüsten" Name="BuildPage">
+                    <Frame Source="Pages/BuildPage.xaml" />
+                </TabItem>
+                <TabItem Header="Befehle" Name="CommandPage">
+                    <Frame Source="Pages/CommandPage.xaml" />
+                </TabItem>
+                <TabItem Header="Aktueller Zug" Name="CommandHistoryPage">
+                    <Frame Source="Pages/CommandHistoryPage.xaml" />
+                </TabItem>
+                <TabItem Header="Diplomatie" Name="Diplomatie">
+                    <Frame Source="Pages/DiplomatiePage.xaml" />
+                </TabItem>
+                <TabItem Header="Optionen" Name="Optionen">
+                    <Frame Source="Pages/OptionsPage.xaml" />
+                </TabItem>
+            </TabControl>
+
+            <!-- Splitter -->
+            <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <!-- Selection History -->
+                    <RowDefinition Height="20" />
+                    <!-- Bottom TabControl -->
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+                <!-- Selection Navigator -->
+                <Frame Grid.Row="0" Height="20" Source="Pages/SelectionNavigatorPage.xaml" />
+
+                <!-- Bottom TabControl -->
+                <TabControl Grid.Row="1" Margin="5" Name="BottomTabControl">
+                    <TabItem Header="Eigenschaften" Name="Eigenschaften">
+                        <Frame Source="Pages/PropertyListPage.xaml" />
                     </TabItem>
-                    <TabItem Header="Rüsten" Name="BuildPage">
-                        <Frame Source="Pages/BuildPage.xaml" />
+                    <TabItem Header="Infos" Name="Informationen">
+                        <Frame Source="Pages/LogPage.xaml" />
                     </TabItem>
-                    <TabItem Header="Befehle" Name="CommandPage">
-                        <Frame Source="Pages/CommandPage.xaml" />
+                    <TabItem Header="Figuren" Name="FigurenAuswahl">
+                        <Frame Source="Pages/SelectFigurPage.xaml" />
                     </TabItem>
-                    <TabItem Header="History" Name="CommandHistoryPage">
-                        <Frame Source="Pages/CommandHistoryPage.xaml" />
-                    </TabItem>
-                    <TabItem Header="Optionen" Name="Optionen">
-                        <Frame Source="Pages/OptionsPage.xaml" />
+                    <TabItem Header="Rüstorte" Name="RüstortAuswahl">
+                        <Frame Source="Pages/SelectRüstortPage.xaml" />
                     </TabItem>
                 </TabControl>
-
-                <!-- Splitter -->
-                <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
-
-                <Grid Grid.Row="2">
-                    <Grid.RowDefinitions>
-                        <!-- Selection History -->
-                        <RowDefinition Height="20" />
-                        <!-- Bottom TabControl -->
-                        <RowDefinition Height="1*" />
-                    </Grid.RowDefinitions>
-                    <!-- Selection Navigator -->
-                    <Frame Grid.Row="0" Height="20" Source="Pages/SelectionNavigatorPage.xaml" />
-
-                    <!-- Bottom TabControl -->
-                    <TabControl Grid.Row="1" Margin="5" Name="BottomTabControl">
-                        <TabItem Header="Eigenschaften" Name="Eigenschaften">
-                            <Frame Source="Pages/PropertyListPage.xaml" />
-                        </TabItem>
-                        <TabItem Header="Infos" Name="Informationen">
-                            <Frame Source="Pages/LogPage.xaml" />
-                        </TabItem>
-                        <TabItem Header="Figuren" Name="FigurenAuswahl">
-                            <Frame Source="Pages/SelectFigurPage.xaml" />
-                        </TabItem>
-                        <TabItem Header="Rüstorte" Name="RüstortAuswahl">
-                            <Frame Source="Pages/SelectRüstortPage.xaml" />
-                        </TabItem>
-                    </TabControl>
-                </Grid>
             </Grid>
         </Grid>
+    </Grid>
 
 </Window>

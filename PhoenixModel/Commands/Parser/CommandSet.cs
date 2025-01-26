@@ -11,14 +11,6 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.Commands.Parser {
     public class CommandSet : PhoenixModel.ViewModel.BlockingSet<ISelectable, SimpleCommand>, INotifyCollectionChanged, IEnumerable<SimpleCommand> {
-        public IEnumerator<SimpleCommand> GetEnumerator() {
-            var val = GetValues();
-            return val.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() {
-            var val = GetValues();
-            return val.GetEnumerator();
-        }
+       
     }
 }

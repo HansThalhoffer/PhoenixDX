@@ -8,6 +8,7 @@ using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
 using PhoenixWPF.Pages.Converter;
 using PhoenixWPF.Program;
+using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -30,19 +31,20 @@ namespace PhoenixWPF.Pages {
             if (SharedData.Diplomatiechange != null && ProgramView.SelectedNation != null &&
                 (e.EventType == ViewEventArgs.ViewEventType.UpdateDiplomatie))
             {
+                EigenschaftlerDataGrid.ItemsSource = null;
                 EigenschaftlerList.Clear();
                 var list = SharedData.Diplomatiechange;
                 if (list != null)
-                    EigenschaftlerList.AddRange(list);
+                    foreach ( var item in SharedData.Diplomatiechange) 
+                        EigenschaftlerList.Add(item);
                 LoadEigenschaftler();
             }
         }
-        public List<IEigenschaftler> EigenschaftlerList { get; set; } = [];
+        public ObservableCollection<IEigenschaftler> EigenschaftlerList { get; set; } = [];
 
 
         public void LoadEigenschaftler()
         {
-
             if (EigenschaftlerList == null || EigenschaftlerList.Count == 0)
                 return;
             string[] toIgnore = { };

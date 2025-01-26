@@ -30,13 +30,17 @@ namespace PhoenixWPF.Pages
             
         }
 
+        private void Refresh() {
+            CommandDataGrid.Items.Refresh();
+        }
+
         private void UndoButton_Click(object sender, RoutedEventArgs e) {
             if (sender is Button button && button.DataContext is SimpleCommand command) {
                 var result = command.UndoCommand();
+                SharedData.Commands.Remove(command);
                 if (result.HasErrors == false) {
-                    CommandDataGrid.Items.Refresh();
+                    Refresh();
                 }
-
             }
         }
       

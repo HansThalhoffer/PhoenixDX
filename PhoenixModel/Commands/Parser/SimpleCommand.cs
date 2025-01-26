@@ -1,8 +1,12 @@
-﻿using PhoenixModel.ExternalTables;
+﻿using PhoenixModel.Database;
+using PhoenixModel.EventsAndArgs;
+using PhoenixModel.ExternalTables;
+using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -21,6 +25,18 @@ namespace PhoenixModel.Commands.Parser {
         public abstract CommandResult ExecuteCommand();
 
         public abstract CommandResult UndoCommand();
+
+        protected void Update(IDatabaseTable item, ViewEventArgs.ViewEventType viewEventType, [CallerMemberName] string callerName = "") {
+            IsExecuted = true;
+            SharedData.StoreQueue.Enqueue(item);
+            bool isUndo = callerName.StartsWith("Undo");
+            if (isUndo)
+                SharedData.Commands.Remove(this);
+            else if (item is ISelectable selectable) 
+                SharedData.Commands.Add(selectable, this);
+
+            ProgramView.Update(ViewEventArgs.ViewEventType.UpdateDiplomatie);
+        }
 
         /// <summary>
         /// Versucht den Befehl rückgängig zu machen.

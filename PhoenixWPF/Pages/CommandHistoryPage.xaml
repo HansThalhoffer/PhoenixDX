@@ -9,7 +9,7 @@
       Title="CommandHistoryPage">
 
     <Grid>
-        <DataGrid x:Name="CommandDataGrid" AutoGenerateColumns="False" CanUserAddRows="False">
+        <DataGrid x:Name="CommandDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
             <DataGrid.Columns>
                 <!-- Readonly Checkbox -->
                 <DataGridCheckBoxColumn Header="Executed"
@@ -22,7 +22,7 @@
                         <DataTemplate>
                             <Button x:Name="UndoButton" Content="Undo" 
                                     Click="UndoButton_Click"
-                                    IsEnabled="{Binding IsExecuted, Mode=OneWay}"/>
+                                    IsEnabled="{Binding IsExecuted, Mode=OneWay}"/> 
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
