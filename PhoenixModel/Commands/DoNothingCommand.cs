@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PhoenixModel.Commands {
-    public class DoNothingCommand : SimpleCommand, ICommand, IEquatable<DoNothingCommand> {
+    public class DoNothingCommand : BaseCommand, ICommand, IEquatable<DoNothingCommand> {
 
         public FigurType Figur = FigurType.None;
         public KleinfeldPosition? Location { get; set; }

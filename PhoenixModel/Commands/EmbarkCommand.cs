@@ -16,7 +16,7 @@ namespace PhoenixModel.Commands {
     /// - Schiffe Krieger 153 ein auf Schiff 308 auf 707/45
     /// - Schiffe Krieger 153 aus von Schiff 308 auf 843/01 nach 843/02
     /// </summary>
-    public class EmbarkCommand : SimpleCommand, ICommand {
+    public class EmbarkCommand : BaseCommand, ICommand {
         public enum Modus { einschiffen, ausschiffen }
 
         public Modus Mode { get; set; }

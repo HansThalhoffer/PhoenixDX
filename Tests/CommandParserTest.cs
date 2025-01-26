@@ -25,7 +25,7 @@ namespace Tests {
             return actualCommand;
         }
 
-        private void DoTest(IEnumerable<SimpleCommand> expectedCommands) {
+        private void DoTest(IEnumerable<BaseCommand> expectedCommands) {
             // Testvergleich mit den expected
             foreach (var expectedCommand in expectedCommands) {
                 ICommand? actualCommand = ParseCommand(expectedCommand.CommandString);

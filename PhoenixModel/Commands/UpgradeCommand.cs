@@ -9,7 +9,7 @@ namespace PhoenixModel.Commands {
     /// baut einen Rüstort aus
     ///    - "Verstärke Rüstort 202/33"
     /// </summary>
-    public class UpgradeCommand : SimpleCommand, ICommand {
+    public class UpgradeCommand : BaseCommand, ICommand {
         public KleinfeldPosition? Location { get; set; } = null;
         public Kosten? Kosten = null;
 

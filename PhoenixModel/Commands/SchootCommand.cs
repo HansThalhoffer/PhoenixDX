@@ -7,7 +7,7 @@ using static PhoenixModel.Commands.SchootCommand;
 
 namespace PhoenixModel.Commands {
 
-    public class SchootCommand : SimpleCommand, ICommand {
+    public class SchootCommand : BaseCommand, ICommand {
         
         public FigurType With { get; set; } 
         public KleinfeldPosition? TargetLocation { get; set; } = null;

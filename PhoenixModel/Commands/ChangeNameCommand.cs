@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PhoenixModel.Commands {
-    public class ChangeNameCommand : SimpleCommand, ICommand {
+    public class ChangeNameCommand : BaseCommand, ICommand {
 
         public FigurType Figur = FigurType.None;
         public int UnitId { get; set; } = 0; 

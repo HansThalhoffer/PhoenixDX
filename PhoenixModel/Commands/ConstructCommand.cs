@@ -13,7 +13,7 @@ namespace PhoenixModel.Commands {
     ///    - "Errichte Brücke im Süden von 444/22"
     ///    - "Errichte Brücke im Norden von 47/11"
     /// </summary>
-    public class ConstructCommand : SimpleCommand, ICommand, IEquatable<ConstructCommand> {
+    public class ConstructCommand : BaseCommand, ICommand, IEquatable<ConstructCommand> {
        
         public ConstructionElementType What { get; set; } = ConstructionElementType.None;      // "Wand", "Brücke"
         public Direction? Direction { get; set; } = null; // "Nordosten", "Süden", "Norden", etc.

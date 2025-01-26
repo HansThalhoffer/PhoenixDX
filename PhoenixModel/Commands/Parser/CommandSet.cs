@@ -10,7 +10,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PhoenixModel.Commands.Parser {
-    public class CommandSet : PhoenixModel.ViewModel.BlockingSet<ISelectable, SimpleCommand>, INotifyCollectionChanged, IEnumerable<SimpleCommand> {
+    /// <summary>
+    /// Spezialisierung des BlockingSet
+    /// </summary>
+    public class CommandSet : PhoenixModel.ViewModel.BlockingSet<ISelectable, BaseCommand>, INotifyCollectionChanged, IEnumerable<BaseCommand> {
        
     }
 }

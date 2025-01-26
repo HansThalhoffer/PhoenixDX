@@ -12,46 +12,102 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PhoenixModel.Commands.Parser {
-    public abstract class SimpleCommand : ICommand {
+    /// <summary>
+    /// Basisklasse für Befehle, die das ICommand-Interface implementieren.
+    /// </summary>
+    public abstract class BaseCommand : ICommand {
+        /// <summary>
+        /// Der zugrunde liegende Befehl als Zeichenkette.
+        /// </summary>
         protected readonly string _CommandString;
-        public bool IsExecuted { get; protected set; }
-        
-        public SimpleCommand(string commandString) { _CommandString = commandString; }
 
+        /// <summary>
+        /// Gibt an, ob der Befehl bereits ausgeführt wurde.
+        /// </summary>
+        public bool IsExecuted { get; protected set; }
+
+        /// <summary>
+        /// Erstellt eine neue Instanz der <see cref="BaseCommand"/>-Klasse.
+        /// </summary>
+        /// <param name="commandString">Die Befehlszeichenkette.</param>
+        public BaseCommand(string commandString) {
+            _CommandString = commandString;
+        }
+
+        /// <summary>
+        /// Ruft die Befehlszeichenkette ab.
+        /// </summary>
         public string CommandString => _CommandString;
 
+        /// <summary>
+        /// Überprüft, ob die Vorbedingungen für die Ausführung des Befehls erfüllt sind.
+        /// </summary>
+        /// <returns>Ein <see cref="CommandResult"/>-Objekt mit dem Ergebnis der Prüfung.</returns>
         public abstract CommandResult CheckPreconditions();
 
+        /// <summary>
+        /// Führt den Befehl aus.
+        /// </summary>
+        /// <returns>Ein <see cref="CommandResult"/>-Objekt mit dem Ausführungsergebnis.</returns>
         public abstract CommandResult ExecuteCommand();
 
+        /// <summary>
+        /// Macht die Ausführung des Befehls rückgängig.
+        /// </summary>
+        /// <returns>Ein <see cref="CommandResult"/>-Objekt mit dem Ergebnis des Rückgängig-Machens.</returns>
         public abstract CommandResult UndoCommand();
 
+        /// <summary>
+        /// Aktualisiert den Status eines Elements in der Datenbank und speichert die Aktion in der Befehlswarteschlange.
+        /// </summary>
+        /// <param name="item">Das betroffene Datenbankobjekt.</param>
+        /// <param name="viewEventType">Der Typ des Ansichtsereignisses, das aktualisiert werden soll.</param>
+        /// <param name="callerName">Der Name der aufrufenden Methode (wird automatisch übermittelt).</param>
         protected void Update(IDatabaseTable item, ViewEventArgs.ViewEventType viewEventType, [CallerMemberName] string callerName = "") {
             IsExecuted = true;
             SharedData.StoreQueue.Enqueue(item);
-            bool isUndo = callerName.StartsWith("Undo");
-            if (isUndo)
-                SharedData.Commands.Remove(this);
-            else if (item is ISelectable selectable) 
-                SharedData.Commands.Add(selectable, this);
 
+            bool isUndo = callerName.StartsWith("Undo");
+            if (isUndo) {
+                SharedData.Commands.Remove(this);
+            }
+            else if (item is ISelectable selectable) {
+                SharedData.Commands.Add(selectable, this);
+            }
+
+            // Aktualisiert die Ansicht für Diplomatie-Änderungen
             ProgramView.Update(ViewEventArgs.ViewEventType.UpdateDiplomatie);
         }
 
         /// <summary>
-        /// Versucht den Befehl rückgängig zu machen.
+        /// Konvertiert das Kommando in eine Zeichenfolgendarstellung.
         /// </summary>
-        /// <returns>Ein Objekt vom Typ CommandResult.</returns>
+        /// <returns></returns>
         public abstract override string ToString();
     }
 
+    /// <summary>
+    /// Abstrakte Basisklasse für einen einfachen Befehlsparser.
+    /// Implementiert die Schnittstelle <see cref="ICommandParser"/> zur Verarbeitung von Befehlsstrings.
+    /// </summary>
     public abstract class SimpleParser : ICommandParser {
+        /// <summary>
+        /// Gibt einen Fehlerzustand zurück, indem das übergebene <paramref name="command"/>-Objekt auf <c>null</c> gesetzt wird.
+        /// </summary>
+        /// <param name="command">Ausgabeparameter, der auf <c>null</c> gesetzt wird.</param>
+        /// <returns>Gibt immer <c>false</c> zurück, um einen Fehlschlag anzuzeigen.</returns>
         protected static bool Fail(out ICommand? command) {
             command = null;
             return false;
         }
-        public abstract bool ParseCommand(string commandString, out ICommand? command);
 
+        /// <summary>
+        /// Parst einen Befehlsstring und gibt das entsprechende <see cref="ICommand"/>-Objekt zurück.
+        /// </summary>
+        /// <param name="commandString">Der zu parsende Befehlsstring.</param>
+        /// <param name="command">Das geparste <see cref="ICommand"/>-Objekt oder <c>null</c>, falls das Parsen fehlschlägt.</param>
+        /// <returns><c>true</c>, wenn der Befehl erfolgreich geparst wurde; andernfalls <c>false</c>.</returns>
+        public abstract bool ParseCommand(string commandString, out ICommand? command);
 
         /// <summary>
         /// Analysiert eine Eingabe und extrahiert eine Kleinfeld-Position.
@@ -186,6 +242,7 @@ namespace PhoenixModel.Commands.Parser {
         }
 
         /// <summary>
+        /// Um aus einem zu bauenden oder zu rüstendem Objekt wieder ein Strin zu machen
         /// die Namen entsprechen 1:1 der Kostentabelle in crossref.mdb
         /// </summary>
         public static string ConstructionElementTypeToString(ConstructionElementType type) {
@@ -213,7 +270,11 @@ namespace PhoenixModel.Commands.Parser {
         }
 
 
-
+        /// <summary>
+        /// Wenn etwas gerüstet oder gebaut werden soll, wird es hiermit im String identifihiert
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         public ConstructionElementType parseConstructionElement(string input) {
             return input.ToLower()
             switch {

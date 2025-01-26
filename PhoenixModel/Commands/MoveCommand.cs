@@ -10,7 +10,7 @@ namespace PhoenixModel.Commands {
     /// Repräsentiert einen Befehl zum Bewegen einer Figur.
     /// Bewege Reiter 220 [von 503/22] nach 504/07 [via 503/21, 503/16, 503/4]
     /// </summary>
-    public class MoveCommand : SimpleCommand, IEquatable<MoveCommand> {
+    public class MoveCommand : BaseCommand, IEquatable<MoveCommand> {
         /// <summary>
         /// Die Art der Figur, die bewegt wird.
         /// </summary>

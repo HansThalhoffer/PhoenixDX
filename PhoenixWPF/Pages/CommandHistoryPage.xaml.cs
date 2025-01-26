@@ -35,7 +35,7 @@ namespace PhoenixWPF.Pages
         }
 
         private void UndoButton_Click(object sender, RoutedEventArgs e) {
-            if (sender is Button button && button.DataContext is SimpleCommand command) {
+            if (sender is Button button && button.DataContext is BaseCommand command) {
                 var result = command.UndoCommand();
                 SharedData.Commands.Remove(command);
                 if (result.HasErrors == false) {

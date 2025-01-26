@@ -13,7 +13,7 @@ namespace PhoenixModel.Commands {
     /// <summary>
     /// Spalte von Reiter 220 ab 400 Reiter mit 4 Heerführern
     /// </summary>
-    public class SplitCommand : SimpleCommand, ICommand {
+    public class SplitCommand : BaseCommand, ICommand {
         public FigurType Figur { get; set; }
         public int OriginalUnitId { get; set; } = 0;
         public int SeparatedUnitId { get; set; } = 0;

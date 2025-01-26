@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PhoenixModel.Commands {
-    public class RepairCommand : SimpleCommand, ICommand {
+    public class RepairCommand : BaseCommand, ICommand {
 
         public Kosten? Kosten = null;
         public KleinfeldPosition? Location { get; set; }

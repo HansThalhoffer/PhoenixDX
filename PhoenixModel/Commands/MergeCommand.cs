@@ -12,7 +12,7 @@ namespace PhoenixModel.Commands {
     /// <summary>
     /// Vereinige Reiter 221 mit 3 Heerführern und 244 mit 2 Heerführern zu 221 mit 5 Heerführern
     /// </summary>
-    public class MergeCommand : SimpleCommand, ICommand {
+    public class MergeCommand : BaseCommand, ICommand {
         public FigurType Figur { get; set; }
         public int TargetUnitId { get; set; }
         public int TargetHeerführerCount { get; set; }
