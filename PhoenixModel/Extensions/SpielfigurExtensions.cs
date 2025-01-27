@@ -71,7 +71,7 @@ namespace PhoenixModel.Extensions {
         }
 
         public static IEnumerable<IPhoenixCommand>? GetCommands(this Spielfigur spielfigur) {
-            return SharedData.Commands.Get(spielfigur);
+            return SharedData.Commands.GetCommands(spielfigur);
         }
     }
 }

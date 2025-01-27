@@ -238,7 +238,63 @@ public static class SpielfigurenView {
     /// </summary>
     /// <param name="figur"></param>
     /// <returns></returns>
-    public static List<NamensSpielfigur> HoleSpielerfiguren() {
+    public static Spielfigur? GetSpielfigur(int id) {
+        Spielfigur? spielfigur = null;
+        if (SharedData.Krieger != null &&
+            (spielfigur = SharedData.Krieger.FirstOrDefault(k => k.Nummer == id)) != null)
+            return spielfigur;
+        if (SharedData.Reiter != null &&
+            (spielfigur = SharedData.Reiter.FirstOrDefault(k => k.Nummer == id)) != null)            
+            return spielfigur;
+        if ( SharedData.Schiffe != null &&
+           (spielfigur = SharedData.Schiffe.FirstOrDefault(k => k.Nummer == id)) != null)
+            return spielfigur;
+        if (SharedData.Kreaturen != null &&
+           (spielfigur = SharedData.Kreaturen.FirstOrDefault(k => k.Nummer == id)) != null)
+            return spielfigur;
+        if (SharedData.Zauberer != null &&
+           (spielfigur = SharedData.Zauberer.FirstOrDefault(k => k.Nummer == id)) != null)
+            return spielfigur;
+        if (SharedData.Character != null &&
+           (spielfigur = SharedData.Character.FirstOrDefault(k => k.Nummer == id)) != null)
+            return spielfigur;
+        return null;
+    }
+
+    /// <summary>
+    /// Hole alle Charaktere und Zauberer, die Spielernamen haben oder Spieler sein können
+    /// </summary>
+    /// <param name="figur"></param>
+    /// <returns></returns>
+    public static Spielfigur? GetSpielfigur(FigurType typ, int id) {
+        Spielfigur? spielfigur = null;
+        if (typ == FigurType.Krieger && SharedData.Krieger != null &&
+            (spielfigur = SharedData.Krieger.FirstOrDefault(k => k.Nummer == id)) != null)
+            return spielfigur;
+        if (typ == FigurType.Reiter && SharedData.Reiter != null &&
+            (spielfigur = SharedData.Reiter.FirstOrDefault(k => k.Nummer == id)) != null)
+            return spielfigur;
+        if (typ == FigurType.Schiff && SharedData.Schiffe != null &&
+           (spielfigur = SharedData.Schiffe.FirstOrDefault(k => k.Nummer == id)) != null)
+            return spielfigur;
+        if (typ == FigurType.Kreatur && SharedData.Kreaturen != null &&
+           (spielfigur = SharedData.Kreaturen.FirstOrDefault(k => k.Nummer == id)) != null)
+            return spielfigur;
+        if (typ == FigurType.Zauberer && SharedData.Zauberer != null &&
+           (spielfigur = SharedData.Zauberer.FirstOrDefault(k => k.Nummer == id)) != null)
+            return spielfigur;
+        if (typ == FigurType.Charakter && SharedData.Character != null &&
+           (spielfigur = SharedData.Character.FirstOrDefault(k => k.Nummer == id)) != null)
+            return spielfigur;
+        return null;
+    }
+
+    /// <summary>
+    /// Hole alle Charaktere und Zauberer, die Spielernamen haben oder Spieler sein können
+    /// </summary>
+    /// <param name="figur"></param>
+    /// <returns></returns>
+    public static List<NamensSpielfigur> GetSpielerfiguren() {
         List<NamensSpielfigur> result = [];
         var charaktere = SharedData.Character?.Where(s => s.IsSpielerFigur == true && Plausibilität.IsValid(s));
         if (charaktere != null)

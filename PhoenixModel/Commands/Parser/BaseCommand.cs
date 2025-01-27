@@ -22,6 +22,21 @@ namespace PhoenixModel.Commands.Parser {
         protected readonly string _CommandString;
 
         /// <summary>
+        /// Wenn das Item innerhalb der aktuellen Session bearbeitet wurde, steht es noch hierdrin
+        /// </summary>
+        protected ISelectable? _Selectable = null;
+
+        /// <summary>
+        /// Wenn das Kommando das Selectable betrifft, gibt es true zurück
+        /// Die Basisimplementierung schaut nach einem direkten Vergleich
+        /// der funktioniert aber nur, wenn das Selectable nach Programmstart verändert wurde
+        /// daher ist ein Vergleich der Werte immer notwendig
+        /// </summary>
+        /// <param name="selectable"></param>
+        /// <returns></returns>
+        public virtual bool HasEffectOn(ISelectable selectable) => _Selectable == selectable;
+
+        /// <summary>
         /// Gibt an, ob der Befehl bereits ausgeführt wurde.
         /// </summary>
         public bool IsExecuted { get; protected set; }
@@ -86,7 +101,8 @@ namespace PhoenixModel.Commands.Parser {
                 SharedData.Commands.Remove(this);
             }
             else if (item is ISelectable selectable) {
-                SharedData.Commands.Add(selectable, this);
+                SharedData.Commands.Add(this);
+                _Selectable = selectable;
             }
 
             // Aktualisiert die Ansicht für Diplomatie-Änderungen

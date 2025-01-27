@@ -1,4 +1,6 @@
-﻿namespace PhoenixModel.Commands.Parser {
+﻿using PhoenixModel.Program;
+
+namespace PhoenixModel.Commands.Parser {
     /// <summary>
     /// Standardbefehl, der zurückgegeben wird, wenn kein CommandParser den Befehlsstring versteht.
     /// </summary>
@@ -17,6 +19,8 @@
         public override string ToString() {
             return _CommandString;
         }
+
+        public override bool HasEffectOn(ISelectable selectable) => false; 
 
         /// <summary>
         /// Führt den Standardbefehl aus und gibt eine Fehlermeldung zurück, wenn der Befehl nicht erkannt wurde.

@@ -45,7 +45,7 @@ namespace PhoenixModel.View {
         /// <param name="figur"></param>
         /// <returns></returns>
         public static IEnumerable<NamensSpielfigur> HoleSpielerfigurenOhneLehen() {
-            var result = SpielfigurenView.HoleSpielerfiguren();
+            var result = SpielfigurenView.GetSpielerfiguren();
             if (SharedData.Lehensvergabe == null || result.Count == 0)
                 return result;
             

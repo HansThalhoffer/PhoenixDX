@@ -13,7 +13,22 @@ namespace PhoenixModel.Commands.Parser {
     /// <summary>
     /// Spezialisierung des BlockingSet
     /// </summary>
-    public class CommandSet : PhoenixModel.ViewModel.BlockingSet<ISelectable, BaseCommand>, INotifyCollectionChanged, IEnumerable<BaseCommand> {
-       
+    public class CommandSet : ObservableCollection<BaseCommand>, INotifyCollectionChanged, IEnumerable<BaseCommand> {
+
+        public IEnumerable<BaseCommand> GetCommands(ISelectable selectable) {
+            return this.Where(item => item.HasEffectOn(selectable));
+        }
+
+        public bool Undo(BaseCommand command) {
+            if (command.CanUndo == true) {
+                var result = command.UndoCommand();
+                if (result.HasErrors == false) {
+                    Remove(command);
+                    return true;
+                }
+                ProgramView.LogError(result.Title, result.Message);
+            }
+            return false;
+        }
     }
 }

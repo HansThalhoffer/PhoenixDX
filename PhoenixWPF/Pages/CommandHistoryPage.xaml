@@ -27,7 +27,7 @@
                         <DataTemplate>
                             <Button x:Name="UndoButton" Content="Undo" 
                                     Click="UndoButton_Click"
-                                    IsEnabled="{Binding CanUndo, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/> 
+                                    Visibility="{Binding CanUndo, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/> 
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

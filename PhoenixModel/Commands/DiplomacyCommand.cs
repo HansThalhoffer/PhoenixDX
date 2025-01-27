@@ -1,5 +1,6 @@
 ﻿using PhoenixModel.Commands.Parser;
 using PhoenixModel.dbPZE;
+using PhoenixModel.dbZugdaten;
 using PhoenixModel.EventsAndArgs;
 using PhoenixModel.Program;
 using PhoenixModel.View;
@@ -72,6 +73,46 @@ namespace PhoenixModel.Commands {
 
 
         /// <summary>
+        /// Wenn das Kommando das Selectable betrifft, gibt es true zurück
+        /// Die Basisimplementierung schaut nach einem direkten Vergleich
+        /// der funktioniert aber nur, wenn das Selectable nach Programmstart verändert wurde
+        /// daher ist ein Vergleich der Werte immer notwendig
+        /// </summary>
+        /// <param name="selectable"></param>
+        /// <returns></returns>
+        public override bool HasEffectOn(ISelectable selectable) {
+
+            return (base.HasEffectOn(selectable) == true ||
+                (selectable != null  && selectable is Diplomatiechange diplomatiechange &&
+                diplomatiechange.ReferenzNation == this.ReferenzNation && diplomatiechange.Nation == this.Nation));
+        }
+
+        private bool IsLastCommand() {
+            if (SharedData.Diplomatiechange != null) {
+                var item = SharedData.Diplomatiechange.Where(d => d.ReferenzNation == ReferenzNation && d.Nation == Nation).First();
+                if (item != null) {
+                    var diplomacyCommands = SharedData.Commands.GetCommands(item);
+                    if (diplomacyCommands != null && diplomacyCommands.Last() == this)
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// nur der jeweils letzte Diplomatie Befehl kann wiederrufen werden
+        /// </summary>
+        public override bool CanUndo {
+            get{
+                CommandResult result = CheckPreconditions();
+                if (result.HasErrors)
+                    return false;
+            
+                return IsLastCommand();
+            }
+        }
+
+        /// <summary>
         /// überprüft, ob die Vorbedingungen gegeben sind, das Kommando auszuführen - das Kommando wird aber noch nicht ausgeführt
         /// </summary>
         /// </summary>
@@ -123,6 +164,10 @@ namespace PhoenixModel.Commands {
             CommandResult result = CheckPreconditions();
             if (result.HasErrors)
                 return result;
+            if (IsLastCommand() == false)
+                return new CommandResultError($"Das Undo von {this.GetType()} konnte nicht ausgeführt werden", $"Das Kommando muss der letzte Diplomatie Befehl sein, damit er fehlerfrei wiederrufen werden kann:\r\n {this.CommandString}", this);
+
+
             if (SharedData.Diplomatiechange != null) {
                 var item = SharedData.Diplomatiechange.Where(d => d.ReferenzNation == ReferenzNation && d.Nation == Nation).First();
                 if (Recht == BewegungsRecht.Wegerecht) {
