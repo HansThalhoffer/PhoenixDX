@@ -8,22 +8,26 @@ using System.Windows;
 
 namespace PhoenixWPF.Database
 {
-
-
+    /// <summary>
+    /// Repräsentiert eine Verbindung zu einer Access-Datenbank via OLEDB
+    /// </summary>
     public class AccessDatabase : IDisposable
     {
         private readonly OleDbConnection _connection;
-
+        /// <summary>
+        /// Ermittelt die installierte Microsoft ACE OLEDB Provider-Version aus der Windows-Registrierung.
+        /// </summary>
+        /// <returns>Der Name des installierten OLEDB Providers oder eine Fehlermeldung.</returns>
         public static string GetInstalledAceOleDbProvider()
         {
-            // Registry path for OLEDB Providers
-            // string registryPath32Bit = @"SOFTWARE\WOW6432Node\Classes\Microsoft.ACE.OLEDB.";
+            // Registrypfad für OLEDB Provider
+              // string registryPath32Bit = @"SOFTWARE\WOW6432Node\Classes\Microsoft.ACE.OLEDB.";
             string registryPath64Bit = @"SOFTWARE\Classes\Microsoft.ACE.OLEDB.";
 
             string? result = null;
 
-            // Check for ACE.OLEDB providers by iterating over known versions
-            string[] versions = { "18.0", "17.0", "16.0", "15.0", "14.0", "12.0", "11.0", "10.0", "8.0", "4.0" }; // Known versions of ACE OLEDB provider
+            // Überprüft bekannte Versionen des ACE OLEDB Providers
+            string[] versions = { "18.0", "17.0", "16.0", "15.0", "14.0", "12.0", "11.0", "10.0", "8.0", "4.0" }; 
             foreach (var version in versions)
             {
                 using (var key = Registry.LocalMachine.OpenSubKey($"{registryPath64Bit}{version}"))
@@ -35,12 +39,20 @@ namespace PhoenixWPF.Database
                     }
                 }
             }
-
             return "No Microsoft.ACE.OLEDB provider installed.";
         }
 
+        /// <summary>
+        /// Standard-SQL-Abfrage zur Rückgabe der letzten automatisch von der Datenbank eingefügten Identität.
+        /// </summary>
         static string QueryIdentityAfterInsert =  "SELECT @@IDENTITY;";
-
+        
+        /// <summary>
+        /// Erstellt eine Verbindung zur Access-Datenbank.
+        /// </summary>
+        /// <param name="databaseFilePath">Der Pfad zur Access-Datenbankdatei.</param>
+        /// <param name="pw">Optionales Passwort für die Datenbank.</param>
+        /// <exception cref="ArgumentException">Wird ausgelöst, wenn kein Dateipfad angegeben wurde.</exception>
         public AccessDatabase(string databaseFilePath, string? pw)
         {
             if (string.IsNullOrWhiteSpace(databaseFilePath))
@@ -65,12 +77,17 @@ namespace PhoenixWPF.Database
             _connection = new OleDbConnection(connectionString);
 
         }
-
+        /// <summary>
+        /// Gibt an, ob die Datenbankverbindung aktuell geöffnet ist.
+        /// </summary>
         public bool IsConnected
         {
             get { return _connection != null && _connection.State == ConnectionState.Open; }
         }
 
+        /// <summary>
+        /// Gibt den Namen der verbundenen Datenbank zurück.
+        /// </summary>
         public string DatabaseName
         {
             get 

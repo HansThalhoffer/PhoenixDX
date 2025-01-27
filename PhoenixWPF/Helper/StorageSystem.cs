@@ -9,8 +9,11 @@ using System.Text;
 
 namespace PhoenixWPF.Helper {
     public class StorageSystem {
-        // Vorbereitung, um auf einem bestimmten USB Stick die verschlüsselten Datenbank Passwörter für den Install abzulegen
-        // wenn die Passwörter auf dem Stick mit der USB ID verschlüsselt wären, ist eine ausreichende Sicherheit gegeben
+        /// <summary>
+        /// Vorbereitung, um auf einem bestimmten USB Stick die verschlüsselten Datenbank Passwörter für den Install abzulegen
+        /// wenn die Passwörter auf dem Stick mit der USB ID verschlüsselt wären, ist eine ausreichende Sicherheit gegeben
+        /// </summary>
+        /// <returns></returns>
         public static string? CheckForPassKeyFile() {
             var drives = DriveInfo.GetDrives();
             foreach (var drive in drives) {
@@ -33,8 +36,12 @@ namespace PhoenixWPF.Helper {
             return null;
         }
 
-        // die Totalsize ist bei fast jedem USB Stick unterschiedlich genug für die Menge an Sicherheit für diese Passwörter
-        // der Aufwand die Passwörter per Tool aus den AccessDB oder der alten Executable zu holen ist viel geringer
+        /// <summary>
+        /// die Totalsize ist bei fast jedem USB Stick unterschiedlich genug für die Menge an Sicherheit für diese Passwörter
+        /// der Aufwand die Passwörter per Tool aus den AccessDB oder der alten Executable zu holen ist viel geringer
+        /// </summary>
+        /// <param name="drive"></param>
+        /// <returns></returns>
         private static string CreatePassKey(DriveInfo drive) {
             return $"{drive.VolumeLabel}{drive.DriveFormat}{drive.TotalSize}";
         }

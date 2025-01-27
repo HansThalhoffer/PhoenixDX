@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json;
-using System.Reflection;
+﻿using System.Text.Json;
 
-namespace PhoenixWPF.Database
-{
-    public class ObjectStore
-    {
+namespace PhoenixWPF.Database {
+    /// <summary>
+    /// Eine generische Speicherklasse zur Verwaltung von Objekten verschiedener Typen.
+    /// </summary>
+    public class ObjectStore {
         private Dictionary<Type, object> store = [];
 
         /// <summary>
-        /// Adds an object to the store. If the type already exists, it will be overwritten.
+        /// Fügt ein Objekt in den Speicher ein. Falls der Typ bereits existiert, wird das Objekt überschrieben.
         /// </summary>
-        public void Add<T>(T obj)
-        {
+        /// <typeparam name="T">Der Typ des Objekts.</typeparam>
+        /// <param name="obj">Das einzufügende Objekt.</param>
+        public void Add<T>(T obj) {
             if (obj == null)
                 return;
             Type type = typeof(T);
@@ -21,34 +20,33 @@ namespace PhoenixWPF.Database
         }
 
         /// <summary>
-        /// Retrieves an object of the specified type from the store.
+        /// Ruft ein Objekt des angegebenen Typs aus dem Speicher ab.
         /// </summary>
-        public T Get<T>()
-        {
+        /// <typeparam name="T">Der Typ des abzurufenden Objekts.</typeparam>
+        /// <returns>Das gespeicherte Objekt des angegebenen Typs.</returns>
+        /// <exception cref="KeyNotFoundException">Wird ausgelöst, wenn kein Objekt des Typs gefunden wurde.</exception>
+        public T Get<T>() {
             Type type = typeof(T);
-            if (store.TryGetValue(type, out var obj))
-            {
+            if (store.TryGetValue(type, out var obj)) {
                 return (T)obj;
             }
             throw new KeyNotFoundException($"Object of type {type} not found in the store.");
         }
 
         /// <summary>
-        /// Serializes the store to a JSON string.
+        /// Serialisiert den gesamten Speicherinhalt in eine JSON-Zeichenkette.
         /// </summary>
-        public string Serialize()
-        {
+        /// <returns>Eine JSON-Zeichenkette, die den Zustand des Speichers enthält.</returns>
+        public string Serialize() {
             var serializedObjects = new List<SerializedObject>();
 
-            foreach (var kvp in store)
-            {
+            foreach (var kvp in store) {
                 var type = kvp.Key;
                 var obj = kvp.Value;
                 var typeName = $"{type.FullName}, {type.Assembly.GetName().Name}";
                 var jsonData = JsonSerializer.Serialize(obj, type);
 
-                serializedObjects.Add(new SerializedObject
-                {
+                serializedObjects.Add(new SerializedObject {
                     TypeName = typeName,
                     JsonData = jsonData
                 });
@@ -58,21 +56,19 @@ namespace PhoenixWPF.Database
         }
 
         /// <summary>
-        /// Deserializes the store from a JSON string.
+        /// Deserialisiert eine JSON-Zeichenkette und stellt den Speicherinhalt wieder her.
         /// </summary>
-        public void Deserialize(string json)
-        {
+        /// <param name="json">Die JSON-Zeichenkette mit gespeicherten Objekten.</param>
+        /// <exception cref="Exception">Wird ausgelöst, wenn ein Typ nicht gefunden werden kann.</exception>
+        public void Deserialize(string json) {
             var serializedObjects = JsonSerializer.Deserialize<List<SerializedObject>>(json);
-            if (serializedObjects != null && serializedObjects.Count > 0)
-            {
+            if (serializedObjects != null && serializedObjects.Count > 0) {
                 store.Clear();
-                foreach (var item in serializedObjects)
-                {
+                foreach (var item in serializedObjects) {
                     if (item == null || string.IsNullOrEmpty(item.TypeName) || string.IsNullOrEmpty(item.JsonData))
                         continue;
                     var type = ResolveType(item.TypeName);
-                    if (type == null)
-                    {
+                    if (type == null) {
                         throw new Exception($"Type '{item.TypeName}' could not be found.");
                     }
 
@@ -84,16 +80,26 @@ namespace PhoenixWPF.Database
         }
 
         /// <summary>
-        /// Resolves a type from its full name and assembly name.
+        /// Löst einen Typ anhand seines vollständigen Namens und des Assembly-Namens auf.
         /// </summary>
-        private Type? ResolveType(string typeName)
-        {
+        /// <param name="typeName">Der vollständige Name des Typs.</param>
+        /// <returns>Der aufgelöste Typ oder null, falls er nicht gefunden wurde.</returns>
+        private Type? ResolveType(string typeName) {
             return Type.GetType(typeName);
         }
 
-        private class SerializedObject
-        {
+        /// <summary>
+        /// Interne Klasse zur Speicherung serialisierter Objekte mit Typinformationen.
+        /// </summary>
+        private class SerializedObject {
+            /// <summary>
+            /// Der vollständige Name des Typs.
+            /// </summary>
             public string? TypeName { get; set; }
+
+            /// <summary>
+            /// Die JSON-Darstellung des Objekts.
+            /// </summary>
             public string? JsonData { get; set; }
         }
     }
