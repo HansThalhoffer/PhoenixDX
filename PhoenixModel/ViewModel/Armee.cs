@@ -4,8 +4,10 @@ using PhoenixModel.Helper;
 
 namespace PhoenixModel.ViewModel {
 
+    /// <summary>
+    /// Gegner wird als Listenklasse der Feinde benutzt
+    /// </summary>
     public class Gegner : List<Feinde>, IEigenschaftler {
-
         /// <summary>
         /// IEigenschaftler Anforderung
         /// </summary>
@@ -23,11 +25,7 @@ namespace PhoenixModel.ViewModel {
                 return eigenschaften;
             }
         }
-
-
     }
-
-
 
     /// <summary>
     /// Armee wird als Listenklasse der Spielfiguren benutzt
@@ -96,7 +94,5 @@ namespace PhoenixModel.ViewModel {
                 return eigenschaften;
             }
         }
-
-
     }
 }

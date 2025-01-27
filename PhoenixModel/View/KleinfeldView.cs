@@ -7,10 +7,17 @@ using System.Linq.Expressions;
 
 namespace PhoenixModel.View {
 
+    /// <summary>
+    /// Für die Maarkierung der Kleinfelder gibt es verschiedene Typen. 
+    /// Die Kartendarstellung generiert daraus Farben, sofern das dort implementiert wurde
+    /// </summary>
     public enum MarkerType {
         None, User, Info, Warning, Fatality
     }
 
+    /// <summary>
+    /// Die Sicht auf die Karte und einzelne Kleinfelder
+    /// </summary>
     public static class KleinfeldView {
 
         /// <summary>

@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PhoenixModel.View
-{
+﻿namespace PhoenixModel.View {
+    /// <summary>
+    /// Attribut zur Markierung einer Eigenschaft als editierbar.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
-    public class Editable: Attribute
-    {
-        // Optionally, you can add properties or parameters for additional metadata
+    public class Editable : Attribute {
+        /// <summary>
+        /// Eine optionale Beschreibung zur editierbaren Eigenschaft.
+        /// </summary>
         public string? Description { get; }
 
-        public Editable(string? description = null)
-        {
+        /// <summary>
+        /// Erstellt eine neue Instanz des Editable-Attributs.
+        /// </summary>
+        /// <param name="description">Eine optionale Beschreibung der editierbaren Eigenschaft.</param>
+        public Editable(string? description = null) {
             Description = description;
         }
     }

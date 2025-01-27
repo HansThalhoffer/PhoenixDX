@@ -8,6 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PhoenixModel.ViewModel {
+    /// <summary>
+    /// Sicht auf die Diplomatie Datenklassen
+    /// </summary>
     public static class DiplomatieView {
 
         /// <summary>

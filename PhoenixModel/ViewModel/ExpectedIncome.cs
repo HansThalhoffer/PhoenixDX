@@ -5,33 +5,139 @@ using PhoenixModel.View;
 using static PhoenixModel.ExternalTables.GeländeTabelle;
 
 namespace PhoenixModel.ViewModel {
+    /// <summary>
+    /// Diese Klasse speichert das erwartete Einkommen eines Reiches basierend auf verschiedenen Geländearten und Gebäudetypen.
+    /// </summary>
     public class ExpectedIncome {
 
+        /// <summary>
+        /// Der Name des Reiches.
+        /// </summary>
         public string Reich { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Das gesamte Einkommen des Reiches.
+        /// </summary>
         public int GesamtEinkommen { get; set; }
+
+        /// <summary>
+        /// Anzahl der Tieflandfelder.
+        /// </summary>
         public int TieflandFelder { get; set; }
+
+        /// <summary>
+        /// Einkommen aus Tieflandfeldern.
+        /// </summary>
         public int TieflandEinkommen { get; set; }
+
+        /// <summary>
+        /// Anzahl der Tiefland-Waldfelder.
+        /// </summary>
         public int TieflandwaldFelder { get; set; }
+
+        /// <summary>
+        /// Einkommen aus Tiefland-Waldfeldern.
+        /// </summary>
         public int TieflandwaldEinkommen { get; set; }
+
+        /// <summary>
+        /// Anzahl der Tiefland-Wüstenfelder.
+        /// </summary>
         public int TieflandwüsteFelder { get; set; }
+
+        /// <summary>
+        /// Einkommen aus Tiefland-Wüstenfeldern.
+        /// </summary>
         public int TieflandwüsteEinkommen { get; set; }
+
+        /// <summary>
+        /// Anzahl der Tiefland-Sumpffelder.
+        /// </summary>
         public int TieflandsumpfFelder { get; set; }
+
+        /// <summary>
+        /// Einkommen aus Tiefland-Sumpffeldern.
+        /// </summary>
         public int TieflandsumpfEinkommen { get; set; }
+
+        /// <summary>
+        /// Anzahl der Hochlandfelder.
+        /// </summary>
         public int HochlandFelder { get; set; }
+
+        /// <summary>
+        /// Einkommen aus Hochlandfeldern.
+        /// </summary>
         public int HochlandEinkommen { get; set; }
+
+        /// <summary>
+        /// Anzahl der Bergfelder.
+        /// </summary>
         public int BergFelder { get; set; }
+
+        /// <summary>
+        /// Einkommen aus Bergfeldern.
+        /// </summary>
         public int BergEinkommen { get; set; }
+
+        /// <summary>
+        /// Anzahl der Gebirgsfelder.
+        /// </summary>
         public int GebirgFelder { get; set; }
+
+        /// <summary>
+        /// Einkommen aus Gebirgsfeldern.
+        /// </summary>
         public int GebirgEinkommen { get; set; }
+
+        /// <summary>
+        /// Anzahl der Burgen.
+        /// </summary>
         public int Burgen { get; set; }
+
+        /// <summary>
+        /// Einkommen aus Burgen.
+        /// </summary>
         public int BurgenEinkommen { get; set; }
+
+        /// <summary>
+        /// Anzahl der Städte.
+        /// </summary>
         public int Städte { get; set; }
+
+        /// <summary>
+        /// Einkommen aus Städten.
+        /// </summary>
         public int StädteEinkommen { get; set; }
+
+        /// <summary>
+        /// Anzahl der Festungen.
+        /// </summary>
         public int Festungen { get; set; }
+
+        /// <summary>
+        /// Einkommen aus Festungen.
+        /// </summary>
         public int FestungenEinkommen { get; set; }
+
+        /// <summary>
+        /// Anzahl der Hauptstädte.
+        /// </summary>
         public int Hauptstädte { get; set; }
+
+        /// <summary>
+        /// Einkommen aus Hauptstädten.
+        /// </summary>
         public int HauptstädteEinkommen { get; set; }
+
+        /// <summary>
+        /// Anzahl der Festungs-Hauptstädte.
+        /// </summary>
         public int FestungsHauptstädte { get; set; }
+
+        /// <summary>
+        /// Einkommen aus Festungs-Hauptstädten.
+        /// </summary>
         public int FestungsHauptstädteEinkommen { get; set; }
 
         /// <summary>
@@ -87,8 +193,6 @@ namespace PhoenixModel.ViewModel {
                     }
 
                 }
-
-
                 // jedes Kleinfeld hat Terrain, Gebäude usw. schon als Member. Mit einer foreach lassen sich die Daten auch sammeln - siehe auch EinnahmenView
             }
 

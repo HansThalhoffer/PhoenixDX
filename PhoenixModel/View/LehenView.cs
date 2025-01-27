@@ -8,6 +8,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PhoenixModel.View {
+    /// <summary>
+    /// Die Sicht auf Lehen
+    /// Dieser Teil wurde in der Altanwendung nicht vollständige implementiert
+    /// </summary>
     public class LehenView {
 
         /// <summary>

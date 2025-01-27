@@ -66,7 +66,8 @@ namespace PhoenixDX.Structures {
                     return coloredTextures[2];
                 case MarkerType.Fatality:
                     return coloredTextures[3];
-                default: return null;
+                default:
+                    throw new ArgumentException($"Der übergebene Markertyp {MarkerType} wurde in der Kartendarstellung PhoenixDX noch nicht implementiert");
             }
         }
     }

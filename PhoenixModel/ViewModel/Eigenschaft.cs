@@ -68,6 +68,16 @@ namespace PhoenixModel.ViewModel {
             }
         }
 
+        /// <summary>
+        /// erzeugt einen long integer Wert aus der Eigenschaft, um die Daten in einem Datagrid sortieren zu können
+        /// column = new DataGridTextColumn
+        /// {
+        ///     Header = name,
+        ///     Binding = new System.Windows.Data.Binding($"Eigenschaften[{index}].Wert"),
+        ///     IsReadOnly = !eig.IsEditable,
+        ///     SortMemberPath = $"Eigenschaften[{index}].SortValue" 
+        /// };
+        /// </summary>
         public long? SortValue {
             get {
                 if (string.IsNullOrWhiteSpace(_wert))
