@@ -170,5 +170,46 @@ namespace Tests {
             ];
             DoTest(expectedCommands);
         }
+
+        [StaFact]
+        public void ParsingChangeNameCommanddTest() {
+            TestSetup.Setup();
+            ChangeNameCommand[] expectedCommands = [
+                new ChangeNameCommand("Nenne Zauberer 504 Magus Morbus"){
+                    Figur = FigurType.Zauberer,
+                    UnitId = 504,
+                    NewName = "Magus Morbus",
+                    NewBeschriftung = string.Empty,
+                    NewSpielerName = string.Empty,
+                    Location = null,
+                },
+                new ChangeNameCommand("Zauberer 504 wir gespielt von Stefan O."){
+                    Figur = FigurType.Zauberer,
+                    UnitId = 504,
+                    NewName = string.Empty,
+                    NewBeschriftung = string.Empty,
+                    NewSpielerName = "Stefan O.",
+                    Location = null,
+                },
+                new ChangeNameCommand("Bezeichner Zauberer 504 CZB"){
+                    Figur = FigurType.Zauberer,
+                    UnitId = 504,
+                    NewName = string.Empty,
+                    NewBeschriftung = "CZB",
+                    NewSpielerName = string.Empty,
+                    Location = null,
+                },
+                new ChangeNameCommand("Nenne Gebäude auf 504/17 Neu Theosophia"){
+                    Figur = FigurType.None,
+                    UnitId = 0,
+                    NewName = "Neu Theosophia",
+                    NewBeschriftung = string.Empty,
+                    NewSpielerName = string.Empty,
+                    Location = new KleinfeldPosition(504,17),
+                },
+                
+            ];
+            DoTest(expectedCommands);
+        }
     }
 }

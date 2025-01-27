@@ -14,20 +14,18 @@ using System.Threading.Tasks;
 using static PhoenixModel.Commands.DiplomacyCommand;
 
 namespace PhoenixModel.Commands {
-    public class ChangeNameCommand : BaseCommand, IPhoenixCommand {
+    public class ChangeNameCommand : BaseCommand, IPhoenixCommand, IEquatable<ChangeNameCommand> {
 
         public FigurType Figur = FigurType.None;
-        public int UnitId { get; set; } = 0; 
-        public string NewName{ get; set; } = string.Empty;
-        public string NewSpielerName{ get; set; } = string.Empty;
+        public int UnitId { get; set; } = 0;
+        public string NewName { get; set; } = string.Empty;
+        public string NewSpielerName { get; set; } = string.Empty;
         public string NewBeschriftung { get; set; } = string.Empty;
         public KleinfeldPosition? Location { get; set; }
 
-        public override bool CanUndo => false;
-
         public override string ToString() {
             if (Figur != FigurType.None) {
-                if (string.IsNullOrEmpty(NewName) == false) 
+                if (string.IsNullOrEmpty(NewName) == false)
                     return $"Nenne {Figur} {UnitId} {NewName}";
                 if (string.IsNullOrEmpty(NewSpielerName) == false)
                     return $"{Figur} {UnitId} wird gespielt von {NewSpielerName}";
@@ -98,10 +96,65 @@ namespace PhoenixModel.Commands {
             }
         }
 
+        /// <summary>
+        /// Das Ändern des Namens kann nicht rückgängig gemacht werden, da der alte Namen unbekannt ist
+        /// </summary>
+        public override bool CanUndo => false;
+
+        /// <summary>
+        /// Das Ändern des Namens kann nicht rückgängig gemacht werden, da der alte Namen unbekannt ist
+        /// </summary>
         public override CommandResult UndoCommand() {
             throw new NotImplementedException();
         }
 
+
+        // Implementing IEquatable<ChangeNameCommand>
+
+        /// <summary>
+        /// Vergleicht zwei Instanzen von <see cref="ChangeNameCommand"/> auf Gleichheit.
+        /// </summary>
+        /// <param name="other">Die andere Instanz von <see cref="ChangeNameCommand"/>, mit der verglichen wird.</param>
+        /// <returns>True, wenn die Instanzen gleich sind, andernfalls False.</returns>
+        public bool Equals(ChangeNameCommand? other) {
+            // Überprüft, ob das andere Objekt null ist oder nicht vom gleichen Typ ist
+            if (other == null)
+                return false;
+
+            if (Location != null && Location.Equals(other.Location) == false)
+                return false;
+            if (Location == null &&  other.Location != null) 
+                return false;
+
+            // Vergleiche die relevanten Felder
+            return Figur == other.Figur &&
+                   UnitId == other.UnitId &&
+                   NewName == other.NewName &&
+                   NewSpielerName == other.NewSpielerName &&
+                   NewBeschriftung == other.NewBeschriftung;
+        }
+
+        /// <summary>
+        /// Überschreibt die Equals-Methode, um die Instanzen zu vergleichen.
+        /// </summary>
+        /// <param name="obj">Das Objekt, mit dem verglichen wird.</param>
+        /// <returns>True, wenn das Objekt gleich ist, andernfalls False.</returns>
+        public override bool Equals(object? obj) {
+            if (obj is ChangeNameCommand otherCommand) {
+                return Equals(otherCommand);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Überschreibt die Methode GetHashCode, um einen Hashwert zu berechnen, der die Gleichheit der Instanzen widerspiegelt.
+        /// </summary>
+        /// <returns>Ein Hashwert, der die Instanz repräsentiert.</returns>
+        public override int GetHashCode() {
+            // Verwendet HashCode.Combine für eine vereinfachte und effiziente Hashcode-Berechnung
+            return HashCode.Combine(Figur, UnitId, NewName, NewSpielerName, NewBeschriftung, Location);
+        }
     }
 
     public class ChangeNameCommandParser : SimpleParser {
