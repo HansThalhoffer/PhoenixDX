@@ -20,15 +20,15 @@ namespace Tests {
 
     public class CommandParserTest {
         
-        private ICommand? ParseCommand(string commandString) {
-            CommandParser.ParseCommand(commandString, out ICommand? actualCommand);
+        private IPhoenixCommand? ParseCommand(string commandString) {
+            CommandParser.ParseCommand(commandString, out IPhoenixCommand? actualCommand);
             return actualCommand;
         }
 
         private void DoTest(IEnumerable<BaseCommand> expectedCommands) {
             // Testvergleich mit den expected
             foreach (var expectedCommand in expectedCommands) {
-                ICommand? actualCommand = ParseCommand(expectedCommand.CommandString);
+                IPhoenixCommand? actualCommand = ParseCommand(expectedCommand.CommandString);
                 Assert.NotNull(actualCommand);
                 Assert.True(actualCommand.GetType() == expectedCommand.GetType());
                 Assert.True(expectedCommand.Equals(actualCommand));
@@ -36,7 +36,7 @@ namespace Tests {
             /// Test als Roundtrip
             foreach (var expectedCommand in expectedCommands) {
                 string cmd = expectedCommand.ToString();
-                ICommand? actualCommand = ParseCommand(cmd);
+                IPhoenixCommand? actualCommand = ParseCommand(cmd);
                 Assert.NotNull(actualCommand);
                 Assert.True(actualCommand.GetType() == expectedCommand.GetType());
                 Assert.True(expectedCommand.Equals(actualCommand));

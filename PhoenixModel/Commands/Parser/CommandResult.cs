@@ -12,13 +12,13 @@ namespace PhoenixModel.Commands.Parser {
         /// </summary>
         /// <param name="title">Der Titel der Meldung.</param>
         /// <param name="message">Die Nachricht des Ergebnisses.</param>
-        public CommandResult(string title, string message, ICommand? command) {
+        public CommandResult(string title, string message, IPhoenixCommand? command) {
             Title = title;
             Message = message;
             Command = command;
         }
 
-        public ICommand?  Command { get; } = null;
+        public IPhoenixCommand?  Command { get; } = null;
 
         /// <summary>
         /// Titel der Nachricht.
@@ -49,7 +49,7 @@ namespace PhoenixModel.Commands.Parser {
 /// Repräsentiert ein Befehls-Ergebnis mit Fehler.
 /// </summary>
 public class CommandResultError : CommandResult {
-    public CommandResultError(string title, string message, ICommand? command) : base(title, message, command) { }
+    public CommandResultError(string title, string message, IPhoenixCommand? command) : base(title, message, command) { }
     public override bool HasErrors => true;
 }
 
@@ -57,6 +57,6 @@ public class CommandResultError : CommandResult {
 /// Repräsentiert ein erfolgreiches Befehls-Ergebnis.
 /// </summary>
 public class CommandResultSuccess : CommandResult {
-    public CommandResultSuccess(string title, string message, ICommand? command) : base(title, message, command) { }
+    public CommandResultSuccess(string title, string message, IPhoenixCommand? command) : base(title, message, command) { }
     public override bool HasErrors => false;
 }

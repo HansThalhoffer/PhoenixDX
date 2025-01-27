@@ -156,7 +156,7 @@ namespace PhoenixModel.Commands {
             RegexOptions.IgnoreCase | RegexOptions.Compiled
         );
 
-        public override bool ParseCommand(string commandString, out ICommand? command) {
+        public override bool ParseCommand(string commandString, out IPhoenixCommand? command) {
             var match = MoveCommandRegex.Match(commandString);
             if (!match.Success)
                 return Fail(out command);

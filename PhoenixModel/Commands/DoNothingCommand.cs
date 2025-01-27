@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PhoenixModel.Commands {
-    public class DoNothingCommand : BaseCommand, ICommand, IEquatable<DoNothingCommand> {
+    public class DoNothingCommand : BaseCommand, IPhoenixCommand, IEquatable<DoNothingCommand> {
 
         public FigurType Figur = FigurType.None;
         public KleinfeldPosition? Location { get; set; }
@@ -76,7 +76,7 @@ namespace PhoenixModel.Commands {
 RegexOptions.IgnoreCase | RegexOptions.Compiled
 );
 
-        public override bool ParseCommand(string commandString, out ICommand? command) {
+        public override bool ParseCommand(string commandString, out IPhoenixCommand? command) {
             var match = DoNothingRegex.Match(commandString);
             if (!match.Success)
                 return Fail(out command);

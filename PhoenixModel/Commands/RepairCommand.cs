@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PhoenixModel.Commands {
-    public class RepairCommand : BaseCommand, ICommand {
+    public class RepairCommand : BaseCommand, IPhoenixCommand {
 
         public Kosten? Kosten = null;
         public KleinfeldPosition? Location { get; set; }
@@ -49,7 +49,7 @@ namespace PhoenixModel.Commands {
             RegexOptions.IgnoreCase | RegexOptions.Compiled
         );
 
-        public override bool ParseCommand(string commandString, out ICommand? command) {
+        public override bool ParseCommand(string commandString, out IPhoenixCommand? command) {
             var match = UpgradeRegex.Match(commandString);
             if (!match.Success) 
                 return Fail(out command);

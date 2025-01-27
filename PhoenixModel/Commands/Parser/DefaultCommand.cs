@@ -38,7 +38,7 @@
         /// </summary>
         /// <param name="command">Das fehlerhafte Kommando, das auf <c>null</c> gesetzt wird.</param>
         /// <returns>Immer <c>false</c>, um einen Fehlschlag anzuzeigen.</returns>
-        protected static bool Fail(out ICommand? command) {
+        protected static bool Fail(out IPhoenixCommand? command) {
             command = null;
             return false;
         }

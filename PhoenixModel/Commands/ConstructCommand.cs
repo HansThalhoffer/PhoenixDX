@@ -13,7 +13,7 @@ namespace PhoenixModel.Commands {
     ///    - "Errichte Brücke im Süden von 444/22"
     ///    - "Errichte Brücke im Norden von 47/11"
     /// </summary>
-    public class ConstructCommand : BaseCommand, ICommand, IEquatable<ConstructCommand> {
+    public class ConstructCommand : BaseCommand, IPhoenixCommand, IEquatable<ConstructCommand> {
        
         public ConstructionElementType What { get; set; } = ConstructionElementType.None;      // "Wand", "Brücke"
         public Direction? Direction { get; set; } = null; // "Nordosten", "Süden", "Norden", etc.
@@ -148,7 +148,7 @@ namespace PhoenixModel.Commands {
              RegexOptions.IgnoreCase | RegexOptions.Compiled
             );
 
-        public override bool ParseCommand(string commandString, out ICommand? command) {
+        public override bool ParseCommand(string commandString, out IPhoenixCommand? command) {
             var match = ConstructRegexErrichte.Match(commandString);
             if (!match.Success) {
                 match = ConstructRegexBaue.Match(commandString);

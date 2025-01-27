@@ -13,9 +13,9 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.Commands.Parser {
     /// <summary>
-    /// Basisklasse für Befehle, die das ICommand-Interface implementieren.
+    /// Basisklasse für Befehle, die das IPhoenixCommand-Interface implementieren.
     /// </summary>
-    public abstract class BaseCommand : ICommand {
+    public abstract class BaseCommand : IPhoenixCommand {
         /// <summary>
         /// Der zugrunde liegende Befehl als Zeichenkette.
         /// </summary>
@@ -38,6 +38,20 @@ namespace PhoenixModel.Commands.Parser {
         /// Ruft die Befehlszeichenkette ab.
         /// </summary>
         public string CommandString => _CommandString;
+
+        /// <summary>
+        /// Kann der Befehl durchgeführt werden?
+        /// CheckPreconditions().HasErrors = false;
+        /// </summary>
+        /// <returns>Ein Objekt vom Typ CommandResult.</returns>
+        public virtual bool CanExecute { get { return CheckPreconditions().HasErrors == false; } }
+
+        /// <summary>
+        /// Kann der Befehl zurück genommen werden?
+        /// Die Preconditions müssen passen und es muss ein ausgeführtes Command sein
+        /// </summary>
+        /// <returns>Ein Objekt vom Typ CommandResult.</returns>
+        public virtual bool CanUndo => CanExecute && IsExecuted == true;
 
         /// <summary>
         /// Überprüft, ob die Vorbedingungen für die Ausführung des Befehls erfüllt sind.
@@ -96,18 +110,18 @@ namespace PhoenixModel.Commands.Parser {
         /// </summary>
         /// <param name="command">Ausgabeparameter, der auf <c>null</c> gesetzt wird.</param>
         /// <returns>Gibt immer <c>false</c> zurück, um einen Fehlschlag anzuzeigen.</returns>
-        protected static bool Fail(out ICommand? command) {
+        protected static bool Fail(out IPhoenixCommand? command) {
             command = null;
             return false;
         }
 
         /// <summary>
-        /// Parst einen Befehlsstring und gibt das entsprechende <see cref="ICommand"/>-Objekt zurück.
+        /// Parst einen Befehlsstring und gibt das entsprechende <see cref="IPhoenixCommand"/>-Objekt zurück.
         /// </summary>
         /// <param name="commandString">Der zu parsende Befehlsstring.</param>
-        /// <param name="command">Das geparste <see cref="ICommand"/>-Objekt oder <c>null</c>, falls das Parsen fehlschlägt.</param>
+        /// <param name="command">Das geparste <see cref="IPhoenixCommand"/>-Objekt oder <c>null</c>, falls das Parsen fehlschlägt.</param>
         /// <returns><c>true</c>, wenn der Befehl erfolgreich geparst wurde; andernfalls <c>false</c>.</returns>
-        public abstract bool ParseCommand(string commandString, out ICommand? command);
+        public abstract bool ParseCommand(string commandString, out IPhoenixCommand? command);
 
         /// <summary>
         /// Analysiert eine Eingabe und extrahiert eine Kleinfeld-Position.

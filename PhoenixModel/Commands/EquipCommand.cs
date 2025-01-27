@@ -12,7 +12,7 @@ namespace PhoenixModel.Commands {
     /// <summary>
     /// Das Rüsten von Rüstgütern als neue Armee und zu einer Armee hinzu oder einfach nur eine Armee mit und ohne Zeug rüsten
     /// </summary>
-    public class EquipCommand : BaseCommand, ICommand {        
+    public class EquipCommand : BaseCommand, IPhoenixCommand {        
         public struct ConstructionElement {
             public ConstructionElementType ConstructionElementType = ConstructionElementType.None;
             public int Count = 0;
@@ -159,7 +159,7 @@ namespace PhoenixModel.Commands {
            RegexOptions.IgnoreCase | RegexOptions.Compiled
         );
 
-        public override bool ParseCommand(string commandString, out ICommand? command) {
+        public override bool ParseCommand(string commandString, out IPhoenixCommand? command) {
 
             var match = EquipExistingRegex.Match(commandString);
             if (!match.Success)

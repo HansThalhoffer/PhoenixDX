@@ -7,7 +7,7 @@ using static PhoenixModel.Commands.SchootCommand;
 
 namespace PhoenixModel.Commands {
 
-    public class SchootCommand : BaseCommand, ICommand {
+    public class SchootCommand : BaseCommand, IPhoenixCommand {
         
         public FigurType With { get; set; } 
         public KleinfeldPosition? TargetLocation { get; set; } = null;
@@ -24,7 +24,7 @@ namespace PhoenixModel.Commands {
         }
 
         /// <summary>
-        /// <see cref="ICommand"/>
+        /// <see cref="IPhoenixCommand"/>
         /// </summary>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
@@ -36,7 +36,7 @@ namespace PhoenixModel.Commands {
         }
 
         /// <summary>
-        /// <see cref="ICommand"/>
+        /// <see cref="IPhoenixCommand"/>
         /// </summary>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
@@ -45,7 +45,7 @@ namespace PhoenixModel.Commands {
         }
 
         /// <summary>
-        /// <see cref="ICommand"/>
+        /// <see cref="IPhoenixCommand"/>
         /// </summary>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
@@ -66,7 +66,7 @@ namespace PhoenixModel.Commands {
               RegexOptions.IgnoreCase | RegexOptions.Compiled
         );
 
-        public override bool ParseCommand(string commandString, out ICommand? command) {
+        public override bool ParseCommand(string commandString, out IPhoenixCommand? command) {
             var match = SchootRegex.Match(commandString);
             if (!match.Success) 
                 return Fail(out command);

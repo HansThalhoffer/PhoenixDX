@@ -4,9 +4,14 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:PhoenixWPF.Pages"
+      xmlns:converter="clr-namespace:PhoenixWPF.Pages.Converter"  
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="CommandHistoryPage">
+    <Page.Resources>
+        <!-- Register the converter -->
+        <converter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </Page.Resources>
 
     <Grid>
         <DataGrid x:Name="CommandDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
@@ -22,7 +27,7 @@
                         <DataTemplate>
                             <Button x:Name="UndoButton" Content="Undo" 
                                     Click="UndoButton_Click"
-                                    IsEnabled="{Binding IsExecuted, Mode=OneWay}"/> 
+                                    IsEnabled="{Binding CanUndo, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/> 
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

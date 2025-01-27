@@ -97,7 +97,7 @@ namespace PhoenixWPF.Pages {
 
                     // Bind Visibility to the boolean property
                     Binding visibilityBinding = new Binding(name) {
-                        Converter = new BoolToVisibilityConverter()
+                        Converter = new  PhoenixWPF.Pages.Converter.BoolToVisibilityConverter()
                     };
                     imageFactory.SetBinding(Image.VisibilityProperty, visibilityBinding);
 

@@ -13,7 +13,7 @@ namespace PhoenixModel.Commands {
     /// <summary>
     /// Spalte von Reiter 220 ab 400 Reiter mit 4 Heerführern
     /// </summary>
-    public class SplitCommand : BaseCommand, ICommand {
+    public class SplitCommand : BaseCommand, IPhoenixCommand {
         public FigurType Figur { get; set; }
         public int OriginalUnitId { get; set; } = 0;
         public int SeparatedUnitId { get; set; } = 0;
@@ -50,7 +50,7 @@ namespace PhoenixModel.Commands {
              RegexOptions.IgnoreCase | RegexOptions.Compiled
          );
 
-        public override bool ParseCommand(string commandString, out ICommand? command) {
+        public override bool ParseCommand(string commandString, out IPhoenixCommand? command) {
             var match = SplitCommandRegex.Match(commandString);
             if (!match.Success) 
                 return Fail(out command);

@@ -10,7 +10,7 @@ namespace PhoenixModel.Commands {
     /// <summary>
     /// Repräsentiert einen diplomatischen Befehl zur Vergabe oder Entziehung von Bewegungsrechten zwischen Nationen.
     /// </summary>
-    public class DiplomacyCommand : BaseCommand, ICommand, IEquatable<DiplomacyCommand> {
+    public class DiplomacyCommand : BaseCommand, IPhoenixCommand, IEquatable<DiplomacyCommand> {
         /// <summary>
         /// Definiert die möglichen Bewegungsrechte einer Nation.
         /// </summary>
@@ -194,12 +194,12 @@ namespace PhoenixModel.Commands {
         );
 
         /// <summary>
-        /// Analysiert einen gegebenen Diplomatiebefehl und erstellt das entsprechende <see cref="ICommand"/>-Objekt.
+        /// Analysiert einen gegebenen Diplomatiebefehl und erstellt das entsprechende <see cref="IPhoenixCommand"/>-Objekt.
         /// </summary>
         /// <param name="commandStringUE">Der zu analysierende Befehl als Zeichenkette.</param>
         /// <param name="command">Ausgabeparameter: Der erstellte Diplomatiebefehl.</param>
         /// <returns>Gibt <c>true</c> zurück, wenn der Befehl erfolgreich analysiert wurde, andernfalls <c>false</c>.</returns>
-        public override bool ParseCommand(string commandStringUE, out ICommand? command) {
+        public override bool ParseCommand(string commandStringUE, out IPhoenixCommand? command) {
             // Ersetzt "Kuestenrecht" durch "Küstenrecht", um alternative Schreibweisen zu unterstützen.
             string commandString = commandStringUE.Replace("Kuestenrecht", "Küstenrecht");
             var match = DiplomacyRegex.Match(commandString);

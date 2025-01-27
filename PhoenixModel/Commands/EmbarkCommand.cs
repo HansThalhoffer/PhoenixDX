@@ -16,7 +16,7 @@ namespace PhoenixModel.Commands {
     /// - Schiffe Krieger 153 ein auf Schiff 308 auf 707/45
     /// - Schiffe Krieger 153 aus von Schiff 308 auf 843/01 nach 843/02
     /// </summary>
-    public class EmbarkCommand : BaseCommand, ICommand {
+    public class EmbarkCommand : BaseCommand, IPhoenixCommand {
         public enum Modus { einschiffen, ausschiffen }
 
         public Modus Mode { get; set; }
@@ -62,7 +62,7 @@ namespace PhoenixModel.Commands {
         );
 
 
-        public override bool ParseCommand(string commandString, out ICommand? command) {
+        public override bool ParseCommand(string commandString, out IPhoenixCommand? command) {
             var match = EmbarkCommandRegex.Match(commandString);
             if (!match.Success)
                 return Fail(out command);

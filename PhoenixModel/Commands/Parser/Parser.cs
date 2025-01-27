@@ -37,7 +37,7 @@
         /// <param name="commandString">Der zu analysierende Befehl.</param>
         /// <param name="command">Das erzeugte Command-Objekt.</param>
         /// <returns>True, wenn der Befehl erfolgreich analysiert wurde, sonst false.</returns>
-        public static bool ParseCommand(string commandString, out ICommand? command) {
+        public static bool ParseCommand(string commandString, out IPhoenixCommand? command) {
             foreach (ICommandParser parser in parsers) {
                 if (parser.ParseCommand(commandString, out command)) {
                     return true;

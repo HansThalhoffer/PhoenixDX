@@ -12,7 +12,7 @@ namespace PhoenixModel.Commands {
     /// <summary>
     /// Vereinige Reiter 221 mit 3 Heerführern und 244 mit 2 Heerführern zu 221 mit 5 Heerführern
     /// </summary>
-    public class MergeCommand : BaseCommand, ICommand {
+    public class MergeCommand : BaseCommand, IPhoenixCommand {
         public FigurType Figur { get; set; }
         public int TargetUnitId { get; set; }
         public int TargetHeerführerCount { get; set; }
@@ -50,7 +50,7 @@ namespace PhoenixModel.Commands {
              RegexOptions.IgnoreCase | RegexOptions.Compiled
          );
 
-        public override bool ParseCommand(string commandString, out ICommand? command) {
+        public override bool ParseCommand(string commandString, out IPhoenixCommand? command) {
             var match = MergeCommandRegex.Match(commandString);
             if (!match.Success) 
                 return Fail(out command);
