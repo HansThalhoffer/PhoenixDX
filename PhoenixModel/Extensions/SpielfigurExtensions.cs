@@ -1,7 +1,11 @@
 ﻿using PhoenixModel.Commands;
+using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbErkenfara;
+using PhoenixModel.dbZugdaten;
 using PhoenixModel.Program;
+using PhoenixModel.View;
 using PhoenixModel.ViewModel;
+using System.Runtime.CompilerServices;
 
 namespace PhoenixModel.Extensions {
     public static class SpielfigurExtensions {
@@ -43,6 +47,84 @@ namespace PhoenixModel.Extensions {
             spielfigur.gf_nach = kleinfeld.gf;
             spielfigur.kf_nach = kleinfeld.kf;
         }
+
+
+        /// <summary>
+        /// Ermittelt ob die Figur auf einem Schiff ist
+        /// </summary>
+        public static bool IsOnShip(this Spielfigur spielfigur) {
+            return spielfigur.BaseTyp != ExternalTables.FigurType.Schiff && spielfigur is TruppenSpielfigur figur && string.IsNullOrEmpty(figur.auf_Flotte) == false;
+        }
+
+
+        /// <summary>
+        /// Ermittelt ob die Figur auf einem Schiff ist und Land in der Nähe
+        /// </summary>
+        public static bool CanDisEmbark(this Spielfigur figur) {
+            if (figur is NamensSpielfigur)
+                return false;
+            if (figur.IsOnShip() == false)
+                return false;
+            var nachbarn = KleinfeldView.GetNachbarn(figur);
+            if (nachbarn != null) {
+                foreach (var nachbar in nachbarn) {
+                    if (nachbar.IsWasser == false) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Ermittelt ob die Figur an der Küste ist und ein Schiff in der Nähe
+        /// </summary>
+        public static bool CanEmbark(this Spielfigur figur) {
+            if (figur is NamensSpielfigur)
+                return false;
+            if (figur.IsOnShip() == true)
+                return false;
+            var nachbarn = KleinfeldView.GetNachbarn(figur);
+            if (nachbarn != null) {
+                foreach (var nachbar in nachbarn) {
+                    if (nachbar.IsWasser) {
+                        var armee = nachbar.Truppen;
+                        if (armee != null && armee.Count > 0) {
+                            foreach (var arme in armee) {
+                                if (arme.BaseTyp == PhoenixModel.ExternalTables.FigurType.Schiff) {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+            return false;
+        }
+
+
+        /// <summary>
+        /// Ermittelt ob die Figur schießen kann
+        /// </summary>
+        public static bool CanShoot(this Spielfigur figur) {
+            return figur is TruppenSpielfigur truppen && (truppen.LKP > 0 || truppen.SKP > 0);
+        }
+
+        /// <summary>
+        /// Ermittelt ob die Figur aufsitzen kann
+        /// </summary>
+        public static bool CanSattleUp(this Spielfigur figur) {
+            return figur is Krieger truppen && (truppen.Pferde > 0);
+        }
+
+        /// <summary>
+        /// Ermittelt ob die Figur aufsitzen kann
+        /// </summary>
+        public static bool CanSattleDown(this Spielfigur figur) {
+            return figur is Reiter;
+        }
+
 
         /// <summary>
         /// Ermittelt den aktuellen Wert von gf (aus gf_nach oder gf_von)

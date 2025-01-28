@@ -1,5 +1,6 @@
 ﻿using PhoenixModel.dbZugdaten;
 using PhoenixModel.Program;
+using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using PhoenixWPF.Helper;
 using PhoenixWPF.Program;
@@ -7,6 +8,7 @@ using System.Security.Policy;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using PhoenixModel.Extensions;
 
 namespace PhoenixWPF.Pages.UserControls {
     /// <summary>
@@ -19,31 +21,23 @@ namespace PhoenixWPF.Pages.UserControls {
             //this.Visibility = Visibility.Hidden;
         }
 
+
         private void SelectionHistory_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) {
             var selected = Main.Instance.SelectionHistory.Current;
             if (selected is Spielfigur figur) {
                 this.Visibility = Visibility.Visible;
-                buttonShoot.Visibility = Visibility.Collapsed;
+                buttonShoot.Visibility = figur.CanShoot()? Visibility.Visible:Visibility.Collapsed;
                 buttonHorse.Visibility = Visibility.Collapsed;
-
-                if (figur is TruppenSpielfigur truppen) {
-                    if (truppen.LKP > 0 || truppen.SKP > 0)
-                        buttonShoot.Visibility = Visibility.Visible;
-                    if (truppen.Pferde > 0) {
-                        buttonHorse.Visibility = Visibility.Visible;
-                        buttonHorse.Content = "Aufsitzen";
-                    }
-                    if (figur is Reiter) {
-                        buttonHorse.Visibility = Visibility.Visible;
-                        buttonHorse.Content = "Absitzen";
-                    }
-                    buttonSplit.Visibility = Visibility.Visible;
-                    buttonBarriere.Visibility = Visibility.Collapsed;
-                    buttonBannen.Visibility = Visibility.Collapsed;
-                    buttonTeleport.Visibility = Visibility.Collapsed;
-                    buttonDuell.Visibility = Visibility.Collapsed;
+                if (figur.CanEmbark()) {
+                    buttonEmbark.Visibility =  Visibility.Visible;
+                    buttonEmbark.Content = "Einschiffen";
                 }
-                else if (figur is Zauberer){
+                if (figur.CanDisEmbark()) {
+                    buttonEmbark.Visibility = Visibility.Visible;
+                    buttonEmbark.Content = "Ausschiffen";
+                }
+
+                if (figur is Zauberer) {
                     buttonFusion.Visibility = Visibility.Collapsed;
                     buttonSplit.Visibility = Visibility.Collapsed;
                     buttonBarriere.Visibility = Visibility.Visible;
@@ -51,10 +45,30 @@ namespace PhoenixWPF.Pages.UserControls {
                     buttonTeleport.Visibility = Visibility.Visible;
                     buttonDuell.Visibility = Visibility.Visible;
                 }
+                else {
+                    buttonBarriere.Visibility = Visibility.Collapsed;
+                    buttonBannen.Visibility = Visibility.Collapsed;
+                    buttonTeleport.Visibility = Visibility.Collapsed;
+                    buttonDuell.Visibility = Visibility.Collapsed;
+                }
+
+                if (figur is TruppenSpielfigur truppen) {                    
+                    if (figur.CanSattleUp()) {
+                        buttonHorse.Visibility = Visibility.Visible;
+                        buttonHorse.Content = "Aufsitzen";
+                    }
+                    if (figur.CanSattleDown()) {
+                        buttonHorse.Visibility = Visibility.Visible;
+                        buttonHorse.Content = "Absitzen";
+                    }
+                    buttonSplit.Visibility = Visibility.Visible;
+                }
+                else
+                    this.Visibility = Visibility.Hidden;
             }
-            else
-                this.Visibility = Visibility.Hidden;
         }
+
+
 
         public void Scale(double scale) {
             this.Scaler.ScaleX = scale;
@@ -62,6 +76,6 @@ namespace PhoenixWPF.Pages.UserControls {
             InvalidateVisual();
         }
 
-        
+
     }
 }

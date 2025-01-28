@@ -138,6 +138,14 @@ namespace PhoenixModel.View {
             }
             return null;
         }
+
+        public static KleinFeld? GetKleinfeld (KleinfeldPosition kf) {
+            if (SharedData.Map != null && SharedData.Map.TryGetValue(kf.CreateBezeichner(), out KleinFeld? feld))
+                return feld;
+            return null;
+        }
+
+
         /// <summary>
         /// holt die Nachbarn des übergebenen Kleinfeldes in der Distanz
         /// </summary>
@@ -145,40 +153,43 @@ namespace PhoenixModel.View {
         /// <param name="distance">Anzahl der Felder als Radius des Umkreises</param>
         /// <param name="includeSelf">das übergebene Feld mitnehmen</param>
         /// <returns>nichts, falls Fehler oder eine Liste aller Nachbarn und bei Bedarf des Feldes</returns>
-        public static IEnumerable<KleinFeld>? GetNachbarn(KleinFeld kf, int distance = 1, bool includeSelf = true) {
+        public static IEnumerable<KleinFeld>? GetNachbarn(KleinfeldPosition kfpos, int distance = 1, bool includeSelf = true) {
             if (SharedData.Map == null || SharedData.Map.IsAddingCompleted == false)
                 return null;
             try {
                 Queue<KleinfeldPosition> working = [];
                 Dictionary<string, KleinfeldPosition> nachbarn = [];
                 List<KleinFeld> result = [];
-                working.Enqueue(kf);
-                int max = distance > 1 ? 1 : 0;
-                for (int i = 1; i <= distance; i++) {
-                    max += 6 * i;
-                }
-                KleinFeld? feld = null;
-                while (working.Count > 0) {
-                    var positionen = KartenKoordinaten.GetKleinfeldNachbarn(working.Dequeue());
-                    if (SharedData.Map != null && positionen != null) {
-                        foreach (var pos in positionen) {
-                            string key = KleinfeldPosition.CreateBezeichner(pos);
-                            if (nachbarn.ContainsKey(key) == false) {
-                                nachbarn.Add(key, pos);
-                                working.Enqueue(pos);
-                                if (SharedData.Map.TryGetValue(key, out feld)) {
-                                    result.Add(feld);
+                KleinFeld? kf = GetKleinfeld(kfpos);
+                if (kf != null) {
+                    working.Enqueue(kf);
+                    int max = distance > 1 ? 1 : 0;
+                    for (int i = 1; i <= distance; i++) {
+                        max += 6 * i;
+                    }
+                    KleinFeld? feld = null;
+                    while (working.Count > 0) {
+                        var positionen = KartenKoordinaten.GetKleinfeldNachbarn(working.Dequeue());
+                        if (SharedData.Map != null && positionen != null) {
+                            foreach (var pos in positionen) {
+                                string key = KleinfeldPosition.CreateBezeichner(pos);
+                                if (nachbarn.ContainsKey(key) == false) {
+                                    nachbarn.Add(key, pos);
+                                    working.Enqueue(pos);
+                                    if (SharedData.Map.TryGetValue(key, out feld)) {
+                                        result.Add(feld);
+                                    }
                                 }
                             }
+                            if (nachbarn.Count >= max)
+                                break;
                         }
-                        if (nachbarn.Count >= max)
-                            break;
                     }
+                    if (includeSelf && nachbarn.ContainsKey(kf.CreateBezeichner()) == false)
+                        result.Add(kf);
+                    else if (!includeSelf && nachbarn.ContainsKey(kf.CreateBezeichner()) == true)
+                        result.Remove(kf);
                 }
-                if (includeSelf && nachbarn.ContainsKey(kf.CreateBezeichner()) == false)
-                    result.Add(kf);
-                else if (!includeSelf && nachbarn.ContainsKey(kf.CreateBezeichner()) == true)
-                    result.Remove(kf);
                 return result;
             }
             catch (Exception e) {

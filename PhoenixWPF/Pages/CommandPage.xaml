@@ -15,8 +15,11 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="440"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <controls:CommandOverlay Grid.Column="0"  Margin="0,10,-210,-310" Grid.Row="1" Width="600"/>
+        <DataGrid Name="Befehle" />
+        <Canvas Grid.Column="0" Grid.Row="1" Margin="-60,0,0,0" Height="320" VerticalAlignment="Top">
+            <controls:CommandOverlay Margin="50,10,-228,-370" />
+        </Canvas>
     </Grid>
 </Page>
