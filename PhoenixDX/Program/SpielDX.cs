@@ -418,6 +418,10 @@ namespace PhoenixDX.Program {
             Marker.LoadContent(Content); // marker für den Layer 2
         }
 
+        public Texture2D GetTexture(FigurType typ) {
+            return Truppen.GetTexture2D(typ);
+        }
+
         /// <summary>
         /// Delegat für die Update-Funktion.
         /// </summary>

@@ -8,6 +8,7 @@ using PhoenixModel.Helper;
 using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using static PhoenixDX.Structures.Truppen;
 
 namespace PhoenixDX.Structures {
@@ -54,6 +55,14 @@ namespace PhoenixDX.Structures {
             new FigurImage(15, FigurType.PiratenLeichtesKriegsschiff, "PiratenLeichtesKriegsschiff"),
             new FigurImage(16, FigurType.CharakterZauberer, "CharakterZauberer")
         ];
+
+        public static Texture2D GetTexture2D(FigurType type) {
+            var image = FigurImages.Where(f => f.Typ == type).FirstOrDefault();
+            if (image != null) 
+                return image.Texture;
+
+            return null;    
+        }
 
         /// <summary>
         /// Repräsentiert eine einzelne Figur mit einem bestimmten Typ und einer Farbe.

@@ -1,4 +1,5 @@
-﻿using PhoenixDX.Drawing;
+﻿using Microsoft.Xna.Framework.Graphics;
+using PhoenixDX.Drawing;
 using PhoenixDX.Program;
 using PhoenixModel.EventsAndArgs;
 using PhoenixModel.Program;
@@ -154,6 +155,13 @@ namespace PhoenixDX {
             if (_game != null)
                 return _game.Opacity;
             return 1f;
+        }
+
+        public Texture2D ExposeTexture(ISelectable selectable) {
+            if (_game != null && selectable != null && selectable is Spielfigur figur) {
+                return _game.GetTexture(figur.Typ);
+            }
+            return null;
         }
 
         /// <summary>
