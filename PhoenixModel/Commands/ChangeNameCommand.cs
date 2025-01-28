@@ -1,5 +1,6 @@
 ﻿using PhoenixModel.Commands.Parser;
 using PhoenixModel.dbPZE;
+using PhoenixModel.dbZugdaten;
 using PhoenixModel.EventsAndArgs;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Program;
@@ -33,6 +34,10 @@ namespace PhoenixModel.Commands {
                     return $"Bezeichne {Figur} {UnitId} {NewSpielerName}";
             }
             return $"Nenne Gebäude auf {Location} {NewName}";
+        }
+
+        public override bool CanAppliedTo(ISelectable selectable) {
+            return (selectable != null && selectable is NamensSpielfigur);
         }
 
         public ChangeNameCommand(string commandString) : base(commandString) {

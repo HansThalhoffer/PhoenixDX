@@ -1,5 +1,6 @@
 ﻿using PhoenixModel.Commands.Parser;
 using PhoenixModel.dbCrossRef;
+using PhoenixModel.dbErkenfara;
 using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
 using System.Text.RegularExpressions;
@@ -15,6 +16,11 @@ namespace PhoenixModel.Commands {
 
         public UpgradeCommand(string commandString) : base(commandString) {
         }
+
+        public override bool CanAppliedTo(ISelectable selectable) {
+            return selectable != null && selectable is KleinFeld kleinFeld && kleinFeld.Gebäude != null;
+        }
+
 
         public override string ToString() {
             string result = $"Verstärke Rüstort {Location}";

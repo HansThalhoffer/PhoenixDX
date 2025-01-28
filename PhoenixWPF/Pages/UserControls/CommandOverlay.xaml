@@ -1,17 +1,42 @@
-﻿<UserControl x:Class="PhoenixWPF.Pages.CommandOverlay"
+﻿<UserControl x:Class="PhoenixWPF.Pages.UserControls.CommandOverlay"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PhoenixWPF.Pages"
+             xmlns:controls="clr-namespace:PhoenixWPF.Pages.UserControls"
              mc:Ignorable="d" 
-             d:DesignHeight="400
-             " d:DesignWidth="400">
+             d:DesignHeight="800
+             " d:DesignWidth="600">
 
     <UserControl.Resources>
     </UserControl.Resources>
-    <Canvas Width="400"  Height="400">
-        <Polygon Canvas.Top="20"
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <controls:GlassButton Grid.Column="0" Grid.Row="0" Width="200" Height="200" ButtonText="Bannen"
+            VerticalAlignment="Top" HorizontalAlignment="Left" />
+
+        <controls:GlassButton Grid.Column="1" Grid.Row="0" Width="200" Height="200" ButtonText="Barriere"
+         VerticalAlignment="Top" HorizontalAlignment="Right" />
+
+        <controls:GlassButton Grid.Column="1" Grid.Row="1" Width="200" Height="200" ButtonText="Teleport"
+ VerticalAlignment="Bottom" HorizontalAlignment="Right" />
+
+        <controls:GlassButton Grid.Column="0" Grid.Row="1" Width="200" Height="200" ButtonText="Duell"
+VerticalAlignment="Bottom" HorizontalAlignment="Left" />
+        
+        <Canvas Width="400"  Height="400" 
+            Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4" Grid.RowSpan="4"
+            VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Polygon Canvas.Top="20" Canvas.Left="-5"
          Points="350,50 575,200 575,500 350,650 125,500 125,200"
          Fill="LightGray" Stroke="Black">
             <Polygon.RenderTransform>
@@ -65,10 +90,11 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-        <Button Name="Split" Foreground="White" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="4"
-                Width="160" Height="80" FontSize="50" Click="Split_Click">Teilen</Button>
-            <Button Name="Fusion" Foreground="White" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="2"
-                Width="160" Height="80" FontSize="50" Click="Fusion_Click">Fusion</Button>
+        <Button Name="buttonCenterTop" Foreground="White" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="4"
+                Width="160" Height="80" FontSize="50" >Teilen</Button>
+            <Button Name="buttonCenterBottom" Foreground="White" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="2"
+                Width="160" Height="80" FontSize="50" >Fusion</Button>
         </Grid>
     </Canvas>
+    </Grid>
 </UserControl>

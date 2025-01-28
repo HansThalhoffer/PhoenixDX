@@ -1,4 +1,4 @@
-﻿using PhoenixModel.Commands.Parser;
+﻿using PhoenixModel.Commands;
 using PhoenixModel.ViewModel;
 using System.Collections.ObjectModel;
 using System.ComponentModel;

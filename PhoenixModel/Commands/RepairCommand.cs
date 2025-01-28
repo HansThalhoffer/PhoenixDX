@@ -1,5 +1,6 @@
 ﻿using PhoenixModel.Commands.Parser;
 using PhoenixModel.dbCrossRef;
+using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
@@ -24,6 +25,10 @@ namespace PhoenixModel.Commands {
         }
 
         public RepairCommand(string commandString) : base(commandString) {
+        }
+
+        public override bool CanAppliedTo(ISelectable selectable) {
+            return selectable != null && selectable is KleinFeld kleinFeld && kleinFeld.Gebäude != null;
         }
 
         public override CommandResult CheckPreconditions() {

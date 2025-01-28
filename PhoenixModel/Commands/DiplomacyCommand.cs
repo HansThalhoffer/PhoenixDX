@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.Commands.Parser;
+using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbPZE;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.EventsAndArgs;
@@ -63,6 +64,11 @@ namespace PhoenixModel.Commands {
                 ? $"Entziehe {reich} {Recht}"
                 : $"Gebe {reich} {Recht}";
         }
+
+        public override bool CanAppliedTo(ISelectable selectable) {
+            return (selectable != null && selectable is Diplomatiechange);
+        }
+
 
         /// <summary>
         /// Initialisiert eine neue Instanz der <see cref="DiplomacyCommand"/>-Klasse mit einem Befehlsstring.

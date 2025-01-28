@@ -1,4 +1,5 @@
-﻿using PhoenixModel.Database;
+﻿using PhoenixModel.Commands.Parser;
+using PhoenixModel.Database;
 using PhoenixModel.EventsAndArgs;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Program;
@@ -11,7 +12,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace PhoenixModel.Commands.Parser {
+namespace PhoenixModel.Commands {
     /// <summary>
     /// Basisklasse für Befehle, die das IPhoenixCommand-Interface implementieren.
     /// </summary>
@@ -25,6 +26,13 @@ namespace PhoenixModel.Commands.Parser {
         /// Wenn das Item innerhalb der aktuellen Session bearbeitet wurde, steht es noch hierdrin
         /// </summary>
         protected ISelectable? _Selectable = null;
+
+
+        /// <summary>
+        /// Wenn das Kommando das Selectable verändern kann, gibt es true zurück
+        /// <param name="selectable"></param>
+        /// <returns></returns>
+        public abstract bool CanAppliedTo(ISelectable selectable);
 
         /// <summary>
         /// Wenn das Kommando das Selectable betrifft, gibt es true zurück

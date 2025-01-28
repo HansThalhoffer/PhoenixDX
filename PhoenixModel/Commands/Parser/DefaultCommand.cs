@@ -1,4 +1,5 @@
-﻿using PhoenixModel.Program;
+﻿using PhoenixModel.dbErkenfara;
+using PhoenixModel.Program;
 
 namespace PhoenixModel.Commands.Parser {
     /// <summary>
@@ -18,6 +19,10 @@ namespace PhoenixModel.Commands.Parser {
         /// <returns>Der ursprüngliche Befehl als <see cref="string"/>.</returns>
         public override string ToString() {
             return _CommandString;
+        }
+
+        public override bool CanAppliedTo(ISelectable selectable) {
+            return false;
         }
 
         public override bool HasEffectOn(ISelectable selectable) => false; 

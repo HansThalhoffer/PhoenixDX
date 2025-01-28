@@ -1,5 +1,6 @@
 ﻿using PhoenixModel.Commands.Parser;
 using PhoenixModel.dbCrossRef;
+using PhoenixModel.dbErkenfara;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
@@ -22,6 +23,11 @@ namespace PhoenixModel.Commands {
             //if (Kosten != null) result = $"{result} für {Kosten.GS}";
             return result;
         }
+
+        public override bool CanAppliedTo(ISelectable selectable) {
+            return (selectable != null && selectable is Spielfigur);
+        }
+
 
         public DoNothingCommand(string commandString) : base(commandString) {
         }

@@ -1,6 +1,7 @@
 ﻿using PhoenixModel.Commands.Parser;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Program;
+using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,9 @@ namespace PhoenixModel.Commands {
             return $"Vereinige {Figur} {SourceUnitId_0} mit {SourceHeerführerCount_0} und {SourceUnitId_0} mit {SourceHeerführerCount_0} zu {TargetUnitId} mit {TargetHeerführerCount}";
         }
 
+        public override bool CanAppliedTo(ISelectable selectable) {
+            return selectable != null && selectable is TruppenSpielfigur;
+        }
         public MergeCommand(string commandString) : base(commandString) {
         }
 

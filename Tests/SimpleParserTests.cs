@@ -1,4 +1,4 @@
-﻿using PhoenixModel.Commands.Parser;
+﻿using PhoenixModel.Commands;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.ViewModel;
 namespace Tests {

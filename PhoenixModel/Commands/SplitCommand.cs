@@ -2,6 +2,7 @@
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Program;
+using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,10 @@ namespace PhoenixModel.Commands {
         }
 
         public SplitCommand(string commandString) : base(commandString) {
+        }
+
+        public override bool CanAppliedTo(ISelectable selectable) {
+            return selectable != null && selectable is TruppenSpielfigur truppe && truppe.hf > 1 && truppe.staerke > 1;
         }
 
         public override CommandResult CheckPreconditions() {

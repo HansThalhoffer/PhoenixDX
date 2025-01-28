@@ -42,6 +42,10 @@ namespace PhoenixModel.Commands {
         /// <param name="commandString">Der Befehlsstring.</param>
         public MoveCommand(string commandString) : base(commandString) { }
 
+        public override bool CanAppliedTo(ISelectable selectable) {
+            return selectable != null && selectable is Spielfigur;
+        }
+
         public override string ToString() {
             string result = $"Bewege {Figur} {UnitId} von {FromLocation} nach {ToLocation}";
             if (ViaLocations != null && ViaLocations.Count > 0) {

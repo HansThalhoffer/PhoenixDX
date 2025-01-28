@@ -18,6 +18,10 @@ namespace PhoenixModel.Commands {
         public SchootCommand(string commandString) : base(commandString) {
         }
 
+        public override bool CanAppliedTo(ISelectable selectable) {
+            return selectable != null && selectable is TruppenSpielfigur truppe && (truppe.LKP > 0 || truppe.SKP > 0);
+        }
+
         public override string ToString() {
             string result = $"Beschieße {TargetLocation} mit {With} {UnitId} von {SourceLocation}";
             return result;

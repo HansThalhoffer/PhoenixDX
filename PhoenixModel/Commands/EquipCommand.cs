@@ -1,5 +1,6 @@
 ﻿using PhoenixModel.Commands.Parser;
 using PhoenixModel.dbCrossRef;
+using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
@@ -43,6 +44,11 @@ namespace PhoenixModel.Commands {
         public EquipCommand(string commandString, KleinfeldPosition? pos) : base(commandString) {
             Location = pos;
         }
+
+        public override bool CanAppliedTo(ISelectable selectable) {
+            return selectable != null && (selectable is Spielfigur || (selectable is KleinFeld kleinfeld && kleinfeld.Gebäude != null));
+        }
+
 
         /// <summary>
         /// überprüft, ob die Vorbedingungen gegeben sind, das Kommando auszuführen - das Kommando wird aber noch nicht ausgeführt

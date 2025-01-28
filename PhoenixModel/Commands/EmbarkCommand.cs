@@ -35,6 +35,11 @@ namespace PhoenixModel.Commands {
         public EmbarkCommand(string commandString) : base(commandString) {
         }
 
+        public override bool CanAppliedTo(ISelectable selectable) {
+            return selectable != null && selectable is Spielfigur;
+        }
+
+
         public override CommandResult CheckPreconditions() {
             throw new NotImplementedException();
         }

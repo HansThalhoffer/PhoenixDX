@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.Commands.Parser;
+using PhoenixModel.Program;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,8 +58,6 @@ namespace PhoenixModel.Commands {
         /// <returns>Ein Objekt vom Typ CommandResult.</returns>
         CommandResult ExecuteCommand();
 
-        
-
         /// <summary>
         /// Kann der Befehl zurück genommen werden?
         /// </summary>
@@ -70,6 +69,23 @@ namespace PhoenixModel.Commands {
         /// </summary>
         /// <returns>Ein Objekt vom Typ CommandResult.</returns>
         CommandResult UndoCommand();
+
+        /// <summary>
+        /// Wenn das Kommando das Selectable betrifft, gibt es true zurück
+        /// Die Basisimplementierung schaut nach einem direkten Vergleich
+        /// der funktioniert aber nur, wenn das Selectable nach Programmstart verändert wurde
+        /// daher ist ein Vergleich der Werte immer notwendig
+        /// </summary>
+        /// <param name="selectable"></param>
+        /// <returns></returns>
+        public bool HasEffectOn(ISelectable selectable);
+
+
+        /// <summary>
+        /// Wenn das Kommando das Selectable verändern kann, gibt es true zurück
+        /// <param name="selectable"></param>
+        /// <returns></returns>
+        public bool CanAppliedTo(ISelectable selectable);
 
         /// <summary>
         /// Versucht den Befehl rückgängig zu machen.

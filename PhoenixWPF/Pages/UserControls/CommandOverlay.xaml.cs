@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace PhoenixWPF.Pages {
+namespace PhoenixWPF.Pages.UserControls {
     /// <summary>
     /// Interaktionslogik für CommandOverlay.xaml
     /// </summary>

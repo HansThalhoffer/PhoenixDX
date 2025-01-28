@@ -1,6 +1,8 @@
 ﻿using PhoenixModel.Commands.Parser;
 using PhoenixModel.dbCrossRef;
+using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbZugdaten;
+using PhoenixModel.Program;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using System.Text.RegularExpressions;
@@ -22,6 +24,11 @@ namespace PhoenixModel.Commands {
 
         public ConstructCommand(string commandString) : base(commandString) {
         }
+
+        public override bool CanAppliedTo(ISelectable selectable) {
+            return (selectable != null && selectable is KleinFeld);
+        }
+
 
         public override string ToString() {
             return (Direction != null)? $"Errichte {SimpleParser.ConstructionElementTypeToString(What)} im {Direction} von {Location}" : $"Errichte {SimpleParser.ConstructionElementTypeToString(What)} auf {Location}"; ;
