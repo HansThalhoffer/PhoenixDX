@@ -24,48 +24,54 @@ namespace PhoenixWPF.Pages.UserControls {
 
         private void SelectionHistory_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) {
             var selected = Main.Instance.SelectionHistory.Current;
-            if (selected is Spielfigur figur) {
-                this.Visibility = Visibility.Visible;
-                buttonShoot.Visibility = figur.CanShoot()? Visibility.Visible:Visibility.Collapsed;
-                buttonHorse.Visibility = Visibility.Collapsed;
-                if (figur.CanEmbark()) {
-                    buttonEmbark.Visibility =  Visibility.Visible;
-                    buttonEmbark.Content = "Einschiffen";
-                }
-                if (figur.CanDisEmbark()) {
-                    buttonEmbark.Visibility = Visibility.Visible;
-                    buttonEmbark.Content = "Ausschiffen";
-                }
-
-                if (figur is Zauberer) {
-                    buttonFusion.Visibility = Visibility.Collapsed;
-                    buttonSplit.Visibility = Visibility.Collapsed;
-                    buttonBarriere.Visibility = Visibility.Visible;
-                    buttonBannen.Visibility = Visibility.Visible;
-                    buttonTeleport.Visibility = Visibility.Visible;
-                    buttonDuell.Visibility = Visibility.Visible;
-                }
-                else {
-                    buttonBarriere.Visibility = Visibility.Collapsed;
-                    buttonBannen.Visibility = Visibility.Collapsed;
-                    buttonTeleport.Visibility = Visibility.Collapsed;
-                    buttonDuell.Visibility = Visibility.Collapsed;
-                }
-
-                if (figur is TruppenSpielfigur truppen) {                    
-                    if (figur.CanSattleUp()) {
-                        buttonHorse.Visibility = Visibility.Visible;
-                        buttonHorse.Content = "Aufsitzen";
-                    }
-                    if (figur.CanSattleDown()) {
-                        buttonHorse.Visibility = Visibility.Visible;
-                        buttonHorse.Content = "Absitzen";
-                    }
-                    buttonSplit.Visibility = Visibility.Visible;
-                }
-                else
-                    this.Visibility = Visibility.Hidden;
+            if (selected == null || selected is Spielfigur figur == false) {
+                this.Visibility = Visibility.Hidden;
+                return;
             }
+            this.Visibility = Visibility.Visible;
+            buttonShoot.Visibility = figur.CanShoot() ? Visibility.Visible : Visibility.Collapsed;
+            buttonHorse.Visibility = Visibility.Collapsed;
+            if (figur.CanEmbark()) {
+                buttonEmbark.Visibility = Visibility.Visible;
+                buttonEmbark.Content = "Einschiffen";
+            }
+            else if (figur.CanDisEmbark()) {
+                buttonEmbark.Visibility = Visibility.Visible;
+                buttonEmbark.Content = "Ausschiffen";
+            }
+            else
+                buttonEmbark.Visibility = Visibility.Collapsed;
+
+
+            if (figur is Zauberer) {
+                buttonFusion.Visibility = Visibility.Collapsed;
+                buttonSplit.Visibility = Visibility.Collapsed;
+                buttonBarriere.Visibility = Visibility.Visible;
+                buttonBannen.Visibility = Visibility.Visible;
+                buttonTeleport.Visibility = Visibility.Visible;
+                buttonDuell.Visibility = Visibility.Visible;
+            }
+            else {
+                buttonBarriere.Visibility = Visibility.Collapsed;
+                buttonBannen.Visibility = Visibility.Collapsed;
+                buttonTeleport.Visibility = Visibility.Collapsed;
+                buttonDuell.Visibility = Visibility.Collapsed;
+            }
+
+            if (figur is TruppenSpielfigur truppen) {
+                if (figur.CanSattleUp()) {
+                    buttonHorse.Visibility = Visibility.Visible;
+                    buttonHorse.Content = "Aufsitzen";
+                }
+                if (figur.CanSattleDown()) {
+                    buttonHorse.Visibility = Visibility.Visible;
+                    buttonHorse.Content = "Absitzen";
+                }
+                buttonSplit.Visibility = Visibility.Visible;
+            }
+            else
+                buttonSplit.Visibility = Visibility.Collapsed;
+
         }
 
 

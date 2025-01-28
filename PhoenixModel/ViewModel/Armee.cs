@@ -60,13 +60,20 @@ namespace PhoenixModel.ViewModel {
                                 wert += $" LKS {t.LKP}";
                             else
                                 wert += $" LKP {t.LKP}";
-                        if (t.SKP > 0)
+                        if (t.SKP > 0) {
                             if (t is Schiffe)
                                 wert += $" SKS {t.LKP}";
                             else
                                 wert += $" SKP:{t.SKP}";
+                        }
                         if (t.Pferde > 0)
                             wert += $" Pferde {t.Pferde}";
+                        if (string.IsNullOrEmpty(t.auf_Flotte) == false) {
+                            if (t is Schiffe)
+                                wert += $" beladen mit {t.auf_Flotte}";
+                            else
+                                wert += $" auf Flotte {t.auf_Flotte}";
+                        }
                         eigenschaften.Add(new Eigenschaft(t.BaseTyp.ToString(), wert, false, this));
 
                     }
