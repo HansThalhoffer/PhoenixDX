@@ -1,5 +1,6 @@
 ﻿using PhoenixModel.Commands.Parser;
 using PhoenixModel.dbZugdaten;
+using PhoenixModel.Extensions;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
@@ -30,7 +31,7 @@ namespace PhoenixModel.Commands {
         }
 
         public override bool CanAppliedTo(ISelectable selectable) {
-            return selectable != null && selectable is TruppenSpielfigur truppe && truppe.hf > 1 && truppe.staerke > 1;
+            return selectable != null && selectable is Spielfigur figur && figur.CanSplit();
         }
 
         public override CommandResult CheckPreconditions() {

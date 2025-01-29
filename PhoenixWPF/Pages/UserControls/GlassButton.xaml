@@ -233,7 +233,7 @@
                             </TransformGroup>
                         </RadialGradientBrush.RelativeTransform>
                         <GradientStop Color="#88FF8888" Offset="0"/>
-                        <GradientStop Color="#FF880000" Offset="1"/>
+                        <GradientStop Color="#FF008800" Offset="1"/>
                     </RadialGradientBrush>
                 </Ellipse.Fill>
             </Ellipse>
@@ -253,7 +253,7 @@
                     <EventTrigger.Actions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Duration="0:0:0.04" Storyboard.TargetName="TopButtonPressed" Storyboard.TargetProperty="(Control.Opacity)" To="1" AccelerationRatio=".9" />
+                                <DoubleAnimation Duration="0:0:0.02" Storyboard.TargetName="TopButtonPressed" Storyboard.TargetProperty="(Control.Opacity)" To="1" AccelerationRatio=".9" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger.Actions>
@@ -271,7 +271,7 @@
                     <EventTrigger.Actions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Duration="0:0:0.5" Storyboard.TargetName="TopButtonGlow" Storyboard.TargetProperty="(Control.Opacity)" To="0" AccelerationRatio=".9" />
+                                <DoubleAnimation Duration="0:0:0.4" Storyboard.TargetName="TopButtonGlow" Storyboard.TargetProperty="(Control.Opacity)" To="0" AccelerationRatio=".9" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger.Actions>

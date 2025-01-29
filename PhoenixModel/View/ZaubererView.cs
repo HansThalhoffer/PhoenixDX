@@ -66,6 +66,6 @@ namespace PhoenixModel.View {
                 return kategorie.Regeneration_GP;
             }
             return 0;
-        }
+        }      
     }
 }

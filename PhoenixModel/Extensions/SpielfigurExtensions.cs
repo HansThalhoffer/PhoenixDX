@@ -125,7 +125,6 @@ namespace PhoenixModel.Extensions {
             return figur is Reiter;
         }
 
-
         /// <summary>
         /// Ermittelt den aktuellen Wert von gf (aus gf_nach oder gf_von)
         /// </summary>
@@ -139,6 +138,50 @@ namespace PhoenixModel.Extensions {
         public static int GetKf(this Spielfigur spielfigur) {
             return spielfigur.kf_nach > 0 ? spielfigur.kf_nach : spielfigur.kf_von;
         }
+
+
+        /// <summary>
+        /// Ermittelt ob der Zauberer eine Barriere errichten kann
+        /// </summary>
+        public static bool CanCastBarriere(this Spielfigur figur, KleinfeldPosition? kf = null, Direction? direction = null) {
+            return figur is Zauberer zauberer && zauberer.CanCastBarriere(kf,direction);
+        }
+
+        /// <summary>
+        /// Ermittelt ob der Zaubeer auf ein benachbartes Kleinfeld bannen kann
+        /// </summary>
+        public static bool CanCastBannen(this Spielfigur figur, KleinfeldPosition? kf = null) {
+            return figur is Zauberer zauberer && zauberer.CanCastBannen(kf);
+        }
+
+        /// <summary>
+        /// Ermittelt ob der Zaubeer teleportieren kann und damit einige Leute mitnehmen
+        /// </summary>
+        public static bool CanCastTeleport(this Spielfigur figur, KleinfeldPosition? kf = null, List<Spielfigur>? teleportPayLoad = null) {
+            return figur is Zauberer zauberer && zauberer.CanCastTeleport(kf, teleportPayLoad);
+        }
+
+        /// <summary>
+        /// Ermittelt ob der Zaubeer einen benachbarten Zauberer zum Duell auffordern kann
+        /// </summary>
+        public static bool CanCastDuell(this Spielfigur figur, KleinfeldPosition? kf = null) {
+            return figur is Zauberer zauberer && zauberer.CanCastDuell(kf);
+        }
+
+        /// <summary>
+        /// Ermittelt ob die Truppe sich aufteilen kann
+        /// </summary>
+        public static bool CanSplit(this Spielfigur figur, KleinfeldPosition? kf = null) {
+            return figur is TruppenSpielfigur truppe && truppe.CanSplit(kf);
+        }
+
+        /// <summary>
+        /// Ermittelt ob die Spielfigur Fusionieren kann
+        /// </summary>
+        public static bool CanFustion(this Spielfigur figur, KleinfeldPosition? kf = null) {
+            return figur is TruppenSpielfigur truppe && truppe.CanFustion();
+        }
+
 
         /// <summary>
         /// Weist die Spielfigur der ausgewählten Nation zu.
