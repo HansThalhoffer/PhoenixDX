@@ -2,11 +2,11 @@ using System;
 using System.Data.Common;
 using PhoenixModel.Database;
 using PhoenixModel.Helper;
+using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
 
 namespace PhoenixModel.dbZugdaten {
-    public class Schenkungen :  IDatabaseTable, IEigenschaftler
-    {
+    public class Schenkungen : IDatabaseTable, ISelectable {
         public static string DatabaseName { get; set;  } = string.Empty;
         public string Database { get { return DatabaseName; } set { DatabaseName = value; } }
         public const string TableName = "Schenkungen";
@@ -21,7 +21,7 @@ namespace PhoenixModel.dbZugdaten {
         public int Schenkung_an { get; set; }
         public string? Schenkung_anID { get; set; }
         public int monat { get; set; }
-        public int ID { get; set; }
+        public int ID { get; set; } = 0;
 
         public enum Felder
         {
@@ -39,6 +39,9 @@ namespace PhoenixModel.dbZugdaten {
         }
 
         public void Save(DbCommand command) {
+            if (ID == 0)
+                Insert(command);
+            
             command.CommandText = $@"
         UPDATE {TableName} SET
             Schenkung_bekommen = {this.Schenkung_bekommen},
@@ -48,8 +51,10 @@ namespace PhoenixModel.dbZugdaten {
             monat = {this.monat}
         WHERE ID = {this.ID}";
 
-            // Execute the command
-            command.ExecuteNonQuery();
+            // Wenn kein Update mögiich ist, dann Insert
+            int result = command.ExecuteNonQuery();
+            if (result == 0)
+                Insert(command);
         }
 
         public void Insert(DbCommand command) {
@@ -83,5 +88,12 @@ namespace PhoenixModel.dbZugdaten {
             command.ExecuteNonQuery();
         }
 
+        public bool Select() {
+            return false;
+        }
+
+        public bool Edit() {
+            return false;
+        }
     }
 }

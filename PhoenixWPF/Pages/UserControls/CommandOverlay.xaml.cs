@@ -21,7 +21,6 @@ namespace PhoenixWPF.Pages.UserControls {
             //this.Visibility = Visibility.Hidden;
         }
 
-
         private void SelectionHistory_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) {
             var selected = Main.Instance.SelectionHistory.Current;
             if (selected == null || selected is Spielfigur figur == false) {
