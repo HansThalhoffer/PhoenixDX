@@ -171,7 +171,8 @@ namespace PhoenixModel.ViewModel {
                         continue;
                     if (k.Gebäude.Rüstort.Bauwerk.StartsWith("Dorf")) 
                         continue;
-                    
+                    if (EinnahmenView.GetGebäudeEinnahmen(k)==0)
+                        continue;
                     if (k.Gebäude.Rüstort.Bauwerk.StartsWith("Burg")) {
                         this.Burgen++;
                         this.BurgenEinkommen += EinnahmenView.GetGebäudeEinnahmen(k);
