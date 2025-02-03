@@ -2,6 +2,7 @@
 using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -139,8 +140,8 @@ namespace PhoenixModel.View {
             return null;
         }
 
-        public static KleinFeld? GetKleinfeld (KleinfeldPosition kf) {
-            if (SharedData.Map != null && SharedData.Map.TryGetValue(kf.CreateBezeichner(), out KleinFeld? feld))
+        public static KleinFeld? GetKleinfeld (KleinfeldPosition? kf) {
+            if (SharedData.Map != null && kf != null && SharedData.Map.TryGetValue(kf.CreateBezeichner(), out KleinFeld? feld))
                 return feld;
             return null;
         }

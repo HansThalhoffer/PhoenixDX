@@ -1,4 +1,5 @@
-﻿using PhoenixModel.dbErkenfara;
+﻿using PhoenixModel.Commands.Parser;
+using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.EventsAndArgs;
 using PhoenixModel.Helper;
@@ -133,11 +134,17 @@ namespace PhoenixWPF.Pages {
 
         private void SaveBauwerknamen(Gebäude gebäude, string neuerNamen) {
             gebäude.Bauwerknamen = neuerNamen;
+            
             if (SharedData.Map != null) {
-                var gemark = SharedData.Map[gebäude.Bezeichner];
-                gemark.Bauwerknamen = neuerNamen;
-                SharedData.StoreQueue.Enqueue(gebäude);
-                SharedData.StoreQueue.Enqueue(gemark);
+                var gemark = SharedData.Map[gebäude.CreateBezeichner()];
+                string command = $"Nenne Gebäude auf {gemark.CreateBezeichner()} {neuerNamen} ({gemark.Bauwerknamen})";
+                if (CommandParser.ParseCommand(command, out var cmd) && cmd != null) {
+                    var result = cmd.ExecuteCommand();
+                    if (result.HasErrors)
+                        SpielWPF.LogError(result.Title, result.Message);
+                }
+                else
+                    SpielWPF.LogError("Der Name konnte nicht gespeichert werden", "Keine Ahnung warum");
             }
         }
 

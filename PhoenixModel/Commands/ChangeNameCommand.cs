@@ -1,18 +1,11 @@
 ﻿using PhoenixModel.Commands.Parser;
-using PhoenixModel.dbPZE;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.EventsAndArgs;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Program;
+using PhoenixModel.View;
 using PhoenixModel.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using static PhoenixModel.Commands.DiplomacyCommand;
 
 namespace PhoenixModel.Commands {
     public class ChangeNameCommand : BaseCommand, IPhoenixCommand, IEquatable<ChangeNameCommand> {
@@ -23,17 +16,18 @@ namespace PhoenixModel.Commands {
         public string NewSpielerName { get; set; } = string.Empty;
         public string NewBeschriftung { get; set; } = string.Empty;
         public KleinfeldPosition? Location { get; set; }
+        public string OldValue { get; set; } = string.Empty;
 
         public override string ToString() {
             if (Figur != FigurType.None) {
                 if (string.IsNullOrEmpty(NewName) == false)
-                    return $"Nenne {Figur} {UnitId} {NewName}";
+                    return $"Nenne {Figur} {UnitId} {NewName} ({OldValue})";
                 if (string.IsNullOrEmpty(NewSpielerName) == false)
-                    return $"{Figur} {UnitId} wird gespielt von {NewSpielerName}";
+                    return $"{Figur} {UnitId} wird gespielt von {NewSpielerName} ({OldValue})";
                 if (string.IsNullOrEmpty(NewBeschriftung) == false)
-                    return $"Bezeichne {Figur} {UnitId} {NewBeschriftung}";
+                    return $"Bezeichne {Figur} {UnitId} {NewBeschriftung} ({OldValue})";
             }
-            return $"Nenne Gebäude auf {Location} {NewName}";
+            return $"Nenne Gebäude auf {Location} {NewName} ({OldValue})";
         }
 
         public override bool CanAppliedTo(ISelectable selectable) {
@@ -77,24 +71,48 @@ namespace PhoenixModel.Commands {
             CommandResult result = CheckPreconditions();
             if (result.HasErrors)
                 return result;
+
             if (Figur != FigurType.None) {
-                switch (Figur) {
-                    case FigurType.Charakter:
-                        if (CommonCommandErrors.NotLoaded(SharedData.Character, "Charakter", CommandString, this, out CommandResult? r2) && r2 != null)
-                            return r2;
-                        break;
-                    case FigurType.Zauberer:
-                        if (CommonCommandErrors.NotLoaded(SharedData.Zauberer, "Zauberer", CommandString, this, out CommandResult? r3) && r3 != null)
-                            return r3;
-                        break;
+                var figur = SpielfigurenView.GetSpielfigur(this.Figur, this.UnitId);
+                if (figur == null)
+                    return new CommandResultError($"Für die angegebene Nummer {UnitId} findet sich kein {Figur}", $"Der Befehl kann nicht ausgeführt werden, da die Figur nicht gefunden wurde:\r\n {CommandString}", this);
+                if (figur is NamensSpielfigur spielfigur == false)
+                    return new CommandResultError($"Für die angegebene Nummer {UnitId} findet sich kein {Figur}, die man umbenennen kann", $"Der Befehl kann nicht ausgeführt werden, da die Figur {figur.BaseTyp} keine Namen trägt :\r\n {CommandString}", this);
+
+                if (string.IsNullOrEmpty(NewName) == false) {
+                    OldValue = NewName;
+                    spielfigur.charname = NewName;
                 }
-                //Update(item, ViewEventArgs.ViewEventType.UpdateSpielfiguren);
+                if (string.IsNullOrEmpty(NewSpielerName) == false) {
+                    OldValue = NewSpielerName;
+                    spielfigur.SpielerName = NewSpielerName;
+                }
+                if (string.IsNullOrEmpty(NewBeschriftung) == false) { 
+                    OldValue = NewBeschriftung; 
+                    spielfigur.Beschriftung = NewBeschriftung; 
+                }
+
+                if (spielfigur is Zauberer wiz)
+                    Update(wiz, ViewEventArgs.ViewEventType.UpdateSpielfiguren);
+                if (spielfigur is Character car)
+                    Update(car, ViewEventArgs.ViewEventType.UpdateSpielfiguren);
+
                 return new CommandResultSuccess($"Das {this.GetType()} wurde erfolgreich ausgeführt", $"Der Befehl wurde ausgeführt:\r\n {this.CommandString}", this);
 
             }
-            else {
+            else { // ein Gebäude erhält einen Namen
                 if (CommonCommandErrors.MissingPosition(Location, CommandString, this, out CommandResult? r1) && r1 != null)
                     return r1;
+                var kf = KleinfeldView.GetKleinfeld(Location);
+                if (kf != null) {
+                    if (kf.Gebäude == null)
+                        return new CommandResultError($"Auf der angegebenen Kleinfeldposition {Location} befindet sich kein Gebäude", $"Der Befehl kann nicht ausgeführt werden, da die Kleinfeldposition zwingend ein Gebäude besitzen muss:\r\n {CommandString}", this);
+                    // setze Namen in beiden Tabellen und speichere
+                    kf.Bauwerknamen = this.NewName;
+                    SharedData.StoreQueue.Enqueue(kf);
+                    kf.Gebäude.Bauwerknamen = this.NewName;
+                    Update(kf.Gebäude, ViewEventArgs.ViewEventType.UpdateGebäude);
+                }
                 //Update(item, ViewEventArgs.ViewEventType.UpdateGebäude);
                 return new CommandResultSuccess($"Das {this.GetType()} wurde erfolgreich ausgeführt", $"Der Befehl wurde ausgeführt:\r\n {this.CommandString}", this);
 
@@ -102,15 +120,62 @@ namespace PhoenixModel.Commands {
         }
 
         /// <summary>
-        /// Das Ändern des Namens kann nicht rückgängig gemacht werden, da der alte Namen unbekannt ist
+        /// Das Ändern des Namens kann nur rückgängig gemacht werden, wenn der alte Namen nicht unbekannt ist
         /// </summary>
-        public override bool CanUndo => false;
+        public override bool CanUndo => string.IsNullOrEmpty(OldValue) == false;
 
         /// <summary>
-        /// Das Ändern des Namens kann nicht rückgängig gemacht werden, da der alte Namen unbekannt ist
+        /// Das Ändern des Namens kann nur rückgängig gemacht werden, wenn der alte Namen bekannt ist
         /// </summary>
         public override CommandResult UndoCommand() {
-            throw new NotImplementedException();
+            if (CanUndo == false) {
+                return new CommandResultError($"Die Umbennenung von {Figur} {UnitId} kann nicht rückgängig gemacht werden", "Da der alte Namen/Bezeichner nicht bekannt ist, kann das Kommando nicht rückgängig gemacht werden.", this);
+            }
+            CommandResult result = CheckPreconditions();
+            if (result.HasErrors)
+                return result;
+            if (Figur != FigurType.None) {
+                var figur = SpielfigurenView.GetSpielfigur(this.Figur, this.UnitId);
+                if (figur == null)
+                    return new CommandResultError($"Für die angegebene Nummer {UnitId} findet sich kein {Figur}", $"Der Befehl kann nicht ausgeführt werden, da die Figur nicht gefunden wurde:\r\n {CommandString}", this);
+                if (figur is NamensSpielfigur spielfigur == false)
+                    return new CommandResultError($"Für die angegebene Nummer {UnitId} findet sich kein {Figur}, die man umbenennen kann", $"Der Befehl kann nicht ausgeführt werden, da die Figur {figur.BaseTyp} keine Namen trägt :\r\n {CommandString}", this);
+
+                if (string.IsNullOrEmpty(NewName) == false) {
+                    spielfigur.charname = OldValue;
+                }
+                if (string.IsNullOrEmpty(NewSpielerName) == false) {
+                    spielfigur.SpielerName = OldValue;
+                }
+                if (string.IsNullOrEmpty(NewBeschriftung) == false) {
+                    spielfigur.Beschriftung = OldValue;
+                }
+
+                if (spielfigur is Zauberer wiz)
+                    Update(wiz, ViewEventArgs.ViewEventType.UpdateSpielfiguren);
+                if (spielfigur is Character car)
+                    Update(car, ViewEventArgs.ViewEventType.UpdateSpielfiguren);
+
+                return new CommandResultSuccess($"Das {this.GetType()} wurde erfolgreich ausgeführt", $"Der Befehl wurde ausgeführt:\r\n {this.CommandString}", this);
+
+            }
+            else { // ein Gebäude erhält einen Namen
+                if (CommonCommandErrors.MissingPosition(Location, CommandString, this, out CommandResult? r1) && r1 != null)
+                    return r1;
+                var kf = KleinfeldView.GetKleinfeld(Location);
+                if (kf != null) {
+                    if (kf.Gebäude == null)
+                        return new CommandResultError($"Auf der angegebenen Kleinfeldposition {Location} befindet sich kein Gebäude", $"Der Befehl kann nicht ausgeführt werden, da die Kleinfeldposition zwingend ein Gebäude besitzen muss:\r\n {CommandString}", this);
+                    // setze alten Namen in beiden Tabellen und speichere
+                    kf.Bauwerknamen = OldValue;
+                    SharedData.StoreQueue.Enqueue(kf);
+                    kf.Gebäude.Bauwerknamen = OldValue;
+                    Update(kf.Gebäude, ViewEventArgs.ViewEventType.UpdateGebäude);
+                }
+                //Update(item, ViewEventArgs.ViewEventType.UpdateGebäude);
+                return new CommandResultSuccess($"Das {this.GetType()} wurde erfolgreich ausgeführt", $"Der Befehl wurde ausgeführt:\r\n {this.CommandString}", this);
+
+            }
         }
 
 
@@ -128,7 +193,7 @@ namespace PhoenixModel.Commands {
 
             if (Location != null && Location.Equals(other.Location) == false)
                 return false;
-            if (Location == null &&  other.Location != null) 
+            if (Location == null && other.Location != null)
                 return false;
 
             // Vergleiche die relevanten Felder
@@ -136,7 +201,8 @@ namespace PhoenixModel.Commands {
                    UnitId == other.UnitId &&
                    NewName == other.NewName &&
                    NewSpielerName == other.NewSpielerName &&
-                   NewBeschriftung == other.NewBeschriftung;
+                   NewBeschriftung == other.NewBeschriftung &&
+                   OldValue == other.OldValue;
         }
 
         /// <summary>
@@ -162,7 +228,21 @@ namespace PhoenixModel.Commands {
         }
     }
 
+    /// <summary>
+    /// Die ChangeName Kommandos enthalten den alten Wert in Klammern dahinter. Für das Umbenennen ist der alte Wert unwichtig, für das Undo aber sehr
+    /// Nenne Gebäude auf 701/30 Bad Innozent (Dorf-III)
+    /// Nenne Zauberer 503 Otto Waalkes ()
+    /// Bezeichne Zaubeer 511 CZ4
+    /// 503 wird gespielt von Hans Dampf (Karl Napp)
+    /// </summary>
     public class ChangeNameCommandParser : SimpleParser {
+
+        static string RemoveAndExtractBracketsContent(string input, out string extractedContent) {
+            Match match = Regex.Match(input, @"\((.*?)\)");
+            extractedContent = match.Success ? match.Groups[1].Value : "";
+            return Regex.Replace(input, @"\s*\(.*?\)", "").Trim();
+        }
+
         /// <summary>
         /// Regex zur Erkennung von Befehlen zum Umbenennen einer Figur.
         /// </summary>
@@ -202,6 +282,7 @@ namespace PhoenixModel.Commands {
         /// <param name="command">Das erstellte IPhoenixCommand-Objekt oder null im Fehlerfall.</param>
         /// <returns>True, wenn der Befehl erfolgreich analysiert wurde, andernfalls false.</returns>
         public override bool ParseCommand(string commandString, out IPhoenixCommand? command) {
+            commandString = RemoveAndExtractBracketsContent(commandString, out string oldValue);
             var match = FigurUmbennenRegex.Match(commandString);
             if (match.Success) {
                 try {
@@ -209,6 +290,7 @@ namespace PhoenixModel.Commands {
                         UnitId = ParseInt(match.Groups["UnitId"].Value),
                         Figur = ParseUnitType(match.Groups["Figur"].Value),
                         NewName = match.Groups["NewName"].Value,
+                        OldValue = oldValue,
                     };
                     return true;
                 }
@@ -226,6 +308,7 @@ namespace PhoenixModel.Commands {
                         UnitId = ParseInt(match.Groups["UnitId"].Value),
                         Figur = ParseUnitType(match.Groups["Figur"].Value),
                         NewSpielerName = match.Groups["NewSpielerName"].Value,
+                        OldValue = oldValue,
                     };
                     return true;
                 }
@@ -242,6 +325,7 @@ namespace PhoenixModel.Commands {
                         UnitId = ParseInt(match.Groups["UnitId"].Value),
                         Figur = ParseUnitType(match.Groups["Figur"].Value),
                         NewBeschriftung = match.Groups["NewBeschriftung"].Value,
+                        OldValue = oldValue,
                     };
                     return true;
                 }
@@ -256,7 +340,8 @@ namespace PhoenixModel.Commands {
                 try {
                     command = new ChangeNameCommand(commandString) {
                         Location = ParseLocation(match.Groups["Location"].Value),
-                        NewName = match.Groups["NewName"].Value
+                        NewName = match.Groups["NewName"].Value,
+                        OldValue = oldValue,
                     };
                     return true;
                 }

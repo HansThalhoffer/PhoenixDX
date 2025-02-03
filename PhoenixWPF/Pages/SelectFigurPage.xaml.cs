@@ -1,4 +1,5 @@
-﻿using PhoenixModel.EventsAndArgs;
+﻿using PhoenixModel.Commands.Parser;
+using PhoenixModel.EventsAndArgs;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Helper;
 using PhoenixModel.Program;
@@ -130,24 +131,36 @@ namespace PhoenixWPF.Pages {
 
         private void SaveSpielfigurCharakterNamen(Spielfigur figur, string neuerNamen)
         {
-            figur.CharakterName = neuerNamen;
-            // nur speichern, wenn das eine zulässige Änderung war
-            if (figur.CharakterName == neuerNamen)
-                SaveSpielfigur(figur);
+            string commandString = $"Nenne {figur.BaseTyp} {figur.Nummer} {neuerNamen} ({figur.CharakterName}) ";
+            if (CommandParser.ParseCommand(commandString, out var cmd) && cmd != null) {
+                var result = cmd.ExecuteCommand();
+                if (result.HasErrors)
+                    SpielWPF.LogError(result.Title, result.Message);
+            }
+            else
+                SpielWPF.LogError("Der Name konnte nicht gespeichert werden", "Keine Ahnung warum");
         }
         private void SaveSpielfigurSpielerNamen(Spielfigur figur, string neuerNamen)
         {
-            figur.SpielerName = neuerNamen;
-            // nur speichern, wenn das eine zulässige Änderung war
-            if (figur.SpielerName == neuerNamen)
-                SaveSpielfigur(figur);
+            string commandString = $"{figur.BaseTyp} {figur.Nummer} wird gespielt von {neuerNamen} ({figur.SpielerName})";
+            if (CommandParser.ParseCommand(commandString, out var cmd) && cmd != null) {
+                var result = cmd.ExecuteCommand();
+                if (result.HasErrors)
+                    SpielWPF.LogError(result.Title, result.Message);
+            }
+            else
+                SpielWPF.LogError("Der Spielername konnte nicht gespeichert werden", "Keine Ahnung warum");
         }
         private void SaveSpielfigurTitel(Spielfigur figur, string neuerNamen)
         {
-            figur.Titel = neuerNamen;
-            // nur speichern, wenn das eine zulässige Änderung war
-            if (figur.Titel == neuerNamen)
-                SaveSpielfigur(figur);
+            string commandString = $"Bezeichne {figur.BaseTyp} {figur.Nummer} {neuerNamen} ({figur.Bezeichner})";
+            if (CommandParser.ParseCommand(commandString, out var cmd) && cmd != null) {
+                var result = cmd.ExecuteCommand();
+                if (result.HasErrors)
+                    SpielWPF.LogError(result.Title, result.Message);
+            }
+            else
+                SpielWPF.LogError("Die Bezeichnung konnte nicht gespeichert werden", "Keine Ahnung warum");
         }
 
         /// <summary>
