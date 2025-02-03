@@ -114,7 +114,7 @@ namespace PhoenixModel.Commands {
             }
 
             // Aktualisiert die Ansicht für Diplomatie-Änderungen
-            ProgramView.Update(ViewEventArgs.ViewEventType.UpdateDiplomatie);
+            ProgramView.Update(viewEventType);
         }
 
         /// <summary>

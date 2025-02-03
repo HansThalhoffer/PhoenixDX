@@ -42,7 +42,7 @@ namespace PhoenixModel.Commands {
                 if (CommonCommandErrors.MissingUnitID(UnitId, CommandString, this, out CommandResult? r1) && r1 != null)
                     return r1;
 
-                if (string.IsNullOrEmpty(NewBeschriftung) && string.IsNullOrEmpty(NewSpielerName) && string.IsNullOrEmpty(NewBeschriftung))
+                if (string.IsNullOrEmpty(NewBeschriftung) && string.IsNullOrEmpty(NewName) && string.IsNullOrEmpty(NewSpielerName))
                     return new CommandResultError("Es wurde kein neuer Name angegeben", $"Es muss je nach Befehl ein neuer Name für Spieler, Charakter oder Gebäude angegeben werden:\r\n {this.CommandString}", this);
                 switch (Figur) {
                     case FigurType.Krieger:
@@ -80,15 +80,15 @@ namespace PhoenixModel.Commands {
                     return new CommandResultError($"Für die angegebene Nummer {UnitId} findet sich kein {Figur}, die man umbenennen kann", $"Der Befehl kann nicht ausgeführt werden, da die Figur {figur.BaseTyp} keine Namen trägt :\r\n {CommandString}", this);
 
                 if (string.IsNullOrEmpty(NewName) == false) {
-                    OldValue = NewName;
+                    OldValue = spielfigur.charname;
                     spielfigur.charname = NewName;
                 }
                 if (string.IsNullOrEmpty(NewSpielerName) == false) {
-                    OldValue = NewSpielerName;
+                    OldValue = spielfigur.SpielerName;
                     spielfigur.SpielerName = NewSpielerName;
                 }
                 if (string.IsNullOrEmpty(NewBeschriftung) == false) { 
-                    OldValue = NewBeschriftung; 
+                    OldValue = spielfigur.Beschriftung; 
                     spielfigur.Beschriftung = NewBeschriftung; 
                 }
 
@@ -108,6 +108,8 @@ namespace PhoenixModel.Commands {
                     if (kf.Gebäude == null)
                         return new CommandResultError($"Auf der angegebenen Kleinfeldposition {Location} befindet sich kein Gebäude", $"Der Befehl kann nicht ausgeführt werden, da die Kleinfeldposition zwingend ein Gebäude besitzen muss:\r\n {CommandString}", this);
                     // setze Namen in beiden Tabellen und speichere
+                    if (kf.Bauwerknamen != null)
+                        OldValue = kf.Bauwerknamen;
                     kf.Bauwerknamen = this.NewName;
                     SharedData.StoreQueue.Enqueue(kf);
                     kf.Gebäude.Bauwerknamen = this.NewName;
@@ -281,12 +283,12 @@ namespace PhoenixModel.Commands {
         /// <param name="commandString">Der zu analysierende Befehl.</param>
         /// <param name="command">Das erstellte IPhoenixCommand-Objekt oder null im Fehlerfall.</param>
         /// <returns>True, wenn der Befehl erfolgreich analysiert wurde, andernfalls false.</returns>
-        public override bool ParseCommand(string commandString, out IPhoenixCommand? command) {
-            commandString = RemoveAndExtractBracketsContent(commandString, out string oldValue);
+        public override bool ParseCommand(string commandStringOrg, out IPhoenixCommand? command) {
+            var commandString = RemoveAndExtractBracketsContent(commandStringOrg, out string oldValue);
             var match = FigurUmbennenRegex.Match(commandString);
             if (match.Success) {
                 try {
-                    command = new ChangeNameCommand(commandString) {
+                    command = new ChangeNameCommand(commandStringOrg) {
                         UnitId = ParseInt(match.Groups["UnitId"].Value),
                         Figur = ParseUnitType(match.Groups["Figur"].Value),
                         NewName = match.Groups["NewName"].Value,
@@ -304,7 +306,7 @@ namespace PhoenixModel.Commands {
             match = NeuerSpielerRegex.Match(commandString);
             if (match.Success) {
                 try {
-                    command = new ChangeNameCommand(commandString) {
+                    command = new ChangeNameCommand(commandStringOrg) {
                         UnitId = ParseInt(match.Groups["UnitId"].Value),
                         Figur = ParseUnitType(match.Groups["Figur"].Value),
                         NewSpielerName = match.Groups["NewSpielerName"].Value,
@@ -321,7 +323,7 @@ namespace PhoenixModel.Commands {
             match = NeueBeschriftungRegex.Match(commandString);
             if (match.Success) {
                 try {
-                    command = new ChangeNameCommand(commandString) {
+                    command = new ChangeNameCommand(commandStringOrg) {
                         UnitId = ParseInt(match.Groups["UnitId"].Value),
                         Figur = ParseUnitType(match.Groups["Figur"].Value),
                         NewBeschriftung = match.Groups["NewBeschriftung"].Value,
@@ -338,7 +340,7 @@ namespace PhoenixModel.Commands {
             match = BauwerkNameRegex.Match(commandString);
             if (match.Success) {
                 try {
-                    command = new ChangeNameCommand(commandString) {
+                    command = new ChangeNameCommand(commandStringOrg) {
                         Location = ParseLocation(match.Groups["Location"].Value),
                         NewName = match.Groups["NewName"].Value,
                         OldValue = oldValue,

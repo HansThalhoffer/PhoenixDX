@@ -52,7 +52,7 @@ namespace PhoenixWPF.Pages {
 
         private void ViewModel_OnViewEvent(object? sender, ViewEventArgs e)
         {
-            if (SharedData.Gebäude != null && ProgramView.SelectedNation != null &&
+            if (ProgramView.SelectedNation != null &&
                 (e.EventType == ViewEventArgs.ViewEventType.EverythingLoaded || e.EventType == ViewEventArgs.ViewEventType.UpdateSpielfiguren))
             {
                 EigenschaftlerDataGrid.ItemsSource = null;
