@@ -55,7 +55,9 @@ namespace PhoenixModel.dbZugdaten {
             Email = '{DatabaseConverter.EscapeString(this.Email)}'
         WHERE ID = '{DatabaseConverter.EscapeString(this.ID)}'";
 
-            command.ExecuteNonQuery();
+            // Execute the command
+            if (command.ExecuteNonQuery() == 0)
+                Insert(command);
         }
 
 

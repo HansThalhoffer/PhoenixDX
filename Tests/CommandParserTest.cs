@@ -183,7 +183,7 @@ namespace Tests {
                     NewSpielerName = string.Empty,
                     Location = null,
                 },
-                new ChangeNameCommand("Zauberer 504 wir gespielt von Stefan O."){
+                new ChangeNameCommand("Zauberer 504 wird gespielt von Stefan O."){
                     Figur = FigurType.Zauberer,
                     UnitId = 504,
                     NewName = string.Empty,
@@ -191,7 +191,7 @@ namespace Tests {
                     NewSpielerName = "Stefan O.",
                     Location = null,
                 },
-                new ChangeNameCommand("Bezeichner Zauberer 504 CZB"){
+                new ChangeNameCommand("Bezeichne Zauberer 504 CZB"){
                     Figur = FigurType.Zauberer,
                     UnitId = 504,
                     NewName = string.Empty,

@@ -54,7 +54,8 @@ namespace PhoenixModel.dbZugdaten {
         WHERE ID = {this.ID}";
 
             // Execute the command
-            command.ExecuteNonQuery();
+            if (command.ExecuteNonQuery() == 0)
+                Insert(command);
         }
 
         public void Delete(DbCommand command) {

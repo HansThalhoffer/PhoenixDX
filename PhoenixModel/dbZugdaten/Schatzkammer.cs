@@ -49,7 +49,9 @@ namespace PhoenixModel.dbZugdaten {
             Verruestet = {this.Verruestet},
         WHERE  monat = {this.monat}";
 
-            command.ExecuteNonQuery();
+            // Execute the command
+            if (command.ExecuteNonQuery() == 0)
+                Insert(command);
         }
 
         public void Insert(DbCommand command) {

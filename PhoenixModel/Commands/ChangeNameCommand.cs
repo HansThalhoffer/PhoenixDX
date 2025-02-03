@@ -31,7 +31,7 @@ namespace PhoenixModel.Commands {
                 if (string.IsNullOrEmpty(NewSpielerName) == false)
                     return $"{Figur} {UnitId} wird gespielt von {NewSpielerName}";
                 if (string.IsNullOrEmpty(NewBeschriftung) == false)
-                    return $"Bezeichne {Figur} {UnitId} {NewSpielerName}";
+                    return $"Bezeichne {Figur} {UnitId} {NewBeschriftung}";
             }
             return $"Nenne Gebäude auf {Location} {NewName}";
         }

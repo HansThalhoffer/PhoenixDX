@@ -66,7 +66,9 @@ namespace PhoenixModel.dbZugdaten {
             Piratenflag = {this.Piratenflag},
             Phase = {this.Phase}
         WHERE id = {this.id}";
-            command.ExecuteNonQuery();
+            // Execute the command
+            if (command.ExecuteNonQuery() == 0)
+                Insert(command);
         }
 
 

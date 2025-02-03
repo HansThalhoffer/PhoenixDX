@@ -92,7 +92,8 @@ namespace PhoenixModel.dbZugdaten {
         WHERE Nummer = {this.Nummer}";
 
             // Execute the command
-            command.ExecuteNonQuery();
+            if (command.ExecuteNonQuery() == 0)
+                Insert(command);
         }
 
         public void Insert(DbCommand command)

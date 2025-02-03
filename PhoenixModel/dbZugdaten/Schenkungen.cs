@@ -52,8 +52,8 @@ namespace PhoenixModel.dbZugdaten {
         WHERE ID = {this.ID}";
 
             // Wenn kein Update mögiich ist, dann Insert
-            int result = command.ExecuteNonQuery();
-            if (result == 0)
+            // Execute the command
+            if (command.ExecuteNonQuery() == 0)
                 Insert(command);
         }
 

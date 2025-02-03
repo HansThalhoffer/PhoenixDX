@@ -189,7 +189,9 @@ namespace PhoenixModel.dbZugdaten {
             y19 = {this.y19}
         WHERE Nummer = {this.Nummer}";
 
-            command.ExecuteNonQuery();
+            // Execute the command
+            if (command.ExecuteNonQuery() == 0)
+                Insert(command);
         }
         public override void Insert(DbCommand command)
         {
