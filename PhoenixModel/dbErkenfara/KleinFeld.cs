@@ -87,7 +87,8 @@ namespace PhoenixModel.dbErkenfara {
         public int? kreatur_feind { get; set; }
         public int? kreatur_freund { get; set; }
         public int Baupunkte { get; set; } = 0;
-        [View.Editable]
+        
+        // [View.Editable] geht nicht, da Gebäude synchron gehalten werden muss
         public string? Bauwerknamen { get; set; }
         public int? lehensid { get; set; }
 

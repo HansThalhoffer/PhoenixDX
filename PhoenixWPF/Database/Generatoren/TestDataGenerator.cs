@@ -100,8 +100,8 @@ namespace PhoenixWPF.Database.Generatoren {
             for (int i = 0; i < count; i++) {
                 Schiffe schiff = schiffe.ElementAt(random.Next(0, anzahlSchiffe - 1));
                 TruppenSpielfigur truppenSpielfigur = figuren.ElementAt(random.Next(0, anzahlFiguren - 1));
-                schiff.auf_Flotte = $"#{truppenSpielfigur.Nummer}";
-                truppenSpielfigur.auf_Flotte = $"#{schiff.Nummer}";
+                schiff.auf_Flotte = $"{schiff.auf_Flotte}#{truppenSpielfigur.Nummer}";
+                truppenSpielfigur.auf_Flotte = $"{schiff.Nummer}";
                 truppenSpielfigur.gf_von = schiff.gf_von;
                 truppenSpielfigur.kf_von = schiff.kf_von;
                 truppenSpielfigur.ph_xy = schiff.ph_xy;

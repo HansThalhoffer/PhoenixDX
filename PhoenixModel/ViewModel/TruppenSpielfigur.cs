@@ -1,4 +1,6 @@
-﻿using PhoenixModel.ExternalTables;
+﻿using PhoenixModel.dbZugdaten;
+using PhoenixModel.ExternalTables;
+using static PhoenixModel.ExternalTables.EinwohnerUndEinnahmenTabelle;
 
 namespace PhoenixModel.ViewModel {
     /// <summary>
@@ -146,7 +148,7 @@ namespace PhoenixModel.ViewModel {
                 }
                 if (SKP > 0) {
                     typ += BaseTyp == FigurType.Schiff ? "\r+ Schwere Kriegsschiffe" : "\r+ Schwere Katapulte";
-                    katapult += $"\r+ {SKP } SK";
+                    katapult += $"\r+ {SKP} SK";
                     lineCount++;
                 }
                 if (Gold > 0) {
@@ -159,11 +161,25 @@ namespace PhoenixModel.ViewModel {
                     katapult += $"\r+ {Pferde} Ps";
                     lineCount++;
                 }
+                if (string.IsNullOrEmpty(auf_Flotte) == false) {
+                   
+                    if (BaseTyp == FigurType.Schiff) {
+                        typ += $"\r Ladung: {auf_Flotte}";
+                        katapult += $"\r ";
+                    }
+                    else {
+                        typ += $"\r auf Schiff {auf_Flotte}";
+                        katapult += $"\r ";
+                    }
+                    lineCount++;
+
+                }
+
                 list.Add(new Eigenschaft("Typ", typ, false, this));
                 list.Add(new Eigenschaft("Stärke", str, false, this));
                 list.Add(new Eigenschaft("Katapulte", katapult, false, this));
                 list.Add(new Eigenschaft("Koordinaten", CreateBezeichner(), false, this));
-                list.Add(new Eigenschaft("Befehle", HasCommands? "♥" : "", false, this));
+                list.Add(new Eigenschaft("Befehle", HasCommands ? "♥" : "", false, this));
                 list.Add(new Eigenschaft(NamensSpielfigur.HeaderBeschriftung, Titel, true, this));
                 list.Add(new Eigenschaft(NamensSpielfigur.HeaderCharakterName, CharakterName, true, this));
                 list.Add(new Eigenschaft(NamensSpielfigur.HeaderSpielerName, SpielerName, true, this));

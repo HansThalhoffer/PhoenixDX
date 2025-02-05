@@ -138,6 +138,8 @@ namespace PhoenixWPF.Pages {
         }
 
         private void SaveBauwerknamen(Gebäude gebäude, string neuerNamen) {
+            if (gebäude.Bauwerknamen == neuerNamen || string.IsNullOrEmpty(neuerNamen ))
+                return;
             gebäude.Bauwerknamen = neuerNamen;
 
             if (SharedData.Map != null) {
