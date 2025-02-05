@@ -1,14 +1,8 @@
-﻿using PhoenixModel.dbZugdaten;
-using PhoenixModel.Program;
-using PhoenixModel.View;
+﻿using PhoenixModel.Extensions;
 using PhoenixModel.ViewModel;
-using PhoenixWPF.Helper;
 using PhoenixWPF.Program;
-using System.Security.Policy;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using PhoenixModel.Extensions;
 
 namespace PhoenixWPF.Pages.UserControls {
     /// <summary>
@@ -18,15 +12,10 @@ namespace PhoenixWPF.Pages.UserControls {
         public CommandOverlay() {
             InitializeComponent();
             Main.Instance.SelectionHistory.PropertyChanged += SelectionHistory_PropertyChanged;
-            //this.Visibility = Visibility.Hidden;
+            this.Visibility = Visibility.Hidden;
         }
 
-        private void SelectionHistory_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) {
-            var selected = Main.Instance.SelectionHistory.Current;
-            if (selected == null || selected is Spielfigur figur == false) {
-                this.Visibility = Visibility.Hidden;
-                return;
-            }
+        private void SetSpielfigurVisibility(Spielfigur figur) {
             Visibility = Visibility.Visible;
             buttonShoot.Visibility = figur.CanShoot() ? Visibility.Visible : Visibility.Collapsed;
             buttonBarriere.Visibility = figur.CanCastBarriere() ? Visibility.Visible : Visibility.Collapsed;
@@ -47,7 +36,7 @@ namespace PhoenixWPF.Pages.UserControls {
             }
             else
                 buttonEmbark.Visibility = Visibility.Collapsed;
-   
+
 
             if (figur.CanSattleUp()) {
                 buttonHorse.Visibility = Visibility.Visible;
@@ -57,6 +46,17 @@ namespace PhoenixWPF.Pages.UserControls {
                 buttonHorse.Visibility = Visibility.Visible;
                 buttonHorse.Content = "Absitzen";
             }
+        }
+
+
+        private void SelectionHistory_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            var selected = Main.Instance.SelectionHistory.Current;
+            if (selected != null && selected is Spielfigur figur) {
+                SetSpielfigurVisibility(figur);
+                return;
+            }
+            this.Visibility = Visibility.Hidden;
+
         }
     }
 }
