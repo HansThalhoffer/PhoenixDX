@@ -109,12 +109,12 @@ namespace PhoenixModel.Commands {
                 SharedData.Commands.Remove(this);
             }
             else if (item is ISelectable selectable) {
+                _Selectable = selectable; // muss vor dem Add, da das Add ein Change Event auslöst
                 SharedData.Commands.Add(this);
-                _Selectable = selectable;
             }
 
             // Aktualisiert die Ansicht für Diplomatie-Änderungen
-            ProgramView.Update(viewEventType);
+            ProgramView.Update(item, viewEventType);
         }
 
         /// <summary>

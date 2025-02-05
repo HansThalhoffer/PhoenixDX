@@ -6,10 +6,13 @@ using PhoenixModel.Helper;
 using PhoenixModel.Program;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
+using PhoenixWPF.Helper;
 using PhoenixWPF.Program;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -43,16 +46,18 @@ namespace PhoenixWPF.Pages {
         private void ViewModel_OnViewEvent(object? sender, ViewEventArgs e) {
             if (SharedData.Gebäude != null && ProgramView.SelectedNation != null &&
                 (e.EventType == ViewEventArgs.ViewEventType.EverythingLoaded || e.EventType == ViewEventArgs.ViewEventType.UpdateGebäude)) {
-                EigenschaftlerList.Clear();
-                var list = BauwerkeView.GetGebäude(ProgramView.SelectedNation);
-                if (list != null)
-                    EigenschaftlerList.AddRange(list);
-                LoadEigenschaftler();
+                if (e.Data == null) {
+                    EigenschaftlerList.Clear();
+                    var list = BauwerkeView.GetGebäude(ProgramView.SelectedNation);
+                    if (list != null)
+                        EigenschaftlerList.AddRange(list);
+                    LoadEigenschaftler();
+                    return;
+                }
             }
         }
 
         public List<IEigenschaftler> EigenschaftlerList { get; set; } = [];
-
 
         public void LoadEigenschaftler() {
 
@@ -77,7 +82,7 @@ namespace PhoenixWPF.Pages {
             foreach (var eig in columns) {
                 string name = eig.Name;
                 int index = eigList.IndexOf(eig);
-                if (eig.Name == "InBau")  {
+                if (eig.Name == "InBau") {
                     DataGridTemplateColumn imageColumn = new DataGridTemplateColumn {
                         Header = "Baustelle"
                     };
@@ -98,7 +103,7 @@ namespace PhoenixWPF.Pages {
 
                     // Bind Visibility to the boolean property
                     Binding visibilityBinding = new Binding(name) {
-                        Converter = new  PhoenixWPF.Pages.Converter.BoolToVisibilityConverter()
+                        Converter = new PhoenixWPF.Pages.Converter.BoolToVisibilityConverter()
                     };
                     imageFactory.SetBinding(Image.VisibilityProperty, visibilityBinding);
 
@@ -114,7 +119,7 @@ namespace PhoenixWPF.Pages {
                         IsReadOnly = name != "Bauwerknamen"
                     };
                     if (name == "Bauwerknamen") {
-                        _BauwerkNamenBindingPath = $"Eigenschaften[{index}].Wert";
+                        _BauwerkNamenBindingPath = $"Bauwerknamen";
                     }
                     else if (name == "Rüstort.Baupunkte")
                         column.Header = "BP Soll";
@@ -134,7 +139,7 @@ namespace PhoenixWPF.Pages {
 
         private void SaveBauwerknamen(Gebäude gebäude, string neuerNamen) {
             gebäude.Bauwerknamen = neuerNamen;
-            
+
             if (SharedData.Map != null) {
                 var gemark = SharedData.Map[gebäude.CreateBezeichner()];
                 string command = $"Nenne Gebäude auf {gemark.CreateBezeichner()} {neuerNamen} ({gemark.Bauwerknamen})";

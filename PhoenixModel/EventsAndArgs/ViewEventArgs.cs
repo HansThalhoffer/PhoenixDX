@@ -1,4 +1,5 @@
-﻿using PhoenixModel.dbCrossRef;
+﻿using PhoenixModel.Database;
+using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static PhoenixModel.EventsAndArgs.MapEventArgs;
+using static PhoenixModel.EventsAndArgs.ViewEventArgs;
 
 namespace PhoenixModel.EventsAndArgs {
     public class ViewEventArgs {
@@ -31,17 +33,12 @@ namespace PhoenixModel.EventsAndArgs {
             LogEntry = value;
         }
 
-        public ViewEventArgs(Gebäude value) {
-            GF = value.gf;
-            KF = value.kf;
-            EventType = ViewEventType.UpdateGebäude;
-            Data = value;
-        }
-
-        public ViewEventArgs(Spielfigur value) {
-            GF = value.gf;
-            KF = value.kf;
-            EventType = ViewEventType.UpdateSpielfiguren;
+        public ViewEventArgs(IDatabaseTable value, ViewEventType eventTyp) {
+            if (value is KleinfeldPosition kf) {
+                GF = kf.gf;
+                KF = kf.kf;
+            }
+            EventType = eventTyp;
             Data = value;
         }
     }

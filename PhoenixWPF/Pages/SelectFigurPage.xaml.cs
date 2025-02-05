@@ -5,6 +5,7 @@ using PhoenixModel.Helper;
 using PhoenixModel.Program;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
+using PhoenixWPF.Helper;
 using PhoenixWPF.Program;
 using System.ComponentModel;
 using System.Security.Cryptography.Xml;
@@ -20,99 +21,105 @@ namespace PhoenixWPF.Pages {
     /// <summary>
     /// Interaktionslogik für SelectFigurPage.xaml
     /// </summary>
-    public partial class SelectFigurPage : Page
-    {
+    public partial class SelectFigurPage : Page {
         public List<IEigenschaftler> EigenschaftlerList { get; set; } = [];
-        public SelectFigurPage()
-        {
+        public SelectFigurPage() {
             InitializeComponent();
             ProgramView.OnViewEvent += ViewModel_OnViewEvent;
             Main.Instance.SelectionHistory.PropertyChanged += SelectionHistory_PropertyChanged;
         }
 
         // zuerst erfolgt die Auswahl des Kleinfeldes und dann einer Figur
-        private void SelectionHistory_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
+        private void SelectionHistory_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) {
             SynchSelected();
         }
 
         // zuerst erfolgt die Auswahl des Kleinfeldes und dann einer Figur
-        private void SynchSelected()
-        {
+        private void SynchSelected() {
             var selected = Main.Instance.SelectionHistory.Current;
-            if (selected != null && selected is Spielfigur figur)
-            {
-                if (EigenschaftlerList.Contains(figur))
-                {
+            if (selected != null && selected is Spielfigur figur) {
+                if (EigenschaftlerList.Contains(figur)) {
                     EigenschaftlerDataGrid.SelectedItem = figur;
                     EigenschaftlerDataGrid.ScrollIntoView(figur);
                 }
             }
         }
 
-        private void ViewModel_OnViewEvent(object? sender, ViewEventArgs e)
-        {
-            if (ProgramView.SelectedNation != null &&
-                (e.EventType == ViewEventArgs.ViewEventType.EverythingLoaded || e.EventType == ViewEventArgs.ViewEventType.UpdateSpielfiguren))
-            {
-                EigenschaftlerDataGrid.ItemsSource = null;
-                EigenschaftlerList.Clear();
-                var list = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation);
-                if (list != null)
-                    EigenschaftlerList.AddRange(list);
-                LoadEigenschaftler();
+        private void ViewModel_OnViewEvent(object? sender, ViewEventArgs e) {
+            if (ProgramView.SelectedNation == null)
+                return;
+            switch (e.EventType) {
+
+                case ViewEventArgs.ViewEventType.EverythingLoaded: {
+                        EigenschaftlerDataGrid.ItemsSource = null;
+                        EigenschaftlerList.Clear();
+                        var list = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation);
+                        if (list != null)
+                            EigenschaftlerList.AddRange(list);
+                        LoadEigenschaftler();
+                        break;
+                    }
+
+                case ViewEventArgs.ViewEventType.UpdateSpielfiguren: {
+                        if (e.Data != null && e.Data is Spielfigur figur) {
+                            int index = EigenschaftlerDataGrid.Items.IndexOf(figur);
+                            string[] toIgnore = { };
+                            List<Eigenschaft> eigList = EigenschaftlerList[0].Eigenschaften;
+                            List<Eigenschaft> columns = eigList.Where(prop => !toIgnore.Contains(prop.Name)).ToList();
+                            int i = 0;
+                            var obj = EigenschaftlerList[index];
+                            foreach (var col in columns) {
+                                var wert = obj.Eigenschaften[i].Wert;
+                                DataGridHelper.SetCellValue(EigenschaftlerDataGrid, index, i, wert != null?wert:"");
+                                i++;
+                            }
+                        }
+                        break;
+                    }
             }
         }
 
-        public void LoadEigenschaftler()
-        {
+        public void LoadEigenschaftler() {
             if (EigenschaftlerList == null || EigenschaftlerList.Count == 0)
                 return;
-            string[] toIgnore = {  };
+            string[] toIgnore = { };
             List<Eigenschaft> eigList = EigenschaftlerList[0].Eigenschaften;
             List<Eigenschaft> columns = eigList.Where(prop => !toIgnore.Contains(prop.Name)).ToList();
 
             EigenschaftlerDataGrid.Columns.Clear();
 
             // Add dynamic columns for Eigenschaften
-            for (int dex = 0; dex < columns.Count; ++dex)
-            {
+            for (int dex = 0; dex < columns.Count; ++dex) {
                 var eig = columns[dex];
                 string name = eig.Name;
                 DataGridTextColumn column;
-                if (eig.SortValue == int.MinValue)
-                {
-                    column = new DataGridTextColumn
-                    {
+                if (eig.SortValue == int.MinValue) {
+                    column = new DataGridTextColumn {
                         Header = name,
                         Binding = new System.Windows.Data.Binding($"Eigenschaften[{dex}].Wert"),
                         IsReadOnly = !eig.IsEditable
-                    };
+                    };                   
                 }
-                else
-                {
-                    column = new DataGridTextColumn
-                    {
+                else {
+                    column = new DataGridTextColumn {
                         Header = name,
                         Binding = new System.Windows.Data.Binding($"Eigenschaften[{dex}].Wert"),
                         IsReadOnly = !eig.IsEditable,
-                        SortMemberPath = $"Eigenschaften[{dex}].SortValue" 
+                        SortMemberPath = $"Eigenschaften[{dex}].SortValue"
                     };
-                }                
+                }
                 EigenschaftlerDataGrid.Columns.Add(column);
             }
 
             EigenschaftlerDataGrid.ItemsSource = EigenschaftlerList;
-        }       
+        }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
-        {
+        private void Page_Loaded(object sender, RoutedEventArgs e) {
             LoadEigenschaftler();
             SynchSelected();
         }
 
-        private void SaveSpielfigur(Spielfigur figur)
-        {
+        private void SaveSpielfigur(Spielfigur figur) {
             if (figur is PhoenixModel.dbZugdaten.Character character)
                 SharedData.StoreQueue.Enqueue(character);
             else if (figur is PhoenixModel.dbZugdaten.Kreaturen kreatur)
@@ -129,8 +136,11 @@ namespace PhoenixWPF.Pages {
                 throw new NotImplementedException();
         }
 
-        private void SaveSpielfigurCharakterNamen(Spielfigur figur, string neuerNamen)
-        {
+        private void SaveSpielfigurCharakterNamen(Spielfigur figur, string neuerNamen) {
+            if (string.IsNullOrEmpty(neuerNamen))
+                return;
+            if (figur.CharakterName == neuerNamen)
+                return;
             string commandString = $"Nenne {figur.BaseTyp} {figur.Nummer} {neuerNamen} ({figur.CharakterName}) ";
             if (CommandParser.ParseCommand(commandString, out var cmd) && cmd != null) {
                 var result = cmd.ExecuteCommand();
@@ -140,8 +150,9 @@ namespace PhoenixWPF.Pages {
             else
                 SpielWPF.LogError("Der Name konnte nicht gespeichert werden", "Keine Ahnung warum");
         }
-        private void SaveSpielfigurSpielerNamen(Spielfigur figur, string neuerNamen)
-        {
+        private void SaveSpielfigurSpielerNamen(Spielfigur figur, string neuerNamen) {
+              if (figur.SpielerName == neuerNamen)
+                return; 
             string commandString = $"{figur.BaseTyp} {figur.Nummer} wird gespielt von {neuerNamen} ({figur.SpielerName})";
             if (CommandParser.ParseCommand(commandString, out var cmd) && cmd != null) {
                 var result = cmd.ExecuteCommand();
@@ -151,8 +162,11 @@ namespace PhoenixWPF.Pages {
             else
                 SpielWPF.LogError("Der Spielername konnte nicht gespeichert werden", "Keine Ahnung warum");
         }
-        private void SaveSpielfigurTitel(Spielfigur figur, string neuerNamen)
-        {
+        private void SaveSpielfigurTitel(Spielfigur figur, string neuerNamen) {
+            if (string.IsNullOrEmpty(neuerNamen))
+                return;
+            if (figur.Bezeichner == neuerNamen)
+                return; 
             string commandString = $"Bezeichne {figur.BaseTyp} {figur.Nummer} {neuerNamen} ({figur.Bezeichner})";
             if (CommandParser.ParseCommand(commandString, out var cmd) && cmd != null) {
                 var result = cmd.ExecuteCommand();
@@ -169,19 +183,14 @@ namespace PhoenixWPF.Pages {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void EigenschaftlerDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
-        {
-            if (e.EditAction == DataGridEditAction.Commit)
-            {
-                if (e.Row.DataContext is Spielfigur figur)
-                {
+        private void EigenschaftlerDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e) {
+            if (e.EditAction == DataGridEditAction.Commit) {
+                if (e.Row.DataContext is Spielfigur figur) {
                     // Get the binding path of the edited column
-                    if (e.Column is DataGridBoundColumn boundColumn && boundColumn.Binding is Binding binding)
-                    {
-                        if (e.EditingElement is TextBox tb)
-                        {
+                    if (e.Column is DataGridBoundColumn boundColumn && boundColumn.Binding is Binding binding) {
+                        if (e.EditingElement is TextBox tb) {
                             string wert = tb.Text;
-                            string? propertyName = (e.Column != null && e.Column.Header!= null) ? e.Column.Header.ToString():string.Empty;
+                            string? propertyName = (e.Column != null && e.Column.Header != null) ? e.Column.Header.ToString() : string.Empty;
 
                             if (propertyName == NamensSpielfigur.HeaderCharakterName)
                                 SaveSpielfigurCharakterNamen(figur, tb.Text);
@@ -195,20 +204,17 @@ namespace PhoenixWPF.Pages {
             }
         }
 
-        private void EigenschaftlerDataGrid_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
+        private void EigenschaftlerDataGrid_MouseRightButtonDown(object sender, MouseButtonEventArgs e) {
             // Get the position of the mouse relative to the DataGrid
             Point mousePosition = e.GetPosition(EigenschaftlerDataGrid);
 
             // Hit test to get the element under the mouse
             HitTestResult hitTestResult = VisualTreeHelper.HitTest(EigenschaftlerDataGrid, mousePosition);
 
-            if (hitTestResult != null)
-            {
+            if (hitTestResult != null) {
                 // Check if the hit test result is a DataGridRow
                 DataGridRow? row = GetParentDataGridRow(hitTestResult.VisualHit);
-                if (row != null && row.Item != null && row.Item is Spielfigur figur)
-                {
+                if (row != null && row.Item != null && row.Item is Spielfigur figur) {
                     // auch die Spielfigur ist eine Kleinfeldposition
                     Program.Main.Instance.Spiel?.SelectGemark(figur);
                 }
@@ -237,7 +243,7 @@ namespace PhoenixWPF.Pages {
             if (sender is MenuItem menuItem) {
                 string? selectedCategory = menuItem.Header.ToString();
                 foreach (var item in EigenschaftlerDataGrid.ContextMenu.Items) {
-                    if (item is MenuItem mnuItem && mnuItem != menuItem) 
+                    if (item is MenuItem mnuItem && mnuItem != menuItem)
                         mnuItem.IsChecked = false;
                 }
                 if (selectedCategory == null)
@@ -283,11 +289,9 @@ namespace PhoenixWPF.Pages {
         }
 
         // Helper method to find the DataGridRow from a Visual element
-        private DataGridRow? GetParentDataGridRow(DependencyObject visual)
-        {
+        private DataGridRow? GetParentDataGridRow(DependencyObject visual) {
             // Traverse up the visual tree to find the DataGridRow
-            while (visual != null && !(visual is DataGridRow))
-            {
+            while (visual != null && !(visual is DataGridRow)) {
                 visual = VisualTreeHelper.GetParent(visual);
             }
             return visual as DataGridRow;

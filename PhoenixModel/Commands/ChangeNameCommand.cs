@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.Commands.Parser;
+using PhoenixModel.dbPZE;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.EventsAndArgs;
 using PhoenixModel.ExternalTables;
@@ -87,11 +88,12 @@ namespace PhoenixModel.Commands {
                     OldValue = spielfigur.SpielerName;
                     spielfigur.SpielerName = NewSpielerName;
                 }
-                if (string.IsNullOrEmpty(NewBeschriftung) == false) { 
-                    OldValue = spielfigur.Beschriftung; 
-                    spielfigur.Beschriftung = NewBeschriftung; 
+                if (string.IsNullOrEmpty(NewBeschriftung) == false) {
+                    OldValue = spielfigur.Beschriftung;
+                    spielfigur.Beschriftung = NewBeschriftung;
                 }
-
+                if (string.IsNullOrEmpty(OldValue))
+                    OldValue = "[leer]";
                 if (spielfigur is Zauberer wiz)
                     Update(wiz, ViewEventArgs.ViewEventType.UpdateSpielfiguren);
                 if (spielfigur is Character car)
@@ -124,7 +126,45 @@ namespace PhoenixModel.Commands {
         /// <summary>
         /// Das Ändern des Namens kann nur rückgängig gemacht werden, wenn der alte Namen nicht unbekannt ist
         /// </summary>
-        public override bool CanUndo => string.IsNullOrEmpty(OldValue) == false;
+        public override bool CanUndo {
+            get {
+                // gebäude haben kein Undo
+                if (this.Figur == FigurType.None) 
+                    return false;
+                CommandResult result = CheckPreconditions();
+                if (result.HasErrors)
+                    return false;
+
+                if (string.IsNullOrEmpty(OldValue))
+                    return false;
+
+                return IsLastCommand();
+            }
+        }
+
+        /// <summary>
+        /// ist das hier das letzte Kommando seiner Art an diesem IDatabaseTable
+        /// </summary>
+        /// <returns></returns>
+        private bool IsLastCommand() {
+            if (this.Figur != FigurType.None) {
+                var figur = SpielfigurenView.GetSpielfigur(this.Figur, this.UnitId);
+                if (figur != null) {
+                    var commands = SharedData.Commands.GetCommands(figur).Where(com => com is ChangeNameCommand);
+                    if (commands != null && commands.Last() == this)
+                        return true;
+                }
+            }
+            else {
+                var kleinfeld = KleinfeldView.GetKleinfeld(Location);
+                if (kleinfeld != null && kleinfeld.Gebäude != null) {
+                    var commands = SharedData.Commands.GetCommands(kleinfeld.Gebäude).Where(com => com is ChangeNameCommand);
+                    if (commands != null && commands.Last() == this)
+                        return true;
+                }
+             }
+            return false;
+        }
 
         /// <summary>
         /// Das Ändern des Namens kann nur rückgängig gemacht werden, wenn der alte Namen bekannt ist
@@ -133,6 +173,9 @@ namespace PhoenixModel.Commands {
             if (CanUndo == false) {
                 return new CommandResultError($"Die Umbennenung von {Figur} {UnitId} kann nicht rückgängig gemacht werden", "Da der alte Namen/Bezeichner nicht bekannt ist, kann das Kommando nicht rückgängig gemacht werden.", this);
             }
+            if (OldValue == "[leer]")
+                OldValue = string.Empty;
+
             CommandResult result = CheckPreconditions();
             if (result.HasErrors)
                 return result;
@@ -262,12 +305,21 @@ namespace PhoenixModel.Commands {
         );
 
         /// <summary>
+        /// Regex zur Erkennung von Befehlen zur Änderung des Spielers einer Figur.
+        /// </summary>
+        private static readonly Regex NeuerSpielerRegexEmpty = new Regex(
+            @"^(?<Figur>\w+)\s+(?<UnitId>\d+)\s+wird\s+gespielt\s+von$",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled
+        );
+
+
+        /// <summary>
         /// Regex zur Erkennung von Befehlen zur Änderung der Beschriftung einer Figur.
         /// </summary>
         private static readonly Regex NeueBeschriftungRegex = new Regex(
-            @"^Bezeichne\s+(?<Figur>\w+)\s+(?<UnitId>\d+)\s+(?<NewBeschriftung>.+)$",
-            RegexOptions.IgnoreCase | RegexOptions.Compiled
-        );
+        @"^Bezeichne\s+(?<Figur>\w+)\s+(?<UnitId>\d+)\s+(?<NewBeschriftung>.+)$",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled
+    );
 
         /// <summary>
         /// Regex zur Erkennung von Befehlen zur Umbenennung eines Bauwerks.
@@ -320,6 +372,25 @@ namespace PhoenixModel.Commands {
                     return false;
                 }
             }
+
+            match = NeuerSpielerRegexEmpty.Match(commandString);
+            if (match.Success) {
+                try {
+                    command = new ChangeNameCommand(commandStringOrg) {
+                        UnitId = ParseInt(match.Groups["UnitId"].Value),
+                        Figur = ParseUnitType(match.Groups["Figur"].Value),
+                        NewSpielerName = "[niemand]",
+                        OldValue = oldValue,
+                    };
+                    return true;
+                }
+                catch (Exception ex) {
+                    ProgramView.LogError("Beim Lesen des ChangeNameCommands gab es einen Fehler", ex.Message);
+                    command = null;
+                    return false;
+                }
+            }
+
             match = NeueBeschriftungRegex.Match(commandString);
             if (match.Success) {
                 try {

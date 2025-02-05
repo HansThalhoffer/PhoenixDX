@@ -1,4 +1,5 @@
-﻿using PhoenixModel.dbPZE;
+﻿using PhoenixModel.Database;
+using PhoenixModel.dbPZE;
 using PhoenixModel.EventsAndArgs;
 using PhoenixModel.ViewModel;
 using static PhoenixModel.EventsAndArgs.ViewEventArgs;
@@ -41,6 +42,13 @@ namespace PhoenixModel.Program {
         public static void Update(ViewEventType what)
         {
             _OnViewEvent(new ViewEventArgs(what));
+        }
+
+        /// <summary>
+        /// wird gefeuert, wenn Daten im größeren Umfange geändert wurden und sich somit eine komplette Initialiserung der abhängigen Klassen lohnt
+        /// </summary>
+        public static void Update(IDatabaseTable item, ViewEventType what) {
+            _OnViewEvent(new ViewEventArgs(item, what));
         }
 
         /// <summary>
