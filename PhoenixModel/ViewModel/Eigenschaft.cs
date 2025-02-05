@@ -82,6 +82,13 @@ namespace PhoenixModel.ViewModel {
             get {
                 if (string.IsNullOrWhiteSpace(_wert))
                     return int.MinValue; // Handle null or empty strings.
+                  
+                // Kleinfeld koordinaten
+                string[] parts = _wert.Split('/');
+                if (parts.Length == 2 && int.TryParse(parts[0], out int firstPart) && int.TryParse(parts[1], out int secondPart)) {
+                    // Format the second part as two digits and convert to integer
+                    return int.Parse($"{firstPart}{secondPart:D2}");
+                }
 
                 // Regular expression to extract leading numeric part
                 var match = System.Text.RegularExpressions.Regex.Match(_wert, @"^[\d.,]+");
