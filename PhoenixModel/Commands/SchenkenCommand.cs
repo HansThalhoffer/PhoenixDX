@@ -15,6 +15,7 @@ namespace PhoenixModel.Commands {
     public class SchenkenCommand {
     }
 
+    
     public class SchenkenCommandParser : SimpleParser {
         private static readonly Regex GiveRegex = new Regex(
              // Explanation:

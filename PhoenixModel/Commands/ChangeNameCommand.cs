@@ -9,14 +9,38 @@ using PhoenixModel.ViewModel;
 using System.Text.RegularExpressions;
 
 namespace PhoenixModel.Commands {
+    /// <summary>
+    /// Befehl zum Ändern des Namens einer Figur oder Gebäudes.
+    /// </summary>
     public class ChangeNameCommand : BaseCommand, IPhoenixCommand, IEquatable<ChangeNameCommand> {
-
+        /// <summary>
+        /// Der Typ der Figur, deren Name geändert werden soll. Wird ein Gebäude geändert, steht hier FigurType.None;
+        /// </summary>
         public FigurType Figur = FigurType.None;
+        /// <summary>
+        /// Die eindeutige ID der Einheit, deren Name geändert wird - oder 0 bei Gebäude
+        /// </summary>
         public int UnitId { get; set; } = 0;
+        /// <summary>
+        /// Der neue Name der Figur oder des Gebäudes
+        /// </summary>
         public string NewName { get; set; } = string.Empty;
+        /// <summary>
+        /// Der neue Spielername, falls dieser geändert wird.
+        /// </summary>
         public string NewSpielerName { get; set; } = string.Empty;
+        /// <summary>
+        /// Die neue Beschriftung der Einheit oder Figur.
+        /// </summary>
         public string NewBeschriftung { get; set; } = string.Empty;
+        /// <summary>
+        /// Die Position auf der Karte, an der sich das Gebäude befindet oder null, wenn eine Figur geändert wird
+        /// </summary>
         public KleinfeldPosition? Location { get; set; }
+        /// <summary>
+        /// Der alte Wert (z. B. der bisherige Name oder die vorherige Beschriftung), 
+        /// bevor die Änderung vorgenommen wurde.
+        /// </summary>
         public string OldValue { get; set; } = string.Empty;
 
         public override string ToString() {
@@ -31,13 +55,25 @@ namespace PhoenixModel.Commands {
             return $"Nenne Gebäude auf {Location} {NewName} ({OldValue})";
         }
 
+        /// <summary>
+        /// Wenn das Kommando das Selectable verändern kann, gibt es true zurück
+        /// <param name="selectable"></param>
+        /// <returns></returns>
         public override bool CanAppliedTo(ISelectable selectable) {
             return (selectable != null && selectable is NamensSpielfigur);
         }
 
+        /// <summary>
+        /// Konstruktion <see cref="BaseCommand"/>
+        /// </summary>
+        /// <param name="commandString"></param>
         public ChangeNameCommand(string commandString) : base(commandString) {
         }
 
+        /// <summary>
+        /// Überprüft, ob die Vorbedingungen für die Ausführung des Befehls erfüllt sind.
+        /// </summary>
+        /// <returns>Ein <see cref="CommandResult"/>-Objekt mit dem Ergebnis der Prüfung.</returns>
         public override CommandResult CheckPreconditions() {
             if (Figur != FigurType.None) {
                 if (CommonCommandErrors.MissingUnitID(UnitId, CommandString, this, out CommandResult? r1) && r1 != null)
@@ -68,6 +104,10 @@ namespace PhoenixModel.Commands {
             return new CommandResultSuccess($"Das {this.GetType()} kann ausgeführt werden", $"Der Befehl kann ausgeführt werden:\r\n {this.CommandString}", this);
         }
 
+        /// <summary>
+        /// Führt den Befehl aus.
+        /// </summary>
+        /// <returns>Ein <see cref="CommandResult"/>-Objekt mit dem Ausführungsergebnis.</returns>
         public override CommandResult ExecuteCommand() {
             CommandResult result = CheckPreconditions();
             if (result.HasErrors)
@@ -124,6 +164,7 @@ namespace PhoenixModel.Commands {
         }
 
         /// <summary>
+        /// Kann der Befehl zurück genommen werden
         /// Das Ändern des Namens kann nur rückgängig gemacht werden, wenn der alte Namen nicht unbekannt ist
         /// </summary>
         public override bool CanUndo {
