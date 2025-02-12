@@ -42,8 +42,8 @@
             </Setter>
         </Style>
 
-        <!-- Street Button Style -->
-        <Style x:Key="StreetButtonStyle" TargetType="Button">
+        <!-- road Button Style -->
+        <Style x:Key="roadButtonStyle" TargetType="Button">
             <Setter Property="Width" Value="100" />
             <Setter Property="Height" Value="60" />
             <Setter Property="Background" Value="DarkGray" />
@@ -101,110 +101,110 @@
                 </Polygon.RenderTransform>
             </Polygon>
             <!-- Wälle -->
-            <Button x:Name="button_wall_NO" Style="{StaticResource WallButtonStyle}" Canvas.Left="366" Canvas.Top="85" Content="Wall">
+            <Button x:Name="button_wall_NO" Style="{StaticResource WallButtonStyle}" Canvas.Left="366" Canvas.Top="85" Content="Wall" Click="Construction_Button_Click" >
                 <Button.RenderTransform>
                     <RotateTransform Angle="30" />
                 </Button.RenderTransform>
             </Button>
 
-            <Button x:Name="button_wall_NW" Style="{StaticResource WallButtonStyle}" Canvas.Left="145" Canvas.Top="137" Content="Wall">
+            <Button x:Name="button_wall_NW" Style="{StaticResource WallButtonStyle}" Canvas.Left="145" Canvas.Top="137" Content="Wall" Click="Construction_Button_Click" >
                 <Button.RenderTransform>
                     <RotateTransform Angle="-30" />
                 </Button.RenderTransform>
             </Button>
 
-            <Button x:Name="button_wall_W" Style="{StaticResource WallButtonStyle}" Canvas.Left="85" Canvas.Top="352" Content="Wall">
+            <Button x:Name="button_wall_W" Style="{StaticResource WallButtonStyle}" Canvas.Left="85" Canvas.Top="352" Content="Wall" Click="Construction_Button_Click" >
                 <Button.RenderTransform>
                     <RotateTransform Angle="-90" />
                 </Button.RenderTransform>
             </Button>
 
-            <Button x:Name="button_wall_O" Style="{StaticResource WallButtonStyle}" Canvas.Left="514" Canvas.Top="240" Content="Wall">
+            <Button x:Name="button_wall_O" Style="{StaticResource WallButtonStyle}" Canvas.Left="514" Canvas.Top="240" Content="Wall" Click="Construction_Button_Click" >
                 <Button.RenderTransform>
                     <RotateTransform Angle="90" />
                 </Button.RenderTransform>
             </Button>
 
-            <Button x:Name="button_wall_SW" Style="{StaticResource WallButtonStyle}" Canvas.Left="241" Canvas.Top="510" Content="Wall">
+            <Button x:Name="button_wall_SW" Style="{StaticResource WallButtonStyle}" Canvas.Left="241" Canvas.Top="510" Content="Wall" Click="Construction_Button_Click" >
                 <Button.RenderTransform>
                     <RotateTransform Angle="-150" />
                 </Button.RenderTransform>
             </Button>
 
-            <Button x:Name="button_wall_SO" Style="{StaticResource WallButtonStyle}" Canvas.Left="457" Canvas.Top="457" Content="Wall">
+            <Button x:Name="button_wall_SO" Style="{StaticResource WallButtonStyle}" Canvas.Left="457" Canvas.Top="457" Content="Wall" Click="Construction_Button_Click" >
                 <Button.RenderTransform>
                     <RotateTransform Angle="150" />
                 </Button.RenderTransform>
             </Button>
             <!-- Straßen -->
-            <Button x:Name="button_street_NO" Style="{StaticResource StreetButtonStyle}" Canvas.Left="331" Canvas.Top="142" Content="Straße">
+            <Button x:Name="button_road_NO" Style="{StaticResource roadButtonStyle}" Canvas.Left="331" Canvas.Top="142" Content="Straße" Click="Construction_Button_Click" >
                 <Button.RenderTransform>
                     <RotateTransform Angle="30" />
                 </Button.RenderTransform>
             </Button>
 
-            <Button x:Name="button_street_NW" Style="{StaticResource StreetButtonStyle}" Canvas.Left="183" Canvas.Top="196" Content="Straße">
+            <Button x:Name="button_road_NW" Style="{StaticResource roadButtonStyle}" Canvas.Left="183" Canvas.Top="196" Content="Straße" Click="Construction_Button_Click" >
                 <Button.RenderTransform>
                     <RotateTransform Angle="-30" />
                 </Button.RenderTransform>
             </Button>
 
-            <Button x:Name="button_street_W" Style="{StaticResource StreetButtonStyle}" Canvas.Left="153" Canvas.Top="350" Content="Straße">
+            <Button x:Name="button_road_W" Style="{StaticResource roadButtonStyle}" Canvas.Left="153" Canvas.Top="350" Content="Straße" Click="Construction_Button_Click" >
                 <Button.RenderTransform>
                     <RotateTransform Angle="-90" />
                 </Button.RenderTransform>
             </Button>
 
-            <Button x:Name="button_street_O" Style="{StaticResource StreetButtonStyle}" Canvas.Left="448" Canvas.Top="242" Content="Straße">
+            <Button x:Name="button_road_O" Style="{StaticResource roadButtonStyle}" Canvas.Left="448" Canvas.Top="242" Content="Straße" Click="Construction_Button_Click" >
                 <Button.RenderTransform>
                     <RotateTransform Angle="90" />
                 </Button.RenderTransform>
             </Button>
 
-            <Button x:Name="button_street_SW" Style="{StaticResource StreetButtonStyle}" Canvas.Left="274" Canvas.Top="452" Content="Straße">
+            <Button x:Name="button_road_SW" Style="{StaticResource roadButtonStyle}" Canvas.Left="274" Canvas.Top="452" Content="Straße" Click="Construction_Button_Click" >
                 <Button.RenderTransform>
                     <RotateTransform Angle="-150" />
                 </Button.RenderTransform>
             </Button>
 
-            <Button x:Name="button_street_SO" Style="{StaticResource StreetButtonStyle}" Canvas.Left="423" Canvas.Top="399" Content="Straße">
+            <Button x:Name="button_road_SO" Style="{StaticResource roadButtonStyle}" Canvas.Left="423" Canvas.Top="399" Content="Straße" Click="Construction_Button_Click" >
                 <Button.RenderTransform>
                     <RotateTransform Angle="150" />
                 </Button.RenderTransform>
             </Button>
 
             <!-- Brücken -->
-            <Button x:Name="button_bridge_NO" Style="{StaticResource BridgeButtonStyle}" Canvas.Left="401" Canvas.Top="26" Content="Brücke" HorizontalAlignment="Center">
+            <Button x:Name="button_bridge_NO" Style="{StaticResource BridgeButtonStyle}" Canvas.Left="401" Canvas.Top="26" Content="Brücke" Click="Construction_Button_Click" >
                 <Button.RenderTransform>
                     <RotateTransform Angle="30" />
                 </Button.RenderTransform>
             </Button>
 
-            <Button x:Name="button_bridge_NW" Style="{StaticResource BridgeButtonStyle}" Canvas.Left="110" Canvas.Top="78" Content="Brücke">
+            <Button x:Name="button_bridge_NW" Style="{StaticResource BridgeButtonStyle}" Canvas.Left="110" Canvas.Top="78" Content="Brücke" Click="Construction_Button_Click" >
                 <Button.RenderTransform>
                     <RotateTransform Angle="-30" />
                 </Button.RenderTransform>
             </Button>
 
-            <Button x:Name="button_bridge_W" Style="{StaticResource BridgeButtonStyle}" Canvas.Left="16" Canvas.Top="351" Content="Brücke">
+            <Button x:Name="button_bridge_W" Style="{StaticResource BridgeButtonStyle}" Canvas.Left="16" Canvas.Top="351" Content="Brücke" Click="Construction_Button_Click" >
                 <Button.RenderTransform>
                     <RotateTransform Angle="-90" />
                 </Button.RenderTransform>
             </Button>
 
-            <Button x:Name="button_bridge_O" Style="{StaticResource BridgeButtonStyle}" Canvas.Left="584" Canvas.Top="238" Content="Brücke" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button x:Name="button_bridge_O" Style="{StaticResource BridgeButtonStyle}" Canvas.Left="584" Canvas.Top="238" Content="Brücke" Click="Construction_Button_Click" >
                 <Button.RenderTransform>
                     <RotateTransform Angle="90" />
                 </Button.RenderTransform>
             </Button>
 
-            <Button x:Name="button_bridge_SW" Style="{StaticResource BridgeButtonStyle}" Canvas.Left="206" Canvas.Top="568" Content="Brücke" HorizontalAlignment="Center">
+            <Button x:Name="button_bridge_SW" Style="{StaticResource BridgeButtonStyle}" Canvas.Left="206" Canvas.Top="568" Content="Brücke" Click="Construction_Button_Click" >
                 <Button.RenderTransform>
                     <RotateTransform Angle="-150" />
                 </Button.RenderTransform>
             </Button>
 
-            <Button x:Name="button_bridge_SO" Style="{StaticResource BridgeButtonStyle}" Canvas.Left="491" Canvas.Top="515" Content="Brücke" HorizontalAlignment="Center">
+            <Button x:Name="button_bridge_SO" Style="{StaticResource BridgeButtonStyle}" Canvas.Left="491" Canvas.Top="515" Content="Brücke" Click="Construction_Button_Click" >
                 <Button.RenderTransform>
                     <RotateTransform Angle="150" />
                 </Button.RenderTransform>

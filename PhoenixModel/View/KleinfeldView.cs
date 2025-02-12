@@ -247,5 +247,146 @@ namespace PhoenixModel.View {
             }
             return false;
         }
+
+        /// <summary>
+        /// gibt true zurück, wenn auf dem Kleinfeld das Element Fluss in der gegebenen Richtung vorhanden ist
+        /// </summary>
+        /// <param name="kf">Kleinfed</param>
+        /// <param name="direction">Richtung</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public static bool HasRiver(KleinFeld kf, Direction direction) {
+            switch (direction) {
+                case Direction.NW:
+                    return kf.Fluss_NW != 0;
+                case Direction.NO:
+                    return kf.Fluss_NO != 0;
+                case Direction.O:
+                    return kf.Fluss_O != 0;
+                case Direction.SO:
+                    return kf.Fluss_SO != 0;
+                case Direction.SW:
+                    return kf.Fluss_SW != 0;
+                case Direction.W:
+                    return kf.Fluss_W != 0;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(direction), "Invalid direction");
+            }
+        }
+
+        /// <summary>
+        /// gibt true zurück, wenn auf dem Kleinfeld das Element Brücke in der gegebenen Richtung vorhanden ist
+        /// </summary>
+        /// <param name="kf">Kleinfed</param>
+        /// <param name="direction">Richtung</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public static bool HasBridge(KleinFeld kf, Direction direction) {
+            switch (direction) {
+                case Direction.NW:
+                    return kf.Bruecke_NW != 0;
+                case Direction.NO:
+                    return kf.Bruecke_NO != 0;
+                case Direction.O:
+                    return kf.Bruecke_O != 0;
+                case Direction.SO:
+                    return kf.Bruecke_SO != 0;
+                case Direction.SW:
+                    return kf.Bruecke_SW != 0;
+                case Direction.W:
+                    return kf.Bruecke_W != 0;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(direction), "Invalid direction");
+            }
+        }
+
+        /// <summary>
+        /// gibt true zurück, wenn auf dem Kleinfeld das Element Brücke in der gegebenen Richtung vorhanden ist
+        /// </summary>
+        /// <param name="kf">Kleinfed</param>
+        /// <param name="direction">Richtung</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public static bool HasWall(KleinFeld kf, Direction direction) {
+            switch (direction) {
+                case Direction.NW:
+                    return kf.Wall_NW != 0;
+                case Direction.NO:
+                    return kf.Wall_NO != 0;
+                case Direction.O:
+                    return kf.Wall_O != 0;
+                case Direction.SO:
+                    return kf.Wall_SO != 0;
+                case Direction.SW:
+                    return kf.Wall_SW != 0;
+                case Direction.W:
+                    return kf.Wall_W != 0;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(direction), "Invalid direction");
+            }
+        }
+
+        /// <summary>
+        /// gibt true zurück, wenn auf dem Kleinfeld das Element Strasse in der gegebenen Richtung vorhanden ist
+        /// </summary>
+        /// <param name="kf">Kleinfed</param>
+        /// <param name="direction">Richtung</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public static bool HasRoad(KleinFeld kf, Direction direction) {
+            switch (direction) {
+                case Direction.NW:
+                    return kf.Strasse_NW != 0;
+                case Direction.NO:
+                    return kf.Strasse_NO != 0;
+                case Direction.O:
+                    return kf.Strasse_O != 0;
+                case Direction.SO:
+                    return kf.Strasse_SO != 0;
+                case Direction.SW:
+                    return kf.Strasse_SW != 0;
+                case Direction.W:
+                    return kf.Strasse_W != 0;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(direction), "Invalid direction");
+            }
+        }
+
+        /// <summary>
+        /// kann hier der User eine Brücke bauen?
+        /// </summary>
+        /// <param name="kf">kleinfeld</param>
+        /// <param name="direction">Richtung</param>
+        /// <returns></returns>
+        public static bool CanConstructBridge(KleinFeld kf, Direction direction) {
+            if (kf.IsWasser || ProgramView.BelongsToUser(kf) == false)
+                return false;
+            return HasRiver(kf, direction) && HasBridge(kf, direction) == false; 
+        }
+
+        /// <summary>
+        /// kann hier der User eine Strasse bauen?
+        /// </summary>
+        /// <param name="kf">kleinfeld</param>
+        /// <param name="direction">Richtung</param>
+        /// <returns></returns>
+        public static bool CanConstructRoad(KleinFeld kf, Direction direction) {
+            if (kf.IsWasser || ProgramView.BelongsToUser(kf) == false)
+                return false;
+            return HasRoad(kf, direction) == false;
+        }
+
+        /// <summary>
+        /// kann hier der User eine Wallanlage bauen?
+        /// </summary>
+        /// <param name="kf">kleinfeld</param>
+        /// <param name="direction">Richtung</param>
+        /// <returns></returns>
+        public static bool CanConstructWall(KleinFeld kf, Direction direction) {
+            if (kf.IsWasser || ProgramView.BelongsToUser(kf) == false)
+                return false;
+            return HasWall(kf, direction) == false;
+        }
+     
     }
 }
