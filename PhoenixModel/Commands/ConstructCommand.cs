@@ -54,9 +54,19 @@ namespace PhoenixModel.Commands {
             if (kosten == null)
                 return new CommandResultError($"Die Kostentablle enthält keinen Wert für {What}", $"Der Befehl kann nicht ausgeführt werden, da die Kostentabelle im Feld Unittyp das genannte Bauwerk nicht kennen \r\n {this.CommandString}", this);
 
+
+
             return new CommandResultSuccess("Das ConstructCommand kann ausgeführt werden", $"Der Befehl kann ausgeführt werden:\r\n {this.CommandString}", this);
         }
 
+        /// <summary>
+        /// In der Datenbank stehen bei Neuanlagen die folgenden Werte, dabei ist id ein autoinc wert
+        /// GF	KF	BP_rep  BP_neu  Art	    Kosten	id
+        /// 305	4	0	    100	    Wall_NW	5000	40
+        /// 305	4	0	    100	    Wall_O	5000	41
+        /// 305	4	0	    60	    Kai_NO	3000	42
+        /// </summary>
+        /// <returns></returns>
         private RuestungBauwerke? CreateRuestungBauwerke() {
             if (Kosten != null && Location != null) {
                 return new RuestungBauwerke() {
