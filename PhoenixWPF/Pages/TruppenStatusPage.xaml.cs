@@ -11,7 +11,7 @@ namespace PhoenixWPF.Pages {
 
         public TruppenStatusPage() {
             InitializeComponent();
-            var curArmy = SpielfigurenView.GetSpielfiguren(PhoenixModel.Program.ProgramView.SelectedNation);
+            var curArmy = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation);
             Status = new TruppenStatus(curArmy);
             this.DataContext = Status;
         }

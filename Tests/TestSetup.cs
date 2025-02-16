@@ -1,5 +1,4 @@
 ﻿using PhoenixModel.Database;
-using PhoenixModel.Program;
 using PhoenixModel.View;
 using PhoenixWPF.Database;
 using PhoenixWPF.Dialogs;

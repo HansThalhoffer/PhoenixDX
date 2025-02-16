@@ -1,5 +1,5 @@
 ﻿using PhoenixModel.dbErkenfara;
-using PhoenixModel.Program;
+using PhoenixModel.View;
 using System.Globalization;
 using System.Windows.Data;
 

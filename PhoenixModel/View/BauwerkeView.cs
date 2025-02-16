@@ -1,7 +1,6 @@
 ﻿using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbPZE;
-using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
 
 namespace PhoenixModel.View {

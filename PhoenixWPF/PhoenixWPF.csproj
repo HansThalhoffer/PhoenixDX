@@ -18,6 +18,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\phoenix-circle.ico" />
+    <None Remove="Resources\phoenix.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\phoenix-circle.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DynamicAero2" Version="1.2.1" />
     <PackageReference Include="LiveCharts.Wpf.Core" Version="0.9.8" />
     <PackageReference Include="System.Data.OleDb" Version="9.0.0" />
@@ -31,6 +40,7 @@
 
   <ItemGroup>
     <Resource Include="Resources\baustelle.png" />
+    <Resource Include="Resources\phoenix.ico" />
   </ItemGroup>
 
 </Project>

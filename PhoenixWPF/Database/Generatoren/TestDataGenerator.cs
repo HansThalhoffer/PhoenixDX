@@ -2,7 +2,7 @@
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.Extensions;
-using PhoenixModel.Program;
+using PhoenixModel.Rules;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using PhoenixWPF.Helper;
@@ -265,8 +265,8 @@ namespace PhoenixWPF.Database.Generatoren {
         /// <param name="figur"></param>
         /// <param name="kf"></param>
         private static void Calculate(ref TruppenSpielfigur figur, KleinFeld kf) {
-            figur.bp = SpielfigurenView.BerechneBewegungspunkte(figur);
-            figur.rp = SpielfigurenView.BerechneRaumpunkte(figur);
+            figur.bp = SpielfigurRules.BerechneBewegungspunkte(figur);
+            figur.rp = SpielfigurRules.BerechneRaumpunkte(figur);
         }
 
         /// <summary>
@@ -275,8 +275,8 @@ namespace PhoenixWPF.Database.Generatoren {
         /// <param name="figur"></param>
         /// <param name="kf"></param>
         private static void Calculate(ref NamensSpielfigur figur, KleinFeld kf) {
-            figur.bp = SpielfigurenView.BerechneBewegungspunkte(figur);
-            figur.rp = SpielfigurenView.BerechneRaumpunkte(figur);
+            figur.bp = SpielfigurRules.BerechneBewegungspunkte(figur);
+            figur.rp = SpielfigurRules.BerechneRaumpunkte(figur);
         }
 
         /// <summary>

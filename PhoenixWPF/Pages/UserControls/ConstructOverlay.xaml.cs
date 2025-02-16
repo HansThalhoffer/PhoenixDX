@@ -1,6 +1,7 @@
-﻿using PhoenixModel.dbErkenfara;
+﻿using PhoenixModel.Commands;
+using PhoenixModel.dbErkenfara;
 using PhoenixModel.Extensions;
-using PhoenixModel.Program;
+using PhoenixModel.Rules;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using PhoenixWPF.Program;
@@ -24,19 +25,25 @@ namespace PhoenixWPF.Pages.UserControls {
             Visibility = Visibility.Visible;
             foreach (Direction dir in Enum.GetValues(typeof(Direction))) {
                 if (this.FindName($"button_bridge_{dir}") is Button buttonBridge) {
-                    buttonBridge.Visibility = KleinfeldView.CanConstructBridge(kf, dir) ? Visibility.Visible : Visibility.Hidden;
+                    buttonBridge.Visibility = ConstructRules.CanConstructBridge(kf, dir) ? Visibility.Visible : Visibility.Hidden;
                 }
                 else
                     throw new Exception($"Da fehlt der Button button_bridge_{dir}");
 
-                if (this.FindName($"button_road_{dir}") is Button buttonroad) {
-                    buttonroad.Visibility = KleinfeldView.CanConstructRoad(kf, dir) ? Visibility.Visible : Visibility.Hidden;
+                if (this.FindName($"button_kai_{dir}") is Button buttonKai) {
+                    buttonKai.Visibility = ConstructRules.CanConstructKai(kf, dir) ? Visibility.Visible : Visibility.Hidden;
+                }
+                else
+                    throw new Exception($"Da fehlt der Button button_kai_{dir}");
+
+                if (this.FindName($"button_road_{dir}") is Button buttonRoad) {
+                    buttonRoad.Visibility = ConstructRules.CanConstructRoad(kf, dir) ? Visibility.Visible : Visibility.Hidden;
                 }
                 else
                     throw new Exception($"Da fehlt der Button button_road_{dir}");
 
                 if (this.FindName($"button_wall_{dir}") is Button buttonWall) {
-                    buttonWall.Visibility = KleinfeldView.CanConstructWall(kf, dir) ? Visibility.Visible : Visibility.Hidden;
+                    buttonWall.Visibility = ConstructRules.CanConstructWall(kf, dir) ? Visibility.Visible : Visibility.Hidden;
                 }
                 else
                     throw new Exception($"Da fehlt der Button button_wall_{dir}");
@@ -44,11 +51,7 @@ namespace PhoenixWPF.Pages.UserControls {
 
         }
 
-        public enum ConstructionType {
-            Wall,
-            Bridge,
-            Road
-        }
+     
 
 
         private void Construction_Button_Click(object sender, RoutedEventArgs e) {
@@ -72,19 +75,23 @@ namespace PhoenixWPF.Pages.UserControls {
         /// </summary>
         /// <param name="constructionType"></param>
         /// <param name="direction"></param>
-        private void Construct(ConstructionType constructionType, Direction direction) {
+        private void Construct(ConstructionElementType constructionType, Direction direction) {
             switch (constructionType) {
-                case ConstructionType.Wall:
-                    // Logic to construct a wall in the specified direction
-                    MessageBox.Show($"Constructing Wall in direction: {direction}");
-                    break;
-                case ConstructionType.Bridge:
+                case ConstructionElementType.Bruecke:
                     // Logic to construct a bridge in the specified direction
                     MessageBox.Show($"Constructing Bridge in direction: {direction}");
                     break;
-                case ConstructionType.Road:
+                case ConstructionElementType.Kai:
+                    // Logic to construct a Kai in the specified direction
+                    MessageBox.Show($"Constructing Kai in direction: {direction}");
+                    break;
+                case ConstructionElementType.Strasse:
                     // Logic to construct a road in the specified direction
                     MessageBox.Show($"Constructing Road in direction: {direction}");
+                    break;
+                case ConstructionElementType.Wall:
+                    // Logic to construct a wall in the specified direction
+                    MessageBox.Show($"Constructing Wall in direction: {direction}");
                     break;
                 default:
                     break;
@@ -110,19 +117,23 @@ namespace PhoenixWPF.Pages.UserControls {
         /// </summary>
         /// <param name="buttonName"></param>
         /// <returns></returns>
-        private (ConstructionType?, Direction?) GetConstructionInfoFromButtonName(string buttonName) {
+        private (ConstructionElementType?, Direction?) GetConstructionInfoFromButtonName(string buttonName) {
             // Extract the construction type (wall, bridge, road) and direction (e.g., NO, SW) from the button name
-            if (buttonName.Contains("button_wall")) {
-                var direction = GetDirectionFromButtonName(buttonName);
-                return (ConstructionType.Wall, direction);
-            }
             if (buttonName.Contains("button_bridge")) {
                 var direction = GetDirectionFromButtonName(buttonName);
-                return (ConstructionType.Bridge, direction);
+                return (ConstructionElementType.Bruecke, direction);
+            }
+            if (buttonName.Contains("button_kai")) {
+                var direction = GetDirectionFromButtonName(buttonName);
+                return (ConstructionElementType.Kai, direction);
             }
             if (buttonName.Contains("button_road")) {
                 var direction = GetDirectionFromButtonName(buttonName);
-                return (ConstructionType.Road, direction);
+                return (ConstructionElementType.Strasse, direction);
+            }
+            if (buttonName.Contains("button_wall")) {
+                var direction = GetDirectionFromButtonName(buttonName);
+                return (ConstructionElementType.Wall, direction);
             }
 
             return (null, null);  // Return null if we couldn't determine the construction type or direction

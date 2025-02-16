@@ -2,7 +2,6 @@
 using PhoenixModel.Commands.Parser;
 using PhoenixModel.Database;
 using PhoenixModel.ExternalTables;
-using PhoenixModel.Program;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using PhoenixWPF.Database;

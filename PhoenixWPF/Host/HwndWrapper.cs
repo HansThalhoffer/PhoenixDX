@@ -9,7 +9,7 @@
 using Microsoft.Xna.Framework.Input;
 using PhoenixDX;
 using PhoenixModel.EventsAndArgs;
-using PhoenixModel.Program;
+using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using PhoenixWPF.Program;
 using System;

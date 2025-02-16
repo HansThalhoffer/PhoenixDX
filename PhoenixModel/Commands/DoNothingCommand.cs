@@ -3,6 +3,7 @@ using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.Program;
+using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Generic;

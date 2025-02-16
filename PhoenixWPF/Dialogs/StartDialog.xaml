@@ -5,6 +5,7 @@
     WindowStartupLocation="CenterOwner"
     BorderBrush ="#FF0000"
     BorderThickness ="6"
+        Icon="../Resources/phoenix.ico"
     ResizeMode="NoResize"
     WindowStyle="None">
     <Grid Margin="8">

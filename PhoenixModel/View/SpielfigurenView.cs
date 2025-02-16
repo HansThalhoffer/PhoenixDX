@@ -1,7 +1,6 @@
 ﻿using PhoenixModel.dbPZE;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.ExternalTables;
-using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
 using static PhoenixModel.View.SpielfigurenView.SpielfigurenFilter;
 
@@ -11,60 +10,6 @@ namespace PhoenixModel.View;
 /// Vereinfacht die Nutzung von Truppensammlungen, die aus verschiedenen Klassen bestehen
 /// </summary>
 public static class SpielfigurenView {
-
-    /// <summary>
-    /// TODO Berechnugn der Beweungspunkte 
-    /// </summary>
-    /// <param name="figur"></param>
-    /// <returns></returns>
-    public static int BerechneBewegungspunkte(Spielfigur figur) {
-        //throw new NotImplementedException();
-        return 0;
-    }
-
-    /// <summary>
-    /// TODO Berechnung der Raumpunkte aus den Daten einer Spielfigur
-    /// </summary>
-    /// <param name="figur"></param>
-    /// <returns></returns>
-    public static int BerechneRaumpunkte(Spielfigur figur) {
-        // die formeln für die RP von Charaktern und Zauberern ist fix
-        if (figur is NamensSpielfigur namens) {
-            if (figur is Character hero && hero.IsSpielerFigur == false) 
-                    return 600;
-            return namens.GP_akt * 50;
-        }
-        var kosten = KostenView.GetKosten(figur);
-        if (kosten == null) {
-            ProgramView.LogError($"Für die Figur {figur} findet sich kein Eintrag in der Kostentabelle", "Für die Berechnung der Raumpunkte muss die Figur in der Kostentabelle existieren");
-            return 0;
-        }
-        int raumpunkte = 0;
-        if (figur is TruppenSpielfigur truppe) {
-            raumpunkte = kosten.Raumpunkte * truppe.staerke;
-            if (truppe.hf > 0) {
-                var equipmentKosten = KostenView.GetKosten("HF");
-                if (equipmentKosten != null)
-                    raumpunkte += truppe.hf * equipmentKosten.Raumpunkte;
-            }
-            if (truppe.LKP > 0) {
-                var equipmentKosten = KostenView.GetKosten(truppe.BaseTyp == FigurType.Schiff?"LKS":"LKP");
-                if (equipmentKosten != null)
-                    raumpunkte += truppe.LKP * equipmentKosten.Raumpunkte;
-            }
-            if (truppe.SKP > 0) {
-                var equipmentKosten= KostenView.GetKosten(truppe.BaseTyp == FigurType.Schiff ? "SKS" : "SKP");
-                if (equipmentKosten != null)
-                    raumpunkte += truppe.SKP * equipmentKosten.Raumpunkte;
-            }
-            if (truppe.Pferde > 0) {
-                var equipmentKosten = KostenView.GetKosten("P");
-                if (equipmentKosten != null)
-                    raumpunkte += truppe.Pferde * equipmentKosten.Raumpunkte;
-            }
-        }
-        return raumpunkte;
-    }
 
     /// <summary>
     /// Holt alle Spielfiguren eines Kleinfeldes als eine Armee

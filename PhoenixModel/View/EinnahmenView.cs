@@ -2,7 +2,6 @@
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbPZE;
 using PhoenixModel.ExternalTables;
-using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
 
 namespace PhoenixModel.View {
@@ -12,10 +11,13 @@ namespace PhoenixModel.View {
     public static class EinnahmenView {
         /// <summary>
         /// Berechnet die Einnahmen basierend auf dem Terrain eines bestimmten Kleinfelds.
+        /// Geplünderte Gemarken bringen 8 Monate keine Einnahmen mehr und es kann in geplünderten Rüstorten 8 Monate lang nicht gerüstet werden.
         /// </summary>
         /// <param name="gem">Das Kleinfeld, für das die Einnahmen berechnet werden.</param>
         /// <returns>Die Einnahmen aus dem Terrain.</returns>
         public static int GetTerrainEinnahmen(KleinFeld gem) {
+            if (gem.gepluendert != 0)
+                return 0;
             if (gem.Terrain != null) {
                 return gem.Terrain.Einnahmen;
             }
@@ -24,10 +26,13 @@ namespace PhoenixModel.View {
 
         /// <summary>
         /// Berechnet die Einnahmen aus einem Gebäude, das sich auf einem bestimmten Kleinfeld befindet.
+        /// Geplünderte Gemarken bringen 8 Monate keine Einnahmen mehr und es kann in geplünderten Rüstorten 8 Monate lang nicht gerüstet werden.
         /// </summary>
         /// <param name="gem">Das Kleinfeld mit dem Gebäude.</param>
         /// <returns>Die Einnahmen aus dem Gebäude.</returns>
         public static int GetGebäudeEinnahmen(KleinFeld gem) {
+            if (gem.gepluendert != 0)
+                return 0;
             Rüstort? gebäude = BauwerkeView.GetRüstortNachKarte(gem);
             if (gebäude != null) {
                 return GetGebäudeEinnahmen(gebäude);

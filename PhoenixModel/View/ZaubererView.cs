@@ -1,6 +1,5 @@
 ﻿using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbZugdaten;
-using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
 
 namespace PhoenixModel.View {
@@ -66,35 +65,6 @@ namespace PhoenixModel.View {
                 return kategorie.Regeneration_GP;
             }
             return 0;
-        }
-
-
-        /// <summary>
-        /// Ermittelt ob der Zauberer eine Barriere errichten kann
-        /// </summary>
-        public static bool CanCastBarriere( Zauberer figur, KleinfeldPosition? kf = null, Direction? direction = null) {
-            return true;
-        }
-
-        /// <summary>
-        /// Ermittelt ob der Zaubeer auf ein benachbartes Kleinfeld bannen kann
-        /// </summary>
-        public static bool CanCastBannen( Zauberer figur, KleinfeldPosition? kf = null) {
-            return true;
-        }
-
-        /// <summary>
-        /// Ermittelt ob der Zaubeer teleportieren kann und damit einige Leute mitnehmen
-        /// </summary>
-        public static bool CanCastTeleport( Zauberer figur, KleinfeldPosition? kf = null, List<Spielfigur>? teleportPayLoad = null) {
-            return true;
-        }
-
-        /// <summary>
-        /// Ermittelt ob der Zaubeer einen benachbarten Zauberer zum Duell auffordern kann
-        /// </summary>
-        public static bool CanCastDuell( Zauberer figur, KleinfeldPosition? kf = null) {
-            return true;
-        }
+        }       
     }
 }

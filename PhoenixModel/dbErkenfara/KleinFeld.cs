@@ -90,7 +90,11 @@ namespace PhoenixModel.dbErkenfara {
         
         // [View.Editable] geht nicht, da Gebäude synchron gehalten werden muss
         public string? Bauwerknamen { get; set; }
-        public int? lehensid { get; set; }
+        public int lehensid { get; set; } = 0;
+        public int gepluendert { get; set; } = 0;
+        public int Event { get; set; } = 0;
+        public int id { get; set; } = 0;
+
 
         private bool? _isWasser = null;
         public bool IsWasser
@@ -150,7 +154,7 @@ namespace PhoenixModel.dbErkenfara {
             Strasse_O, Strasse_SO, Strasse_SW, Strasse_W, Bruecke_NW, Bruecke_NO, Bruecke_O, Bruecke_SO, Bruecke_SW, Bruecke_W,
             Reich, Krieger_eigen, Krieger_feind, Krieger_freund, Reiter_eigene, Reiter_feind, Reiter_freund, Schiffe_eigene, schiffe_feind, Schiffe_freund,
             Zauberer_eigene, Zauberer_feind, Zauberer_freund, Char_eigene, Char_feind, Char_freund, krieger_text, kreatur_eigen, kreatur_feind, kreatur_freund,
-            Baupunkte, Bauwerknamen, lehensid
+            Baupunkte, Bauwerknamen, lehensid, gepluendert, Event, id
         }
 
         public void Load(DbDataReader reader)
@@ -218,6 +222,9 @@ namespace PhoenixModel.dbErkenfara {
             Baupunkte = DatabaseConverter.ToInt32(reader[(int)Felder.Baupunkte]);
             Bauwerknamen = reader.GetString((int)Felder.Bauwerknamen);
             lehensid = DatabaseConverter.ToInt32(reader[(int)Felder.lehensid]);
+            gepluendert = DatabaseConverter.ToInt32(reader[(int)Felder.gepluendert]);
+            Event = DatabaseConverter.ToInt32(reader[(int)Felder.Event]);
+            id = DatabaseConverter.ToInt32(reader[(int)Felder.id]);
         }
         #endregion
 
@@ -302,7 +309,9 @@ namespace PhoenixModel.dbErkenfara {
             kreatur_freund = {this.kreatur_freund},
             Baupunkte = {this.Baupunkte},
             Bauwerknamen = '{DatabaseConverter.EscapeString(this.Bauwerknamen)}',
-            lehensid = {this.lehensid}
+            lehensid = {this.lehensid},
+            gepluendert = {this.gepluendert},
+            Event = {this.Event}
              WHERE gf = {this.gf} AND kf = {this.kf} ";
 
             // Execute the command
@@ -328,7 +337,7 @@ namespace PhoenixModel.dbErkenfara {
             Zauberer_eigene, Zauberer_feind, Zauberer_freund, 
             Char_eigene, Char_feind, Char_freund, 
             krieger_text, kreatur_eigen, kreatur_feind, kreatur_freund, 
-            Baupunkte, Bauwerknamen, lehensid, gf, kf
+            Baupunkte, Bauwerknamen, lehensid, gf, kf, gepluendert, Event
         ) VALUES (
             '{DatabaseConverter.EscapeString(this.ph_xy)}', {this.x}, {this.y}, 
             '{DatabaseConverter.EscapeString(this.db_xy)}', {this.Rand}, {this.Gelaendetyp}, {this.Ruestort}, 
@@ -344,7 +353,7 @@ namespace PhoenixModel.dbErkenfara {
             {this.Char_eigene}, {this.Char_feind}, {this.Char_freund}, 
             '{DatabaseConverter.EscapeString(this.krieger_text)}', {this.kreatur_eigen}, {this.kreatur_feind}, {this.kreatur_freund}, 
             {this.Baupunkte}, '{DatabaseConverter.EscapeString(this.Bauwerknamen)}', {this.lehensid}, 
-            {this.gf}, {this.kf}
+            {this.gf}, {this.kf}, {this.gepluendert}, {this.Event}
         )";
 
             // Execute the command

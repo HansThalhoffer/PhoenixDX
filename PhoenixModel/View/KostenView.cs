@@ -1,75 +1,61 @@
-﻿using PhoenixModel.dbCrossRef;
+﻿using PhoenixModel.Commands;
+using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.ViewModel;
+using static PhoenixModel.View.SpielfigurenView.SpielfigurenFilter;
 
 namespace PhoenixModel.View {
     /// <summary>
     /// Statische Klasse zur Verarbeitung und Abfrage von Kosten.
     /// </summary>
     public static class KostenView {
+
         /// <summary>
         /// Ermittelt die Kosten für eine bestimmte Spielfigur.
         /// </summary>
         /// <param name="figur">Die Spielfigur, für die die Kosten ermittelt werden sollen.</param>
         /// <returns>Die zugehörigen Kosten oder null, falls nicht gefunden.</returns>
         public static Kosten? GetKosten(Spielfigur figur) {
-            string? search = null;
 
             switch (figur.BaseTyp) {
                 case FigurType.Krieger:
                 case FigurType.Kreatur:
-                    search = "K";
-                    break;
+                    return GetKosten(ConstructionElementType.K);
                 case FigurType.Reiter:
-                    search = "R";
-                    break;
+                    return GetKosten(ConstructionElementType.R);
                 case FigurType.Schiff:
-                    search = "S";
+                    return GetKosten(ConstructionElementType.S);
                     break;
                 case FigurType.Zauberer: {
                         if (figur is Zauberer wiz) {
                             switch (wiz.Klasse) {
                                 case Zaubererklasse.ZA:
-                                    search = "ZA";
-                                    break;
+                                    return GetKosten(ConstructionElementType.ZA);
                                 default:
-                                    search = "ZB";
-                                    break;
+                                    return GetKosten(ConstructionElementType.ZB);
                             }
                         }
                         break;
                     }
             }
-            return GetKosten(search);
+            return null;
         }
 
-        /// <summary>
-        /// Ermittelt die Kosten für ein bestimmtes Bauwerk.
-        /// </summary>
-        /// <param name="ort">Das Bauwerk, für das die Kosten ermittelt werden sollen.</param>
-        /// <returns>Die zugehörigen Kosten oder null, falls nicht gefunden.</returns>
-        public static Kosten? GetKosten(BauwerkBasis ort) {
-            string? search = null;
-
-            if (ort == null)
+        public static Kosten? GetKosten(ConstructionElementType element) {
+            if (SharedData.Kosten == null)
                 return null;
+            if (SharedData.Kosten.TryGetValue(element.ToString(), out var kosten))
+                return kosten;
+            return null;
+        }
 
-            if (ort.Bauwerk.StartsWith("Dorf"))
-                return null;
-
-            if (ort.Bauwerk.StartsWith("Burg"))
-                search = "Burg";
-            else if (ort.Bauwerk.StartsWith("Stadt"))
-                search = "Stadt";
-            else if (ort.Bauwerk.StartsWith("Festungshauptstadt"))
-                search = "Festungshauptstadt";
-            else if (ort.Bauwerk.StartsWith("Festung"))
-                search = "Festung";
-            else if (ort.Bauwerk.StartsWith("Hauptstadt"))
-                search = "Hauptstadt";
-
-            return GetKosten(search);
+        public static int GetGSKosten(ConstructionElementType element) {
+            if (SharedData.Kosten == null)
+                return 0;
+            if (SharedData.Kosten.TryGetValue(element.ToString(), out var kosten))
+                return kosten.GS;
+            return 0;
         }
 
         /// <summary>

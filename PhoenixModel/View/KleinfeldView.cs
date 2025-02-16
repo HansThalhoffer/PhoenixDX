@@ -1,10 +1,23 @@
-﻿using PhoenixModel.dbErkenfara;
-using PhoenixModel.Program;
+﻿using PhoenixModel.Commands;
+using PhoenixModel.dbCrossRef;
+using PhoenixModel.dbErkenfara;
+using PhoenixModel.dbPZE;
+using PhoenixModel.dbZugdaten;
+using PhoenixModel.ExternalTables;
 using PhoenixModel.ViewModel;
+using System;
 using System.Collections.Concurrent;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using System.Runtime.ConstrainedExecution;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+using static PhoenixModel.ExternalTables.EinwohnerUndEinnahmenTabelle;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PhoenixModel.View {
 
@@ -353,40 +366,32 @@ namespace PhoenixModel.View {
         }
 
         /// <summary>
-        /// kann hier der User eine Brücke bauen?
+        /// gibt true zurück, wenn auf dem Kleinfeld das Element Kaianlagen in der gegebenen Richtung vorhanden ist
         /// </summary>
-        /// <param name="kf">kleinfeld</param>
+        /// <param name="kf">Kleinfed</param>
         /// <param name="direction">Richtung</param>
         /// <returns></returns>
-        public static bool CanConstructBridge(KleinFeld kf, Direction direction) {
-            if (kf.IsWasser || ProgramView.BelongsToUser(kf) == false)
-                return false;
-            return HasRiver(kf, direction) && HasBridge(kf, direction) == false; 
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public static bool HasKai(KleinFeld kf, Direction direction) {
+            switch (direction) {
+                case Direction.NW:
+                    return kf.Kai_NW != 0;
+                case Direction.NO:
+                    return kf.Kai_NO != 0;
+                case Direction.O:
+                    return kf.Kai_O != 0;
+                case Direction.SO:
+                    return kf.Kai_SO != 0;
+                case Direction.SW:
+                    return kf.Kai_SW != 0;
+                case Direction.W:
+                    return kf.Kai_W != 0;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(direction), "Invalid direction");
+            }
         }
 
-        /// <summary>
-        /// kann hier der User eine Strasse bauen?
-        /// </summary>
-        /// <param name="kf">kleinfeld</param>
-        /// <param name="direction">Richtung</param>
-        /// <returns></returns>
-        public static bool CanConstructRoad(KleinFeld kf, Direction direction) {
-            if (kf.IsWasser || ProgramView.BelongsToUser(kf) == false)
-                return false;
-            return HasRoad(kf, direction) == false;
-        }
-
-        /// <summary>
-        /// kann hier der User eine Wallanlage bauen?
-        /// </summary>
-        /// <param name="kf">kleinfeld</param>
-        /// <param name="direction">Richtung</param>
-        /// <returns></returns>
-        public static bool CanConstructWall(KleinFeld kf, Direction direction) {
-            if (kf.IsWasser || ProgramView.BelongsToUser(kf) == false)
-                return false;
-            return HasWall(kf, direction) == false;
-        }
+        
      
     }
 }

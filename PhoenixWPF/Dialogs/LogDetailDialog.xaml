@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PhoenixWPF.Dialogs"
         mc:Ignorable="d"
+        Icon="../Resources/phoenix.ico"
         Title="Anwendungsmeldungen" Height="450" Width="800">
         <Grid>
             <Grid.ColumnDefinitions>

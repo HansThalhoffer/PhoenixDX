@@ -1,5 +1,5 @@
 ﻿using PhoenixModel.dbZugdaten;
-using PhoenixModel.Program;
+using PhoenixModel.View;
 
 namespace PhoenixModel.ViewModel {
     /// <summary>

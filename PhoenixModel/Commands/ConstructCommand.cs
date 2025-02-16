@@ -183,7 +183,7 @@ namespace PhoenixModel.Commands {
                 };
             }
             catch (Exception ex) {
-                Program.ProgramView.LogError("Beim Lesen des ConstructCommand gab es einen Fehler", ex.Message);
+                ProgramView.LogError("Beim Lesen des ConstructCommand gab es einen Fehler", ex.Message);
                 command = null;
                 return false;
             }

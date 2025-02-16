@@ -2,6 +2,7 @@
 using PhoenixModel.Commands;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.Program;
+using PhoenixModel.Rules;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using System;
@@ -103,7 +104,7 @@ namespace Tests {
                 // Assert.True(rp == item.rp);
             }*/
             foreach (var item in expected) {
-                int rp = SpielfigurenView.BerechneRaumpunkte(item);
+                int rp = SpielfigurRules.BerechneRaumpunkte(item);
                 Assert.True(rp == item.rp);
             }
 

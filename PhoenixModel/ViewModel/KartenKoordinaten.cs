@@ -1,4 +1,4 @@
-﻿using PhoenixModel.Program;
+﻿using PhoenixModel.View;
 
 namespace PhoenixModel.ViewModel {
 

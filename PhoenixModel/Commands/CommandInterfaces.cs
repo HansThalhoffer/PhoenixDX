@@ -27,6 +27,7 @@ namespace PhoenixModel.Commands {
         ZB, // Zauberer Klasse B
         Strasse,
         Bruecke,
+        Kai,
         Wall,
         Burg,
         ausbau

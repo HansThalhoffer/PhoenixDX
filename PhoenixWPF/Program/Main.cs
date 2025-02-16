@@ -261,6 +261,7 @@ namespace PhoenixWPF.Program {
                         }
                         Settings.UserSettings.SelectedReich = dialog.SelectedNation?.Nummer ?? -1;
                         Settings.UserSettings.SelectedZug = dialog.SelectedZug ?? -1;
+                        ProgramView.SelectedMonth = Settings.UserSettings.SelectedZug;
                         zugdatenPath = System.IO.Path.Combine(zugdatenPath, Settings.UserSettings.SelectedZug.ToString());
                         ProgramView.SelectedNation = SharedData.Nationen?.ElementAt(Settings.UserSettings.SelectedReich);
                         zugdatenPath = System.IO.Path.Combine(zugdatenPath, $"{ProgramView.SelectedNation?.DBname}.mdb");

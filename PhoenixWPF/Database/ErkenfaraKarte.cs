@@ -1,7 +1,7 @@
 ﻿using PhoenixModel.Database;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.EventsAndArgs;
-using PhoenixModel.Program;
+using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using PhoenixWPF.Database;
 using System.Data;

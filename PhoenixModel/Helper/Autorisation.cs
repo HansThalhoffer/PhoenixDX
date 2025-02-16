@@ -1,14 +1,13 @@
 ﻿using PhoenixModel.Database;
 using PhoenixModel.dbErkenfara;
-using PhoenixModel.Program;
+using PhoenixModel.View;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhoenixModel.Helper
-{
+namespace PhoenixModel.Helper {
     public static class Autorisation
     {
         /// <summary>
