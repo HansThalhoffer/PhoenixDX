@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.Commands;
+using PhoenixModel.Commands.Parser;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.Extensions;
 using PhoenixModel.Rules;
@@ -49,13 +50,7 @@ namespace PhoenixWPF.Pages.UserControls {
                     throw new Exception($"Da fehlt der Button button_wall_{dir}");
             }
             button_burg.Visibility = ConstructRules.CanConstructCastle(kf) ? Visibility.Visible : Visibility.Hidden;
-            
-
-
         }
-
-     
-
 
         private void Construction_Button_Click(object sender, RoutedEventArgs e) {
             // Get the button that was clicked
@@ -79,25 +74,38 @@ namespace PhoenixWPF.Pages.UserControls {
         /// <param name="constructionType"></param>
         /// <param name="direction"></param>
         private void Construct(ConstructionElementType constructionType, Direction direction) {
-            switch (constructionType) {
-                case ConstructionElementType.Bruecke:
-                    // Logic to construct a bridge in the specified direction
-                    MessageBox.Show($"Constructing Bridge in direction: {direction}");
-                    break;
-                case ConstructionElementType.Kai:
-                    // Logic to construct a Kai in the specified direction
-                    MessageBox.Show($"Constructing Kai in direction: {direction}");
-                    break;
-                case ConstructionElementType.Strasse:
-                    // Logic to construct a road in the specified direction
-                    MessageBox.Show($"Constructing Road in direction: {direction}");
-                    break;
-                case ConstructionElementType.Wall:
-                    // Logic to construct a wall in the specified direction
-                    MessageBox.Show($"Constructing Wall in direction: {direction}");
-                    break;
-                default:
-                    break;
+            var selected = Main.Instance.SelectionHistory.Current;
+            // wenn ein Kleinfeld ausgewählt ist und es zum Reich des Users gehört, dann kann gebaut werden
+            if (selected != null && selected is KleinFeld kf && ProgramView.BelongsToUser(kf)) {
+                string commandString = string.Empty;
+                switch (constructionType) {
+                    case ConstructionElementType.Bruecke:
+                        commandString = $"Errichte Brücke im {direction} von {kf.CreateBezeichner()}";
+                        break;
+                    case ConstructionElementType.Kai:
+                        commandString = $"Errichte Kai im {direction} von {kf.CreateBezeichner()}";
+                        break;
+                    case ConstructionElementType.Strasse:
+                        commandString = $"Errichte Straße im {direction} von {kf.CreateBezeichner()}";
+                        break;
+                    case ConstructionElementType.Wall:
+                        commandString = $"Errichte Wall im {direction} von {kf.CreateBezeichner()}";
+                        break;
+                    case ConstructionElementType.Burg:
+                        commandString = $"Errichte Burg auf {kf.CreateBezeichner()}";
+                        break;
+                    default:
+                        break;
+                }
+                if (string.IsNullOrEmpty(commandString) == false) {
+                    if (CommandParser.ParseCommand(commandString, out var cmd) && cmd != null) {
+                        var result = cmd.ExecuteCommand();
+                        if (result.HasErrors)
+                            SpielWPF.LogError(result.Title, result.Message);
+                    }
+                    else
+                        SpielWPF.LogError("Der Name konnte nicht gespeichert werden", "Keine Ahnung warum");
+                }
             }
         }
 
@@ -150,6 +158,10 @@ namespace PhoenixWPF.Pages.UserControls {
                 return;
             }
             this.Visibility = Visibility.Hidden;
+        }
+
+        private void button_burg_Click(object sender, RoutedEventArgs e) {
+            Construct(ConstructionElementType.Burg, Direction.W);
         }
     }
 }

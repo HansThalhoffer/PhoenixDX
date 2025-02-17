@@ -2,6 +2,7 @@
 using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbZugdaten;
+using PhoenixModel.Extensions;
 using PhoenixModel.Program;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
@@ -31,7 +32,7 @@ namespace PhoenixModel.Commands {
 
 
         public override string ToString() {
-            return (Direction != null)? $"Errichte {SimpleParser.ConstructionElementTypeToString(What)} im {Direction} von {Location}" : $"Errichte {SimpleParser.ConstructionElementTypeToString(What)} auf {Location}"; ;
+            return (Direction != null)? $"Errichte {What} im {Direction} von {Location}" : $"Errichte {What} auf {Location}"; ;
         }
 
         /// <summary>
@@ -108,6 +109,7 @@ namespace PhoenixModel.Commands {
                 return result;
             RuestungBauwerke? bauwerk = CreateRuestungBauwerke();
             if (bauwerk != null && SharedData.RuestungBauwerke != null) {
+                SharedData.RuestungBauwerke.Reopen();
                 SharedData.RuestungBauwerke.Add(bauwerk);
                 SharedData.StoreQueue.Insert(bauwerk);
                 return new CommandResultSuccess("Das ConstructCommand wurde ausgeführt", $"Der Befehl wurde ausgeführt:\r\n {this.CommandString}", this);
