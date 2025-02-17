@@ -142,8 +142,8 @@ namespace PhoenixDX.Structures {
             ReicheInitalized = true;
             foreach (var nation in nations)
             {
-                if (Reiche.ContainsKey(nation.Nummer.Value) == false)
-                    Reiche.Add(nation.Nummer ?? -1, new Reich(nation));
+                if (Reiche.ContainsKey(nation.Nummer) == false)
+                    Reiche.Add(nation.Nummer, new Reich(nation));
                 else
                     break;
             }

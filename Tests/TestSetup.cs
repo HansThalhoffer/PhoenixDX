@@ -1,5 +1,7 @@
-﻿using PhoenixModel.Database;
+﻿using LiveCharts.Wpf;
+using PhoenixModel.Database;
 using PhoenixModel.View;
+using PhoenixModel.ViewModel;
 using PhoenixWPF.Database;
 using PhoenixWPF.Dialogs;
 using PhoenixWPF.Helper;
@@ -32,6 +34,15 @@ namespace Tests {
                     return dialog.ProvidePassword();
                 }
             }
+        }
+
+        public static void SelectNation(string nation) {
+            if (SharedData.Nationen == null)
+                throw new Exception("Daten fehlen. PZE laden");
+            var n = NationenView.GetNationFromString(nation);
+            if (n == null)
+                throw new Exception($"Nation {nation} nicht gefunden");
+            ProgramView.SelectedNation = n;
         }
 
         public static void DispatchUI() {
@@ -113,6 +124,25 @@ namespace Tests {
                 db.Load();
                 db.LoadBackgroundSynchronous();
             }
+            
+            string nat = Path.GetFileName(settings.UserSettings.DatabaseLocationZugdaten);
+            nat = nat.Substring(0, nat.Length - 4);
+            if (SharedData.Nationen != null) {
+                var nation = NationenView.GetNationFromString(nat);
+                if (nation != null) {
+                    ProgramView.SelectedNation = nation;
+                    settings.UserSettings.SelectedReich = nation.Nummer;
+                }
+            }
+            string? dir = System.IO.Path.GetDirectoryName(settings.UserSettings.DatabaseLocationZugdaten);
+            if (dir == null)
+                return;
+            string zugmonat = Path.GetFileName(dir);
+            int monat = Convert.ToInt32(zugmonat);
+            settings.UserSettings.SelectedZug = monat;
+            
+            ProgramView.SelectedMonth = monat;
+
         }
 
         /// <summary>

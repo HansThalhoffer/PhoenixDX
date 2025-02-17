@@ -1,5 +1,7 @@
 ﻿using PhoenixModel.Commands;
+using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbErkenfara;
+using PhoenixModel.Helper;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using System;
@@ -11,6 +13,60 @@ using System.Threading.Tasks;
 
 namespace PhoenixModel.Rules {
     public static class ConstructRules {
+
+        /// <summary>
+        /// Überprüft, ob ein Bauwerk nicht auf Wasser errichtet werden kann.
+        /// </summary>
+        /// <param name="kf">Das zu überprüfende Kleinfeld.</param>
+        /// <returns>Ein Fehler-Resultat, falls das Bauwerk nicht erlaubt ist, sonst null.</returns>
+        public static Result? IsNotAllowedOnWater(KleinFeld? kf) {
+            if (kf == null)
+                return Result.Fail($"Wo ist das Kleinfeld?", $"Bitte ein Kleinfeld übergeben");
+
+            if (kf.IsWasser)
+                return Result.Fail("Das Bauwerk kann nicht auf dem Wasser errichtet werden", "Bitte wähle ein weniger nasses Kleinfeld aus");
+            return Result.Success();
+        }
+
+        /// <summary>
+        /// Überprüft, ob das Bauwerk auf eigenem Gebiet errichtet werden darf.
+        /// </summary>
+        /// <param name="kf">Das zu überprüfende Kleinfeld.</param>
+        /// <returns>Ein Fehler-Resultat, falls das Bauwerk nicht erlaubt ist, sonst null.</returns>
+        public static Result? IsAllowedForOwner(KleinFeld? kf) {
+            if (kf == null)
+                return Result.Fail($"Wo ist das Kleinfeld?", $"Bitte ein Kleinfeld übergeben");
+
+            if (ProgramView.BelongsToUser(kf) == false)
+                return Result.Fail("Das Bauwerk kann nur auf dem eigenen Gebiet errichtet werden", "Bitte wähle ein Kleinfeld aus, das dir gehört");
+            return Result.Success();
+        }
+
+        /// <summary>
+        /// Überprüft, ob sich das Spiel in der Rüstphase befindet.
+        /// </summary>
+        /// <returns>Ein Fehler-Resultat, falls das Bauwerk nicht erlaubt ist, sonst null.</returns>
+        public static Result? IsRüstPhase() {
+            if (ProgramView.CanConstruct() == false)
+                return Result.Fail("Das Bauwerk kann nur in der Rüstphase errichtet werden", "Bitte wähle einen passenden Zeitpunkt dafür");
+            return Result.Success();
+        }
+
+        /// <summary>
+        /// Überprüft, ob genügend Geld für den Bau vorhanden ist.
+        /// </summary>
+        /// <param name="kf">Das Kleinfeld, auf dem das Bauwerk errichtet werden soll.</param>
+        /// <param name="kosten">Die Kosten für das Bauwerk.</param>
+        /// <returns>Ein Fehler-Resultat, falls nicht genügend Geld vorhanden ist, sonst null.</returns>
+        public static Result? IsEnoughMoney(KleinFeld? kf, int kosten) {
+            if (kf == null)
+                return Result.Fail($"Wo ist das Kleinfeld?", $"Bitte ein Kleinfeld übergeben");
+
+            if (SchatzkammerView.HasEnoughMoney(kf, kosten) == false)
+                return Result.Fail($"Das Bauwerk kostet mehr als in der Schatzkammer ist", $"Bitte gehe betteln! {kosten} kostet das Bauwerk. In der Schatzkammer sind nur noch {SchatzkammerView.MoneyToSpendThisTurn()}");
+            return Result.Success();
+        }
+
         /// <summary>
         /// kann hier der User eine Brücke bauen?
         /// </summary>
@@ -21,23 +77,36 @@ namespace PhoenixModel.Rules {
         /// <param name="kf">kleinfeld</param>
         /// <param name="direction">Richtung</param>
         /// <returns></returns>
-        public static bool CanConstructBridge(KleinFeld kf, Direction direction) {
-            if (kf.IsWasser || ProgramView.BelongsToUser(kf) == false || ProgramView.CanConstruct() == false)
-                return false;
-            var pos = KartenKoordinaten.GetNachbar(kf, direction);
+        public static Result CanConstructBridge(KleinFeld kf, Direction direction) {
+            if (IsNotAllowedOnWater(kf) is Result wasserTest && wasserTest.HasErrors)
+                return wasserTest;
 
+            if (IsAllowedForOwner(kf) is Result ownerTest && ownerTest.HasErrors)
+                return ownerTest;
+
+            if (IsRüstPhase() is Result phaseTest && phaseTest.HasErrors)
+                return phaseTest;
+
+
+            var pos = KartenKoordinaten.GetNachbar(kf, direction);
             // nachbar muss selbe Höhenstufe haben
             if (SharedData.Map != null && pos != null && SharedData.Map[pos.CreateBezeichner()].Terrain.Höhe == kf.Terrain.Höhe) {
-                if (KleinfeldView.HasRiver(kf, direction) == true && KleinfeldView.HasBridge(kf, direction) == false) {
-                    // nun noch Kosten berechnen und schauen, ob das Geld langt
-                    int kosten = KostenView.GetGSKosten(ConstructionElementType.Bruecke);
-                    if (SchatzkammerView.HasEnoughMoney(kf, kosten)) {
-                        return true;
-                    }
-                    return true;
-                }
+
+                if (KleinfeldView.HasRiver(kf, direction) == false)
+                    return Result.Fail($"Ohne Fluss keine Brücke", $"In dieser Richtung gibt es keinen Fluss {direction}");
+
+                if (KleinfeldView.HasBridge(kf, direction) == true)
+                    return Result.Fail($"Hier steht schon eine Brücke", $"In dieser Richtung {direction} braucht es keine mehr");
+
+                // nun noch Kosten berechnen und schauen, ob das Geld langt
+                if (IsEnoughMoney(kf, KostenView.GetGSKosten(ConstructionElementType.Bruecke)) is Result moneyTest && moneyTest.HasErrors)
+                    return moneyTest;
+
+                //var cmd = new ConstructCommand($"Errichte Brücke im {direction} von {kf.CreateBezeichner()}");
+                return Result.Success();
             }
-            return false;
+            else
+                return Result.Fail($"Das geht zu steil bergauf für eine Brücke", $"Die Brücke muss auf benachbarten Feldern mit gleicher Höhenstüfe errichtet werden");
         }
 
         /// <summary>
@@ -61,18 +130,27 @@ namespace PhoenixModel.Rules {
         /// <param name="kf">kleinfeld</param>
         /// <param name="direction">Richtung</param>
         /// <returns></returns>
-        public static bool CanConstructRoad(KleinFeld kf, Direction direction) {
-            if (kf.IsWasser || ProgramView.BelongsToUser(kf) == false || ProgramView.CanConstruct() == false)
-                return false;
+        public static Result CanConstructRoad(KleinFeld? kf, Direction direction) {
+            if (kf == null)
+                return Result.Fail($"Wo ist das Kleinfeld?", $"Bitte ein Kleinfeld übergeben");
+
+            if (IsNotAllowedOnWater(kf) is Result wasserTest && wasserTest.HasErrors)
+                return wasserTest;
+
+            if (IsAllowedForOwner(kf) is Result ownerTest && ownerTest.HasErrors)
+                return ownerTest;
+
+            if (IsRüstPhase() is Result phaseTest && phaseTest.HasErrors)
+                return phaseTest;
+
             if (KleinfeldView.HasRoad(kf, direction))
-                return false;
+                return Result.Fail($"Hier ist schon eine Strasse", $"In dieser Richtung {direction} braucht es keine mehr");
 
-            int kosten = KostenView.GetGSKosten(ConstructionElementType.Strasse);
-            if (SchatzkammerView.HasEnoughMoney(kf, kosten)) {
-                return true;
-            }
+            if (IsEnoughMoney(kf, KostenView.GetGSKosten(ConstructionElementType.Strasse)) is Result moneyTest && moneyTest.HasErrors)
+                return moneyTest;
 
-            return true;
+            //  var cmd = new ConstructCommand($"Errichte Straße im {direction} von {kf.CreateBezeichner()}");
+            return Result.Success();
         }
 
 
@@ -86,27 +164,39 @@ namespace PhoenixModel.Rules {
         /// <param name="kf">kleinfeld</param>
         /// <param name="direction">Richtung</param>
         /// <returns></returns>
-        public static bool CanConstructKai(KleinFeld kf, Direction direction) {
-            if (kf.IsKüste || ProgramView.BelongsToUser(kf) == false || ProgramView.CanConstruct() == false)
-                return false;
+        public static Result CanConstructKai(KleinFeld? kf, Direction direction) {
+            if (kf == null)
+                return Result.Fail($"Wo ist das Kleinfeld?", $"Bitte ein Kleinfeld übergeben");
+
+            if (IsNotAllowedOnWater(kf) is Result wasserTest && wasserTest.HasErrors)
+                return wasserTest;
+
+            if (IsAllowedForOwner(kf) is Result ownerTest && ownerTest.HasErrors)
+                return ownerTest;
+
+            if (IsRüstPhase() is Result phaseTest && phaseTest.HasErrors)
+                return phaseTest;
 
             // laut Regelwerk nur auf Höhe 1 möglich
             if (kf.Terrain.Höhe != 1)
-                return false;
+                return Result.Fail($"Hier ist es zu hoch", $"Kai Anlagen dürfen nur in der Höhenstufe 1 gebaut werden");
+
             if (KleinfeldView.HasKai(kf, direction))
-                return false;
+                return Result.Fail($"Hier ist schon ein Kai", $"In dieser Richtung {direction} braucht es keinen mehr");
 
             var pos = KartenKoordinaten.GetNachbar(kf, direction);
             if (SharedData.Map != null && pos != null) {
                 if (SharedData.Map[pos.CreateBezeichner()].IsWasser) {
-                    int kosten = KostenView.GetGSKosten(ConstructionElementType.Kai);
-                    if (SchatzkammerView.HasEnoughMoney(kf, kosten)) {
-                        return true;
-                    }
+                    if (IsEnoughMoney(kf, KostenView.GetGSKosten(ConstructionElementType.Kai)) is Result moneyTest && moneyTest.HasErrors)
+                        return moneyTest;
+                    else
+                        return Result.Success();
                 }
+                else
+                    return Result.Fail($"Hier ist keine Küste", $"Kai-Anlagen müssen ins Wasser zeigen");
 
             }
-            return false;
+            return Result.Fail("Geht nicht", "Weiß nicht, warum?");
         }
 
         /// <summary>
@@ -115,16 +205,24 @@ namespace PhoenixModel.Rules {
         /// <param name="kf">kleinfeld</param>
         /// <param name="direction">Richtung</param>
         /// <returns></returns>
-        public static bool CanConstructWall(KleinFeld kf, Direction direction) {
-            if (kf.IsWasser || ProgramView.BelongsToUser(kf) == false || ProgramView.CanConstruct() == false)
-                return false;
-            if (KleinfeldView.HasWall(kf, direction) == false) {
-                int kosten = KostenView.GetGSKosten(ConstructionElementType.Wall);
-                if (SchatzkammerView.HasEnoughMoney(kf, kosten)) {
-                    return true;
-                }
-            }
-            return false;
+        public static Result CanConstructWall(KleinFeld? kf, Direction direction) {
+            if (kf == null)
+                return Result.Fail($"Wo ist das Kleinfeld?", $"Bitte ein Kleinfeld übergeben");
+
+            if (IsNotAllowedOnWater(kf) is Result wasserTest && wasserTest.HasErrors)
+                return wasserTest;
+
+            if (IsAllowedForOwner(kf) is Result ownerTest && ownerTest.HasErrors)
+                return ownerTest;
+
+            if (IsRüstPhase() is Result phaseTest && phaseTest.HasErrors)
+                return phaseTest;
+
+            if (KleinfeldView.HasWall(kf, direction))
+                return Result.Fail($"Hier ist schon ein Wall", $"In dieser Richtung {direction} braucht es keinen mehr");
+            if (IsEnoughMoney(kf, KostenView.GetGSKosten(ConstructionElementType.Wall)) is Result moneyTest && moneyTest.HasErrors)
+                return moneyTest;
+            return Result.Success();
         }
 
         /// <summary>
@@ -133,19 +231,28 @@ namespace PhoenixModel.Rules {
         /// <param name="kf">kleinfeld</param>
         /// <param name="direction">Richtung</param>
         /// <returns></returns>
-        public static bool CanConstructCastle(KleinFeld kf) {
-            if (kf.IsWasser || ProgramView.BelongsToUser(kf) == false || ProgramView.CanConstruct() == false)
-                return false;
-            if (kf.Gebäude == null) {
-                // nun noch Kosten berechnen und schauen, ob das Geld langt
-                int kosten = KostenView.GetGSKosten(ConstructionElementType.Burg);
-                if ( SchatzkammerView.HasEnoughMoney(kf, kosten) ) {
-                    return true;
-                }
-            }
-            return false;
+        public static Result CanConstructCastle(KleinFeld? kf) {
+            if (kf == null)
+                return Result.Fail($"Wo ist das Kleinfeld?", $"Bitte ein Kleinfeld übergeben");
+
+            if (IsNotAllowedOnWater(kf) is Result wasserTest && wasserTest.HasErrors)
+                return wasserTest;
+
+            if (IsAllowedForOwner(kf) is Result ownerTest && ownerTest.HasErrors)
+                return ownerTest;
+
+            if (IsRüstPhase() is Result phaseTest && phaseTest.HasErrors)
+                return phaseTest;
+
+            if (kf != null && kf.Gebäude != null)
+                return Result.Fail($"Hier ist schon ein Gebäude", $"Da braucht es keines mehr");
+
+            if (IsEnoughMoney(kf, KostenView.GetGSKosten(ConstructionElementType.Burg)) is Result moneyTest && moneyTest.HasErrors)
+                return moneyTest;
+
+            return Result.Success();
         }
-        
+
 
 
     }

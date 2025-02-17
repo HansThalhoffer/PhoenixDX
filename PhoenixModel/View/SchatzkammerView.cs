@@ -11,15 +11,22 @@ using System.Threading.Tasks;
 namespace PhoenixModel.View {
     public static class SchatzkammerView {
 
+        private static Schatzkammer? _actual = null;
+
         /// <summary>
         /// die Funktion holt den aktuellen Stand der Schatzkammer für den Zug
         /// </summary>
         /// <returns></returns>
         public static Schatzkammer GetActual() {
-            if (SharedData.Schatzkammer != null && SharedData.Schatzkammer.Count > 0) {
-                return SharedData.Schatzkammer.Where(k => k.monat == ProgramView.SelectedMonth).First();
+            if ( _actual == null && SharedData.Schatzkammer != null && SharedData.Schatzkammer.Count > 0) {
+                try {
+                    _actual = SharedData.Schatzkammer.Where(k => k.monat == ProgramView.SelectedMonth).First();
+                }
+                catch (Exception ex) {
+                    ProgramView.LogError($"Der Monat {ProgramView.SelectedMonth} hat keine Daten zur Schatzkammer", ex.Message);
+                }
             }
-            return new Schatzkammer();
+            return _actual ?? new Schatzkammer();
         }
 
         /// <summary>
@@ -27,7 +34,7 @@ namespace PhoenixModel.View {
         /// </summary>
         /// <returns></returns>
         public static int MoneyToSpendThisTurn() {
-            return new Schatzkammer().Reichschatz;
+            return GetActual().Reichschatz;
         }
 
         /// <summary>

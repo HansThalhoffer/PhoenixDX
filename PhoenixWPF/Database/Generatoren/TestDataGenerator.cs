@@ -73,6 +73,8 @@ namespace PhoenixWPF.Database.Generatoren {
                 Save(zauberer, command);
                 var schenkungen = GenerateSchenkungen(8);
                 Save(schenkungen, command);
+                Schatzkammer schatzkammer = new Schatzkammer() { Reichschatz = 1000000, Einahmen_land = 40000, GS_bei_truppen = 60000, monat = 999 };
+                schatzkammer.Save(command);
 
                 // todo schenkungen
             }

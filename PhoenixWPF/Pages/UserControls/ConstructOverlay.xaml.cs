@@ -48,6 +48,9 @@ namespace PhoenixWPF.Pages.UserControls {
                 else
                     throw new Exception($"Da fehlt der Button button_wall_{dir}");
             }
+            button_burg.Visibility = ConstructRules.CanConstructCastle(kf) ? Visibility.Visible : Visibility.Hidden;
+            
+
 
         }
 

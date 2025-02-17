@@ -36,7 +36,7 @@ namespace PhoenixModel.dbPZE {
         public string? Farbname { get; set; }
         public Color? Farbe { get; set; }
 
-        public int? Nummer { get; set; }
+        public int Nummer { get; set; } = -1;
         public string Reich { get; set; } = string.Empty;
         public string Name => Reich;
         public string DBname { get; set; } = string.Empty;

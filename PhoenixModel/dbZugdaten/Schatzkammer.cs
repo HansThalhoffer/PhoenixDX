@@ -46,7 +46,7 @@ namespace PhoenixModel.dbZugdaten {
             schenkung_bekommen = {this.schenkung_bekommen},
             GS_bei_truppen = {this.GS_bei_truppen},
             schenkung_getaetigt = {this.schenkung_getaetigt},
-            Verruestet = {this.Verruestet},
+            Verruestet = {this.Verruestet}
         WHERE  monat = {this.monat}";
 
             // Execute the command
