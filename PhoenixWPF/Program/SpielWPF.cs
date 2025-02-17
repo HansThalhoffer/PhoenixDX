@@ -110,7 +110,6 @@ namespace PhoenixWPF.Program {
                 Main.Map?.Goto(pos);
                 if (pos is ISelectable select)
                     Main.Instance.SelectionHistory.Current = select;
-               
             }
             
         }

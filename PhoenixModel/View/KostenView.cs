@@ -26,7 +26,6 @@ namespace PhoenixModel.View {
                     return GetKosten(ConstructionElementType.R);
                 case FigurType.Schiff:
                     return GetKosten(ConstructionElementType.S);
-                    break;
                 case FigurType.Zauberer: {
                         if (figur is Zauberer wiz) {
                             switch (wiz.Klasse) {

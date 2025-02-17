@@ -9,6 +9,10 @@ using System.Collections.Generic;
 using System.Windows;
 using static PhoenixModel.Database.PasswordHolder;
 using PhoenixModel.View;
+using System.IO;
+using Ionic.Zip;
+using static PhoenixWPF.Database.PasswortProvider;
+using System.Text;
 
 namespace PhoenixWPF.Database {
 
@@ -163,7 +167,7 @@ namespace PhoenixWPF.Database {
             { 
                 string aktuellesDatenbank= System.IO.Path.Combine(zugdatenPath, alteZugdaten);
                 aktuellesDatenbank = System.IO.Path.Combine(aktuellesDatenbank, databaseFileName);
-                using (AccessDatabase connector = new(databaseLocation, holder.DecryptedPassword))
+                using (AccessDatabase connector = new(aktuellesDatenbank, holder.DecryptedPassword))
                 {
                     if (connector?.Open() == false)
                         return result;
@@ -182,6 +186,74 @@ namespace PhoenixWPF.Database {
                     }
                     catch (Exception ex)
                     {
+                        SpielWPF.LogError("Fehler beim Öffnen der Zugdaten Datenbank: ", ex.Message);
+                    }
+                    connector?.Close();
+                }
+            }
+            return result;
+        }
+
+        public static List<RuestungBauwerke> LoadBaukostenHistory() {
+            if (Main.Instance.Settings == null || SharedData.Nationen == null || Main.Instance.Settings.UserSettings.SelectedReich < 0)
+                return [];
+
+            string databaseLocation = Main.Instance.Settings.UserSettings.DatabaseLocationZugdaten;
+            string databaseFileName = System.IO.Path.GetFileName(databaseLocation);
+            string zugdatenPath = Helper.StorageSystem.ExtractBasePath(databaseLocation, "Zugdaten");
+            var zugDatenListe = Helper.StorageSystem.GetNumericDirectories(zugdatenPath);
+
+            var zugDaten = new Zugdaten(databaseLocation, (Main.Instance.Settings.UserSettings.PasswordReich));
+            PasswordHolder holder = new(new EncryptedString(Main.Instance.Settings.UserSettings.PasswordReich));
+            List<RuestungBauwerke> result = [];
+            foreach (string alteZugdaten in zugDatenListe) {
+
+                string rüstungDatenbank = $"Rüstung_{databaseFileName}";
+                string aktuellerPfad = Path.Combine(zugdatenPath, alteZugdaten);
+                string aktuelleDatenbank = Path.Combine(aktuellerPfad, rüstungDatenbank);
+                // es gibt hier keine Rüstung Datenbank
+                if (File.Exists(aktuelleDatenbank) == false) {
+                    // gibt es ein Zip für Rüstung?
+                    string? firstMatchingFile = Directory.EnumerateFiles(aktuellerPfad, "Ruestung_*.zip").FirstOrDefault();
+                    if (firstMatchingFile == null) {
+                        // nein, dann wurde hier nicht gerüstet
+                        continue;
+                    }
+                    // es gibt ein Zip - also auspacken
+                    using (ZipFile zip = ZipFile.Read(firstMatchingFile)) {
+                        // suche nach dem File
+                        ZipEntry? entry = zip.Entries.FirstOrDefault(e => e.FileName.EndsWith(databaseFileName));
+                        if (entry != null) {
+                            entry.Password = Encoding.UTF8.GetString(Convert.FromBase64String($"MTIzc2llYmVu{PasswortProvider.End}lcmdlIQ==")); // steht unverschlüsselt im alten Source-Code und der exe 
+                            entry.Extract(aktuellerPfad, ExtractExistingFileAction.OverwriteSilently);
+                            string extracted = Path.Combine(aktuellerPfad, entry.FileName);
+                            if (File.Exists(extracted) == false) {
+                                SpielWPF.LogError($"Fehler beim Auspacken von {aktuelleDatenbank}", entry.Info);
+                            }
+                            File.Move(extracted, aktuelleDatenbank, true);
+                            Directory.Delete(Path.Combine(aktuellerPfad, "PZE.NET"), true);
+                            if (File.Exists(aktuelleDatenbank) == false) {
+                                SpielWPF.LogError($"Fehler beim Umbennen von {aktuelleDatenbank}", entry.Info);
+                                continue;
+                            }
+                        }
+                    }
+                }
+                using (AccessDatabase connector = new(aktuelleDatenbank, holder.DecryptedPassword)) {
+                    if (connector?.Open() == false)
+                        return result;
+                    try {
+                        BlockingCollection<RuestungBauwerke>? collection = [];
+                        zugDaten.Load<RuestungBauwerke>(connector, ref collection, Enum.GetNames(typeof(RuestungBauwerke.Felder)));
+                        if (collection != null && collection.Count > 0) {
+                            // var einnahmen = collection.Where(k => k.Art.StartsWith("Bruecke"));
+                            foreach (var item in collection) {
+                                item.ZugMonat = Convert.ToInt32(alteZugdaten);
+                            }
+                            result.AddRange(collection);
+                        }
+                    }
+                    catch (Exception ex) {
                         SpielWPF.LogError("Fehler beim Öffnen der Zugdaten Datenbank: ", ex.Message);
                     }
                     connector?.Close();

@@ -76,6 +76,7 @@
                 <MenuItem Header="Schatzkammer">
                     <MenuItem Header="Bericht des Kämmerers" IsCheckable="False"  Click="MenuItem_Click" Tag="ErwarteteEinkommen" />
                     <MenuItem Header="Bericht der Historiker" IsCheckable="False"  Click="MenuItem_Click" Tag="Entwicklung" />
+                    <MenuItem Header="Bericht der Handwerker" IsCheckable="False"  Click="MenuItem_Click" Tag="Baukosten" />
                     <Separator/>
                     <MenuItem Header="Bisherige Schenkungen" IsCheckable="False"  Click="MenuItem_Click" Tag="Schenkungen" />
                     <MenuItem Header="Geld verschenken" IsCheckable="False"  Click="MenuItem_Click" Tag="Schenken" />

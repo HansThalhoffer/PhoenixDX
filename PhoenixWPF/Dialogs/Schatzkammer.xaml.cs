@@ -1,7 +1,9 @@
 ﻿using PhoenixModel.dbPZE;
 using PhoenixModel.Helper;
 using PhoenixModel.ViewModel;
+using PhoenixWPF.Database;
 using PhoenixWPF.Pages;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
@@ -20,6 +22,21 @@ namespace PhoenixWPF.Dialogs
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
             InitializeComponent();
             Schenkungen.Navigated += Schenkungen_Navigated;
+            Baukosten.Navigated += Baukosten_Navigated;
+                
+        }
+
+        private void Baukosten_Navigated(object sender, NavigationEventArgs e) {
+            if (Baukosten.Content is EigenschaftlerListGridPage page) {
+                var collection = Zugdaten.LoadBaukostenHistory();
+                if (page.EigenschaftlerList != null) {
+                    page.EigenschaftlerList.Clear();
+                    page.EigenschaftlerList = null;
+                }                
+                List<IEigenschaftler> list = [];
+                list.AddRange(collection);
+                page.EigenschaftlerList = list;
+            }
         }
 
         public void Show(string page) {

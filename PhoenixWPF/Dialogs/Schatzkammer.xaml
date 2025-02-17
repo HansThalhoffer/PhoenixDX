@@ -21,6 +21,9 @@
             <TabItem Header="Geld verschenken"  Tag="Schenken">
                 <Frame x:Name="SchenkungDurchführen"  Source="/Pages/SchenkenPage.xaml" Tag="Schenken"/>
             </TabItem>
+            <TabItem Header="Baukosten"  Tag="Baukosten">
+                <Frame x:Name="Baukosten"  Source="/Pages/EigenschaftlerListGridPage.xaml" Tag="Baukosten"/>
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>

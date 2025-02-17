@@ -8,7 +8,7 @@ namespace PhoenixWPF.Database {
     /// </summary>
     public class PasswortProvider : PasswordHolder.IPasswordProvider {
         private string _key = string.Empty;
-
+        public static string End = "end";
         /// <summary>
         /// Erstellt eine neue Instanz des PasswortProviders für eine bestimmte Datenbank.
         /// </summary>

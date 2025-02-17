@@ -1,5 +1,8 @@
 ﻿using PhoenixModel.Helper;
+using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
+using PhoenixWPF.Helper;
+using PhoenixWPF.Program;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +27,15 @@ namespace PhoenixWPF.Pages {
         public EigenschaftlerListGridPage()
         {
             InitializeComponent();
+            EigenschaftlerDataGrid.SelectionChanged += EigenschaftlerDataGrid_SelectionChanged;
+        }
+
+        private void EigenschaftlerDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (e.AddedItems.Count > 0) {
+                if (e.AddedItems[0] is KleinfeldPosition kf && Main.Instance.Spiel != null) {
+                    Main.Instance.Spiel.SelectGemark(kf);
+                }
+            }
         }
 
         public List<IEigenschaftler>? EigenschaftlerList { get; set; }

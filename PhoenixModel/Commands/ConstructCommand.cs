@@ -70,8 +70,8 @@ namespace PhoenixModel.Commands {
         private RuestungBauwerke? CreateRuestungBauwerke() {
             if (Kosten != null && Location != null) {
                 return new RuestungBauwerke() {
-                    GF = Location.gf,
-                    KF = Location.kf,
+                    gf = Location.gf,
+                    kf = Location.kf,
                     Art = $"{What.ToString()}_{Direction.ToString()}",
                     BP_rep = 0,
                     BP_neu = Kosten.BauPunkte,

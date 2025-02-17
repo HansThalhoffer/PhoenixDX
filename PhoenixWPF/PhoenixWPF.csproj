@@ -29,6 +29,7 @@
   <ItemGroup>
     <PackageReference Include="DynamicAero2" Version="1.2.1" />
     <PackageReference Include="LiveCharts.Wpf.Core" Version="0.9.8" />
+    <PackageReference Include="ProDotNetZip" Version="1.20.0" />
     <PackageReference Include="System.Data.OleDb" Version="9.0.0" />
     <PackageReference Include="System.Management" Version="9.0.0" />
   </ItemGroup>

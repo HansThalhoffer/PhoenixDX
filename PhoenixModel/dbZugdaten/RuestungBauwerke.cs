@@ -3,10 +3,11 @@ using System.ComponentModel.Design;
 using System.Data.Common;
 using PhoenixModel.Database;
 using PhoenixModel.Helper;
+using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 
 namespace PhoenixModel.dbZugdaten {
-    public class RuestungBauwerke :  IDatabaseTable, IEigenschaftler, IEquatable<RuestungBauwerke>
+    public class RuestungBauwerke :  KleinfeldPosition, IDatabaseTable, IEigenschaftler, IEquatable<RuestungBauwerke>
     {
         public static string DatabaseName { get; set;  } = string.Empty;
         public string Database { get { return DatabaseName; } set { DatabaseName = value; } }
@@ -14,14 +15,13 @@ namespace PhoenixModel.dbZugdaten {
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner => ID.ToString();
         // IEigenschaftler
-        private static readonly string[] PropertiestoIgnore = ["DatabaseName"];
+        private static readonly string[] PropertiestoIgnore = ["DatabaseName","Database","Bezeichner","ID","Key"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
-        public int GF { get; set; }
-        public int KF { get; set; }
+        public int ZugMonat { get; set; }
+        public string Art { get; set; } = string.Empty ;
         public int BP_rep { get; set; }
         public int BP_neu { get; set; }
-        public string? Art { get; set; }
         public int Kosten { get; set; }
         public int ID { get; set; }
 
@@ -32,21 +32,22 @@ namespace PhoenixModel.dbZugdaten {
 
         public void Load(DbDataReader reader)
         {
-            this.GF = DatabaseConverter.ToInt32(reader[(int)Felder.GF]);
-            this.KF = DatabaseConverter.ToInt32(reader[(int)Felder.KF]);
+            this.gf = DatabaseConverter.ToInt32(reader[(int)Felder.GF]);
+            this.kf = DatabaseConverter.ToInt32(reader[(int)Felder.KF]);
             this.BP_rep = DatabaseConverter.ToInt32(reader[(int)Felder.BP_rep]);
             this.BP_neu = DatabaseConverter.ToInt32(reader[(int)Felder.BP_neu]);
             this.Art = DatabaseConverter.ToString(reader[(int)Felder.Art]);
             this.Kosten = DatabaseConverter.ToInt32(reader[(int)Felder.Kosten]);
             this.ID = DatabaseConverter.ToInt32(reader[(int)Felder.id]);
+            this.ZugMonat = ProgramView.SelectedMonth;
         }
 
         public void Save(DbCommand command)
         {
             command.CommandText = $@"
         UPDATE {TableName} SET
-            GF = {this.GF},
-            KF = {this.KF},
+            GF = {this.gf},
+            KF = {this.kf},
             BP_rep = {this.BP_rep},
             BP_neu = {this.BP_neu},
             Art = '{DatabaseConverter.EscapeString(this.Art)}',
@@ -63,8 +64,8 @@ namespace PhoenixModel.dbZugdaten {
             command.CommandText = $@"
             DELETE FROM {TableName}
             WHERE 
-                GF = {this.GF} AND
-                KF = {this.KF} AND
+                GF = {this.gf} AND
+                KF = {this.kf} AND
                 BP_rep = {this.BP_rep} AND
                 BP_neu = {this.BP_neu} AND
                 Art = '{DatabaseConverter.EscapeString(this.Art)}' AND
@@ -83,8 +84,8 @@ namespace PhoenixModel.dbZugdaten {
         INSERT INTO {TableName} (
             GF, KF, BP_rep, BP_neu, Art, Kosten
         ) VALUES (
-            {this.GF},
-            {this.KF},
+            {this.gf},
+            {this.kf},
             {this.BP_rep},
             {this.BP_neu},
             '{DatabaseConverter.EscapeString(this.Art)}',
@@ -102,8 +103,8 @@ namespace PhoenixModel.dbZugdaten {
         public bool Equals(RuestungBauwerke? other) {
             if (other == null) return false;
 
-            return GF == other.GF &&
-                   KF == other.KF &&
+            return gf == other.gf &&
+                   kf == other.kf &&
                    BP_rep == other.BP_rep &&
                    BP_neu == other.BP_neu &&
                    Kosten == other.Kosten &&
@@ -115,7 +116,7 @@ namespace PhoenixModel.dbZugdaten {
         }
 
         public override int GetHashCode() {
-            return HashCode.Combine(GF, KF, BP_rep, BP_neu, Art, Kosten);
+            return HashCode.Combine(gf, kf, BP_rep, BP_neu, Art, Kosten);
         }
     }
 }

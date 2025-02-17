@@ -86,12 +86,16 @@ namespace PhoenixWPF
                     case "Entwicklung":
                         new SchatzkammerDialog().Show("Entwicklung");
                         break;
+                    case "Baukosten":
+                        new SchatzkammerDialog().Show("Baukosten");
+                        break;
                     case "Schenkungen":
                         new SchatzkammerDialog().Show("Schenkungen");
                         break;
                     case "Schenken":
                         new SchatzkammerDialog().Show("Schenken");
                         break;
+                        
 
                     // Extras
                     case "Zugwechsel":
