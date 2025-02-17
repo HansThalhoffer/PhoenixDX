@@ -1,4 +1,7 @@
-﻿using System;
+﻿using PhoenixModel.Helper;
+using PhoenixWPF.Database;
+using PhoenixWPF.Pages;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +13,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace PhoenixWPF.Dialogs
@@ -25,8 +29,20 @@ namespace PhoenixWPF.Dialogs
                 Owner = Application.Current.MainWindow; // Set the owner to the current window
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
             InitializeComponent();
+            Mobilisierung.Navigated += Mobilisierung_Navigated;
         }
-
+        private void Mobilisierung_Navigated(object sender, NavigationEventArgs e) {
+            if (Mobilisierung.Content is EigenschaftlerListGridPage page) {
+                var collection = Zugdaten.LoadMobilisierungHistory();
+                if (page.EigenschaftlerList != null) {
+                    page.EigenschaftlerList.Clear();
+                    page.EigenschaftlerList = null;
+                }
+                List<IEigenschaftler> list = [];
+                list.AddRange(collection);
+                page.EigenschaftlerList = list;
+            }
+        }
         public void Show (string page) {
             this.Loaded += (s, e) => {
                 foreach (TabItem tab in Tabulator.Items) {

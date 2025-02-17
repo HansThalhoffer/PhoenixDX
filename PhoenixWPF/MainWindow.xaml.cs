@@ -70,7 +70,9 @@ namespace PhoenixWPF
                     case "TruppenEntwicklung":
                         new TruppenEntwicklungDialog().Show("Entwicklung");
                         break;
-
+                    case "Mobilisierung":
+                        new TruppenEntwicklungDialog().Show("Mobilisierung");
+                        break;
                     // Hofhaltung
                     case "LehenVerwalten":
                         new LehenDialog().Show("LehenVerwalten");

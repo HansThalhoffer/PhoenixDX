@@ -13,52 +13,45 @@ using System.IO;
 using Ionic.Zip;
 using static PhoenixWPF.Database.PasswortProvider;
 using System.Text;
+using PhoenixModel.Program;
+using PhoenixModel.Helper;
 
 namespace PhoenixWPF.Database {
 
-    public class Zugdaten : DatabaseLoader, ILoadableDatabase
-    {
+    public class Zugdaten : DatabaseLoader, ILoadableDatabase {
         EncryptedString _encryptedpassword;
         string _databaseFileName;
         public EncryptedString Encryptedpassword { get => _encryptedpassword; set => _encryptedpassword = value; }
         public string DatabaseFileName { get => _databaseFileName; set => _databaseFileName = value; }
 
 
-        public Zugdaten(string databaseFileName, EncryptedString encryptedpassword)
-        {
+        public Zugdaten(string databaseFileName, EncryptedString encryptedpassword) {
             _databaseFileName = databaseFileName;
             _encryptedpassword = encryptedpassword;
         }
 
-        private void ViewModel_OnViewEvent(object? sender, ViewEventArgs e)
-        {
+        private void ViewModel_OnViewEvent(object? sender, ViewEventArgs e) {
             if (e.EventType == ViewEventArgs.ViewEventType.EverythingLoaded && SharedData.Diplomatie != null && SharedData.Diplomatiechange != null
-                && ProgramView.SelectedNation != null)
-            {
+                && ProgramView.SelectedNation != null) {
                 Task.Run(() => RepairDiplomatieChange());
                 ProgramView.OnViewEvent -= ViewModel_OnViewEvent;
             }
         }
 
-        private void RepairDiplomatieChange()
-        {
-            if (SharedData.Diplomatie != null && SharedData.Diplomatiechange != null)
-            {
+        private void RepairDiplomatieChange() {
+            if (SharedData.Diplomatie != null && SharedData.Diplomatiechange != null) {
                 if (SharedData.Diplomatiechange.IsAddingCompleted == false)
                     SpielWPF.LogError("Daten noch nicht vollständig geladen", "Die Tabelle Diplomatiechange aus den Zugdaten fehlt");
                 if (SharedData.Diplomatie.IsAddingCompleted == false)
                     SpielWPF.LogError("Daten noch nicht vollständig geladen", "Die Tabelle Reich_crossref aus der Erkenfarakarte fehlt");
                 var keys = SharedData.Diplomatie.Keys.OrderBy(str => str).ToList();
 
-                foreach (var diplo in SharedData.Diplomatiechange)
-                {
-                    if (diplo.ReferenzNation != ProgramView.SelectedNation )
-                    {
+                foreach (var diplo in SharedData.Diplomatiechange) {
+                    if (diplo.ReferenzNation != ProgramView.SelectedNation) {
                         string key = diplo.Bezeichner;
                         if (keys.Contains(key) == false)
                             SpielWPF.LogWarning($"Die Kombination {diplo.Bezeichner} wurde nicht in der Reich_crossref gefunden", "Die Datenbanken der Erkenfarakarte und der Zugdaten sind auseinander gelaufen. Bitte die Spielleitung informieren");
-                        if (SharedData.Diplomatie.ContainsKey(key))
-                        {
+                        if (SharedData.Diplomatie.ContainsKey(key)) {
                             diplo.CopyValues(SharedData.Diplomatie[key]);
                         }
                         else
@@ -66,15 +59,13 @@ namespace PhoenixWPF.Database {
                     }
                 }
             }
-            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-            {
+            Application.Current.Dispatcher.BeginInvoke(new Action(() => {
                 ProgramView.Update(ViewEventArgs.ViewEventType.UpdateDiplomatie);
             }));
 
         }
 
-        public void Save(IDatabaseTable table)
-        {
+        public void Save(IDatabaseTable table) {
             Save(table, _encryptedpassword, _databaseFileName);
         }
 
@@ -86,42 +77,34 @@ namespace PhoenixWPF.Database {
             Delete(table, _encryptedpassword, _databaseFileName);
         }
 
-        public void Load()
-        {
+        public void Load() {
             PasswordHolder holder = new(_encryptedpassword);
-            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptedPassword))
-            {
+            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptedPassword)) {
                 if (connector?.Open() == false)
                     return;
-                try
-                {
-              
+                try {
+
                 }
-                catch (Exception ex)
-                {
-                    SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Öffnen der Datenbank {_databaseFileName}" , ex.Message));
+                catch (Exception ex) {
+                    SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Öffnen der Datenbank {_databaseFileName}", ex.Message));
                 }
                 connector?.Close();
             }
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
         }
 
         public void LoadBackgroundSynchronous() {
             LoadInBackground();
         }
 
-        protected override void LoadInBackground()
-        {
+        protected override void LoadInBackground() {
             PasswordHolder holder = new(_encryptedpassword);
-            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptedPassword))
-            {
+            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptedPassword)) {
                 if (connector?.Open() == false)
                     return;
-                try
-                {
+                try {
                     Load<ZugdatenSettings>(connector, ref SharedData.ZugdatenSettings, Enum.GetNames(typeof(ZugdatenSettings.Felder)));
                     Load<BilanzEinnahmen>(connector, ref SharedData.BilanzEinnahmen_Zugdaten, Enum.GetNames(typeof(BilanzEinnahmen.Felder)));
                     Load<Character>(connector, ref SharedData.Character, Enum.GetNames(typeof(Character.Felder)));
@@ -141,16 +124,14 @@ namespace PhoenixWPF.Database {
                     Load<Zauberer>(connector, ref SharedData.Zauberer, Enum.GetNames(typeof(Zauberer.Felder)));
                     ProgramView.OnViewEvent += ViewModel_OnViewEvent;
                 }
-                catch (Exception ex)
-                {
-                    SpielWPF.LogError("Fehler beim Öffnen der Zugdaten Datenbank: " , ex.Message);
+                catch (Exception ex) {
+                    SpielWPF.LogError("Fehler beim Öffnen der Zugdaten Datenbank: ", ex.Message);
                 }
                 connector?.Close();
             }
         }
 
-        public static List<BilanzEinnahmen> LoadBilanzEinnahmenHistory()
-        {
+        public static List<BilanzEinnahmen> LoadBilanzEinnahmenHistory() {
             if (Main.Instance.Settings == null || SharedData.Nationen == null || Main.Instance.Settings.UserSettings.SelectedReich < 0)
                 return [];
 
@@ -163,20 +144,16 @@ namespace PhoenixWPF.Database {
             PasswordHolder holder = new(new EncryptedString(Main.Instance.Settings.UserSettings.PasswordReich));
             List<BilanzEinnahmen> result = [];
             int tl = 100;
-            foreach(string alteZugdaten in zugDatenListe)
-            { 
-                string aktuellesDatenbank= System.IO.Path.Combine(zugdatenPath, alteZugdaten);
+            foreach (string alteZugdaten in zugDatenListe) {
+                string aktuellesDatenbank = System.IO.Path.Combine(zugdatenPath, alteZugdaten);
                 aktuellesDatenbank = System.IO.Path.Combine(aktuellesDatenbank, databaseFileName);
-                using (AccessDatabase connector = new(aktuellesDatenbank, holder.DecryptedPassword))
-                {
+                using (AccessDatabase connector = new(aktuellesDatenbank, holder.DecryptedPassword)) {
                     if (connector?.Open() == false)
                         return result;
-                    try
-                    {
+                    try {
                         BlockingCollection<BilanzEinnahmen>? bilanzEinnahmen = [];
                         zugDaten.Load<BilanzEinnahmen>(connector, ref bilanzEinnahmen, Enum.GetNames(typeof(BilanzEinnahmen.Felder)));
-                        if (bilanzEinnahmen != null && bilanzEinnahmen.Count > 0)
-                        {
+                        if (bilanzEinnahmen != null && bilanzEinnahmen.Count > 0) {
                             var einnahmen = bilanzEinnahmen.ElementAt(0);
                             einnahmen.monat = int.Parse(alteZugdaten);
                             if (tl != einnahmen.Tiefland)
@@ -184,8 +161,7 @@ namespace PhoenixWPF.Database {
                             result.Add(einnahmen);
                         }
                     }
-                    catch (Exception ex)
-                    {
+                    catch (Exception ex) {
                         SpielWPF.LogError("Fehler beim Öffnen der Zugdaten Datenbank: ", ex.Message);
                     }
                     connector?.Close();
@@ -194,9 +170,10 @@ namespace PhoenixWPF.Database {
             return result;
         }
 
-        public static List<RuestungBauwerke> LoadBaukostenHistory() {
+
+        private static void PrepareHistory() {
             if (Main.Instance.Settings == null || SharedData.Nationen == null || Main.Instance.Settings.UserSettings.SelectedReich < 0)
-                return [];
+                return;
 
             string databaseLocation = Main.Instance.Settings.UserSettings.DatabaseLocationZugdaten;
             string databaseFileName = System.IO.Path.GetFileName(databaseLocation);
@@ -239,6 +216,30 @@ namespace PhoenixWPF.Database {
                         }
                     }
                 }
+            }
+        }
+
+        public static List<IEigenschaftler> LoadBaukostenHistory() {
+            if (Main.Instance.Settings == null || SharedData.Nationen == null || Main.Instance.Settings.UserSettings.SelectedReich < 0)
+                return [];
+            PrepareHistory();
+            string databaseLocation = Main.Instance.Settings.UserSettings.DatabaseLocationZugdaten;
+            string databaseFileName = System.IO.Path.GetFileName(databaseLocation);
+            string zugdatenPath = Helper.StorageSystem.ExtractBasePath(databaseLocation, "Zugdaten");
+            var zugDatenListe = Helper.StorageSystem.GetNumericDirectories(zugdatenPath);
+
+            var zugDaten = new Zugdaten(databaseLocation, (Main.Instance.Settings.UserSettings.PasswordReich));
+            PasswordHolder holder = new(new EncryptedString(Main.Instance.Settings.UserSettings.PasswordReich));
+            List<IEigenschaftler> result = [];
+            foreach (string alteZugdaten in zugDatenListe) {
+
+                string rüstungDatenbank = $"Rüstung_{databaseFileName}";
+                string aktuellerPfad = Path.Combine(zugdatenPath, alteZugdaten);
+                string aktuelleDatenbank = Path.Combine(aktuellerPfad, rüstungDatenbank);
+                // es gibt hier keine Rüstung Datenbank
+                if (File.Exists(aktuelleDatenbank) == false) {
+                    continue;
+                }
                 using (AccessDatabase connector = new(aktuelleDatenbank, holder.DecryptedPassword)) {
                     if (connector?.Open() == false)
                         return result;
@@ -258,12 +259,75 @@ namespace PhoenixWPF.Database {
                     }
                     connector?.Close();
                 }
+                using (AccessDatabase connector = new(aktuelleDatenbank, holder.DecryptedPassword)) {
+                    if (connector?.Open() == false)
+                        return result;
+                    try {
+                        BlockingCollection<RuestungRuestorte>? collection = [];
+                        zugDaten.Load<RuestungRuestorte>(connector, ref collection, Enum.GetNames(typeof(RuestungRuestorte.Felder)));
+                        if (collection != null && collection.Count > 0) {
+                            // var einnahmen = collection.Where(k => k.Art.StartsWith("Bruecke"));
+                            foreach (var item in collection) {
+                                item.ZugMonat = Convert.ToInt32(alteZugdaten);
+                            }
+                            result.AddRange(collection);
+                        }
+                    }
+                    catch (Exception ex) {
+                        SpielWPF.LogError("Fehler beim Öffnen der Zugdaten Datenbank: ", ex.Message);
+                    }
+                    connector?.Close();
+                }
             }
             return result;
         }
 
-        public class TruppenStatistik
-        {
+
+        public static List<IEigenschaftler> LoadMobilisierungHistory() {
+            if (Main.Instance.Settings == null || SharedData.Nationen == null || Main.Instance.Settings.UserSettings.SelectedReich < 0)
+                return [];
+            PrepareHistory();
+            string databaseLocation = Main.Instance.Settings.UserSettings.DatabaseLocationZugdaten;
+            string databaseFileName = System.IO.Path.GetFileName(databaseLocation);
+            string zugdatenPath = Helper.StorageSystem.ExtractBasePath(databaseLocation, "Zugdaten");
+            var zugDatenListe = Helper.StorageSystem.GetNumericDirectories(zugdatenPath);
+
+            var zugDaten = new Zugdaten(databaseLocation, (Main.Instance.Settings.UserSettings.PasswordReich));
+            PasswordHolder holder = new(new EncryptedString(Main.Instance.Settings.UserSettings.PasswordReich));
+            List<IEigenschaftler> result = [];
+            foreach (string alteZugdaten in zugDatenListe) {
+
+                string rüstungDatenbank = $"Rüstung_{databaseFileName}";
+                string aktuellerPfad = Path.Combine(zugdatenPath, alteZugdaten);
+                string aktuelleDatenbank = Path.Combine(aktuellerPfad, rüstungDatenbank);
+                // es gibt hier keine Rüstung Datenbank
+                if (File.Exists(aktuelleDatenbank) == false) {
+                    continue;
+                }
+                using (AccessDatabase connector = new(aktuelleDatenbank, holder.DecryptedPassword)) {
+                    if (connector?.Open() == false)
+                        return result;
+                    try {
+                        BlockingCollection<Ruestung>? collection = [];
+                        zugDaten.Load<Ruestung>(connector, ref collection, Enum.GetNames(typeof(Ruestung.Felder)));
+                        if (collection != null && collection.Count > 0) {
+                            // var einnahmen = collection.Where(k => k.Art.StartsWith("Bruecke"));
+                            foreach (var item in collection) {
+                                item.ZugMonat = Convert.ToInt32(alteZugdaten);
+                            }
+                            result.AddRange(collection);
+                        }
+                    }
+                    catch (Exception ex) {
+                        SpielWPF.LogError("Fehler beim Öffnen der Zugdaten Datenbank: ", ex.Message);
+                    }
+                    connector?.Close();
+                }
+            }
+            return result;
+        }
+
+        public class TruppenStatistik {
             public int Krieger = 0;
             public int KriegerHF = 0;
             public int Reiter = 0;
@@ -280,8 +344,7 @@ namespace PhoenixWPF.Database {
         }
 
 
-        public static List<TruppenStatistik> LoadTruppenStatistik()
-        {
+        public static List<TruppenStatistik> LoadTruppenStatistik() {
             if (Main.Instance.Settings == null || SharedData.Nationen == null || Main.Instance.Settings.UserSettings.SelectedReich < 0)
                 return [];
 
@@ -293,18 +356,14 @@ namespace PhoenixWPF.Database {
             var zugDaten = new Zugdaten(databaseLocation, (Main.Instance.Settings.UserSettings.PasswordReich));
             PasswordHolder holder = new(new EncryptedString(Main.Instance.Settings.UserSettings.PasswordReich));
             List<TruppenStatistik> result = [];
-            foreach (string alteZugdaten in zugDatenListe)
-            {
+            foreach (string alteZugdaten in zugDatenListe) {
                 string aktuelleDatenbank = System.IO.Path.Combine(zugdatenPath, alteZugdaten);
                 aktuelleDatenbank = System.IO.Path.Combine(aktuelleDatenbank, databaseFileName);
-                try
-                {
-                    using (AccessDatabase connector = new(aktuelleDatenbank, holder.DecryptedPassword))
-                    {
+                try {
+                    using (AccessDatabase connector = new(aktuelleDatenbank, holder.DecryptedPassword)) {
                         if (connector?.Open() == false)
                             return result;
-                        try
-                        {
+                        try {
                             int krieger = zugDaten.GetSum(connector, "Krieger", "staerke");
                             int kriegerHF = zugDaten.GetSum(connector, "Krieger", "hf");
                             int reiter = zugDaten.GetSum(connector, "Reiter", "staerke");
@@ -317,8 +376,7 @@ namespace PhoenixWPF.Database {
                             int SKP = zugDaten.GetSum(connector, "Krieger", "SKP");
                             SKP += zugDaten.GetSum(connector, "Reiter", "SKP");
 
-                            result.Add(new TruppenStatistik
-                            {
+                            result.Add(new TruppenStatistik {
                                 Krieger = krieger,
                                 KriegerHF = kriegerHF,
                                 Reiter = reiter,
@@ -331,15 +389,13 @@ namespace PhoenixWPF.Database {
                                 SKP = SKP,
                             });
                         }
-                        catch (Exception ex)
-                        {
-                            SpielWPF.LogError("Fehler beim Lesen der Zugdaten Datenbank: " , ex.Message);
+                        catch (Exception ex) {
+                            SpielWPF.LogError("Fehler beim Lesen der Zugdaten Datenbank: ", ex.Message);
                         }
                         connector?.Close();
                     }
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex) {
                     SpielWPF.LogError("Fehler beim Öffnen der Zugdaten Datenbank: ", ex.Message);
                 }
             }

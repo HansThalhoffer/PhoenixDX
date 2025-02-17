@@ -15,6 +15,9 @@
             <TabItem Header="Historische Daten"  Tag="Entwicklung">
                 <Frame x:Name="HistorischeBilanzen"  Source="/Pages/ChartPage.xaml" Tag="Entwicklung"/>
             </TabItem>
+            <TabItem Header="Mobilisierung"  Tag="Mobilisierung">
+                <Frame x:Name="Mobilisierung"  Source="/Pages/EigenschaftlerListGridPage.xaml" Tag="Mobilisierung"/>
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>

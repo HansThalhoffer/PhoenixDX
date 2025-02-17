@@ -2,6 +2,7 @@ using System;
 using System.Data.Common;
 using PhoenixModel.Database;
 using PhoenixModel.Helper;
+using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 
 namespace PhoenixModel.dbZugdaten {
@@ -11,10 +12,10 @@ namespace PhoenixModel.dbZugdaten {
         public const string TableName = "ruestung";
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner { get => CreateBezeichner(); }
-        private static readonly string[] PropertiestoIgnore = ["DatabaseName"];
+        private static readonly string[] PropertiestoIgnore = ["DatabaseName", "Database", "Bezeichner", "ID", "Key"];
         public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
 
-
+        public int ZugMonat { get; set; }
         public int Nummer { get; set; }
         public int HF { get; set; }
         public int Z { get; set; }
@@ -69,12 +70,13 @@ namespace PhoenixModel.dbZugdaten {
             this.Beschriftung = DatabaseConverter.ToString(reader[(int)Felder.Beschriftung]);
             this.id = DatabaseConverter.ToInt32(reader[(int)Felder.id]);
             this.besRuestung = DatabaseConverter.ToInt32(reader[(int)Felder.besRuestung]);
+            this.ZugMonat = ProgramView.SelectedMonth;
         }
 
         public void Save(DbCommand command)
         {
             command.CommandText = $@" UPDATE {DatabaseConverter.EscapeString(TableName)} SET
-            GF = {this.gf}, KF = {this.kf},
+            gf = {this.gf}, kf = {this.kf},
             HF = {this.HF}, Z = {this.Z},
             K = {this.K}, R = {this.R},
             P = {this.P}, LKS = {this.LKS},
@@ -99,7 +101,7 @@ namespace PhoenixModel.dbZugdaten {
         public void Insert(DbCommand command)
         {
             command.CommandText = $@"INSERT INTO {DatabaseConverter.EscapeString(TableName)} 
-            (GF,KF,Nummer,HF,Z,K,R,P,LKS,SKS,LKP,SKP,GP_akt,GP_ges,ZB,S,Neuruestung,KF_Flotte,GF_Flotte,Garde,Name_x,Beschriftung, besRuestung) 
+            (gf,kf,Nummer,HF,Z,K,R,P,LKS,SKS,LKP,SKP,GP_akt,GP_ges,ZB,S,Neuruestung,KF_Flotte,GF_Flotte,Garde,Name_x,Beschriftung, besRuestung) 
             VALUES ({this.gf},{this.kf},{this.Nummer},{this.HF},{this.Z},{this.K},{this.R},{this.P},{this.LKS},{this.SKS},{this.LKP},{this.SKP},{this.GP_akt},{this.GP_ges},{this.ZB},{this.S},
                     {this.Neuruestung},{this.KF_Flotte},{this.GF_Flotte},{this.Garde},'{DatabaseConverter.EscapeString(this.Name_x)}','{DatabaseConverter.EscapeString(this.Beschriftung)}',
                     {this.besRuestung})";
@@ -111,8 +113,8 @@ namespace PhoenixModel.dbZugdaten {
             command.CommandText = $@"
         DELETE FROM {DatabaseConverter.EscapeString(TableName)}
         WHERE 
-            GF = {this.gf} AND
-            KF = {this.kf} AND
+            gf = {this.gf} AND
+            kf = {this.kf} AND
             HF = {this.HF} AND
             Z = {this.Z} AND
             K = {this.K} AND

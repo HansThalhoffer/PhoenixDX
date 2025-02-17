@@ -61,7 +61,7 @@ namespace PhoenixModel.Commands {
 
         /// <summary>
         /// In der Datenbank stehen bei Neuanlagen die folgenden Werte, dabei ist id ein autoinc wert
-        /// GF	KF	BP_rep  BP_neu  Art	    Kosten	id
+        /// gf	kf	BP_rep  BP_neu  Art	    Kosten	id
         /// 305	4	0	    100	    Wall_NW	5000	40
         /// 305	4	0	    100	    Wall_O	5000	41
         /// 305	4	0	    60	    Kai_NO	3000	42

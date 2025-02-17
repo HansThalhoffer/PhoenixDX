@@ -46,8 +46,8 @@ namespace PhoenixModel.dbZugdaten {
         {
             command.CommandText = $@"
         UPDATE {TableName} SET
-            GF = {this.gf},
-            KF = {this.kf},
+            gf = {this.gf},
+            kf = {this.kf},
             BP_rep = {this.BP_rep},
             BP_neu = {this.BP_neu},
             Art = '{DatabaseConverter.EscapeString(this.Art)}',
@@ -64,8 +64,8 @@ namespace PhoenixModel.dbZugdaten {
             command.CommandText = $@"
             DELETE FROM {TableName}
             WHERE 
-                GF = {this.gf} AND
-                KF = {this.kf} AND
+                gf = {this.gf} AND
+                kf = {this.kf} AND
                 BP_rep = {this.BP_rep} AND
                 BP_neu = {this.BP_neu} AND
                 Art = '{DatabaseConverter.EscapeString(this.Art)}' AND
@@ -82,7 +82,7 @@ namespace PhoenixModel.dbZugdaten {
         {
             command.CommandText = $@"
         INSERT INTO {TableName} (
-            GF, KF, BP_rep, BP_neu, Art, Kosten
+            gf, kf, BP_rep, BP_neu, Art, Kosten
         ) VALUES (
             {this.gf},
             {this.kf},
