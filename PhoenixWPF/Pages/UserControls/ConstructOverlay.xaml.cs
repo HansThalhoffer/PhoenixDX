@@ -62,8 +62,8 @@ namespace PhoenixWPF.Pages.UserControls {
             var (constructionType, direction) = GetConstructionInfoFromButtonName(button.Name);
 
             // Perform the construction logic based on the construction type and direction
-            if (constructionType != null && direction != null) {
-                Construct(constructionType.Value, direction.Value);
+            if (constructionType != null) {
+                Construct(constructionType.Value, direction);
             }
         }
 
@@ -73,7 +73,7 @@ namespace PhoenixWPF.Pages.UserControls {
         /// </summary>
         /// <param name="constructionType"></param>
         /// <param name="direction"></param>
-        private void Construct(ConstructionElementType constructionType, Direction direction) {
+        private void Construct(ConstructionElementType constructionType, Direction? direction) {
             var selected = Main.Instance.SelectionHistory.Current;
             // wenn ein Kleinfeld ausgewählt ist und es zum Reich des Users gehört, dann kann gebaut werden
             if (selected != null && selected is KleinFeld kf && ProgramView.BelongsToUser(kf)) {
@@ -115,7 +115,7 @@ namespace PhoenixWPF.Pages.UserControls {
         /// <param name="buttonName"></param>
         /// <returns></returns>
         private Direction? GetDirectionFromButtonName(string buttonName) {
-            var directionPart = buttonName.Replace("button_wall_", "").Replace("button_bridge_", "").Replace("button_road_", "");
+            var directionPart = buttonName.Replace("button_wall_", "").Replace("button_bridge_", "").Replace("button_road_", "").Replace("button_kai_", "");
             if (Enum.TryParse(directionPart, out Direction direction)) {
                 return direction;
             }

@@ -101,6 +101,12 @@ namespace Tests {
                     Direction = Direction.W,
                     Kosten = new PhoenixModel.dbCrossRef.Kosten{ GS = 3000, BauPunkte = 60, RP = 0, Unittyp = "Strasse" },
                 },
+                   new ConstructCommand("Errichte Kai im NW von 701/48"){
+                    Location = new(701,48),
+                    What = ConstructionElementType.Kai,
+                    Direction = Direction.NW,
+                    Kosten = new PhoenixModel.dbCrossRef.Kosten{ GS = 3000, BauPunkte = 60, RP = 0, Unittyp = "Strasse" },
+                },
                 new ConstructCommand("Errichte Burg auf 701/48"){
                     Location = new(701,48),
                     What = ConstructionElementType.Burg,

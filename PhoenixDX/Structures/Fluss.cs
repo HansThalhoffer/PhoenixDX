@@ -19,6 +19,7 @@ namespace PhoenixDX.Structures {
         /// </summary>
         /// <returns>Die Richtungstextur des Flusses.</returns>
         protected override Drawing.DirectionTexture GetDirectionTexture() { return Texture; }
+        protected override Drawing.DirectionTexture GetBuildDirectionTexture() { return Texture; }
 
         /// <summary>
         /// Erstellt eine neue Instanz der <c>Fluss</c>-Klasse.

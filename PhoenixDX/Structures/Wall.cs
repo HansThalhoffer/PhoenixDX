@@ -9,12 +9,14 @@ namespace PhoenixDX.Structures {
         /// Die Textur, die für die Wand verwendet wird.
         /// </summary>
         public static Drawing.DirectionTexture Texture = new("wand_");
+        public static Drawing.DirectionTexture TextureBaustelle = new("baustelle_wand_");
 
         /// <summary>
         /// Gibt die Richtungstextur für die Wand zurück.
         /// </summary>
         /// <returns>Die Richtungstextur der Wand.</returns>
         protected override Drawing.DirectionTexture GetDirectionTexture() { return Texture; }
+        protected override Drawing.DirectionTexture GetBuildDirectionTexture() { return TextureBaustelle; }
 
         /// <summary>
         /// Erstellt eine neue Instanz einer Wand mit den angegebenen Richtungen.

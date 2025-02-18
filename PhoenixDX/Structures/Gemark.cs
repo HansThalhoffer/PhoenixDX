@@ -361,6 +361,13 @@ namespace PhoenixDX.Structures {
                             textureValues.Add(fieldValue);
                         }
                     }
+                    textureField = type.GetField("TextureBaustelle", BindingFlags.Public | BindingFlags.Static);
+                    if (textureField != null && textureField.FieldType == typeof(DirectionTexture)) {
+                        var fieldValue = textureField.GetValue(null) as DirectionTexture;
+                        if (fieldValue != null) {
+                            textureValues.Add(fieldValue);
+                        }
+                    }
                 }
 
                 const string folder = "Images/TilesetV/";

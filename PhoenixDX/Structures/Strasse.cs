@@ -9,12 +9,14 @@ namespace PhoenixDX.Structures {
         /// Die Textur, die für die Straße verwendet wird.
         /// </summary>
         public static Drawing.DirectionTexture Texture = new("strasse_");
+        public static Drawing.DirectionTexture TextureBaustelle = new("baustelle_strasse_");
 
         /// <summary>
         /// Gibt die Richtungstextur für die Straße zurück.
         /// </summary>
         /// <returns>Die Richtungstextur der Straße.</returns>
         protected override Drawing.DirectionTexture GetDirectionTexture() { return Texture; }
+        protected override Drawing.DirectionTexture GetBuildDirectionTexture() { return TextureBaustelle; }
 
         /// <summary>
         /// Erstellt eine neue Instanz einer Straße mit den angegebenen Richtungen.

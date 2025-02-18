@@ -9,12 +9,14 @@ namespace PhoenixDX.Structures {
         /// Die Textur für die Kai-Richtungen.
         /// </summary>
         public static Drawing.DirectionTexture Texture = new("kai_");
+        public static Drawing.DirectionTexture TextureBaustelle = new("baustelle_kai_");
 
         /// <summary>
         /// Ruft die Richtungstextur für den Kai ab.
         /// </summary>
         /// <returns>Die Richtungstextur für den Kai.</returns>
         protected override Drawing.DirectionTexture GetDirectionTexture() { return Texture; }
+        protected override Drawing.DirectionTexture GetBuildDirectionTexture() { return TextureBaustelle; }
 
         /// <summary>
         /// Erstellt eine neue Instanz der <see cref="Kai"/>-Klasse mit den angegebenen Richtungen.

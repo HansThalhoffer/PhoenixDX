@@ -6,6 +6,7 @@ using PhoenixModel.Extensions;
 using PhoenixModel.Program;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace PhoenixModel.Commands {
@@ -108,10 +109,25 @@ namespace PhoenixModel.Commands {
             if ( result.HasErrors ) 
                 return result;
             RuestungBauwerke? bauwerk = CreateRuestungBauwerke();
-            if (bauwerk != null && SharedData.RuestungBauwerke != null) {
-                SharedData.RuestungBauwerke.Reopen();
-                SharedData.RuestungBauwerke.Add(bauwerk);
-                SharedData.StoreQueue.Insert(bauwerk);
+            if (bauwerk != null && SharedData.RuestungBauwerke != null && SharedData.Map != null) {
+                try {
+                    SharedData.RuestungBauwerke.ReopenSharedData();
+                    SharedData.RuestungBauwerke.Add(bauwerk);
+                    var kf = SharedData.Map[bauwerk.CreateBezeichner()];
+                    if (What != ConstructionElementType.Burg) {
+                        string fieldName = $"{What}_{Direction}";
+                        var field = kf.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).FirstOrDefault(f => f.Name == fieldName);
+                        if (field == null) {
+                            throw new InvalidOperationException($"Das Feld {fieldName} wurde in der Klasse Kleinfeld nicht gefunden");
+                        }
+                        field.SetValue(kf, -1);                        
+                    }
+                    SharedData.UpdateQueue.Enqueue(SharedData.Map[kf.CreateBezeichner()]);
+                    // Update(bauwerk, EventsAndArgs.ViewEventArgs.ViewEventType.UpdateKleinfeld);
+                }
+                catch (Exception ex) {
+                    ProgramView.LogError($"Fehler bei der Ausführung von {this.CommandString}",ex.Message);
+                }
                 return new CommandResultSuccess("Das ConstructCommand wurde ausgeführt", $"Der Befehl wurde ausgeführt:\r\n {this.CommandString}", this);
             }
 

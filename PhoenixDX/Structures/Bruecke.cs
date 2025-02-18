@@ -9,12 +9,14 @@ namespace PhoenixDX.Structures {
         /// Statische Textur für die Brücke.
         /// </summary>
         public static Drawing.DirectionTexture Texture = new("bruecke_");
+        public static Drawing.DirectionTexture TextureBaustelle = new("baustelle_bruecke_");
 
         /// <summary>
         /// Gibt die Richtungs-Textur für die Brücke zurück.
         /// </summary>
         /// <returns>Die Richtungstextur für die Brücke.</returns>
         protected override Drawing.DirectionTexture GetDirectionTexture() { return Texture; }
+        protected override Drawing.DirectionTexture GetBuildDirectionTexture() { return TextureBaustelle; }
 
         /// <summary>
         /// Erstellt eine neue Instanz der Brücke.

@@ -41,6 +41,7 @@ namespace PhoenixDX.Drawing {
         /// </summary>
         /// <returns>Die Richtungstextur.</returns>
         protected abstract Drawing.DirectionTexture GetDirectionTexture();
+        protected abstract Drawing.DirectionTexture GetBuildDirectionTexture();
 
         /// <summary>
         /// Erstellt eine Liste von Texturen basierend auf den Richtungswerten.
@@ -49,6 +50,10 @@ namespace PhoenixDX.Drawing {
         private List<Texture2D> GetTextures() {
             List<Texture2D> textures = new List<Texture2D>();
             foreach (Direction direction in Enum.GetValues(typeof(Direction))) {
+                if (HasDirection(direction) < 0) {
+                    var t = GetBuildDirectionTexture();
+                    textures.Add(t.GetTexture(direction));
+                }
                 if (HasDirection(direction) > 0) {
                     var t = GetDirectionTexture();
                     textures.Add(t.GetTexture(direction));

@@ -14,7 +14,7 @@ using static PhoenixModel.EventsAndArgs.ViewEventArgs;
 namespace PhoenixModel.EventsAndArgs {
     public class ViewEventArgs {
         public enum ViewEventType {
-            None, Log, UpdateGebäude, UpdateSpielfiguren, UpdateDiplomatie, UpdateEverything, EverythingLoaded
+            None, Log, UpdateGebäude, UpdateKleinfeld, UpdateSpielfiguren, UpdateDiplomatie, UpdateEverything, EverythingLoaded
         }
 
         public int GF = 0, KF = 0;

@@ -113,8 +113,11 @@ namespace PhoenixModel.Commands {
                 _Selectable = selectable; // muss vor dem Add, da das Add ein Change Event auslöst
                 SharedData.Commands.Add(this);
             }
-
-            // Aktualisiert die Ansicht für Diplomatie-Änderungen
+            // wenn sich ein Kleinfeld geändert hat, bitte neu zeichnen
+            if (item is KleinfeldPosition kf && SharedData.Map != null) {
+                SharedData.UpdateQueue.Enqueue(SharedData.Map[kf.CreateBezeichner()]);
+            }
+            // Aktualisiert die Ansicht 
             ProgramView.Update(item, viewEventType);
         }
 
@@ -317,6 +320,7 @@ namespace PhoenixModel.Commands {
         public ConstructionElementType parseConstructionElement(string input) {
             return input.ToLower()
             switch {
+                "kai" => ConstructionElementType.Kai,
                 "k" => ConstructionElementType.K,
                 "krieger" => ConstructionElementType.K,
                 "kriegern" => ConstructionElementType.K,
