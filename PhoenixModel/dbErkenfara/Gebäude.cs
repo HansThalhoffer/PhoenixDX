@@ -12,6 +12,7 @@ namespace PhoenixModel.dbErkenfara {
     {
         public static string DatabaseName { get; set;  } = string.Empty;
         public string Database { get { return DatabaseName; } set { DatabaseName = value; } }
+        
 
         // IDatabaseTable
         public const string TableName = "bauwerksliste";

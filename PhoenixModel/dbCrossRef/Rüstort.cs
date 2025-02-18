@@ -15,7 +15,7 @@ namespace PhoenixModel.dbCrossRef {
         public const string TableName = "ruestort_crossref";
         string IDatabaseTable.TableName => TableName;
         public static Dictionary<int, Rüstort> NachBaupunkten = [];
-
+        
         public string? Ruestort { get; set; }
         public int? KapazitätTruppen { get; set; }
         public int? KapazitätHF { get; set; }
@@ -39,18 +39,6 @@ namespace PhoenixModel.dbCrossRef {
             canSieged = DatabaseConverter.ToBool(reader[(int)Felder.canSieged]);
             if (Baupunkte > 0)
                 NachBaupunkten.Add(Baupunkte.Value, this);
-        }
-
-        void IDatabaseTable.Load(DbDataReader reader) {
-            throw new NotImplementedException();
-        }
-
-        void IDatabaseTable.Save(DbCommand reader) {
-            throw new NotImplementedException();
-        }
-
-        void IDatabaseTable.Insert(DbCommand reader) {
-            throw new NotImplementedException();
         }
     }
 }

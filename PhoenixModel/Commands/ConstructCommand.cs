@@ -43,7 +43,7 @@ namespace PhoenixModel.Commands {
         public override CommandResult CheckPreconditions() {
             if (What == ConstructionElementType.None)
                 return new CommandResultError("Es wurde kein zu errichtendes Bauwerk angegeben", $"In dem Befehl konnte das Bauwerk (Straße, Brücke, Wall) nicht gefunden werden \r\n {this.CommandString}",this);
-            if (Direction == null)
+            if (Direction == null && What != ConstructionElementType.Burg)
                 return new CommandResultError("Es wurde keine Richtung angegeben", $"In dem Befehl konnte die Richtung (Nordosten, Westen, etc) nicht gefunden werden \r\n {this.CommandString}", this);
             if (Location == null)
                 return new CommandResultError("Es wurde kein Kleinfeld angegeben", $"In dem Befehl konnte das Kleinfeld zB '701/22' nicht gefunden werden \r\n {this.CommandString}", this);
@@ -113,17 +113,14 @@ namespace PhoenixModel.Commands {
                 try {
                     SharedData.RuestungBauwerke.ReopenSharedData();
                     SharedData.RuestungBauwerke.Add(bauwerk);
-                    var kf = SharedData.Map[bauwerk.CreateBezeichner()];
-                    if (What != ConstructionElementType.Burg) {
-                        string fieldName = $"{What}_{Direction}";
-                        var field = kf.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).FirstOrDefault(f => f.Name == fieldName);
-                        if (field == null) {
-                            throw new InvalidOperationException($"Das Feld {fieldName} wurde in der Klasse Kleinfeld nicht gefunden");
-                        }
-                        field.SetValue(kf, -1);                        
+
+                    // wenn es eine Burg ist, dann braucht es ein Bauwerk
+                    if (this.What == ConstructionElementType.Burg) {
+                        BauwerkeView.AddBaustelle(SharedData.Map[bauwerk.CreateBezeichner()]);
                     }
-                    SharedData.UpdateQueue.Enqueue(SharedData.Map[kf.CreateBezeichner()]);
-                    // Update(bauwerk, EventsAndArgs.ViewEventArgs.ViewEventType.UpdateKleinfeld);
+
+                    RuestungBauwerkeView.UpdateKleinFeld(bauwerk);
+                    Update(bauwerk, EventsAndArgs.ViewEventArgs.ViewEventType.UpdateKleinfeld);
                 }
                 catch (Exception ex) {
                     ProgramView.LogError($"Fehler bei der Ausführung von {this.CommandString}",ex.Message);

@@ -8,6 +8,20 @@ namespace PhoenixModel.View {
     /// Statische Klasse zur Verarbeitung und Abfrage von Bauwerken.
     /// </summary>
     public static class BauwerkeView {
+
+        /// <summary>
+        /// fügt eine Baustelle 
+        /// </summary>
+        /// <param name="kf"></param>
+        public static void AddBaustelle(KleinFeld kf) {
+            if (kf != null && kf.Nation != null && SharedData.Gebäude != null) {
+                kf.Baupunkte = -1;
+                var gebäude = new Gebäude() { Bauwerknamen = "Baustelle", gf = kf.gf, kf = kf.kf, Reich = kf.Nation.DBname, IsNew = true  };
+                SharedData.Gebäude.Add(gebäude.CreateBezeichner(), gebäude);
+            }
+        }
+
+
         /// <summary>
         /// Gibt die Rüstort-Referenz für eine gegebene Nummer zurück.
         /// </summary>
@@ -25,6 +39,10 @@ namespace PhoenixModel.View {
         /// <param name="baupunkte">Die Anzahl der Baupunkte.</param>
         /// <returns>Der entsprechende Rüstort oder null, falls nicht gefunden.</returns>
         public static Rüstort? GetRuestortNachBaupunkten(int baupunkte) {
+            if (baupunkte == -1 || SharedData.RüstortReferenz == null) {
+                return Rüstort.NachBaupunkten[baupunkte];
+            }
+
             if (baupunkte < 1 || SharedData.RüstortReferenz == null)
                 return null;
 

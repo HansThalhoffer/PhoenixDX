@@ -30,6 +30,8 @@ namespace PhoenixWPF.Database
                 try
                 {
                     Load<Rüstort>(connector, ref SharedData.RüstortReferenz, Enum.GetNames(typeof(Rüstort.Felder)));
+                    // füge der Tabelle eine Baustelle hinzu
+                    Rüstort.NachBaupunkten.Add(-1, new Rüstort() { Baupunkte = 0, Bauwerk = "Baustelle", Nummer = -1 });
                 }
                 catch (Exception ex)
                 {

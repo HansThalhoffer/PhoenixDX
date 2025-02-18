@@ -28,7 +28,8 @@ namespace PhoenixDX.Structures {
             {"Dorf",new RuestortSymbol(7, "Dorf", "Dorf") },
             {"Dorf-I",new RuestortSymbol(8, "Dorf-I", "Dorf-I") },
             {"Dorf-II",new RuestortSymbol(9, "Dorf-II", "Dorf-II") },
-            {"Dorf-III",new RuestortSymbol(10, "Dorf-III", "Dorf-III") }
+            {"Dorf-III",new RuestortSymbol(10, "Dorf-III", "Dorf-III") },
+            {"Baustelle",new RuestortSymbol(-1, "Baustelle", "baustelle_dorf") }
         };
 
         private SimpleTexture _hexTexture = null;

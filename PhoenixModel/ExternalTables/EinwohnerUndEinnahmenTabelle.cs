@@ -40,6 +40,7 @@ namespace PhoenixModel.ExternalTables
             { "Tiefseeeinbahnpunkt (Tiefsee)", new Werte(0, 0) },
             { "Auftauchpunkt (unbekannt)", new Werte(0, 0) },
             // aus den Bauwerken
+            { "Baustelle", new Werte ( 0, 0 ) },
             { "Dorf-I", new Werte ( 0, 0 ) },
             { "Dorf-II", new Werte ( 0, 0 ) },
             { "Dorf-III", new Werte ( 0, 0 ) },

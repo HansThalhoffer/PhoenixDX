@@ -40,6 +40,7 @@ namespace PhoenixModel.dbZugdaten {
             this.Kosten = DatabaseConverter.ToInt32(reader[(int)Felder.Kosten]);
             this.ID = DatabaseConverter.ToInt32(reader[(int)Felder.id]);
             this.ZugMonat = ProgramView.SelectedMonth;
+            RuestungBauwerkeView.UpdateKleinFeld(this);
         }
 
         public void Save(DbCommand command)
