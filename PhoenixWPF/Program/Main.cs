@@ -324,15 +324,23 @@ namespace PhoenixWPF.Program {
         #endregion
 
         /// <summary>
-        /// wenn alles datenbanken geladen sind, und das Programm soweit aktiv sein darf, wird die Funktion ausgeführt
+        /// Die Commands, die während des Ladens im Background erstellt worden sind,
+        /// werden hier in die Command Collection geschoben
         /// </summary>
-        private void EverythingLoaded() {
-            ProgramView.DataLoadingCompleted();
+        private void DequeueCommands() {
             while (SharedData.CommandQueue.Count > 0) {
                 if (SharedData.CommandQueue.TryDequeue(out var command))
                     SharedData.Commands.Add(command);
             }
-            _backgroundSave?.Start();
+        }
+
+        /// <summary>
+        /// wenn alles datenbanken geladen sind, und das Programm soweit aktiv sein darf, wird die Funktion ausgeführt
+        /// </summary>
+        private void EverythingLoaded() {
+            ProgramView.DataLoadingCompleted();
+            DequeueCommands();
+             _backgroundSave?.Start();
             if (Settings.UserSettings.ShowKüstenregel == true)
                 ShowKüstenRecht(Visibility.Visible);
         }
