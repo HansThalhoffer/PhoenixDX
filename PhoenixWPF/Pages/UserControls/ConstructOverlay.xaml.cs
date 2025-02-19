@@ -100,8 +100,10 @@ namespace PhoenixWPF.Pages.UserControls {
                 if (string.IsNullOrEmpty(commandString) == false) {
                     if (CommandParser.ParseCommand(commandString, out var cmd) && cmd != null) {
                         var result = cmd.ExecuteCommand();
+                        SetKleinfeldVisibility(kf);
                         if (result.HasErrors)
                             SpielWPF.LogError(result.Title, result.Message);
+
                     }
                     else
                         SpielWPF.LogError("Der Name konnte nicht gespeichert werden", "Keine Ahnung warum");

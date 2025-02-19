@@ -152,6 +152,8 @@ namespace PhoenixWPF.Program {
             SharedData.Schiffe=null;
             SharedData.Units_Zugdaten=null;
             SharedData.Zauberer=null;
+            // allgemeines
+            SharedData.Commands.Clear();
             // die Truppen in der Darstellung löschen
             foreach (var f in updateList)
                 UpdateKleinfeld(f);
@@ -326,6 +328,10 @@ namespace PhoenixWPF.Program {
         /// </summary>
         private void EverythingLoaded() {
             ProgramView.DataLoadingCompleted();
+            while (SharedData.CommandQueue.Count > 0) {
+                if (SharedData.CommandQueue.TryDequeue(out var command))
+                    SharedData.Commands.Add(command);
+            }
             _backgroundSave?.Start();
             if (Settings.UserSettings.ShowKüstenregel == true)
                 ShowKüstenRecht(Visibility.Visible);

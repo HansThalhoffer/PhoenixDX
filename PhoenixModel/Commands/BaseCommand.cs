@@ -48,7 +48,7 @@ namespace PhoenixModel.Commands {
         /// <summary>
         /// Gibt an, ob der Befehl bereits ausgeführt wurde.
         /// </summary>
-        public bool IsExecuted { get; protected set; }
+        public bool IsExecuted { get; set; }
 
         /// <summary>
         /// Erstellt eine neue Instanz der <see cref="BaseCommand"/>-Klasse.

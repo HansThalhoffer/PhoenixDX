@@ -21,6 +21,15 @@ namespace PhoenixModel.Helper {
         }
 
         /// <summary>
+        /// copy constructor für abgeleitete Klassen
+        /// </summary>
+        /// <param name="result"></param>
+        public Result(Result result) {
+            this.Title = result.Title;
+            this.Message = result.Message;
+            this.HasErrors = result.HasErrors;
+        }
+        /// <summary>
         /// Titel der Nachricht.
         /// </summary>
         public string Title { get; protected set; } = string.Empty;

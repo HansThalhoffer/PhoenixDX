@@ -17,6 +17,7 @@ namespace PhoenixModel.ViewModel {
         /// </summary>
         public static DatabaseQueue StoreQueue = [];
         public static ConcurrentQueue<KleinFeld> UpdateQueue = [];
+        public static ConcurrentQueue<BaseCommand> CommandQueue= [];
         public static CommandSet Commands = new();
 
         // Karte

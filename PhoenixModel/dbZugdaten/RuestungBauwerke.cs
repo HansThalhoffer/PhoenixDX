@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.Design;
 using System.Data.Common;
+using PhoenixModel.Commands;
 using PhoenixModel.Database;
 using PhoenixModel.Helper;
 using PhoenixModel.View;
@@ -41,6 +42,7 @@ namespace PhoenixModel.dbZugdaten {
             this.ID = DatabaseConverter.ToInt32(reader[(int)Felder.id]);
             this.ZugMonat = ProgramView.SelectedMonth;
             RuestungBauwerkeView.UpdateKleinFeld(this);
+            RuestungBauwerkeView.ReconstructCommand(this);
         }
 
         public void Save(DbCommand command)

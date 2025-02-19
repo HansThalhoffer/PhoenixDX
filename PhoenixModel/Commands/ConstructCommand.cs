@@ -4,6 +4,7 @@ using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.Extensions;
 using PhoenixModel.Program;
+using PhoenixModel.Rules;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using System.Reflection;
@@ -27,6 +28,14 @@ namespace PhoenixModel.Commands {
         public ConstructCommand(string commandString) : base(commandString) {
         }
 
+        public override bool HasEffectOn(ISelectable selectable) {
+            if (base.HasEffectOn(selectable)) 
+                return true;
+            if (selectable is KleinfeldPosition position && position.Equals(this.Location))
+                return true;
+            return false;
+        }
+
         public override bool CanAppliedTo(ISelectable selectable) {
             return (selectable != null && selectable is KleinFeld);
         }
@@ -45,7 +54,7 @@ namespace PhoenixModel.Commands {
                 return new CommandResultError("Es wurde kein zu errichtendes Bauwerk angegeben", $"In dem Befehl konnte das Bauwerk (Straße, Brücke, Wall) nicht gefunden werden \r\n {this.CommandString}",this);
             if (Direction == null && What != ConstructionElementType.Burg)
                 return new CommandResultError("Es wurde keine Richtung angegeben", $"In dem Befehl konnte die Richtung (Nordosten, Westen, etc) nicht gefunden werden \r\n {this.CommandString}", this);
-            if (Location == null)
+            if (Location == null || SharedData.Map == null)
                 return new CommandResultError("Es wurde kein Kleinfeld angegeben", $"In dem Befehl konnte das Kleinfeld zB '701/22' nicht gefunden werden \r\n {this.CommandString}", this);
             if (SharedData.Kosten == null)
                 return new CommandResultError("Die Kostentabelle wurde nicht geladen", $"Der Befehl kann nicht ausgeführt werden, da die Kostentabelle aus der crossref.mdb nicht geladen wurden \r\n {this.CommandString}", this);
@@ -55,9 +64,22 @@ namespace PhoenixModel.Commands {
             var kosten = KostenView.GetKosten(What.ToString());
             if (kosten == null)
                 return new CommandResultError($"Die Kostentablle enthält keinen Wert für {What}", $"Der Befehl kann nicht ausgeführt werden, da die Kostentabelle im Feld Unittyp das genannte Bauwerk nicht kennen \r\n {this.CommandString}", this);
+            var kf = SharedData.Map[Location.CreateBezeichner()];
+            // leider unvermeidbar, obwohl es überprüft wird
+            Direction dir = this.Direction != null ? Direction.Value : ViewModel.Direction.NW;
+            switch (What) {
+                case ConstructionElementType.Bruecke:
+                    return new CommandResult(ConstructRules.CanConstructBridge(kf, dir), this);
+                case ConstructionElementType.Burg:
+                    return new CommandResult(ConstructRules.CanConstructCastle(kf), this);
+                case ConstructionElementType.Kai:
+                    return new CommandResult(ConstructRules.CanConstructKai(kf, dir), this);
+                case ConstructionElementType.Strasse:
+                    return new CommandResult(ConstructRules.CanConstructRoad(kf, dir),this);
+                case ConstructionElementType.Wall:
+                    return new CommandResult(ConstructRules.CanConstructWall(kf, dir), this);
 
-
-
+            }
             return new CommandResultSuccess("Das ConstructCommand kann ausgeführt werden", $"Der Befehl kann ausgeführt werden:\r\n {this.CommandString}", this);
         }
 
