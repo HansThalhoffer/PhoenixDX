@@ -113,6 +113,10 @@ namespace PhoenixModel.Commands {
                 _Selectable = selectable; // muss vor dem Add, da das Add ein Change Event auslöst
                 SharedData.Commands.Add(this);
             }
+            else if (item is KleinfeldPosition position && SharedData.Map != null) {
+                _Selectable = SharedData.Map[position.CreateBezeichner()];
+                SharedData.Commands.Add(this);
+            }
             // wenn sich ein Kleinfeld geändert hat, bitte neu zeichnen
             if (item is KleinfeldPosition kf && SharedData.Map != null) {
                 SharedData.UpdateQueue.Enqueue(SharedData.Map[kf.CreateBezeichner()]);

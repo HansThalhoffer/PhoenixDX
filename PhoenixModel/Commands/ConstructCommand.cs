@@ -28,6 +28,8 @@ namespace PhoenixModel.Commands {
         public ConstructCommand(string commandString) : base(commandString) {
         }
 
+        public override bool CanUndo => IsExecuted == true;
+
         public override bool HasEffectOn(ISelectable selectable) {
             if (base.HasEffectOn(selectable)) 
                 return true;
@@ -142,6 +144,7 @@ namespace PhoenixModel.Commands {
                     }
 
                     RuestungBauwerkeView.UpdateKleinFeld(bauwerk);
+                    IsExecuted = true;
                     Update(bauwerk, EventsAndArgs.ViewEventArgs.ViewEventType.UpdateKleinfeld);
                 }
                 catch (Exception ex) {

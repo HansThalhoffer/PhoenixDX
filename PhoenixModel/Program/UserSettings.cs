@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using PhoenixModel.ViewModel;
+using System.ComponentModel;
 namespace PhoenixModel.Program {
     /// <summary>
     /// die Settings werden automatisch gespeichert, wenn Änderungen stattfinden.
@@ -21,6 +22,7 @@ namespace PhoenixModel.Program {
         private int _selectedZug = -1;
         private bool _showKüstenRegel = true;
         private float _opacity = 1f;
+        public Position? _cameraPosition = null;
 
 
         /// <summary>
@@ -102,6 +104,15 @@ namespace PhoenixModel.Program {
             }
         }
 
+        public Position CameraPosition {
+            get { return _cameraPosition ?? new Position(0, 0); }
+            set {
+                if (_cameraPosition != value) {
+                    _cameraPosition = value;
+                    OnPropertyChanged(nameof(CameraPosition));
+                }
+            }
+        }
 
         #endregion
 

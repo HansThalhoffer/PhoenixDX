@@ -70,8 +70,14 @@ namespace PhoenixWPF.Program {
         }
 
         private Main() {
-            Settings = new AppSettings("Settings.jpk");
-            Settings.InitializeSettings();
+            try {
+                Settings = new AppSettings("Settings.jpk");
+                Settings.InitializeSettings();
+            }
+            catch (Exception ex) {
+                // hier ist noch kein Errorlog
+                MessageBox.Show(ex.Message);
+            }
         }
 
         /// <summary>
@@ -176,8 +182,10 @@ namespace PhoenixWPF.Program {
         public void StopInstance() {
             _backgroundSave?.Stop();
             PerformSave(null, new EventArgs());
-            if (Instance.SpielDXBridge != null)
+            if (Instance.SpielDXBridge != null) {
                 Settings.UserSettings.Zoom = Instance.SpielDXBridge.GetZoom();
+                Settings.UserSettings.CameraPosition = Instance.SpielDXBridge.GetCameraPosition();
+            }
         }
 
         /// <summary>

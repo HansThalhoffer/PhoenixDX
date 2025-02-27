@@ -17,7 +17,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <DataGrid Name="Befehle" />
+        <DataGrid Name="CommandDataGrid" />
         <Canvas Grid.Column="0" Grid.Row="1" Margin="0,0,0,0" Height="320" VerticalAlignment="Top">
             <controls:ConstructOverlay Margin="0,-30,0,0" />
         </Canvas>

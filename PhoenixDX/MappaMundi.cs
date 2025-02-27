@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Drawing;
 using PhoenixDX.Program;
+using PhoenixModel.dbCrossRef;
 using PhoenixModel.EventsAndArgs;
 using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
@@ -181,6 +182,26 @@ namespace PhoenixDX {
             if (_game != null)
                 return _game.Zoom;
             return 0f;
+        }
+
+
+        /// <summary>
+        /// Zoom change von WPF zu DirectX, beispielsweise dem Sliden in den Optionen
+        /// </summary>
+        /// <param name="val"></param>
+        public void SetCameraPosition(Position val) {
+            if (_game != null)
+                _game.CameraPosition = val;
+        }
+
+        /// <summary>
+        /// Zoom holen - wird benötigt für das Abspeichern des Zooms in den Settings
+        /// </summary>
+        /// <returns></returns>
+        public Position GetCameraPosition() {
+            if (_game != null)
+                return _game.CameraPosition;
+            return new Position(0,0);
         }
         #endregion
 

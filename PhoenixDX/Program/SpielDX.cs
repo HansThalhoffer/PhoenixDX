@@ -40,6 +40,13 @@ namespace PhoenixDX.Program {
         /// aktuelle Kamerapositon
         /// </summary>
         Position _cameraPosition = new Position(0, 0);
+        public Position CameraPosition { get { return _cameraPosition; }  
+            set { 
+                if (_cameraPosition == value)
+                    return; 
+                _cameraPosition = value; 
+            } 
+        }
         /// <summary>
         /// virtuelle Breite des Fenster in 4K
         /// </summary>

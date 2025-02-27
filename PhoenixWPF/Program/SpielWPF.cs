@@ -32,6 +32,7 @@ namespace PhoenixWPF.Program {
                 case MapEventArgs.MapEventType.Loaded: {
                         // hier wird der Zoom aus den User Settings übertragen.
                         Main.Map?.SetZoom(Main.Instance.Settings.UserSettings.Zoom);
+                        Main.Map?.SetCameraPosition(Main.Instance.Settings.UserSettings.CameraPosition);
                         break;
                     }
                 case MapEventArgs.MapEventType.SelectGemark: {

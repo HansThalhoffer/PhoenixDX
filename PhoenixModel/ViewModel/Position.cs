@@ -8,6 +8,15 @@
         /// </summary>
         /// <param name="x">Die X-Koordinate der Position.</param>
         /// <param name="y">Die Y-Koordinate der Position.</param>
+        public Position() {
+            X = 0; Y = 0;
+        }
+
+        /// <summary>
+        /// Konstruktor, der die Position mit ganzzahligen Werten für X und Y initialisiert.
+        /// </summary>
+        /// <param name="x">Die X-Koordinate der Position.</param>
+        /// <param name="y">Die Y-Koordinate der Position.</param>
         public Position(int x, int y) {
             X = x; Y = y;
         }

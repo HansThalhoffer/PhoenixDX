@@ -18,7 +18,8 @@ namespace PhoenixWPF.Pages.UserControls {
     public partial class ConstructOverlay : UserControl {
         public ConstructOverlay() {
             InitializeComponent();
-            Main.Instance.SelectionHistory.PropertyChanged += SelectionHistory_PropertyChanged;
+            if (Main.Instance.SelectionHistory != null)
+                Main.Instance.SelectionHistory.PropertyChanged += SelectionHistory_PropertyChanged;
             // this.Visibility = Visibility.Hidden;
         }
 
