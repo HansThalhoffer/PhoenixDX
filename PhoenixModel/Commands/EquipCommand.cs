@@ -115,7 +115,7 @@ namespace PhoenixModel.Commands {
                 var existing = SharedData.Ruestung.Where(r => r.Equals(ruest)).First();
                 if (existing == null)
                     return new CommandResultError("Der Auftrag für diese Rüstung existiert nicht und kann daher nicht rückgänig gemacht werden", $"Der Befehl kann nicht rückgängig gemacht werden, da er nicht in den Zugdaten gespeichert wurde\r\n {this.CommandString}", this);
-                SharedData.Ruestung.Remove(existing);
+               // SharedData.Ruestung.Remove<Ruestung>(existing);
                 SharedData.StoreQueue.Delete(existing);
             }
 

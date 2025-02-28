@@ -105,12 +105,11 @@ namespace PhoenixModel.dbZugdaten {
 
         public bool Equals(RuestungBauwerke? other) {
             if (other == null) return false;
-
+            // kosten werden nicht verglichen. Es reicht das Geländefeld und das Bauwerk bzw. die Baupunkte
             return gf == other.gf &&
                    kf == other.kf &&
                    BP_rep == other.BP_rep &&
                    BP_neu == other.BP_neu &&
-                   Kosten == other.Kosten &&
                    Art == other.Art; // String comparison (null-safe)
         }
 

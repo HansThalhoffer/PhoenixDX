@@ -37,14 +37,13 @@ namespace PhoenixModel.View {
                 string dir = string.Empty;
                 if (what != ConstructionElementType.Burg) {
                     dir = bauwerk.Art.Split('_')[1];
-                    var match = Enum.GetNames(typeof(DirectionNames))
-                          .FirstOrDefault(name => dir.Contains(name, StringComparison.OrdinalIgnoreCase));
-                    Direction? direction = match != null ? (Direction)Enum.Parse(typeof(DirectionNames), match) : null;
+                    Direction? direction = dir != null ? (Direction)Enum.Parse(typeof(Direction), dir) : null;
                     var command = new ConstructCommand($"Errichte {what} im {direction} von {bauwerk.CreateBezeichner()}") {
                         Direction = direction,
                         Location = bauwerk,
                         What = what,
-                        Kosten = KostenView.GetKosten(bauwerk.ToString()),
+                        Kosten = KostenView.GetKosten(what),
+                        IsExecuted = true,
                     };
                     SharedData.CommandQueue.Enqueue(command);
                 }
@@ -53,7 +52,7 @@ namespace PhoenixModel.View {
                         Direction = null,
                         Location = bauwerk,
                         What = what,
-                        Kosten = KostenView.GetKosten(bauwerk.ToString()),
+                        Kosten = KostenView.GetKosten(what),
                         IsExecuted = true
                     };
                     SharedData.CommandQueue.Enqueue(command);

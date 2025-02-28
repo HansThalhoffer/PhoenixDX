@@ -114,11 +114,18 @@ namespace PhoenixModel.Commands {
         public override CommandResult UndoCommand() {
             RuestungBauwerke? bauwerk = CreateRuestungBauwerke();
             if (bauwerk != null && SharedData.RuestungBauwerke != null) {
-                var existing = SharedData.RuestungBauwerke.Where(bw => bw.Equals(bauwerk)).First();
+            var existing = SharedData.RuestungBauwerke.Where(bw => bw.Equals(bauwerk)).First();
                 if (existing == null)
                     return new CommandResultError("Der Auftrag für dieses Bauwerk existiert nicht und kann daher nicht rückgänig gemacht werden", $"Der Befehl kann nicht rückgängig gemacht werden, da er nicht in den Zugdaten gespeichert wurde\r\n {this.CommandString}", this);
                 SharedData.RuestungBauwerke.Remove(existing);
                 SharedData.StoreQueue.Delete(existing);
+
+                // Todo das Bauwerk noch aus der Karte löschen
+
+                if (SharedData.Map != null)
+                    SharedData.UpdateQueue.Enqueue(SharedData.Map[bauwerk.CreateBezeichner()]);
+                ProgramView.Update(bauwerk, EventsAndArgs.ViewEventArgs.ViewEventType.UpdateKleinfeld);
+                return new CommandResultSuccess("Undo von ConstructCommand wurde ausgeführt", $"Der Befehl wurde rückgängig gemacht:\r\n {this.CommandString}", this);
             }
 
             return new CommandResultError("Fehler", "Keine Ahnung warum", this);

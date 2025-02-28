@@ -19,11 +19,11 @@ namespace PhoenixModel.Extensions {
         /// <param name="collection"></param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public static void ReopenSharedData<T>(this BlockingCollection<T> collection) {
+        public static BlockingCollection<T> ReopenSharedData<T>(this BlockingCollection<T> collection) {
             if (collection == null) throw new ArgumentNullException(nameof(collection));
             
             if (collection.IsAddingCompleted == false) // already open
-                return;
+                return collection;
             
             Type sharedDataType = typeof(SharedData);
             // Find the static field that holds this instance
@@ -44,6 +44,39 @@ namespace PhoenixModel.Extensions {
 
             // Replace the static field with the new instance
             field.SetValue(null, newCollection);
+            return newCollection;
+        }
+
+        /// <summary>
+        /// Entfernt einen Wert aus der BlockingCollection.
+        /// </summary>
+        /// <typeparam name="T">Der Typ der gespeicherten Werte.</typeparam>
+        /// <param name="collection">Die BlockingCollection, aus der der Wert entfernt werden soll.</param>
+        /// <param name="item">Das zu entfernende Element.</param>
+        /// <returns>Die Anzahl der entfernten Elemente.</returns>
+        public static int Remove<T>(this BlockingCollection<T> collection, T item) {
+            if (collection == null) throw new ArgumentNullException(nameof(collection));
+            collection = ReopenSharedData(collection);
+
+            var tempQueue = new ConcurrentQueue<T>();
+            int removedCount = 0;
+
+            // Entfernt das angegebene Element aus der Sammlung
+            while (collection.TryTake(out T? currentItem)) {
+                if (EqualityComparer<T>.Default.Equals(currentItem, item)) {
+                    removedCount++;
+                }
+                else {
+                    tempQueue.Enqueue(currentItem);
+                }
+            }
+
+            // Fügt die restlichen Elemente wieder in die BlockingCollection ein
+            foreach (var remainingItem in tempQueue) {
+                collection.Add(remainingItem);
+            }
+
+            return removedCount;
         }
     }
 }
