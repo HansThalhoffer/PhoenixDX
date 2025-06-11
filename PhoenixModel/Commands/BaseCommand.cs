@@ -310,6 +310,7 @@ namespace PhoenixModel.Commands {
                 ConstructionElementType.Bruecke => "Brücke",
                 ConstructionElementType.Wall => "Wall",
                 ConstructionElementType.Burg => "Burg",
+                ConstructionElementType.Dorf => "Dorf",
                 ConstructionElementType.ausbau => "ausbau",
                 _ => string.Empty,
             };
@@ -360,6 +361,7 @@ namespace PhoenixModel.Commands {
                 "brücke" => ConstructionElementType.Bruecke,
                 "bruecke" => ConstructionElementType.Bruecke,
                 "burg" => ConstructionElementType.Burg,
+                "dorf" => ConstructionElementType.Dorf,
                 _ => ConstructionElementType.None
             };
         }

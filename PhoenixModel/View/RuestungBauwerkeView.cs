@@ -23,9 +23,19 @@ namespace PhoenixModel.View {
                 return;
             try {
                 ConstructionElementType what = ConstructionElementType.None;
+                if (bauwerk.Art.StartsWith("Dorf")) 
+                    what = ConstructionElementType.Dorf;
                 if (bauwerk.Art.StartsWith("Burg"))
                     what = ConstructionElementType.Burg;
-                else if (bauwerk.Art.StartsWith("Br"))
+                if (bauwerk.Art.StartsWith("Stadt"))
+                    what = ConstructionElementType.Stadt;
+                if (bauwerk.Art.StartsWith("Festungshauptstadt"))
+                     what = ConstructionElementType.Festungshauptstadt;
+                if (bauwerk.Art.StartsWith("Festung"))
+                    what = ConstructionElementType.Festung;
+                if (bauwerk.Art.StartsWith("Hauptstadt"))
+                    what = ConstructionElementType.Hauptstadt;
+                else if (bauwerk.Art.StartsWith("Br")) 
                     what = ConstructionElementType.Bruecke;
                 else if (bauwerk.Art.StartsWith("Kai"))
                     what = ConstructionElementType.Kai;
@@ -33,10 +43,9 @@ namespace PhoenixModel.View {
                     what = ConstructionElementType.Strasse;
                 else if (bauwerk.Art.StartsWith("Wall"))
                     what = ConstructionElementType.Wall;
-
-                string dir = string.Empty;
-                if (what != ConstructionElementType.Burg) {
-                    dir = bauwerk.Art.Split('_')[1];
+                // hat es eine Richtung?
+                if (what == ConstructionElementType.Bruecke || what == ConstructionElementType.Kai || what == ConstructionElementType.Strasse || what == ConstructionElementType.Wall) {
+                    string dir = bauwerk.Art.Split('_')[1];
                     Direction? direction = dir != null ? (Direction)Enum.Parse(typeof(Direction), dir) : null;
                     var command = new ConstructCommand($"Errichte {what} im {direction} von {bauwerk.CreateBezeichner()}") {
                         Direction = direction,
@@ -48,11 +57,21 @@ namespace PhoenixModel.View {
                     SharedData.CommandQueue.Enqueue(command);
                 }
                 else {
+                    var kosten = KostenView.GetKosten(what);
+                    if (kosten == null) {
+                        kosten = new dbCrossRef.Kosten() {
+                            Unittyp = bauwerk.Art,
+                            BauPunkte = bauwerk.BP_neu > bauwerk.BP_rep ? bauwerk.BP_neu : bauwerk.BP_rep,
+                            GS = bauwerk.Kosten,
+                            RP = 0
+                        };
+                    }
+
                     var command = new ConstructCommand($"Errichte {what} auf {bauwerk.CreateBezeichner()}") {
                         Direction = null,
                         Location = bauwerk,
                         What = what,
-                        Kosten = KostenView.GetKosten(what),
+                        Kosten = kosten,
                         IsExecuted = true
                     };
                     SharedData.CommandQueue.Enqueue(command);
@@ -74,17 +93,15 @@ namespace PhoenixModel.View {
         public static void UpdateKleinFeld(RuestungBauwerke bauwerk) {
             if (bauwerk != null && SharedData.Map != null) {
                 var kf = SharedData.Map[bauwerk.CreateBezeichner()];
-                if (bauwerk.Art.StartsWith("Burg") == false) {
-                    string fieldName = bauwerk.Art;
-                    var field = kf.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).FirstOrDefault(f => f.Name == fieldName);
-                    if (field == null) {
-                        throw new InvalidOperationException($"Das Feld {fieldName} wurde in der Klasse Kleinfeld nicht gefunden");
-                    }
-                    field.SetValue(kf, -1);
-                }
-                else {
+                string fieldName = bauwerk.Art;
+                var field = kf.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).FirstOrDefault(f => f.Name == fieldName);
+                if (field == null) {
                     BauwerkeView.AddBaustelle(kf);
                 }
+                else { 
+                    field.SetValue(kf, -1);
+                }
+                
                 SharedData.UpdateQueue.Enqueue(kf);
             }
         }

@@ -54,7 +54,7 @@ namespace PhoenixModel.Commands {
         public override CommandResult CheckPreconditions() {
             if (What == ConstructionElementType.None)
                 return new CommandResultError("Es wurde kein zu errichtendes Bauwerk angegeben", $"In dem Befehl konnte das Bauwerk (Straße, Brücke, Wall) nicht gefunden werden \r\n {this.CommandString}",this);
-            if (Direction == null && What != ConstructionElementType.Burg)
+            if (Direction == null && What != ConstructionElementType.Burg && What != ConstructionElementType.Dorf)
                 return new CommandResultError("Es wurde keine Richtung angegeben", $"In dem Befehl konnte die Richtung (Nordosten, Westen, etc) nicht gefunden werden \r\n {this.CommandString}", this);
             if (Location == null || SharedData.Map == null)
                 return new CommandResultError("Es wurde kein Kleinfeld angegeben", $"In dem Befehl konnte das Kleinfeld zB '701/22' nicht gefunden werden \r\n {this.CommandString}", this);
@@ -73,6 +73,7 @@ namespace PhoenixModel.Commands {
                 case ConstructionElementType.Bruecke:
                     return new CommandResult(ConstructRules.CanConstructBridge(kf, dir), this);
                 case ConstructionElementType.Burg:
+                case ConstructionElementType.Dorf:
                     return new CommandResult(ConstructRules.CanConstructCastle(kf), this);
                 case ConstructionElementType.Kai:
                     return new CommandResult(ConstructRules.CanConstructKai(kf, dir), this);
@@ -146,7 +147,7 @@ namespace PhoenixModel.Commands {
                     SharedData.RuestungBauwerke.Add(bauwerk);
 
                     // wenn es eine Burg ist, dann braucht es ein Bauwerk
-                    if (this.What == ConstructionElementType.Burg) {
+                    if (this.What == ConstructionElementType.Dorf || this.What == ConstructionElementType.Burg) {
                         BauwerkeView.AddBaustelle(SharedData.Map[bauwerk.CreateBezeichner()]);
                     }
 

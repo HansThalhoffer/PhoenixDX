@@ -17,7 +17,7 @@ namespace PhoenixModel.Commands {
         K, // Krieger
         S, // Schiffe
         R, // Reiter
-        P, // PFerde
+        P, // Pferde
         LKP,// Leichte Katapulte
         SKP,// Schwere Katapulte
         LKS,// Leichte Kriegsschiffe 
@@ -29,7 +29,12 @@ namespace PhoenixModel.Commands {
         Bruecke,
         Kai,
         Wall,
+        Dorf,
         Burg,
+        Stadt,
+        Festung,
+        Hauptstadt,
+        Festungshauptstadt,
         ausbau
     }
 
