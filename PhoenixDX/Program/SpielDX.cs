@@ -366,7 +366,10 @@ namespace PhoenixDX.Program {
                                 return;
                             if (Zoom < 0.2f && _maus.WheelDelta < 0)
                                 return;
-                            Zoom *= _maus.WheelDelta > 0 ? 1.05f : 0.95f;
+
+                            // 120 ist die Anzahl der Einheiten pro Mausrad-Notch, 5f ist die Zoomgeschwindigkeit, 100f um es in Prozent umzuwandeln
+                            float percent = _maus.WheelDelta / 120f * 5f / 100f;
+                            Zoom *= 1f + percent;
                             break;
                         }
 
