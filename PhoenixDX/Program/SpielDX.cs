@@ -356,7 +356,7 @@ namespace PhoenixDX.Program {
                         }
                     case MausEventArgs.MouseEventType.MouseMove: {
                             if (_maus.RightButton == MausEventArgs.MouseButtonState.Pressed) {
-                                Position delta = _maus.ScreenPositionDelta * 18;
+                                Position delta = _maus.ScreenPositionDelta;// * (int)(18f * Zoom);
                                 MoveCamera(delta);
                             }
                             break;
@@ -367,9 +367,38 @@ namespace PhoenixDX.Program {
                             if (Zoom < 0.2f && _maus.WheelDelta < 0)
                                 return;
 
-                            // 120 ist die Anzahl der Einheiten pro Mausrad-Notch, 5f ist die Zoomgeschwindigkeit, 100f um es in Prozent umzuwandeln
-                            float percent = _maus.WheelDelta / 120f * 5f / 100f;
+                            // 120 ist die Anzahl der Einheiten pro Mausrad-Notch,
+                            // So werden eventuell geänderte Usereinstellungen übernommen
+                            // 4f ist die Zoomgeschwindigkeit,
+                            // 100f um es in Prozent umzuwandeln
+                            float percent = _maus.WheelDelta / 120f * 4f / 100f;
+
+                            if (Microsoft.Xna.Framework.Input.Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
+                                percent *= 3f;
+
+                            // Alte Skalierung sichern
+                            Vektor oldScale = _scale;
+
+                            // Mausposition in Vektorform (Client-Koordinaten)
+                            Position mpos = _maus.ScreenPosition;
+                            Vektor screenPos = new Vektor(mpos.X, mpos.Y);
+
+                            // Weltkoordinate des Punktes unter dem Cursor (unabhängig von Skalierung)
+                            Vektor world = new Vektor(
+                                (screenPos.X - _cameraPosition.X) / oldScale.X,
+                                (screenPos.Y - _cameraPosition.Y) / oldScale.Y
+                            );
+
+                            // Zoom anwenden (dies aktualisiert _scale via _RecalcScale im Setter)
                             Zoom *= 1f + percent;
+
+                            // Neue Kamera so berechnen, dass derselbe Weltpunkt unter dem Cursor bleibt
+                            Vektor newCamera = new Vektor(
+                                screenPos.X - world.X * _scale.X,
+                                screenPos.Y - world.Y * _scale.Y
+                            );
+
+                            _cameraPosition.SetFromVector2(newCamera);
                             break;
                         }
 
