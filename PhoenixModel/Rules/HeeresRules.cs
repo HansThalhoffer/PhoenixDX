@@ -91,14 +91,23 @@ namespace PhoenixModel.Rules {
         /// Sucht die nächste freie Nummer im Nummernkreis der Gattung.
         /// </summary>
         /// <returns>die freie Nummer, oder null wenn der Nummernkreis voll ist</returns>
-        public static int? FindeFreieNummer(TruppenSpielfigur vorbild) {
-            int start = GetStartNummer(vorbild.BaseTyp);
+        public static int? FindeFreieNummer(TruppenSpielfigur vorbild) => FindeFreieNummer(vorbild.BaseTyp);
+
+        /// <summary>
+        /// Sucht die nächste freie Nummer im Nummernkreis einer Gattung.
+        ///
+        /// Beim Aufsitzen entsteht aus einem Kriegerheer ein Reiterheer, die Nummer muss also im
+        /// Nummernkreis der Zielgattung gesucht werden und nicht in dem der Ausgangsgattung.
+        /// </summary>
+        /// <returns>die freie Nummer, oder null wenn der Nummernkreis voll ist</returns>
+        public static int? FindeFreieNummer(FigurType baseTyp) {
+            int start = GetStartNummer(baseTyp);
             if (start == 0)
                 return null;
 
             var vergeben = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation)
                 .OfType<TruppenSpielfigur>()
-                .Where(truppe => truppe.BaseTyp == vorbild.BaseTyp)
+                .Where(truppe => truppe.BaseTyp == baseTyp)
                 .Select(truppe => truppe.Nummer)
                 .ToHashSet();
 
