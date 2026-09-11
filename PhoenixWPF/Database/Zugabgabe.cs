@@ -19,6 +19,8 @@ namespace PhoenixWPF.Database {
         public string Details { get; init; } = string.Empty;
         /// <summary>Die Datenbank des Folgezuges, sofern sie angelegt wurde</summary>
         public string? NeueDatenbank { get; init; }
+        /// <summary>Das Archiv, das an die Spielleitung geht</summary>
+        public string? ÜbergabeArchiv { get; init; }
         public int ÜbernommeneFiguren { get; init; }
         public int AufgelösteFiguren { get; init; }
         public int NeuerReichsschatz { get; init; }
@@ -118,23 +120,26 @@ namespace PhoenixWPF.Database {
             if (folge == null)
                 return ZugabgabeErgebnis.Fehler("Der Reichsschatz des Folgezuges lässt sich nicht berechnen", string.Empty);
 
-            // 2. die Quelle als abgegeben markieren und die Abrechnung dort festhalten
+            // 2. die Abrechnung des laufenden Monats in der Quelle festhalten
             try {
                 using var quellDb = Öffne(quelle, klartext);
                 using var befehl = quellDb.OpenDBCommand();
                 abgerechnet.Save(befehl);
                 SetzeStehengebliebeneFiguren(befehl);
-                var settings = ZugView.Settings;
-                if (settings != null) {
-                    settings.Phase = (int)Zugphase.Abgeschlossen;
-                    settings.Save(befehl);
-                }
             }
             catch (Exception ex) {
                 return ZugabgabeErgebnis.Fehler("Der laufende Zug liess sich nicht abschliessen", ex.Message);
             }
 
-            // 3. kopieren - ab hier wird nur noch in der Kopie gearbeitet
+            // 3. das Paket für die Spielleitung. Es enthält den abgegebenen Zug, nicht den
+            // Folgezug, und muss stehen, bevor irgendetwas weitergestellt wird - ohne Übergabe
+            // ist der Zug nicht abgegeben.
+            var paket = SpielleitungsUebergabe.ErstelleZugpaket(quelle, aktuellerZug);
+            if (paket.Erfolgreich == false)
+                return ZugabgabeErgebnis.Fehler(paket.Meldung,
+                    $"{paket.Details} Ohne Übergabe an die Spielleitung wurde der Zug nicht abgegeben; es hat sich nichts verändert.");
+
+            // 4. kopieren - ab hier wird nur noch in der Kopie gearbeitet
             try {
                 string? zielVerzeichnis = Path.GetDirectoryName(ziel);
                 if (zielVerzeichnis != null)
@@ -145,7 +150,7 @@ namespace PhoenixWPF.Database {
                 return ZugabgabeErgebnis.Fehler($"Die Zugdatenbank liess sich nicht nach {ziel} kopieren", ex.Message);
             }
 
-            // 4. die Kopie auf den Folgezug umstellen
+            // 5. die Kopie auf den Folgezug umstellen
             int aufgelöst = 0;
             int übernommen = 0;
             try {
@@ -171,27 +176,44 @@ namespace PhoenixWPF.Database {
 
                 folge.Save(befehl);
 
-                var settings = ZugView.Settings;
-                if (settings != null) {
-                    settings.Monat = folgeZug;
-                    settings.Phase = (int)Zugphase.Rüstphase;
-                    settings.Save(befehl);
-                }
+                // die settings-Tabelle führt genau eine Zeile. Sie wird hier direkt gesetzt und
+                // nicht über das geladene Objekt, denn das gehört noch zum laufenden Zug.
+                befehl.CommandText = $"UPDATE {ZugdatenSettings.TableName} SET Monat = {folgeZug}, Phase = {(int)Zugphase.Rüstphase}";
+                befehl.ExecuteNonQuery();
             }
             catch (Exception ex) {
                 return ZugabgabeErgebnis.Fehler($"Die Zugdaten für Zug {folgeZug} liessen sich nicht vorbereiten",
                     $"{ex.Message} Die Datei {ziel} ist unvollständig und sollte gelöscht werden, bevor der Zug erneut abgegeben wird.");
             }
 
+            // 6. erst jetzt gilt der Zug als abgegeben. Bricht vorher etwas ab, bleibt er offen
+            // und kann nach dem Beheben der Ursache erneut abgegeben werden.
+            try {
+                using var quellDb = Öffne(quelle, klartext);
+                using var befehl = quellDb.OpenDBCommand();
+                befehl.CommandText = $"UPDATE {ZugdatenSettings.TableName} SET Phase = {(int)Zugphase.Abgeschlossen}";
+                befehl.ExecuteNonQuery();
+            }
+            catch (Exception ex) {
+                return ZugabgabeErgebnis.Fehler($"Zug {aktuellerZug} liess sich nicht als abgegeben vermerken",
+                    $"{ex.Message} Die Zugdaten für Zug {folgeZug} liegen aber bereits unter {ziel}.");
+            }
+
+            var geladeneSettings = ZugView.Settings;
+            if (geladeneSettings != null)
+                geladeneSettings.Phase = (int)Zugphase.Abgeschlossen;
+
             SpielWPF.Log(new PhoenixModel.Program.LogEntry($"Zug {aktuellerZug} wurde abgegeben",
                 $"Die Zugdaten für Zug {folgeZug} liegen unter {ziel}. Übernommen wurden {übernommen} Figuren, "
-                + $"{aufgelöst} sind aufgelöst worden. Der Reichsschatz beträgt {folge.Reichschatz} GS."));
+                + $"{aufgelöst} sind aufgelöst worden. Der Reichsschatz beträgt {folge.Reichschatz} GS. "
+                + $"Für die Spielleitung liegt {paket.Archiv} bereit."));
 
             return new ZugabgabeErgebnis {
                 Erfolgreich = true,
                 Meldung = $"Zug {aktuellerZug} ist abgegeben",
                 Details = $"Die Zugdaten für Zug {folgeZug} liegen unter {ziel}.",
                 NeueDatenbank = ziel,
+                ÜbergabeArchiv = paket.Archiv,
                 ÜbernommeneFiguren = übernommen,
                 AufgelösteFiguren = aufgelöst,
                 NeuerReichsschatz = folge.Reichschatz,

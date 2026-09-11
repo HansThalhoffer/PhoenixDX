@@ -201,7 +201,7 @@ namespace PhoenixWPF.Database {
                         // suche nach dem File
                         ZipEntry? entry = zip.Entries.FirstOrDefault(e => e.FileName.EndsWith(databaseFileName));
                         if (entry != null) {
-                            entry.Password = Encoding.UTF8.GetString(Convert.FromBase64String($"MTIzc2llYmVu{PasswortProvider.End}lcmdlIQ==")); // steht unverschlüsselt im alten Source-Code und der exe 
+                            entry.Password = PasswortProvider.ZipPasswort;
                             entry.Extract(aktuellerPfad, ExtractExistingFileAction.OverwriteSilently);
                             string extracted = Path.Combine(aktuellerPfad, entry.FileName);
                             if (File.Exists(extracted) == false) {

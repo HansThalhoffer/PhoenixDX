@@ -10,6 +10,17 @@ namespace PhoenixWPF.Database {
     public class PasswortProvider : PasswordHolder.IPasswordProvider {
         private string _key = string.Empty;
         public static string End = "end";
+
+        /// <summary>
+        /// Das Passwort der Zip-Archive, die zwischen Reich und Spielleitung ausgetauscht werden.
+        ///
+        /// Es ist für alle Reiche dasselbe und steht im Quelltext und in der exe der Altanwendung
+        /// unverschlüsselt drin - es schützt die Archive also nicht, sondern sorgt nur dafür, dass
+        /// beide Seiten dieselben Dateien lesen können. Hier steht es genauso zusammengesetzt wie
+        /// beim Auspacken der alten Rüstungsarchive.
+        /// </summary>
+        public static string ZipPasswort
+            => System.Text.Encoding.UTF8.GetString(Convert.FromBase64String($"MTIzc2llYmVu{End}lcmdlIQ=="));
         /// <summary>
         /// Erstellt eine neue Instanz des PasswortProviders für eine bestimmte Datenbank.
         /// </summary>

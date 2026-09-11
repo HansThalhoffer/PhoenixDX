@@ -24,17 +24,45 @@ namespace Tests {
         }
 
         /// <summary>
-        /// Legt eine Spielwiese an: ein eigenes Zugdatenverzeichnis mit einer Kopie der Datenbank
-        /// des laufenden Zuges.
+        /// Legt eine Spielwiese an: ein eigenes Datenverzeichnis mit derselben Struktur wie die
+        /// echten Spieldaten und einer Kopie der Datenbank des laufenden Zuges. Die Struktur muss
+        /// stimmen, weil die Zugabgabe daraus den Ablageort des Folgezuges und den der Übergabe an
+        /// die Spielleitung ableitet.
         /// </summary>
         private static string ErstelleKopie(int zug) {
             string quelle = TestSetup.ZugdatenPfad;
             string spielwiese = Path.Combine(Path.GetTempPath(), "PhoenixDX_Zugabgabe_" + Guid.NewGuid().ToString("N"));
-            string verzeichnis = Path.Combine(spielwiese, zug.ToString());
+            string verzeichnis = Path.Combine(spielwiese, "_Data", "Zugdaten", zug.ToString());
             Directory.CreateDirectory(verzeichnis);
             string ziel = Path.Combine(verzeichnis, Path.GetFileName(quelle));
             File.Copy(quelle, ziel);
             return ziel;
+        }
+
+        /// <summary>
+        /// Das Wurzelverzeichnis der Spielwiese zu einer Kopie, zum Aufräumen
+        /// </summary>
+        private static string GetSpielwiese(string kopie)
+            => Path.GetFullPath(Path.Combine(Path.GetDirectoryName(kopie)!, "..", "..", ".."));
+
+        /// <summary>
+        /// Packt das Archiv wieder aus und prüft, dass die erwartete Datenbank drin ist und sich
+        /// mit dem vereinbarten Passwort auch entschlüsseln lässt. Ein Archiv, das die Spielleitung
+        /// nicht öffnen kann, ist keine Zugabgabe.
+        /// </summary>
+        private static void PruefeArchiv(string archiv, string erwarteteDatei) {
+            string ausgepackt = Path.Combine(Path.GetDirectoryName(archiv)!, "Probe");
+            Directory.CreateDirectory(ausgepackt);
+            using (var zip = Ionic.Zip.ZipFile.Read(archiv)) {
+                var eintrag = zip.Entries.FirstOrDefault(e => e.FileName.EndsWith(erwarteteDatei, StringComparison.OrdinalIgnoreCase));
+                Assert.True(eintrag != null, $"{erwarteteDatei} steckt nicht in {archiv}");
+                Assert.True(eintrag!.UsesEncryption, "Das Archiv ist unverschlüsselt");
+                eintrag.Password = PhoenixWPF.Database.PasswortProvider.ZipPasswort;
+                eintrag.Extract(ausgepackt, Ionic.Zip.ExtractExistingFileAction.OverwriteSilently);
+            }
+            string datei = Path.Combine(ausgepackt, erwarteteDatei);
+            Assert.True(File.Exists(datei), $"{erwarteteDatei} liess sich nicht aus {archiv} auspacken");
+            Assert.True(new FileInfo(datei).Length > 0, "Die ausgepackte Datenbank ist leer");
         }
 
         [StaFact]
@@ -44,7 +72,7 @@ namespace Tests {
             int folgeZug = zug + 1;
 
             string kopie = ErstelleKopie(zug);
-            string spielwiese = Path.GetDirectoryName(Path.GetDirectoryName(kopie))!;
+            string spielwiese = GetSpielwiese(kopie);
             try {
                 Assert.True(TestSetup.LadeZugdatenAusDatei(kopie, zug), $"Die Kopie {kopie} liess sich nicht laden");
 
@@ -61,6 +89,12 @@ namespace Tests {
                 Assert.NotNull(ergebnis.NeueDatenbank);
                 Assert.True(File.Exists(ergebnis.NeueDatenbank), $"{ergebnis.NeueDatenbank} wurde nicht angelegt");
                 Assert.Equal(anzahlVorher - aufgelösteVorher, ergebnis.ÜbernommeneFiguren);
+
+                // das Paket für die Spielleitung liegt bereit und enthält den abgegebenen Zug
+                Assert.NotNull(ergebnis.ÜbergabeArchiv);
+                Assert.True(File.Exists(ergebnis.ÜbergabeArchiv), $"{ergebnis.ÜbergabeArchiv} wurde nicht angelegt");
+                Assert.EndsWith($"_{zug}.zip", ergebnis.ÜbergabeArchiv);
+                PruefeArchiv(ergebnis.ÜbergabeArchiv!, Path.GetFileName(kopie));
 
                 // die Quelle bleibt als Archiv erhalten und ist als abgegeben markiert
                 Assert.True(TestSetup.LadeZugdatenAusDatei(kopie, zug));
@@ -110,6 +144,35 @@ namespace Tests {
         }
 
         /// <summary>
+        /// Das Rüstungsarchiv muss dort landen, wo die Anwendung beim Aufbau der Rüstungshistorie
+        /// danach sucht: im Zugverzeichnis, als Ruestung_&lt;Reich&gt;_&lt;Zug&gt;.zip.
+        /// </summary>
+        [StaFact]
+        public void RuestungspaketLiegtImZugverzeichnis() {
+            LadeAlles();
+            int zug = ZugView.AktuellerZug.Zug;
+
+            string kopie = ErstelleKopie(zug);
+            string spielwiese = GetSpielwiese(kopie);
+            try {
+                var ergebnis = SpielleitungsUebergabe.ErstelleRüstungspaket(kopie, zug);
+                Assert.True(ergebnis.Erfolgreich, $"{ergebnis.Meldung} {ergebnis.Details}");
+                Assert.NotNull(ergebnis.Archiv);
+
+                Assert.Equal(Path.GetDirectoryName(kopie), Path.GetDirectoryName(ergebnis.Archiv));
+                Assert.StartsWith("Ruestung_", Path.GetFileName(ergebnis.Archiv)!);
+                Assert.EndsWith($"_{zug}.zip", ergebnis.Archiv);
+
+                // die Anwendung sucht mit genau diesem Muster danach
+                Assert.NotNull(Directory.EnumerateFiles(Path.GetDirectoryName(kopie)!, "Ruestung_*.zip").FirstOrDefault());
+                PruefeArchiv(ergebnis.Archiv!, Path.GetFileName(kopie));
+            }
+            finally {
+                try { Directory.Delete(spielwiese, true); } catch { /* siehe oben */ }
+            }
+        }
+
+        /// <summary>
         /// Ein zweites Abgeben desselben Zuges darf die bereits begonnene Arbeit im Folgezug nicht
         /// stillschweigend wegwerfen.
         /// </summary>
@@ -119,7 +182,7 @@ namespace Tests {
             int zug = ZugView.AktuellerZug.Zug;
 
             string kopie = ErstelleKopie(zug);
-            string spielwiese = Path.GetDirectoryName(Path.GetDirectoryName(kopie))!;
+            string spielwiese = GetSpielwiese(kopie);
             try {
                 Assert.True(TestSetup.LadeZugdatenAusDatei(kopie, zug));
                 Assert.True(Zugabgabe.Durchführen(kopie, TestSetup.ZugdatenPasswort, zug).Erfolgreich);

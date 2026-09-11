@@ -116,6 +116,7 @@ namespace PhoenixWPF
                 + $"Übernommen wurden {ergebnis.ÜbernommeneFiguren} Figuren"
                 + (ergebnis.AufgelösteFiguren > 0 ? $", {ergebnis.AufgelösteFiguren} sind aufgelöst worden" : string.Empty) + ".\r\n"
                 + $"Der Reichsschatz für Zug {bericht.NächsterZug.Zug} beträgt {ergebnis.NeuerReichsschatz} GS.\r\n\r\n"
+                + $"Für die Spielleitung liegt bereit:\r\n{ergebnis.ÜbergabeArchiv}\r\n\r\n"
                 + "Über \"Extras / Zug Wechseln\" geht es in den neuen Zug.",
                 "Zug abgegeben", MessageBoxButton.OK, MessageBoxImage.Information);
         }
