@@ -1,4 +1,4 @@
-using PhoenixModel.Commands.Parser;
+﻿using PhoenixModel.Commands.Parser;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.EventsAndArgs;
 using PhoenixModel.ExternalTables;
@@ -373,7 +373,9 @@ namespace PhoenixModel.Commands {
         // (?:\s+via\s+(?<via>.*))?$: optionally capture everything after "via" as a single string
         //
         private static readonly Regex MoveCommandRegex = new Regex(
-            @"^Bewege\s+(?<type>[\w ]+?)\s+(?<unitId>\d+)(?:\s+von\s+(?<from>[^\s]+))?\s+nach\s+(?<to>[^\s]+)(?:\s+via\s+(?<via>.*))?$",
+            // "und plündere" am Ende schaltet von Erobern auf Plündern um; ohne Zusatz wird
+            // auferobert, so wie es der EroberungsModus voreinstellt
+            @"^Bewege\s+(?<type>[\w ]+?)\s+(?<unitId>\d+)(?:\s+von\s+(?<from>[^\s]+))?\s+nach\s+(?<to>[^\s]+)(?:\s+via\s+(?<via>.*?))?(?:\s+und\s+(?<pluendere>plündere|plündern))?$",
             RegexOptions.IgnoreCase | RegexOptions.Compiled
         );
 
@@ -400,6 +402,7 @@ namespace PhoenixModel.Commands {
                     FromLocation = ParseLocation(match.Groups["from"].Value),
                     ToLocation = ParseLocation(match.Groups["to"].Value),
                     ViaLocations = via.Count > 0 ? via : null,
+                    Eroberung = match.Groups["pluendere"].Success ? EroberungsModus.Plündern : EroberungsModus.Erobern,
                 };
             }
             catch (Exception ex) {
