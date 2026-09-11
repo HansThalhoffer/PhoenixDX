@@ -133,9 +133,22 @@ namespace PhoenixDX.Structures {
                 cacheKey += $" {truppen[0].Color.PackedValue}|{figur.Typ.ToString()}";
             }
 
-            if (TextureCache.TryGet(cacheKey, out BaseTexture baseTexture))
-                return baseTexture as SimpleTexture;
+            // Das Zusammensetzen schaltet das RenderTarget um und darf deshalb nicht mitten im
+            // Zeichnen passieren - sonst wird der Bildpuffer verworfen und das Bild kurz schwarz.
+            // Eine Kopie der Liste, weil die Textur erst zwischen zwei Bildern erzeugt wird.
+            var figuren = new List<Figur>(truppen);
+            return TextureCache.GetOrRequest(cacheKey, () => RendereTruppen(cacheKey, figuren)) as SimpleTexture;
+        }
 
+        /// <summary>
+        /// Setzt die Figuren eines Kleinfeldes zu einer Textur zusammen.
+        /// Darf nur zwischen zwei Bildern aufgerufen werden, nicht aus dem Zeichnen heraus.
+        /// </summary>
+        private static SimpleTexture RendereTruppen(string cacheKey, List<Figur> truppen)
+        {
+            if (SpielDX.Instance.Graphics == null || truppen.Count == 0)
+                return null;
+            BaseTexture baseTexture;
             var graphicsDevice = SpielDX.Instance.Graphics.GraphicsDevice;
             float faktor = truppen.Count > 1 ? 1.2f :0.8f;
             int figurHeight = Convert.ToInt32(719f / faktor);

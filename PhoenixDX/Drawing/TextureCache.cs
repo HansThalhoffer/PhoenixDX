@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Drawing;
 using PhoenixDX.Program;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -12,6 +13,58 @@ namespace PhoenixModel.Helper {
     internal class TextureCache : Dictionary<string, BaseTexture> {
         private static TextureCache _instance = [];
         public static TextureCache Instance => _instance;
+
+        /// <summary>
+        /// Texturen, die erst noch zusammengesetzt werden müssen.
+        ///
+        /// Das Zusammensetzen schaltet das RenderTarget der Grafikkarte um. Passiert das mitten im
+        /// Zeichnen eines Bildes, geht der bis dahin gezeichnete Inhalt des Bildpuffers verloren und
+        /// das Bild wird für einen Moment schwarz. Deshalb wird hier nur vorgemerkt; erzeugt wird
+        /// zwischen zwei Bildern über <see cref="VerarbeiteVorgemerkte"/>.
+        /// </summary>
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, Func<BaseTexture>> _vorgemerkt = new();
+
+        /// <summary>
+        /// Liefert die Textur aus dem Cache. Ist sie noch nicht vorhanden, wird ihre Erzeugung
+        /// vorgemerkt und null zurückgegeben - der Aufrufer zeichnet sie dann in diesem Bild noch
+        /// nicht und ab dem nächsten Bild mit.
+        /// </summary>
+        /// <param name="key">Schlüssel der Textur im Cache</param>
+        /// <param name="erzeuger">erzeugt die Textur; wird nur zwischen zwei Bildern aufgerufen</param>
+        public static BaseTexture GetOrRequest(string key, Func<BaseTexture> erzeuger) {
+            if (_instance.TryGetValue(key, out var vorhanden))
+                return vorhanden;
+            _vorgemerkt.TryAdd(key, erzeuger);
+            return null;
+        }
+
+        /// <summary>
+        /// Erzeugt alle vorgemerkten Texturen.
+        ///
+        /// Darf nur zwischen zwei Bildern aufgerufen werden, also aus Update und niemals aus Draw,
+        /// und nur aus dem Thread der Spielschleife.
+        /// </summary>
+        /// <returns>die Anzahl der erzeugten Texturen</returns>
+        public static int VerarbeiteVorgemerkte() {
+            if (_vorgemerkt.IsEmpty)
+                return 0;
+            int erzeugt = 0;
+            foreach (string key in _vorgemerkt.Keys) {
+                if (_vorgemerkt.TryRemove(key, out var erzeuger) == false)
+                    continue;
+                try {
+                    var textur = erzeuger();
+                    if (textur != null) {
+                        _instance[key] = textur;
+                        erzeugt++;
+                    }
+                }
+                catch (System.Exception ex) {
+                    PhoenixDX.MappaMundi.Log(0, 0, $"Die Textur '{key}' konnte nicht erzeugt werden", ex);
+                }
+            }
+            return erzeugt;
+        }
 
         /// <summary>
         /// Überprüft, ob eine Textur mit dem angegebenen Schlüssel existiert.

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Drawing;
+using PhoenixModel.Helper;
 using PhoenixDX.Helper;
 using PhoenixDX.Structures;
 using PhoenixModel.EventsAndArgs;
@@ -201,6 +202,9 @@ namespace PhoenixDX.Program {
         private void Graphics_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e) {
             // Redirect rendering to the WPF control's window handle
             e.GraphicsDeviceInformation.PresentationParameters.DeviceWindowHandle = _windowHandle;
+            // Sicherheitsnetz: sollte doch einmal mitten im Bild das RenderTarget umgeschaltet
+            // werden, bleibt der bereits gezeichnete Inhalt erhalten statt schwarz zu werden.
+            e.GraphicsDeviceInformation.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
         }
         /// <summary>
         /// Berechnet die Skalierung basierend auf der virtuellen und der Client-Größe sowie dem Zoomfaktor.
@@ -473,6 +477,12 @@ namespace PhoenixDX.Program {
             /*while (_updateQueue.TryDequeue(out var gemarkPosition))
                 Weltkarte.UpdateGemark(gemarkPosition);*/
             _backgroundUpdater?.Update();
+
+            // Zusammengesetzte Texturen werden hier erzeugt, zwischen zwei Bildern. Im Draw würde
+            // das Umschalten des RenderTargets den Bildpuffer verwerfen und die Karte kurz schwarz
+            // werden lassen.
+            TextureCache.VerarbeiteVorgemerkte();
+
             // entweder DoInitialization oder HandleInput
             _updateFunction();
 

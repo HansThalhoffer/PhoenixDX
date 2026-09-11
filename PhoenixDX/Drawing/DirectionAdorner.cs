@@ -80,20 +80,22 @@ namespace PhoenixDX.Drawing {
         /// Erstellt eine kombinierte Textur basierend auf den aktuellen Richtungswerten.
         /// </summary>
         /// <returns>Die erstellte <see cref="BaseTexture"/> oder null, wenn keine Texturen vorhanden sind.</returns>
+        /// <summary>
+        /// Holt die zusammengesetzte Textur aus dem Cache.
+        ///
+        /// Ist sie noch nicht vorhanden, wird sie nur vorgemerkt und erst zwischen zwei Bildern
+        /// erzeugt - das Zusammensetzen schaltet das RenderTarget um und würde mitten im Zeichnen
+        /// den Bildpuffer verwerfen.
+        /// </summary>
         public BaseTexture CreateTexture() {
             if (IsEmpty)
                 return null;
 
             string cacheKey = $"{GetType().Name} {_value[0]} {_value[1]} {_value[2]} {_value[3]} {_value[4]} {_value[5]}";
-            if (TextureCache.Contains(cacheKey))
-                return TextureCache.Get(cacheKey);
-
-            List<Texture2D> list = GetTextures();
-            if (list != null && list.Count > 0) {
-                var texture = TextureCache.MergeTextures(list);
-                TextureCache.Set(cacheKey, texture);
-            }
-            return null;
+            return TextureCache.GetOrRequest(cacheKey, () => {
+                List<Texture2D> list = GetTextures();
+                return list != null && list.Count > 0 ? TextureCache.MergeTextures(list) : null;
+            });
         }
 
         private BaseTexture _texture = null;
