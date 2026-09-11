@@ -30,7 +30,13 @@ namespace PhoenixModel.View {
         public static Rüstort? GetRuestortReferenz(int? nummer) {
             if (nummer == null || nummer < 1 || SharedData.RüstortReferenz == null)
                 return null;
-            return SharedData.RüstortReferenz.ElementAt(nummer.Value - 1);
+            // Gesucht wird über die Nummer, nicht über die Position in der Sammlung.
+            //
+            // Vorher stand hier ElementAt(nummer - 1). Das setzt voraus, dass die Referenztabelle
+            // lückenlos bei 1 beginnt und genau in dieser Reihenfolge geladen wurde. Stimmt das
+            // nicht, kam die falsche Referenz heraus - und sobald die Nummer grösser war als die
+            // Zeilenzahl, eine Ausnahme mitten in der Anzeige eines Feldes.
+            return SharedData.RüstortReferenz.FirstOrDefault(rüstort => rüstort.Nummer == nummer.Value);
         }
 
         /// <summary>

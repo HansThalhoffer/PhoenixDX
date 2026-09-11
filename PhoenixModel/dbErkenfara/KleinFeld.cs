@@ -24,7 +24,30 @@ namespace PhoenixModel.dbErkenfara {
         string IDatabaseTable.TableName => TableName;
         public string Bezeichner { get => CreateBezeichner(); }
         private static readonly string[] PropertiestoIgnore = { "Gebäude", "Index", "DatabaseName", "Database", "x", "y", "Rand", "db_xy", "ph_xy", "krieger_text", "TerrainType", "Key", "Reich", "Gelaendetyp", "Mark", "IsWasser", "IsKüste" };
-        public List<Eigenschaft> Eigenschaften => PropertyProcessor.CreateProperties(this, PropertiestoIgnore);
+
+        /// <summary>
+        /// Was nur der Besitzer des Kleinfeldes erfahren darf.
+        ///
+        /// Regelwerk 1.5.12: "Die Zahl der aktuellen Baupunkte wird auf dem Spielbrett nicht
+        /// eingetragen und wird nur dem Besitzer bekannt gegeben; das Symbol des Rüstortes ist
+        /// gegebenenfalls auf der Karte zu ändern."
+        ///
+        /// Die Ausbaustufe ist also öffentlich - sie steht als Symbol auf dem Brett und jeder sieht
+        /// sie - der genaue Stand der Baupunkte dagegen nicht. An ihm liesse sich ablesen, wie stark
+        /// ein fremder Rüstort beschädigt ist.
+        /// </summary>
+        private static readonly string[] NurFürDenBesitzer = ["Baupunkte"];
+
+        public List<Eigenschaft> Eigenschaften => PropertyProcessor.CreateProperties(this,
+            GehörtDemBenutzer ? PropertiestoIgnore : [.. PropertiestoIgnore, .. NurFürDenBesitzer]);
+
+        /// <summary>
+        /// Gehört das Kleinfeld dem Reich, das gerade gespielt wird?
+        ///
+        /// Bewusst ohne Protokolleintrag, anders als ProgramView.BelongsToUser: die Frage wird bei
+        /// jeder Anzeige eines Feldes gestellt, und ein herrenloses Feld ist nichts Meldenswertes.
+        /// </summary>
+        public bool GehörtDemBenutzer => ProgramView.SelectedNation != null && Nation == ProgramView.SelectedNation;
         #endregion
 
         #region Datenbankfelder

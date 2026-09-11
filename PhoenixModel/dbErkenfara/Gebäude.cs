@@ -20,7 +20,16 @@ namespace PhoenixModel.dbErkenfara {
         public string Bezeichner { get => CreateBezeichner(); }
         // IEigenschaftler
         private static readonly string[] PropertiestoIgnore = ["DatabaseName", "Database", "Key","gf","kf"];
-        public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this, PropertiestoIgnore); }
+
+        /// <summary>
+        /// Der genaue Stand der Baupunkte ist nur dem Besitzer bekannt, siehe Regelwerk 1.5.12 und
+        /// die gleichnamige Liste in <see cref="KleinFeld"/>.
+        /// </summary>
+        private static readonly string[] NurFürDenBesitzer = ["Baupunkte"];
+
+        public List<Eigenschaft> Eigenschaften { get => PropertyProcessor.CreateProperties(this,
+            ProgramView.SelectedNation != null && Nation == ProgramView.SelectedNation
+                ? PropertiestoIgnore : [.. PropertiestoIgnore, .. NurFürDenBesitzer]); }
 
 
         // Felder der Tabellen
