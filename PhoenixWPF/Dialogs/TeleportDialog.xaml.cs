@@ -28,7 +28,8 @@ namespace PhoenixWPF.Dialogs {
 
             var art = TeleportRules.GetArt(teleportfeld);
             PromptLabel.Text = $"{figur.Bezeichner} betritt das Teleportfeld {teleportfeld.CreateBezeichner()} ({art}). "
-                + "Auf einem Teleportfeld bleibt niemand stehen - bitte auswählen, wo die Figur wieder erscheint.";
+                + "Auf einem Teleportfeld bleibt niemand stehen. Auftauchpunkt und Auftauchfeld gibt die Spielleitung vor - "
+                + "bitte die bekanntgegebenen Werte eintragen.";
 
             HinweisLabel.Text = TeleportRules.KostetAuftauchen(art)
                 ? "Das Auftauchen zählt als weiteres Wasserfeld und kostet zusätzliche Bewegungspunkte (Regelwerk 6.6.4)."

@@ -21,7 +21,7 @@
         <ListBox Grid.Row="2" Name="PunkteListe" Background="#303030" Foreground="LightGray"
                  BorderBrush="#505050" SelectionChanged="PunkteListe_SelectionChanged" />
 
-        <TextBlock Grid.Row="3" Text="Feld, auf dem die Figur erscheint" FontWeight="Bold" Margin="0,10,0,4" />
+        <TextBlock Grid.Row="3" Text="Auftauchfeld (Vorgabe der Spielleitung)" FontWeight="Bold" Margin="0,10,0,4" />
         <ListBox Grid.Row="4" Name="FelderListe" Background="#303030" Foreground="LightGray"
                  BorderBrush="#505050" DisplayMemberPath="Bezeichner" SelectionChanged="FelderListe_SelectionChanged" />
 

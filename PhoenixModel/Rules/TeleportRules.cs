@@ -33,13 +33,15 @@ namespace PhoenixModel.Rules {
     /// <summary>
     /// Die Regeln rund um die Teleportfelder, Regelwerk Kapitel 6.6.3 bis 6.6.5.
     ///
-    /// - Der Auftauchpunkt für die Reise von der Pirateninsel nach Erkenfara wird zusammen mit der
-    ///   Zugreihenfolge vier Züge im Voraus von der Spielleitung ausgewürfelt (1w8: 1-6 die sechs
-    ///   Teleportfelder am Kartenrand, 7-8 die beiden Tiefseepunkte). Die Anwendung würfelt also
-    ///   nicht selbst, sondern lässt den vorgegebenen Punkt auswählen.
-    /// - In der Gegenrichtung sind alle sechs Punkte jederzeit befahrbar.
-    /// - Aufgetaucht wird nie auf dem Teleportpunkt selbst, sondern auf einem der sechs Kleinfelder
-    ///   ringsherum; welches davon, sucht sich der Spieler aus.
+    /// - Das Teleportfeld selbst ist nur zum Verlassen der Welt da. Aufgetaucht wird nie darauf,
+    ///   sondern auf einem der sechs Kleinfelder ringsherum.
+    /// - Von den acht Teleportpunkten ist pro Monat genau einer aktiv; nur über ihn kommt man
+    ///   zurück. Er wird zusammen mit der Zugreihenfolge vier Züge im Voraus von der Spielleitung
+    ///   ausgewürfelt (1w8: 1-6 die sechs Punkte am Kartenrand, 7-8 die beiden Tiefseepunkte) und
+    ///   steht in der Spalte Auftauchpunkt_A der Tabelle Zugreihenfolge. Die Anwendung würfelt
+    ///   also nicht selbst.
+    /// - Auch das konkrete Auftauchfeld unter den sechs ist von der Spielleitung vorgegeben und den
+    ///   Spielern bekannt. In den Daten steht es bisher nicht, deshalb wird es im Dialog ausgewählt.
     /// </summary>
     public static class TeleportRules {
 
@@ -246,6 +248,9 @@ namespace PhoenixModel.Rules {
         /// <summary>
         /// Aufgetaucht wird nie auf dem Teleportpunkt selbst, sondern auf einem der sechs Kleinfelder
         /// ringsherum. Geliefert werden nur die Felder, die auf der Karte liegen und Wasser sind.
+        ///
+        /// Welches der sechs es ist, gibt die Spielleitung vor. Da diese Angabe in den Daten fehlt,
+        /// liefert die Funktion alle in Frage kommenden und die Auswahl trifft der Benutzer.
         /// </summary>
         public static List<KleinFeld> GetAuftauchfelder(KleinfeldPosition? teleportpunkt) {
             List<KleinFeld> result = [];
