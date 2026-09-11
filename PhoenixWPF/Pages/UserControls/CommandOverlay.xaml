@@ -102,42 +102,45 @@ VerticalAlignment="Bottom" HorizontalAlignment="Left" />
        Grid.ColumnSpan="2" Grid.RowSpan="2" Width="200" Height="200"
        VerticalAlignment="Center" />
             </Grid>
-            <Button x:Name="buttonNO" Width="100" Height="90" Background="Transparent" Content="é" FontFamily="Wingdings" FontSize="100"
+            <TextBlock x:Name="textBewegungspunkte" Canvas.Left="110" Canvas.Top="252" Width="220"
+                       TextAlignment="Center" FontSize="34" FontWeight="Bold" Foreground="#FFE8E8E8"
+                       Text="" ToolTip="Verbleibende Bewegungspunkte" />
+            <Button x:Name="buttonNO" Click="Bewegung_Button_Click" Width="100" Height="90" Background="Transparent" Content="é" FontFamily="Wingdings" FontSize="100"
                 Canvas.Left="280" HorizontalContentAlignment="Center" VerticalAlignment="Center" Padding="0,-20,0,0"
                 Foreground="Green">
             <Button.RenderTransform>
                 <RotateTransform Angle="37" />
             </Button.RenderTransform>
         </Button>
-        <Button x:Name="buttonNW" Width="100" Height="90" Background="Transparent" Content="é" FontFamily="Wingdings" FontSize="100"
+        <Button x:Name="buttonNW" Click="Bewegung_Button_Click" Width="100" Height="90" Background="Transparent" Content="é" FontFamily="Wingdings" FontSize="100"
             Canvas.Left="50" Canvas.Top="60" HorizontalContentAlignment="Center" VerticalAlignment="Center" Padding="0,-20,0,0"
             Foreground="Green">
             <Button.RenderTransform>
                 <RotateTransform Angle="-37" />
             </Button.RenderTransform>
         </Button>
-        <Button x:Name="buttonW" Width="100" Height="90" Background="Transparent" Content="é" FontFamily="Wingdings" FontSize="100"
+        <Button x:Name="buttonW" Click="Bewegung_Button_Click" Width="100" Height="90" Background="Transparent" Content="é" FontFamily="Wingdings" FontSize="100"
             Canvas.Left="10" Canvas.Top="240" HorizontalContentAlignment="Center" VerticalAlignment="Center" Padding="0,-20,0,0"
             Foreground="Green">
             <Button.RenderTransform>
                 <RotateTransform Angle="-90" />
             </Button.RenderTransform>
         </Button>
-        <Button x:Name="buttonO" Width="100" Height="90" Background="Transparent" Content="é" FontFamily="Wingdings" FontSize="100"
+        <Button x:Name="buttonO" Click="Bewegung_Button_Click" Width="100" Height="90" Background="Transparent" Content="é" FontFamily="Wingdings" FontSize="100"
             Canvas.Left="400" Canvas.Top="140" HorizontalContentAlignment="Center" VerticalAlignment="Center" Padding="0,-20,0,0"
             Foreground="Green">
             <Button.RenderTransform>
                 <RotateTransform Angle="90" />
             </Button.RenderTransform>
         </Button>
-        <Button x:Name="buttonSW" Width="100" Height="90" Background="Transparent" Content="é" FontFamily="Wingdings" FontSize="100"
+        <Button x:Name="buttonSW" Click="Bewegung_Button_Click" Width="100" Height="90" Background="Transparent" Content="é" FontFamily="Wingdings" FontSize="100"
             Canvas.Left="140" Canvas.Top="392" HorizontalContentAlignment="Center" VerticalAlignment="Center" Padding="0,-20,0,0"
             Foreground="Green">
             <Button.RenderTransform>
                 <RotateTransform Angle="-145" />
             </Button.RenderTransform>
         </Button>
-        <Button x:Name="buttonSO"  Width="100" Height="90" Background="Transparent" Content="é" FontFamily="Wingdings" FontSize="100"
+        <Button x:Name="buttonSO" Click="Bewegung_Button_Click"  Width="100" Height="90" Background="Transparent" Content="é" FontFamily="Wingdings" FontSize="100"
             Canvas.Left="360" Canvas.Top="340" HorizontalContentAlignment="Center" VerticalAlignment="Center" Padding="0,-20,0,0"
             Foreground="Green">
             <Button.RenderTransform>

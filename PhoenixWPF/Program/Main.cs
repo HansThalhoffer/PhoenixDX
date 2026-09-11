@@ -381,6 +381,8 @@ namespace PhoenixWPF.Program {
                         UpdateKleinfeld(gem);
                     }
                 }
+                // die bereits in den Zugdaten gespeicherten Bewegungen wieder als Befehle herstellen
+                BewegungView.RekonstruiereAlleBewegungen();
                 EverythingLoaded();
             }
         }

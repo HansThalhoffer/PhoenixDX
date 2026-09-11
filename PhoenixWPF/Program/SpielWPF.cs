@@ -79,14 +79,34 @@ namespace PhoenixWPF.Program {
             if (SharedData.Map != null && SharedData.Map.IsAddingCompleted) {
 
                 var bezeichner = KleinfeldPosition.CreateBezeichner(e.GF, e.KF);
-                var gem = SharedData.Map[bezeichner];
-                if (gem.Nation == ProgramView.SelectedNation && Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) {
+                if (SharedData.Map.TryGetValue(bezeichner, out var gem) == false || gem == null)
+                    return;
+
+                // Umschalt + Klick bewegt die ausgewählte Spielfigur auf dem günstigsten Weg dorthin.
+                // Die Auswahl bleibt dabei auf der Figur, damit man mehrere Züge hintereinander machen kann.
+                if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) {
+                    if (Main.Instance.SelectionHistory.Current is Spielfigur figur) {
+                        var ergebnis = Helper.Bewegungssteuerung.BewegeZuZielfeld(figur, gem);
+                        if (ergebnis.HasErrors)
+                            LogError(ergebnis.Title, ergebnis.Message);
+                        else
+                            Main.Instance.SelectionHistory.Refresh();
+                    }
+                    else {
+                        LogInfo("Es ist keine Spielfigur ausgewählt",
+                            "Für eine Bewegung mit Umschalt+Klick muss zuerst die Figur ausgewählt werden, die sich bewegen soll");
+                    }
+                    return;
+                }
+
+                // Strg + Klick setzt oder entfernt eine eigene Markierung auf einem Feld des eigenen Reiches
+                if ((Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) && gem.Nation == ProgramView.SelectedNation) {
                     MarkerType mark = (gem.Mark == MarkerType.None) ? MarkerType.User : MarkerType.None;
                     KleinfeldView.Mark(gem, mark, true);
                 }
 
                 Main.Instance.SelectionHistory.Current = gem;
-               
+
                 // Test Pfad sichtbar machen
                 /*IEnumerable<KleinFeld>? list = KleinfeldView.GetPath(gem, "SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO SO");
                 if (list != null) {

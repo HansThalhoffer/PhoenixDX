@@ -212,24 +212,23 @@ public static class SpielfigurenView {
     /// <param name="figur"></param>
     /// <returns></returns>
     public static Spielfigur? GetSpielfigur(FigurType typ, int id) {
+        // Der Typ einer Figur hängt von ihrer Ausrüstung ab: ein Kriegerheer mit Katapulten meldet
+        // sich als LeichteArtillerie, eine Flotte mit Katapulten als Kriegsschiff. Daher wird sowohl
+        // gegen den aktuellen Typ als auch gegen den Basistyp verglichen.
+        bool Passt(Spielfigur figur) => figur.Nummer == id && (figur.Typ == typ || figur.BaseTyp == typ);
+
         Spielfigur? spielfigur = null;
-        if (typ == FigurType.Krieger && SharedData.Krieger != null &&
-            (spielfigur = SharedData.Krieger.FirstOrDefault(k => k.Nummer == id)) != null)
+        if (SharedData.Krieger != null && (spielfigur = SharedData.Krieger.FirstOrDefault(Passt)) != null)
             return spielfigur;
-        if (typ == FigurType.Reiter && SharedData.Reiter != null &&
-            (spielfigur = SharedData.Reiter.FirstOrDefault(k => k.Nummer == id)) != null)
+        if (SharedData.Reiter != null && (spielfigur = SharedData.Reiter.FirstOrDefault(Passt)) != null)
             return spielfigur;
-        if (typ == FigurType.Schiff && SharedData.Schiffe != null &&
-           (spielfigur = SharedData.Schiffe.FirstOrDefault(k => k.Nummer == id)) != null)
+        if (SharedData.Schiffe != null && (spielfigur = SharedData.Schiffe.FirstOrDefault(Passt)) != null)
             return spielfigur;
-        if (typ == FigurType.Kreatur && SharedData.Kreaturen != null &&
-           (spielfigur = SharedData.Kreaturen.FirstOrDefault(k => k.Nummer == id)) != null)
+        if (SharedData.Kreaturen != null && (spielfigur = SharedData.Kreaturen.FirstOrDefault(Passt)) != null)
             return spielfigur;
-        if (typ == FigurType.Zauberer && SharedData.Zauberer != null &&
-           (spielfigur = SharedData.Zauberer.FirstOrDefault(k => k.Nummer == id)) != null)
+        if (SharedData.Zauberer != null && (spielfigur = SharedData.Zauberer.FirstOrDefault(Passt)) != null)
             return spielfigur;
-        if (typ == FigurType.Charakter && SharedData.Character != null &&
-           (spielfigur = SharedData.Character.FirstOrDefault(k => k.Nummer == id)) != null)
+        if (SharedData.Character != null && (spielfigur = SharedData.Character.FirstOrDefault(Passt)) != null)
             return spielfigur;
         return null;
     }

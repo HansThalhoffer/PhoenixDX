@@ -1,0 +1,36 @@
+﻿<Window x:Class="PhoenixWPF.Dialogs.TeleportDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Teleport" Height="420" Width="520"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        Background="#202020" Foreground="LightGray">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Name="PromptLabel" TextWrapping="Wrap" Margin="0,0,0,10" />
+
+        <TextBlock Grid.Row="1" Text="Auftauchpunkt (Vorgabe der Spielleitung)" FontWeight="Bold" Margin="0,0,0,4" />
+        <ListBox Grid.Row="2" Name="PunkteListe" Background="#303030" Foreground="LightGray"
+                 BorderBrush="#505050" SelectionChanged="PunkteListe_SelectionChanged" />
+
+        <TextBlock Grid.Row="3" Text="Feld, auf dem die Figur erscheint" FontWeight="Bold" Margin="0,10,0,4" />
+        <ListBox Grid.Row="4" Name="FelderListe" Background="#303030" Foreground="LightGray"
+                 BorderBrush="#505050" DisplayMemberPath="Bezeichner" SelectionChanged="FelderListe_SelectionChanged" />
+
+        <TextBlock Grid.Row="5" Name="HinweisLabel" TextWrapping="Wrap" Margin="0,8,0,8" Foreground="#FFB0B0B0" />
+
+        <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Name="OkButton" Content="Teleportieren" Width="120" Height="28" Margin="0,0,8,0"
+                    IsDefault="True" IsEnabled="False" Click="OkButton_Click" />
+            <Button Content="Abbrechen" Width="100" Height="28" IsCancel="True" />
+        </StackPanel>
+    </Grid>
+</Window>

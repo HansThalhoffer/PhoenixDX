@@ -66,7 +66,18 @@ namespace PhoenixModel.dbErkenfara {
         public int? Bruecke_SO { get; set; }
         public int? Bruecke_SW { get; set; }
         public int? Bruecke_W { get; set; }
-        public int? Reich { get; set; }
+        private int? _reich = null;
+        /// <summary>
+        /// Die Nummer der Nation, der das Kleinfeld gehört. Beim Setzen wird die gemerkte Nation
+        /// verworfen, damit eine Eroberung sofort durchschlägt.
+        /// </summary>
+        public int? Reich {
+            get => _reich;
+            set {
+                _reich = value;
+                _nation = null;
+            }
+        }
         public int? Krieger_eigen { get; set; }
         public int? Krieger_feind { get; set; }
         public int? Krieger_freund { get; set; }
@@ -408,13 +419,22 @@ namespace PhoenixModel.dbErkenfara {
             }
         }*/
 
+        private Nation? _nation = null;
+        /// <summary>
+        /// Die Nation, der dieses Kleinfeld gehört.
+        /// Der Wert wird gemerkt, weil ElementAt auf der BlockingCollection die Liste durchläuft und
+        /// die Zugehörigkeit bei der Wegsuche sehr oft abgefragt wird.
+        /// </summary>
         public Nation? Nation
         {
             get
             {
+                if (_nation != null)
+                    return _nation;
                 if (SharedData.Nationen == null || Reich == null)
                     return null;
-                return SharedData.Nationen.ElementAt(Reich.Value);
+                _nation = SharedData.Nationen.ElementAt(Reich.Value);
+                return _nation;
             }
         }
 

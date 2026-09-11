@@ -44,6 +44,7 @@ namespace PhoenixModel.ViewModel {
         public static BlockingCollection<BEW_PiratenSchiffe>? BEW_PiratenSchiffe = null;
         public static BlockingCollection<BEW_PiratenSKS>? BEW_PiratenSKS = null;
         public static BlockingCollection<BEW_Reiter>? BEW_Reiter = null;
+        public static BlockingCollection<BEW_Schiffe>? BEW_Schiffe = null;
         public static BlockingCollection<BEW_SKP>? BEW_SKP = null;
         public static BlockingCollection<BEW_SKS>? BEW_SKS = null;
         public static BlockingDictionary<Kosten>? Kosten = null;

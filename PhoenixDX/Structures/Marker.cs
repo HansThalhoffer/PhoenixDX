@@ -37,10 +37,14 @@ namespace PhoenixDX.Structures {
             try
             {
                 _hexTexture = contentManager.Load<Texture2D>("Images/TilesetV/Info");
-                coloredTextures[0] = new ColoredTexture(_hexTexture, Color.Turquoise);
-                coloredTextures[1] = new ColoredTexture(_hexTexture, Color.Yellow);
-                coloredTextures[2] = new ColoredTexture(_hexTexture, Color.Orange);
-                coloredTextures[3] = new ColoredTexture(_hexTexture, Color.Red);
+                // Die Texturen werden über den Wert des MarkerTyps indiziert, damit ein neuer Typ
+                // im Model nicht stillschweigend die Farben verschiebt.
+                SetColor(MarkerType.User, Color.Turquoise);
+                SetColor(MarkerType.Info, Color.Yellow);
+                SetColor(MarkerType.Warning, Color.Orange);
+                SetColor(MarkerType.Fatality, Color.Red);
+                SetColor(MarkerType.Bewegung, Color.LightGreen);
+                SetColor(MarkerType.Weg, Color.CornflowerBlue);
             }
             catch (Exception ex)
             {
@@ -54,21 +58,20 @@ namespace PhoenixDX.Structures {
         /// <returns>Die entsprechende ColoredTexture oder null.</returns>
         public override ColoredTexture CreateTexture()
         {
-            switch (MarkerType)
-            {
-                case MarkerType.None:
-                    return null;
-                case MarkerType.User:
-                    return coloredTextures[0];
-                case MarkerType.Info:
-                    return coloredTextures[1];
-                case MarkerType.Warning:
-                    return coloredTextures[2];
-                case MarkerType.Fatality:
-                    return coloredTextures[3];
-                default:
-                    throw new ArgumentException($"Der übergebene Markertyp {MarkerType} wurde in der Kartendarstellung PhoenixDX noch nicht implementiert");
-            }
+            if (MarkerType == MarkerType.None)
+                return null;
+            int index = (int)MarkerType;
+            if (index < 0 || index >= coloredTextures.Length || coloredTextures[index] == null)
+                throw new ArgumentException($"Der übergebene Markertyp {MarkerType} wurde in der Kartendarstellung PhoenixDX noch nicht implementiert");
+            return coloredTextures[index];
+        }
+
+        /// <summary>
+        /// Hinterlegt die Farbe für einen Markertyp an der Position seines Enum-Wertes.
+        /// </summary>
+        private static void SetColor(MarkerType markerType, Color color)
+        {
+            coloredTextures[(int)markerType] = new ColoredTexture(_hexTexture, color);
         }
     }
 }

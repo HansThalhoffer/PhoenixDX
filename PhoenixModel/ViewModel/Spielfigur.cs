@@ -195,6 +195,23 @@ namespace PhoenixModel.ViewModel {
         }
 
         /// <summary>
+        /// Die verbleibenden und die maximalen Bewegungspunkte für die Anzeige
+        /// </summary>
+        public string Bewegungspunkte => $"{bp} von {bp_max}";
+
+        /// <summary>
+        /// Der in diesem Zug zurückgelegte Weg als lesbarer Text
+        /// </summary>
+        public string Route {
+            get {
+                if (schritt <= 0)
+                    return $"steht auf {CreateBezeichner()}";
+                var spur = new Bewegungsspur(this);
+                return $"{KleinfeldPosition.CreateBezeichner(gf_von, kf_von)} → {spur}";
+            }
+        }
+
+        /// <summary>
         /// hat die Figur bereits Commandos erhalten
         /// </summary>
         public bool HasCommands{

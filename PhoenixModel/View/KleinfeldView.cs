@@ -26,7 +26,11 @@ namespace PhoenixModel.View {
     /// Die Kartendarstellung generiert daraus Farben, sofern das dort implementiert wurde
     /// </summary>
     public enum MarkerType {
-        None, User, Info, Warning, Fatality
+        None, User, Info, Warning, Fatality,
+        /// <summary>Ein Kleinfeld, das die ausgewählte Figur in diesem Zug noch erreichen kann</summary>
+        Bewegung,
+        /// <summary>Ein Kleinfeld auf dem Weg, den die ausgewählte Figur in diesem Zug zurückgelegt hat</summary>
+        Weg
     }
 
     /// <summary>
@@ -94,6 +98,28 @@ namespace PhoenixModel.View {
         /// </summary>
         public static void UnMark(KleinFeld kleinFeld) {
             Mark(kleinFeld, MarkerType.None);
+        }
+
+        /// <summary>
+        /// entfernt die Markierung mehrerer Kleinfelder auf einmal.
+        /// Die Warteschlange wird dabei nur einmal aufgeräumt, was bei vielen Feldern - etwa der
+        /// Reichweitenanzeige einer Flotte - deutlich schneller ist als einzelne Aufrufe von Mark.
+        /// </summary>
+        public static void UnMark(IEnumerable<KleinFeld> kleinfelder) {
+            bool etwasEntfernt = false;
+            foreach (var kf in kleinfelder) {
+                if (kf.Mark == MarkerType.None)
+                    continue;
+                kf.Mark = MarkerType.None;
+                SharedData.UpdateQueue.Enqueue(kf);
+                etwasEntfernt = true;
+            }
+            if (etwasEntfernt == false)
+                return;
+            var temp = _markedQueue.Where(f => f.Mark != MarkerType.None).ToArray();
+            _markedQueue.Clear();
+            foreach (var f in temp)
+                _markedQueue.Enqueue(f);
         }
 
         /// <summary>

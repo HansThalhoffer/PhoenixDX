@@ -13,13 +13,12 @@ namespace PhoenixModel.Rules {
 
 
         /// <summary>
-        /// TODO Berechnugn der Beweungspunkte 
+        /// Die maximalen Bewegungspunkte einer Spielfigur.
+        /// Die Berechnung steht in <see cref="BewegungsRules.BerechneBewegungspunkte(Spielfigur?)"/>,
+        /// zusammen mit den übrigen Bewegungsregeln.
         /// </summary>
-        /// <param name="figur"></param>
-        /// <returns></returns>
         public static int BerechneBewegungspunkte(Spielfigur figur) {
-            //throw new NotImplementedException();
-            return 0;
+            return BewegungsRules.BerechneBewegungspunkte(figur);
         }
 
         /// <summary>

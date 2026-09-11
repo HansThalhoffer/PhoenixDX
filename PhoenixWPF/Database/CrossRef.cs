@@ -80,6 +80,7 @@ namespace PhoenixWPF.Database
                     Load<BEW_PiratenSchiffe>(connector, ref SharedData.BEW_PiratenSchiffe, Enum.GetNames(typeof(BEW_PiratenSchiffe.Felder)));
                     Load<BEW_PiratenSKS>(connector, ref SharedData.BEW_PiratenSKS, Enum.GetNames(typeof(BEW_PiratenSKS.Felder)));
                     Load<BEW_Reiter>(connector, ref SharedData.BEW_Reiter, Enum.GetNames(typeof(BEW_Reiter.Felder)));
+                    Load<BEW_Schiffe>(connector, ref SharedData.BEW_Schiffe, Enum.GetNames(typeof(BEW_Schiffe.Felder)));
                     Load<BEW_SKP>(connector, ref SharedData.BEW_SKP, Enum.GetNames(typeof(BEW_SKP.Felder)));
                     Load<BEW_SKS>(connector, ref SharedData.BEW_SKS, Enum.GetNames(typeof(BEW_SKS.Felder)));
                     Load<Kosten>(connector, ref SharedData.Kosten, Enum.GetNames(typeof(Kosten.Felder)));

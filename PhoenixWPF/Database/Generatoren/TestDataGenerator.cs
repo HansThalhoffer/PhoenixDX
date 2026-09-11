@@ -267,7 +267,10 @@ namespace PhoenixWPF.Database.Generatoren {
         /// <param name="figur"></param>
         /// <param name="kf"></param>
         private static void Calculate(ref TruppenSpielfigur figur, KleinFeld kf) {
-            figur.bp = SpielfigurRules.BerechneBewegungspunkte(figur);
+            // bp_max muss mitgesetzt werden: ohne den Maximalwert gilt die Figur nie als unbewegt,
+            // und Flüsse ohne Brücke sowie fremde Wälle liessen sich nie überwinden
+            figur.bp_max = SpielfigurRules.BerechneBewegungspunkte(figur);
+            figur.bp = figur.bp_max;
             figur.rp = SpielfigurRules.BerechneRaumpunkte(figur);
         }
 
@@ -277,7 +280,8 @@ namespace PhoenixWPF.Database.Generatoren {
         /// <param name="figur"></param>
         /// <param name="kf"></param>
         private static void Calculate(ref NamensSpielfigur figur, KleinFeld kf) {
-            figur.bp = SpielfigurRules.BerechneBewegungspunkte(figur);
+            figur.bp_max = SpielfigurRules.BerechneBewegungspunkte(figur);
+            figur.bp = figur.bp_max;
             figur.rp = SpielfigurRules.BerechneRaumpunkte(figur);
         }
 

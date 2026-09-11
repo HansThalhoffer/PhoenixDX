@@ -37,6 +37,15 @@ namespace PhoenixWPF.Helper {
         }
 
         /// <summary>
+        /// Meldet erneut, dass sich die aktuelle Auswahl geändert hat, ohne eine andere auszuwählen.
+        /// Wird gebraucht, wenn sich das ausgewählte Objekt selbst verändert hat - etwa wenn eine
+        /// Spielfigur bewegt wurde und die Anzeige der Bewegungspunkte nachziehen muss.
+        /// </summary>
+        public void Refresh() {
+            _OnSelectionChange(Current);
+        }
+
+        /// <summary>
         /// Navigiert in der Historie einen Schritt vorwärts.
         /// </summary>
         /// <returns>Das nächste ausgewählte Objekt oder null, falls nicht möglich.</returns>
