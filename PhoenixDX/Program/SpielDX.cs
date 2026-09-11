@@ -148,6 +148,10 @@ namespace PhoenixDX.Program {
 
             Activated += Spiel_Activated;
             _updateFunction = DoInitialization;
+
+            XmlStateServer server = new XmlStateServer(() => {
+                return $"<SpielDX><Timestamp>{DateTime.UtcNow:o}</Timestamp><CameraPosition><X>{CameraPosition.X}</X><Y>{CameraPosition.Y}</Y></CameraPosition><Zoom>{Zoom}</Zoom></SpielDX>";
+            });
         }
 
         /// <summary>
