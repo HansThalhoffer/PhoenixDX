@@ -1,73 +1,63 @@
 ﻿using PhoenixModel.Commands.Parser;
-using PhoenixModel.dbCrossRef;
-using PhoenixModel.dbErkenfara;
-using PhoenixModel.dbZugdaten;
 using PhoenixModel.Program;
 using PhoenixModel.View;
+using PhoenixModel.Rules;
 using PhoenixModel.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace PhoenixModel.Commands {
-    public class RepairCommand : BaseCommand, IPhoenixCommand {
 
-        public Kosten? Kosten = null;
-        public KleinfeldPosition? Location { get; set; }
-        public int Baupunkte { get; set; } = 0;
+    /// <summary>
+    /// Repariert einen beschädigten Rüstort.
+    ///
+    /// - "Repariere Rüstort 202/33"
+    /// - "Repariere 150 Baupunkte an dem Bauwerk auf 202/33"
+    ///
+    /// Ohne Angabe wird repariert, was der Monat hergibt: höchstens 250 Baupunkte und nie mehr,
+    /// als kaputt ist. Die Regeln stehen in <see cref="RuestortRules"/>.
+    /// </summary>
+    public class RepairCommand : RuestortBaubefehl {
 
-        public override string ToString() {            
-            string result = $"Repariere {Baupunkte} an dem Bauwerk auf {Location}";
-            //if (Kosten != null) result = $"{result} für {Kosten.GS}";
-            return result ; 
-        }
+        protected override Bauart Bauart => Bauart.Reparatur;
 
         public RepairCommand(string commandString) : base(commandString) {
         }
 
-        public override bool CanAppliedTo(ISelectable selectable) {
-            return selectable != null && selectable is KleinFeld kleinFeld && kleinFeld.Gebäude != null;
+        public override string ToString() {
+            return Baupunkte > 0
+                ? $"Repariere {Baupunkte} Baupunkte an dem Bauwerk auf {Location?.CreateBezeichner()}"
+                : $"Repariere Rüstort {Location?.CreateBezeichner()}";
         }
 
+        /// <summary>
+        /// Ohne ausdrückliche Angabe wird repariert, soviel in einem Monat geht
+        /// </summary>
         public override CommandResult CheckPreconditions() {
-            throw new NotImplementedException();
+            if (Baupunkte <= 0)
+                Baupunkte = Math.Min(RuestortRules.MaxBaupunkteProMonat, RuestortRules.GetSchaden(BestimmeKleinfeld()));
+            return base.CheckPreconditions();
         }
-
-        public override CommandResult ExecuteCommand() {
-            CommandResult result = CheckPreconditions();
-            if (result.HasErrors)
-                return result;
-            throw new NotImplementedException();
-        }
-
-        public override CommandResult UndoCommand() {
-            throw new NotImplementedException();
-        }
-        
     }
 
     public class RepairCommandParser : SimpleParser {
-        private static readonly Regex UpgradeRegex = new Regex(
-            @"^Repariere\s+(?<Baupunkte>\d+)\s+Baupunktet\s+an\s+dem\s+Bauwerk\s+auf\s+(?<loc>[^\s]+)$",
-            RegexOptions.IgnoreCase | RegexOptions.Compiled
-        );
+
+        private static readonly Regex RepairRegex = new(
+              @"^Repariere\s+(?:(?<bp>\d+)\s+Baupunkte?\s+an\s+dem\s+Bauwerk\s+auf|Rüstort)\s+(?<loc>\d+/\d+)$",
+              RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         public override bool ParseCommand(string commandString, out IPhoenixCommand? command) {
-            var match = UpgradeRegex.Match(commandString);
-            if (!match.Success) 
+            var match = RepairRegex.Match(commandString);
+            if (match.Success == false)
                 return Fail(out command);
-            
+
             try {
                 command = new RepairCommand(commandString) {
                     Location = ParseLocation(match.Groups["loc"].Value),
-                    Baupunkte = ParseInt(match.Groups["Baupunkte"].Value),
+                    Baupunkte = match.Groups["bp"].Success ? ParseInt(match.Groups["bp"].Value) : 0,
                 };
             }
             catch (Exception ex) {
-                ProgramView.LogError("Beim Lesen des RepairCommands gab es einen Fehler", ex.Message);
+                ProgramView.LogError("Beim Lesen des RepairCommand gab es einen Fehler", ex.Message);
                 command = null;
                 return false;
             }

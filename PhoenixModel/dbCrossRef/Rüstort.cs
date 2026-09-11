@@ -37,8 +37,11 @@ namespace PhoenixModel.dbCrossRef {
             KapazitätHF = DatabaseConverter.ToInt32(reader[(int)Felder.Kapazitaet_HF]);
             KapazitätZ = DatabaseConverter.ToInt32(reader[(int)Felder.Kapazitaet_Z]);
             canSieged = DatabaseConverter.ToBool(reader[(int)Felder.canSieged]);
+            // Zugewiesen statt hinzugefügt: NachBaupunkten ist statisch und wird nie geleert.
+            // Mit Add warf das zweite Laden der Crossref - etwa beim Zugwechsel - schon bei der
+            // ersten Zeile, der Ladevorgang brach ab und die Rüstortreferenz blieb leer zurück.
             if (Baupunkte > 0)
-                NachBaupunkten.Add(Baupunkte.Value, this);
+                NachBaupunkten[Baupunkte.Value] = this;
         }
     }
 }
