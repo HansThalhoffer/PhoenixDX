@@ -401,8 +401,9 @@ namespace PhoenixWPF.Program {
 
             try {
                 databaseLocation = StorageSystem.LocateFile(databaseLocation, $"Datenbank {databaseName}");
-                PasswordHolder pwdHolder = new PasswordHolder(encryptedPassword, new PasswortProvider(databaseName));
-                encryptedPassword = pwdHolder.EncryptedPasswordBase64;
+                encryptedPassword = BesorgeGültigesPasswort(databaseLocation, encryptedPassword, databaseName);
+                if (string.IsNullOrEmpty(encryptedPassword))
+                    return;
                 using (ILoadableDatabase db = dbCreator(databaseLocation, encryptedPassword)) {
                     if (loadCompletedDelegate != null)
                         db.BackgroundLoad(loadCompletedDelegate);
@@ -413,6 +414,47 @@ namespace PhoenixWPF.Program {
             catch (Exception ex) {
                 SpielWPF.LogError($"Die Datenbank {databaseName} konnte nicht geladen werden", ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Wie oft nach einem Datenbankpasswort gefragt wird, bevor aufgegeben wird
+        /// </summary>
+        private const int MaxPasswortVersuche = 3;
+
+        /// <summary>
+        /// Liefert ein verschlüsseltes Passwort, mit dem sich die Datenbank auch wirklich öffnen lässt.
+        ///
+        /// Die Passwörter werden mit dem Rechnernamen als Schlüssel abgelegt. Wird der Rechner umbenannt
+        /// oder die Einstellungsdatei auf einen anderen Rechner kopiert, lassen sie sich nicht mehr
+        /// entschlüsseln. Ohne diese Prüfung würde die Anwendung stillschweigend mit einem unbrauchbaren
+        /// Passwort weiterarbeiten und nie wieder nachfragen.
+        /// </summary>
+        /// <returns>das verschlüsselte Passwort oder ein leerer String, wenn es nicht geklappt hat</returns>
+        private static string BesorgeGültigesPasswort(string databaseLocation, string encryptedPassword, string databaseName) {
+            if (string.IsNullOrEmpty(databaseLocation) || File.Exists(databaseLocation) == false) {
+                SpielWPF.LogError($"Die Datenbank {databaseName} wurde nicht gefunden",
+                    $"Unter '{databaseLocation}' liegt keine Datei. Bitte die Datenbank über den Dateidialog auswählen.");
+                return string.Empty;
+            }
+
+            var provider = new PasswortProvider(databaseName);
+            string fehler = string.Empty;
+            for (int versuch = 1; versuch <= MaxPasswortVersuche; versuch++) {
+                PasswordHolder holder = new(encryptedPassword, provider);
+                encryptedPassword = holder.EncryptedPasswordBase64;
+                // der Benutzer hat den Passwortdialog abgebrochen
+                if (string.IsNullOrEmpty(encryptedPassword))
+                    break;
+                if (AccessDatabase.TestConnection(databaseLocation, holder.DecryptedPassword, out fehler))
+                    return encryptedPassword;
+                SpielWPF.LogWarning($"Das gespeicherte Passwort für {databaseName} passt nicht",
+                    $"{fehler}\r\nDas Passwort wird verworfen und erneut abgefragt (Versuch {versuch} von {MaxPasswortVersuche}).");
+                // verwerfen, damit im nächsten Durchlauf wieder gefragt wird
+                encryptedPassword = string.Empty;
+            }
+            SpielWPF.LogError($"Die Datenbank {databaseName} konnte nicht geöffnet werden",
+                $"{databaseLocation}\r\n{fehler}\r\nHinweis: gespeicherte Passwörter sind an den Rechnernamen gebunden. Nach einem Rechnerwechsel oder einer Umbenennung müssen sie neu eingegeben werden.");
+            return string.Empty;
         }
 
         private ILoadableDatabase CreateCrossRef(string databaseLocation, string encryptedPassword) {

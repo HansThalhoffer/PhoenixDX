@@ -9,6 +9,17 @@ using System.Text;
 
 namespace PhoenixWPF.Helper {
     public class StorageSystem {
+
+        /// <summary>
+        /// Dürfen fehlende Angaben durch einen Dialog beim Benutzer erfragt werden?
+        ///
+        /// In der Anwendung ja - dort soll der Benutzer eine fehlende Datenbank heraussuchen können.
+        /// In automatisierten Testläufen nicht, denn dort blockiert ein modaler Dialog den ganzen
+        /// Lauf und öffnet unerwartet Fenster auf dem Bildschirm. Tests sollen stattdessen sofort
+        /// mit einer aussagekräftigen Meldung scheitern.
+        /// </summary>
+        public static bool BenutzerdialogeErlaubt { get; set; } = true;
+
         /// <summary>
         /// Vorbereitung, um auf einem bestimmten USB Stick die verschlüsselten Datenbank Passwörter für den Install abzulegen
         /// wenn die Passwörter auf dem Stick mit der USB ID verschlüsselt wären, ist eine ausreichende Sicherheit gegeben
@@ -131,6 +142,10 @@ namespace PhoenixWPF.Helper {
             }
 
             if (File.Exists(fullPath) == false) {
+                if (BenutzerdialogeErlaubt == false)
+                    throw new FileNotFoundException(
+                        $"Die Datei '{relativePath}' wurde nicht gefunden ({windowText}). Ohne Benutzerdialoge kann sie nicht gesucht werden.");
+
                 string filter = "Any File (*.*)|*.*";
                 if (fileName.EndsWith(".mdb"))
                     filter = "Access Database Files (*.mdb)|*.mdb";

@@ -17,8 +17,8 @@ namespace PhoenixWPF.Database
         /// <summary>
         /// Ermittelt die installierte Microsoft ACE OLEDB Provider-Version aus der Windows-Registrierung.
         /// </summary>
-        /// <returns>Der Name des installierten OLEDB Providers oder eine Fehlermeldung.</returns>
-        public static string GetInstalledAceOleDbProvider()
+        /// <returns>Der Name des installierten OLEDB Providers oder null, wenn keiner gefunden wurde.</returns>
+        public static string? GetInstalledAceOleDbProvider()
         {
             // Registrypfad für OLEDB Provider
               // string registryPath32Bit = @"SOFTWARE\WOW6432Node\Classes\Microsoft.ACE.OLEDB.";
@@ -39,7 +39,7 @@ namespace PhoenixWPF.Database
                     }
                 }
             }
-            return "No Microsoft.ACE.OLEDB provider installed.";
+            return null;
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace PhoenixWPF.Database
                 throw new ArgumentException("Database file path must be provided.", nameof(databaseFilePath));
 
             string connectionString = string.Empty;
-            string provider = GetInstalledAceOleDbProvider();
+            string? provider = GetInstalledAceOleDbProvider();
             if (provider == null)
             {
                 SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, "Es ist kein Microsoft.ACE.OLEDB Treiber installiert. Bitte einen entsprechenden Treiber installieren", "Der 'Microsoft Access Database Engine 2016 Redistributable' Treiber für die Access Datenbank muss installiert sein. Normalerweise ist der automatisch mit dem Office installiert, hier anscheinend nicht. Die Installationsdateien befinden sich unter 'Redistribute' im Hauptverzeichnis. Sie könne auch bei Microsoft heruntergeladen werden."));
@@ -76,6 +76,38 @@ namespace PhoenixWPF.Database
             }
             _connection = new OleDbConnection(connectionString);
 
+        }
+
+        /// <summary>
+        /// Versucht die Datenbank mit dem übergebenen Klartextpasswort zu öffnen, ohne etwas zu laden
+        /// und ohne einen Fehler zu protokollieren. Damit lässt sich vor dem Laden feststellen, ob ein
+        /// gespeichertes Passwort überhaupt noch passt.
+        /// </summary>
+        /// <param name="databaseFilePath">Pfad zur Access Datenbank</param>
+        /// <param name="pw">das Passwort im Klartext</param>
+        /// <param name="fehler">die Fehlermeldung, falls das Öffnen nicht geklappt hat</param>
+        /// <returns>true, wenn die Datenbank geöffnet werden konnte</returns>
+        public static bool TestConnection(string databaseFilePath, string? pw, out string fehler)
+        {
+            fehler = string.Empty;
+            if (string.IsNullOrWhiteSpace(databaseFilePath) || System.IO.File.Exists(databaseFilePath) == false)
+            {
+                fehler = $"Die Datei {databaseFilePath} existiert nicht";
+                return false;
+            }
+            try
+            {
+                using var test = new AccessDatabase(databaseFilePath, pw);
+                if (test._connection.State != ConnectionState.Open)
+                    test._connection.Open();
+                test._connection.Close();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                fehler = ex.Message;
+                return false;
+            }
         }
         /// <summary>
         /// Gibt an, ob die Datenbankverbindung aktuell geöffnet ist.

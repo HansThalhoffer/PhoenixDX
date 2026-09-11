@@ -1,5 +1,6 @@
 ﻿using PhoenixModel.Database;
 using PhoenixWPF.Dialogs;
+using PhoenixWPF.Helper;
 using static PhoenixModel.Database.PasswordHolder;
 
 namespace PhoenixWPF.Database {
@@ -47,6 +48,9 @@ namespace PhoenixWPF.Database {
         /// </summary>
         public EncryptedString Password {
             get {
+                // In automatisierten Läufen darf kein modaler Dialog aufgehen
+                if (StorageSystem.BenutzerdialogeErlaubt == false)
+                    return string.Empty;
                 PasswordDialog dialog = new PasswordDialog($"Das Passwort für die Datenbank {_key} bitte eingeben");
                 dialog.ShowDialog();
                 return dialog.ProvidePassword();

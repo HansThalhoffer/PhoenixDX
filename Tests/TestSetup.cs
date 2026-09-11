@@ -29,6 +29,12 @@ namespace Tests {
 
             public EncryptedString Password {
                 get {
+                    // Im Testlauf darf kein modaler Dialog aufgehen - fehlt das Passwort, soll der
+                    // Test mit einer klaren Meldung scheitern.
+                    if (StorageSystem.BenutzerdialogeErlaubt == false)
+                        throw new InvalidOperationException(
+                            $"Für '{ForWhat}' ist in Tests.jpk kein Passwort hinterlegt. " +
+                            "Die Datei liegt im Roaming-Verzeichnis der Anwendung und lässt sich aus Settings.jpk übernehmen.");
                     PasswordDialog dialog = new PasswordDialog($"Das Passwort für '{ForWhat} bitte eingeben");
                     dialog.ShowDialog();
                     return dialog.ProvidePassword();
@@ -65,6 +71,9 @@ namespace Tests {
         }
 
         public static void Setup() {
+            // Kein Testlauf darf Datei- oder Passwortdialoge aufpoppen lassen. Fehlt eine Angabe,
+            // scheitert der Test sofort mit einer Meldung, statt den Lauf modal zu blockieren.
+            StorageSystem.BenutzerdialogeErlaubt = false;
             if (Application.Current == null) {
                 new Application();
             }
