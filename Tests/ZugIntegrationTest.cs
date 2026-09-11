@@ -102,6 +102,64 @@ namespace Tests {
         }
 
         /// <summary>
+        /// Der Trockenlauf der Zugabgabe darf nichts verändern und muss jede Figur einordnen.
+        /// </summary>
+        [StaFact]
+        public void TrockenlaufDerZugabgabeVeraendertNichts() {
+            LadeAlles();
+
+            var armee = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation);
+            Assert.NotEmpty(armee);
+
+            // Zustand vor dem Bericht festhalten
+            var vorher = armee.Select(f => (f.Nummer, f.BaseTyp, f.gf_von, f.kf_von, f.gf_nach, f.kf_nach, f.bp, f.schritt)).ToList();
+
+            var bericht = ZugabgabeView.ErstelleBericht();
+
+            Assert.Equal(ZugView.AktuellerZug.Zug, bericht.AktuellerZug.Zug);
+            Assert.Equal(ZugView.AktuellerZug.Zug + 1, bericht.NächsterZug.Zug);
+            Assert.Equal(armee.Count, bericht.Figuren.Count);
+            Assert.Equal(armee.Count, bericht.AnzahlBewegt + bericht.AnzahlStehengeblieben + bericht.AnzahlAufgelöst);
+            Assert.False(string.IsNullOrWhiteSpace(bericht.Zusammenfassung));
+
+            // nichts darf sich geändert haben
+            var nachher = armee.Select(f => (f.Nummer, f.BaseTyp, f.gf_von, f.kf_von, f.gf_nach, f.kf_nach, f.bp, f.schritt)).ToList();
+            Assert.Equal(vorher, nachher);
+        }
+
+        /// <summary>
+        /// Nach dem Zugübergang steht jede Figur, die nicht aufgelöst wurde, noch auf ihrem Feld
+        /// und hat volle Bewegungspunkte. Geschrieben wird dabei nichts.
+        /// </summary>
+        [StaFact]
+        public void ZugUebergangErhaeltAllePositionen() {
+            LadeAlles();
+
+            var armee = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation);
+            Assert.NotEmpty(armee);
+            var erwartet = armee.ToDictionary(f => $"{f.BaseTyp} {f.Nummer}", f => (gf: f.gf, kf: f.kf, aufgelöst: ZugendeRules.IstAufgelöst(f)));
+
+            int übernommen = ZugabgabeView.SchiebeAlleFigurenInDenNächstenZug();
+            Assert.Equal(armee.Count, übernommen);
+
+            foreach (var figur in armee) {
+                var vorher = erwartet[$"{figur.BaseTyp} {figur.Nummer}"];
+                if (vorher.aufgelöst) {
+                    Assert.Equal(0, figur.gf);
+                    continue;
+                }
+                Assert.Equal(vorher.gf, figur.gf);
+                Assert.Equal(vorher.kf, figur.kf);
+                Assert.Equal(figur.bp_max, figur.bp);
+                Assert.Equal(0, figur.hoehenstufen);
+                Assert.Equal(0, figur.schritt);
+            }
+
+            // die Zugdaten im Speicher sind jetzt verändert - für die folgenden Tests neu laden
+            LadeAlles();
+        }
+
+        /// <summary>
         /// Der Phasenwechsel geht nur vorwärts, und nur die Spielleitung kann ihn erzwingen.
         /// Geschrieben wird dabei nichts - die StoreQueue wird im Testlauf nicht abgearbeitet.
         /// </summary>
