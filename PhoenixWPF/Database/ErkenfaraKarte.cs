@@ -32,7 +32,15 @@ namespace PhoenixWPF.Program {
                 Load<Gebäude>(connector, ref SharedData.Gebäude, Enum.GetNames(typeof(Gebäude.Felder)));
                 Load<KleinFeld>(connector, ref SharedData.Map, Enum.GetNames(typeof(KleinFeld.Felder)));
                 connector?.Close();
-                Task.Run(() => RepairBauwerklistePhase1());
+                // Die Reparatur läuft bewusst hier und nicht nebenher in einem Task.
+                //
+                // Sie ergänzt fehlende Einträge in SharedData.Gebäude. Lief sie nebenher, wetteiferte
+                // sie mit dem Aufbau der Karte: BauwerkeView.GetGebäude meldet jedes Gemark, dessen
+                // Eintrag noch fehlt, als Fehler - mit demselben Wortlaut, den die Reparatur als
+                // Warnung verwendet. Je nachdem, wer zuerst an das Gemark kam, erschienen die
+                // Meldungen beim Start also mal, mal nicht. Es ist eine Schleife über bereits
+                // geladene Daten und dauert nicht nennenswert.
+                RepairBauwerklistePhase1();
                 ProgramView.OnViewEvent += ViewModel_OnViewEvent;
                 return;
             }
@@ -61,19 +69,16 @@ namespace PhoenixWPF.Program {
                     // lookup in Bauwerktabelle
                     if (SharedData.Gebäude.ContainsKey(gemark.Bezeichner))
                         gebäude = SharedData.Gebäude[gemark.Bezeichner];
-                    // ergänzt die Datenbank falls notwendig
-                    if (gebäude == null)
-                    {
-                        ProgramView.LogWarning(gemark, $"Fehlendes Gebäude in der Bauwerktabelle mit dem Namen {gemark.Bauwerknamen}", $"Durch einen Datenbankfehler hat das Gebäude auf {gemark.Bezeichner} keinen Eintrag in der Tabelle [bauwerkliste] in der Datenbank Ekrenfarakarte.mdb.\r\rDieser Fehler wurde automatisch korrigiert");
-                        gebäude = new Gebäude();
-                        gebäude.kf = gemark.kf;
-                        gebäude.gf = gemark.gf;
-                        SharedData.Gebäude.Add(gebäude.Bezeichner, gebäude);
-                    }
-                    gebäude.Bauwerknamen = gemark.Bauwerknamen;
+                    // ergänzt die Datenbank falls notwendig - dieselbe Reparatur, die auch der
+                    // erste Zugriff auf ein Gemark auslöst, damit es nur eine Stelle dafür gibt
+                    gebäude ??= BauwerkeView.ErgänzeFehlendesGebäude(gemark);
+                    if (gebäude != null)
+                        gebäude.Bauwerknamen = gemark.Bauwerknamen;
                 }
             }
-            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            // Die Reparatur läuft jetzt im Ladevorgang und damit auch dort, wo es gar keine
+            // Anwendung mit Oberfläche gibt - etwa im Testlauf.
+            Application.Current?.Dispatcher.BeginInvoke(new Action(() =>
             {
                 ProgramView.Update(ViewEventArgs.ViewEventType.UpdateGebäude);
             }));

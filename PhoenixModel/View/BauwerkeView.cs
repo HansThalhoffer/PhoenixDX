@@ -137,15 +137,42 @@ namespace PhoenixModel.View {
                 if (SharedData.Gebäude.ContainsKey(gemark.Bezeichner))
                     gebäude = SharedData.Gebäude[gemark.Bezeichner];
 
-                if (gebäude == null) {
-                    ProgramView.LogError(gemark, $"Fehlendes Gebäude in der Bauwerktabelle mit dem Namen {gemark.Bauwerknamen}",
-                        "Durch einen Datenbankfehler hat das Gebäude keinen Eintrag in der Tabelle [bauwerkliste] in der Datenbank Ekrenfarakarte.mdb");
-                }
-                return gebäude;
+                return gebäude ?? ErgänzeFehlendesGebäude(gemark);
             }
             catch (Exception ex) {
                 throw new Exception($"Ausnahme bei der Festlegung des Gebäudes auf Kleinfeld {gemark.Bezeichner}", ex);
             }
+        }
+
+        /// <summary>
+        /// Legt einen fehlenden Eintrag in der Bauwerkliste an.
+        ///
+        /// In der Karte steht ein Gebäude, in der Tabelle [bauwerkliste] der Erkenfarakarte.mdb
+        /// fehlt es - die Karte ist die gepflegte Tabelle und gibt den Ausschlag. Der Eintrag wird
+        /// deshalb ergänzt statt den Fehler nur zu melden.
+        ///
+        /// Wer den Mangel zuerst bemerkt, behebt ihn: die Reparatur beim Laden der Karte oder der
+        /// erste Zugriff auf das Gemark. Vorher hing es vom Zufall ab, wer zuerst an das Gemark kam,
+        /// und die Meldung erschien beim Start mal als Warnung, mal als Fehler, mal gar nicht.
+        /// </summary>
+        /// <returns>das ergänzte Gebäude, oder das bereits vorhandene, wenn ein anderer schneller war</returns>
+        public static Gebäude? ErgänzeFehlendesGebäude(KleinFeld gemark) {
+            if (SharedData.Gebäude == null)
+                return null;
+
+            var gebäude = new Gebäude {
+                gf = gemark.gf,
+                kf = gemark.kf,
+                Bauwerknamen = gemark.Bauwerknamen,
+            };
+
+            if (SharedData.Gebäude.TryAdd(gebäude.Bezeichner, gebäude) == false)
+                return SharedData.Gebäude[gebäude.Bezeichner];
+
+            ProgramView.LogWarning(gemark, $"Fehlendes Gebäude in der Bauwerktabelle mit dem Namen {gemark.Bauwerknamen}",
+                $"Durch einen Datenbankfehler hat das Gebäude auf {gemark.Bezeichner} keinen Eintrag in der Tabelle "
+                + "[bauwerkliste] in der Datenbank Ekrenfarakarte.mdb.\r\rDieser Fehler wurde automatisch korrigiert");
+            return gebäude;
         }
     }
 }
