@@ -33,7 +33,7 @@ namespace PhoenixWPF.Pages.UserControls {
             buttonBannen.Visibility = figur.CanCastBannen() ? Visibility.Visible : Visibility.Collapsed;
             buttonTeleport.Visibility = figur.CanCastTeleport() ? Visibility.Visible : Visibility.Collapsed;
             buttonDuell.Visibility = figur.CanCastDuell() ? Visibility.Visible : Visibility.Collapsed;
-            buttonFusion.Visibility = figur.CanFustion() ? Visibility.Visible : Visibility.Collapsed;
+            buttonFusion.Visibility = figur.CanFusion() ? Visibility.Visible : Visibility.Collapsed;
             buttonSplit.Visibility = figur.CanSplit() ? Visibility.Visible : Visibility.Collapsed;
 
             buttonHorse.Visibility = Visibility.Collapsed;

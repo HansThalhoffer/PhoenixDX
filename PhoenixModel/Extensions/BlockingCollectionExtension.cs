@@ -48,8 +48,42 @@ namespace PhoenixModel.Extensions {
         }
 
         /// <summary>
-        /// Entfernt einen Wert aus der BlockingCollection.
+        /// Entfernt genau dieses eine Objekt aus der Sammlung - verglichen wird die Referenz und
+        /// nicht der Inhalt.
+        ///
+        /// Für Spielfiguren ist das der einzig richtige Weg: sie erben ihr Equals von
+        /// <see cref="KleinfeldPosition"/> und gelten damit als gleich, sobald sie auf derselben
+        /// Gemark stehen. <see cref="Remove"/> würde deshalb beim Entfernen einer Figur alle
+        /// anderen Figuren desselben Feldes gleich mitnehmen.
         /// </summary>
+        /// <returns>die Anzahl der entfernten Elemente, also 0 oder 1</returns>
+        public static int RemoveInstance<T>(this BlockingCollection<T> collection, T item) where T : class {
+            if (collection == null) throw new ArgumentNullException(nameof(collection));
+            collection = ReopenSharedData(collection);
+
+            var übrige = new ConcurrentQueue<T>();
+            int entfernt = 0;
+
+            while (collection.TryTake(out T? aktuell)) {
+                if (entfernt == 0 && ReferenceEquals(aktuell, item))
+                    entfernt++;
+                else
+                    übrige.Enqueue(aktuell);
+            }
+
+            foreach (var rest in übrige)
+                collection.Add(rest);
+
+            return entfernt;
+        }
+
+        /// <summary>
+        /// Entfernt alle Werte aus der BlockingCollection, die dem übergebenen inhaltlich gleichen.
+        /// </summary>
+        /// <remarks>
+        /// Achtung: verglichen wird über Equals. Bei Spielfiguren bedeutet das "steht auf derselben
+        /// Gemark", weshalb dort <see cref="RemoveInstance"/> zu verwenden ist.
+        /// </remarks>
         /// <typeparam name="T">Der Typ der gespeicherten Werte.</typeparam>
         /// <param name="collection">Die BlockingCollection, aus der der Wert entfernt werden soll.</param>
         /// <param name="item">Das zu entfernende Element.</param>

@@ -179,7 +179,7 @@ namespace PhoenixModel.Extensions {
         /// <summary>
         /// Ermittelt ob die Spielfigur Fusionieren kann
         /// </summary>
-        public static bool CanFustion(this Spielfigur figur) {
+        public static bool CanFusion(this Spielfigur figur) {
             return SpielfigurRules.CanFusion(figur);
         }
     

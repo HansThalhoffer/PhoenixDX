@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.Commands.Parser;
+using PhoenixModel.Extensions;
 using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbZugdaten;
@@ -131,7 +132,9 @@ namespace PhoenixModel.Commands {
             Ruestung? ruest = CreateRuestung();
             if (ruest != null && SharedData.Ruestung != null) {
 
-                SharedData.Ruestung.Add(ruest);
+                // die Sammlung wird nach dem Laden fuer Ergaenzungen geschlossen und muss vor dem
+                // Hinzufuegen wieder geoeffnet werden - sonst wirft Add eine Ausnahme
+                SharedData.Ruestung.ReopenSharedData().Add(ruest);
                 SharedData.StoreQueue.Insert(ruest);
                 return new CommandResultSuccess("Die Rüstung wurde ausgeführt", $"Der Befehl wurde ausgeführt:\r\n {this.CommandString}", this);
             }

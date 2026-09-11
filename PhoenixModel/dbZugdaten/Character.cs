@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data.Common;
 using PhoenixModel.Database;
 using PhoenixModel.ExternalTables;
@@ -158,8 +158,16 @@ namespace PhoenixModel.dbZugdaten {
             command.ExecuteNonQuery();
         }
 
-        public void Delete(DbCommand reader) {
-            throw new NotImplementedException();
+        /// <summary>
+        /// Entfernt die Figur aus den Zugdaten.
+        ///
+        /// Im laufenden Spiel verschwindet selten eine Figur, beim Teilen und Fusionieren von
+        /// Heeren aber sehr wohl: wird eine Abspaltung zurueckgenommen, muss das neu angelegte
+        /// Heer auch wieder aus der Datenbank heraus.
+        /// </summary>
+        public void Delete(DbCommand command) {
+            command.CommandText = $"DELETE FROM {TableName} WHERE Nummer = {this.Nummer}";
+            command.ExecuteNonQuery();
         }
 
     }

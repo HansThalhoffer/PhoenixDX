@@ -46,32 +46,41 @@ namespace PhoenixModel.Rules {
                 ProgramView.LogError($"Für die Figur {figur} findet sich kein Eintrag in der Kostentabelle", "Für die Berechnung der Raumpunkte muss die Figur in der Kostentabelle existieren");
                 return 0;
             }
-            int raumpunkte = 0;
-            if (figur is TruppenSpielfigur truppe) {
-                raumpunkte = kosten.Raumpunkte * truppe.staerke;
-                if (truppe.Pferde > 0) {
-                    var equipmentKosten = KostenView.GetKosten("P");
-                    if (equipmentKosten != null)
-                        raumpunkte += truppe.Pferde * equipmentKosten.Raumpunkte;
-                }
-                if (truppe.hf > 0) {
-                    var equipmentKosten = KostenView.GetKosten("HF");
-                    if (equipmentKosten != null)
-                        raumpunkte += truppe.hf * equipmentKosten.Raumpunkte;
-                }
-                if (truppe.LKP > 0) {
-                    var equipmentKosten = KostenView.GetKosten(truppe.BaseTyp == FigurType.Schiff ? "LKS" : "LKP");
-                    if (equipmentKosten != null)
-                        raumpunkte += truppe.LKP * equipmentKosten.Raumpunkte;
-                }
-                if (truppe.SKP > 0) {
-                    var equipmentKosten = KostenView.GetKosten(truppe.BaseTyp == FigurType.Schiff ? "SKS" : "SKP");
-                    if (equipmentKosten != null)
-                        raumpunkte += truppe.SKP * equipmentKosten.Raumpunkte;
-                }
-               
+            if (figur is TruppenSpielfigur truppe)
+                return BerechneRaumpunkte(truppe, truppe.staerke, truppe.Pferde, truppe.hf, truppe.LKP, truppe.SKP);
+            return 0;
+        }
+
+        /// <summary>
+        /// Berechnet die Raumpunkte einer gedachten Zusammensetzung.
+        ///
+        /// Gebraucht wird das beim Teilen eines Heeres: dort muss feststehen, ob beide Hälften die
+        /// Mindestgrösse erreichen, bevor überhaupt etwas verändert wird.
+        /// </summary>
+        /// <param name="vorbild">die Truppe, deren Gattung die Kosten bestimmt</param>
+        public static int BerechneRaumpunkte(TruppenSpielfigur vorbild, int stärke, int pferde, int heerführer, int lkp, int skp) {
+            var kosten = KostenView.GetKosten(vorbild);
+            if (kosten == null) {
+                ProgramView.LogError($"Für die Figur {vorbild} findet sich kein Eintrag in der Kostentabelle", "Für die Berechnung der Raumpunkte muss die Figur in der Kostentabelle existieren");
+                return 0;
             }
+
+            int raumpunkte = kosten.Raumpunkte * stärke;
+            raumpunkte += Raumpunkte("P", pferde);
+            raumpunkte += Raumpunkte("HF", heerführer);
+            raumpunkte += Raumpunkte(vorbild.BaseTyp == FigurType.Schiff ? "LKS" : "LKP", lkp);
+            raumpunkte += Raumpunkte(vorbild.BaseTyp == FigurType.Schiff ? "SKS" : "SKP", skp);
             return raumpunkte;
+        }
+
+        /// <summary>
+        /// Die Raumpunkte einer Anzahl eines Rüstgutes laut Kostentabelle
+        /// </summary>
+        private static int Raumpunkte(string rüstgut, int anzahl) {
+            if (anzahl <= 0)
+                return 0;
+            var kosten = KostenView.GetKosten(rüstgut);
+            return kosten == null ? 0 : anzahl * kosten.Raumpunkte;
         }
 
         /// <summary>
