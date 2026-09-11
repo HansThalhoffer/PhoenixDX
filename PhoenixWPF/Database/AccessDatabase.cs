@@ -165,6 +165,15 @@ namespace PhoenixWPF.Database
         /// </summary>
         public void Close()
         {
+            // erst die Lesebefehle freigeben, dann die Verbindung - die umgekehrte Reihenfolge
+            // lässt den Treiber auf freigegebenen Strukturen arbeiten
+            foreach (var command in _offeneLeseBefehle)
+            {
+                try { command.Dispose(); }
+                catch (Exception ex) { SpielWPF.LogWarning("Ein Datenbankbefehl konnte nicht freigegeben werden", ex.Message); }
+            }
+            _offeneLeseBefehle.Clear();
+
             if (_connection.State != ConnectionState.Closed)
                 _connection.Close();
         }
@@ -191,12 +200,28 @@ namespace PhoenixWPF.Database
         /// </summary>
         /// <param name="query">The SQL query to execute.</param>
         /// <returns>A DataTable containing the result set.</returns>
+        /// <summary>
+        /// Befehle, die zu noch offenen Lesern gehören und erst danach freigegeben werden dürfen
+        /// </summary>
+        private readonly List<OleDbCommand> _offeneLeseBefehle = [];
+
         public DbDataReader OpenReader(string query)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Query must be provided.", nameof(query));
 
-            using var command = new OleDbCommand(query, _connection);
+            // Der Befehl darf hier NICHT mit using freigegeben werden.
+            //
+            // Vorher stand hier "using var command" - damit wurde der Befehl beim Verlassen der
+            // Methode freigegeben, während der zurückgegebene Leser noch daran hing und noch keine
+            // Zeile gelesen hatte. Der Access-Treiber arbeitet dann auf bereits freigegebenen
+            // nativen Strukturen weiter. Das ist die Ursache der sporadischen Zugriffsverletzung in
+            // mso99Lwin32client.dll, die den ganzen Prozess ohne Ausnahme beendet hat.
+            //
+            // Der Befehl bleibt jetzt bis zum Schliessen der Verbindung am Leben. AccessDatabase
+            // ist kurzlebig und wird von den Aufrufern in einem using gehalten.
+            var command = new OleDbCommand(query, _connection);
+            _offeneLeseBefehle.Add(command);
             return command.ExecuteReader();
         }
 
