@@ -149,8 +149,11 @@ namespace Tests {
             string zugmonat = Path.GetFileName(dir);
             int monat = Convert.ToInt32(zugmonat);
             settings.UserSettings.SelectedZug = monat;
-            
+
+            // Der Verzeichnisname dient nur dem Auffinden der Datei; massgeblich für den Spielmonat
+            // ist die settings-Tabelle der Zugdatenbank.
             ProgramView.SelectedMonth = monat;
+            ZugView.BestimmeAktuellenZug(monat);
 
         }
 

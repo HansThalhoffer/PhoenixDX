@@ -381,6 +381,8 @@ namespace PhoenixWPF.Program {
                         UpdateKleinfeld(gem);
                     }
                 }
+                // Zugmonat festlegen und Widersprüche zwischen Verzeichnis, settings und Schatzkammer melden
+                ZugView.BestimmeAktuellenZug(Settings.UserSettings.SelectedZug);
                 // die bereits in den Zugdaten gespeicherten Bewegungen wieder als Befehle herstellen
                 BewegungView.RekonstruiereAlleBewegungen();
                 EverythingLoaded();

@@ -38,7 +38,7 @@ namespace PhoenixModel.View {
         public static bool CanConstruct() {
             if (SharedData.ZugdatenSettings == null || SharedData.ZugdatenSettings.Count == 0)
                 return false;
-            return SharedData.ZugdatenSettings.Last().Phase == 0;
+            return ZugView.KannRüsten;
         }
 
         /// <summary>

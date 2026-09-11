@@ -357,6 +357,11 @@ namespace PhoenixModel.Rules {
                 Richtung = richtung,
             };
 
+            // Bewegt wird erst, wenn die Rüstphase abgeschlossen ist (Regelwerk Kapitel 3)
+            if (ZugView.KannBewegen == false)
+                return SchrittErgebnis.Fehler($"In der {ZugView.PhasenBeschreibung} wird nicht bewegt",
+                    "Erst wenn die Rüstphase abgeschlossen ist, können Figuren bewegt werden.");
+
             // Eingeschiffte Truppen bewegen sich nicht selbst, sondern werden von der Flotte getragen
             if (figur is TruppenSpielfigur truppe && figur.BaseTyp != FigurType.Schiff && string.IsNullOrEmpty(truppe.auf_Flotte) == false)
                 return SchrittErgebnis.Fehler("Diese Einheit ist eingeschifft",

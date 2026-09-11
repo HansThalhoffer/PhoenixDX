@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using PhoenixModel.View;
 using PhoenixWPF.Database.Generatoren;
 using PhoenixWPF.Dialogs;
 using PhoenixWPF.Program;
@@ -54,6 +55,40 @@ namespace PhoenixWPF
         }
 
         
+        /// <summary>
+        /// Zeigt im Zug-Menü an, in welcher Phase der Zug gerade ist, und bietet den Wechsel nur an,
+        /// wenn er auch möglich ist.
+        /// </summary>
+        private void ZugMenu_SubmenuOpened(object sender, RoutedEventArgs e) {
+            var zug = ZugView.AktuellerZug;
+            MenuPhaseAnzeige.Header = $"Zug {zug.Zug} - {zug.Beschreibung} - {ZugView.PhasenBeschreibung}";
+            MenuNaechstePhase.IsEnabled = ZugView.Phase == Zugphase.Rüstphase;
+        }
+
+        /// <summary>
+        /// Beendet die Rüstphase. Danach kann nicht mehr gerüstet, dafür aber bewegt werden,
+        /// deshalb wird vorher nachgefragt.
+        /// </summary>
+        private void NächstePhase() {
+            if (ZugView.Phase != Zugphase.Rüstphase) {
+                var abgelehnt = ZugView.NächstePhase();
+                SpielWPF.LogWarning(abgelehnt.Title, abgelehnt.Message);
+                return;
+            }
+
+            var antwort = MessageBox.Show(
+                "Die Rüstphase wirklich beenden?\r\n\r\nDanach kann in diesem Zug nicht mehr gerüstet oder gebaut werden. Zurück geht es nicht.",
+                "Rüstphase beenden", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+            if (antwort != MessageBoxResult.Yes)
+                return;
+
+            var ergebnis = ZugView.NächstePhase();
+            if (ergebnis.HasErrors)
+                SpielWPF.LogError(ergebnis.Title, ergebnis.Message);
+            else
+                SpielWPF.LogInfo(ergebnis.Title, ergebnis.Message);
+        }
+
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             if (sender is MenuItem menuItem)
@@ -98,6 +133,14 @@ namespace PhoenixWPF
                         new SchatzkammerDialog().Show("Schenken");
                         break;
                         
+
+                    // Zug
+                    case "NaechstePhase":
+                        NächstePhase();
+                        break;
+                    case "Zugreihenfolge":
+                        new ZugreihenfolgeDialog().Show();
+                        break;
 
                     // Extras
                     case "Zugwechsel":

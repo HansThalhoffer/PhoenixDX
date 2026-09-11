@@ -1,4 +1,4 @@
-using PhoenixModel.dbErkenfara;
+﻿using PhoenixModel.dbErkenfara;
 using PhoenixModel.Rules;
 using PhoenixModel.ViewModel;
 using System.Windows;
@@ -34,8 +34,11 @@ namespace PhoenixWPF.Dialogs {
                 ? "Das Auftauchen zählt als weiteres Wasserfeld und kostet zusätzliche Bewegungspunkte (Regelwerk 6.6.4)."
                 : "Das Auftauchen selbst kostet keine weiteren Bewegungspunkte (Regelwerk 6.6.5).";
 
-            foreach (var punkt in TeleportRules.GetMöglicheZiele(teleportfeld))
+            var ziele = TeleportRules.GetVorgegebeneZiele(teleportfeld);
+            foreach (var punkt in ziele)
                 PunkteListe.Items.Add(punkt);
+            if (ziele.Count == 1 && art == TeleportArt.Piratennest)
+                HinweisLabel.Text += " Der Auftauchpunkt ist die Vorgabe der Spielleitung aus der Zugreihenfolge.";
 
             if (PunkteListe.Items.Count == 1)
                 PunkteListe.SelectedIndex = 0;

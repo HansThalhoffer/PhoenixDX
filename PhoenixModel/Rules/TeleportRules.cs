@@ -161,6 +161,31 @@ namespace PhoenixModel.Rules {
         }
 
         /// <summary>
+        /// Die Teleportpunkte, die in diesem Zug tatsächlich angesteuert werden dürfen.
+        ///
+        /// Für die Reise von der Pirateninsel nach Erkenfara gibt die Spielleitung den Auftauchpunkt
+        /// vier Züge im Voraus vor (Regelwerk 6.6.3); er steht in der Tabelle Zugreihenfolge. Ist er
+        /// für den laufenden Monat bekannt, bleibt genau dieser Punkt übrig. Fehlt der Eintrag,
+        /// werden alle regelkonformen Punkte angeboten.
+        /// </summary>
+        public static List<Teleportfeld> GetVorgegebeneZiele(KleinfeldPosition? teleportfeld) {
+            var möglich = GetMöglicheZiele(teleportfeld);
+            if (GetArt(teleportfeld) != TeleportArt.Piratennest)
+                return möglich;
+
+            var vorgabe = ZugView.GetAuftauchpunkt();
+            if (vorgabe == null)
+                return möglich;
+            var gefiltert = möglich.Where(p => p.Position.gf == vorgabe.gf && p.Position.kf == vorgabe.kf).ToList();
+            if (gefiltert.Count == 0) {
+                ProgramView.LogWarning($"Der vorgegebene Auftauchpunkt {vorgabe.CreateBezeichner()} ist kein Teleportfeld",
+                    $"In der Zugreihenfolge steht für diesen Monat {vorgabe.CreateBezeichner()} als Auftauchpunkt, auf der Karte ist das aber kein Teleportfeld. Es werden alle Punkte angeboten.");
+                return möglich;
+            }
+            return gefiltert;
+        }
+
+        /// <summary>
         /// Kostet das Auftauchen selbst noch Bewegungspunkte?
         ///
         /// Von der Insel nach Erkenfara ja: der Auftauchpunkt "zählt als 2tes Wasserfeld"

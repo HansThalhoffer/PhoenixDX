@@ -86,6 +86,12 @@
                     <MenuItem Header="Bericht der Historiker" IsCheckable="False"  Click="MenuItem_Click" Tag="TruppenEntwicklung" />
                     <MenuItem Header="Bericht der Mobilisierung" IsCheckable="False"  Click="MenuItem_Click" Tag="Mobilisierung" />
                 </MenuItem>
+                <MenuItem Header="Zug" Name="ZugMenu" SubmenuOpened="ZugMenu_SubmenuOpened">
+                    <MenuItem Header="Aktuelle Phase" Name="MenuPhaseAnzeige" IsEnabled="False" />
+                    <MenuItem Header="Rüstphase beenden" Name="MenuNaechstePhase" IsCheckable="False" Click="MenuItem_Click" Tag="NaechstePhase" />
+                    <Separator/>
+                    <MenuItem Header="Zugreihenfolge" IsCheckable="False" Click="MenuItem_Click" Tag="Zugreihenfolge" />
+                </MenuItem>
                 <MenuItem Header="Extras">
                     <MenuItem Header="Zug Wechseln" IsCheckable="False"  Click="MenuItem_Click" Tag="Zugwechsel" />
                     <Separator/>

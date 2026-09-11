@@ -24,6 +24,7 @@ namespace PhoenixModel.ViewModel {
         public static BlockingDictionary<KleinFeld>? Map = null;
         public static BlockingDictionary<Gebäude>? Gebäude = null; // bauwerkliste
         public static BlockingDictionary<ReichCrossref>? Diplomatie = null;
+        public static BlockingCollection<Zugreihenfolge>? Zugreihenfolge = null;
 
         // PZE
         public static BlockingCollection<Nation>? Nationen = null;
