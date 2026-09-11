@@ -465,6 +465,17 @@ namespace PhoenixModel.Rules {
             return IstFertig(GetKai(ziel, gegenrichtung)) || IstFertig(GetKai(start, richtung));
         }
 
+        /// <summary>
+        /// Eine Kaianlage zwischen zwei Kleinfeldern, ohne dass der Aufrufer die Gegenrichtung
+        /// kennen muss. Wird auch beim Einschiffen gebraucht, wo die Kaianlage die Höhenstufe
+        /// verbilligt (Regelwerk 1.5.2).
+        /// </summary>
+        public static bool HatKai(KleinFeld? start, KleinFeld? ziel, Direction richtung) {
+            if (start == null || ziel == null)
+                return false;
+            return HatKai(start, ziel, richtung, Gegenrichtung(richtung));
+        }
+
         private static int? GetStraße(KleinFeld kf, Direction direction) => direction switch {
             Direction.NW => kf.Strasse_NW,
             Direction.NO => kf.Strasse_NO,
