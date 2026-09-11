@@ -19,6 +19,22 @@ namespace PhoenixModel.Database {
         }
 
         /// <summary>
+        /// Erzeugt das SQL-Literal für eine Zeichenkette, einschliesslich der Anführungszeichen.
+        ///
+        /// Leere Zeichenketten werden zu NULL. Access weist bei vielen Textspalten die Einstellung
+        /// "Leere Zeichenfolge zulassen: Nein" auf und lehnt ein '' mit einem Fehler ab, während
+        /// NULL erlaubt ist. Beim Lesen liefert <see cref="ToString(object)"/> für NULL wieder eine
+        /// leere Zeichenkette, der Unterschied ist für die Anwendung also nicht sichtbar.
+        /// </summary>
+        /// <param name="value">der zu schreibende Text</param>
+        /// <returns>NULL oder der maskierte Text in einfachen Anführungszeichen</returns>
+        public static string SqlText(string? value) {
+            if (string.IsNullOrEmpty(value))
+                return "NULL";
+            return $"'{EscapeString(value)}'";
+        }
+
+        /// <summary>
         /// Konvertiert ein Datenbankfeld-Objekt in einen Integer-Wert.
         /// </summary>
         /// <param name="o">Das zu konvertierende Objekt.</param>

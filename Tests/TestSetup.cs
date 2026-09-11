@@ -150,11 +150,87 @@ namespace Tests {
             int monat = Convert.ToInt32(zugmonat);
             settings.UserSettings.SelectedZug = monat;
 
-            // Der Verzeichnisname dient nur dem Auffinden der Datei; massgeblich für den Spielmonat
-            // ist die settings-Tabelle der Zugdatenbank.
+            // Massgeblich für den Spielmonat ist der Verzeichnisname, nicht die settings-Tabelle der
+            // Zugdatenbank - deren Monat läuft in den echten Daten vor. BestimmeAktuellenZug warnt,
+            // wenn beide auseinanderlaufen.
             ProgramView.SelectedMonth = monat;
             ZugView.BestimmeAktuellenZug(monat);
 
+        }
+
+        /// <summary>
+        /// Lädt die Zugdaten eines anderen, bereits abgeschlossenen Zuges. Die Zugverzeichnisse
+        /// liegen nebeneinander und heissen nach ihrer Zugnummer, deshalb genügt es, im
+        /// konfigurierten Pfad das Verzeichnis auszutauschen.
+        ///
+        /// Damit lassen sich Berechnungen gegen einen Monat prüfen, dessen Ergebnis schon feststeht.
+        /// Der Aufrufer muss hinterher <see cref="LoadZugdaten"/> aufrufen, sonst arbeiten die
+        /// folgenden Tests auf dem falschen Zug weiter.
+        /// </summary>
+        /// <returns>true, wenn es das Verzeichnis gibt und geladen werden konnte</returns>
+        public static bool LoadZugdatenAusZug(int zug) {
+            AppSettings settings = new AppSettings("Tests.jpk");
+            settings.InitializeSettings();
+            settings.UserSettings.DatabaseLocationZugdaten = StorageSystem.LocateFile(settings.UserSettings.DatabaseLocationZugdaten, "Zugdaten.mdb");
+
+            string? dir = Path.GetDirectoryName(settings.UserSettings.DatabaseLocationZugdaten);
+            string? wurzel = dir == null ? null : Path.GetDirectoryName(dir);
+            if (wurzel == null)
+                return false;
+
+            string pfad = Path.Combine(wurzel, zug.ToString(), Path.GetFileName(settings.UserSettings.DatabaseLocationZugdaten));
+            return LadeZugdatenAusDatei(pfad, zug);
+        }
+
+        /// <summary>
+        /// Lädt eine beliebige Zugdatenbank, auch ausserhalb des konfigurierten Datenverzeichnisses.
+        /// Damit lassen sich schreibende Tests gegen eine Kopie fahren, ohne die echten Spieldaten
+        /// anzufassen.
+        ///
+        /// Der Aufrufer muss hinterher <see cref="LoadZugdaten"/> aufrufen, sonst arbeiten die
+        /// folgenden Tests auf der falschen Datenbank weiter.
+        /// </summary>
+        /// <returns>true, wenn es die Datei gibt und sie geladen werden konnte</returns>
+        public static bool LadeZugdatenAusDatei(string pfad, int zug) {
+            if (File.Exists(pfad) == false)
+                return false;
+
+            AppSettings settings = new AppSettings("Tests.jpk");
+            settings.InitializeSettings();
+
+            if (Application.Current == null)
+                new Application();
+
+            using (var db = new Zugdaten(pfad, settings.UserSettings.PasswordReich)) {
+                db.Load();
+                db.LoadBackgroundSynchronous();
+            }
+
+            ProgramView.SelectedMonth = zug;
+            ZugView.BestimmeAktuellenZug(zug);
+            return true;
+        }
+
+        /// <summary>
+        /// Das Passwort der Zugdatenbanken, wie es in den Testeinstellungen hinterlegt ist
+        /// </summary>
+        public static PasswordHolder.EncryptedString ZugdatenPasswort {
+            get {
+                AppSettings settings = new AppSettings("Tests.jpk");
+                settings.InitializeSettings();
+                return settings.UserSettings.PasswordReich;
+            }
+        }
+
+        /// <summary>
+        /// Der konfigurierte Pfad zur Zugdatenbank des laufenden Zuges
+        /// </summary>
+        public static string ZugdatenPfad {
+            get {
+                AppSettings settings = new AppSettings("Tests.jpk");
+                settings.InitializeSettings();
+                return StorageSystem.LocateFile(settings.UserSettings.DatabaseLocationZugdaten, "Zugdaten.mdb");
+            }
         }
 
         /// <summary>
