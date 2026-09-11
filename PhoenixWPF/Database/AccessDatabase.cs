@@ -74,6 +74,16 @@ namespace PhoenixWPF.Database
             {
                 connectionString += "Jet OLEDB:Database Password=" + pw + ";";
             }
+            // Verbindungspooling abschalten.
+            //
+            // Der Access-Treiber haelt gepoolte Verbindungen nativ offen und wird ueber mehrere
+            // Threads hinweg wiederverwendet. Bei dem schnellen Oeffnen und Schliessen, das diese
+            // Anwendung betreibt - beim Speichern eine Verbindung je Datensatz - fuehrt das
+            // reproduzierbar zu einer Zugriffsverletzung in mso99Lwin32client.dll und damit zum
+            // sofortigen Absturz des Prozesses ohne verwertbare Ausnahme.
+            // -4 bedeutet: weder Pooling noch automatische Transaktionsanmeldung.
+            connectionString += "OLE DB Services=-4;";
+
             _connection = new OleDbConnection(connectionString);
 
         }
