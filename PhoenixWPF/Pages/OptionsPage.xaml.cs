@@ -74,6 +74,14 @@ namespace PhoenixWPF.Pages
             }
         }
 
+        /// <summary>
+        /// Die Netzwerkfreigabe der Spielleitung wird erst beim Verlassen des Feldes übernommen -
+        /// sonst würde jeder Tastendruck eine halbe Adresse speichern.
+        /// </summary>
+        private void txtServerFreigabe_LostFocus(object sender, RoutedEventArgs e) {
+            Main.Instance.Settings.UserSettings.ServerFreigabe = txtServerFreigabe.Text.Trim();
+        }
+
         public OptionsPage()
         {
             InitializeComponent();
@@ -81,6 +89,7 @@ namespace PhoenixWPF.Pages
             Main.Instance.Options = this;
             IsKüstenregelSichtbar = Main.Instance.Settings.UserSettings.ShowKüstenregel;
             sldOpacity.Value = Main.Instance.Settings.UserSettings.Opacity;
+            txtServerFreigabe.Text = Main.Instance.Settings.UserSettings.ServerFreigabe;
         }
         
     }

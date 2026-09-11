@@ -34,6 +34,15 @@
                      Orientation="Horizontal" IsEnabled="True" Height="18" HorizontalAlignment="Left"/>
             </StackPanel>
 
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <TextBlock Foreground="Wheat" FontSize="12" FontStyle="Italic" Width="80" HorizontalAlignment="Left">
+                    <Run Text="Spielleitung: " />
+                </TextBlock>
+                <TextBox x:Name="txtServerFreigabe" Width="200" Height="20" HorizontalAlignment="Left"
+                         Margin="5,0,0,0" LostFocus="txtServerFreigabe_LostFocus"
+                         ToolTip="Die Netzwerkfreigabe der Spielleitung, etwa \\192.168.1.66\PZEData. Ist sie nicht erreichbar, wird der Zug aus einem Archiv geholt." />
+            </StackPanel>
+
         </StackPanel>
     </Grid>
 </Page>

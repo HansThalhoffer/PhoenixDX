@@ -90,6 +90,7 @@
                     <MenuItem Header="Aktuelle Phase" Name="MenuPhaseAnzeige" IsEnabled="False" />
                     <MenuItem Header="Rüstphase beenden" Name="MenuNaechstePhase" IsCheckable="False" Click="MenuItem_Click" Tag="NaechstePhase" />
                     <MenuItem Header="Zug abgeben" Name="MenuZugAbgeben" IsCheckable="False" Click="MenuItem_Click" Tag="ZugAbgeben" />
+                    <MenuItem Header="Zug von der Spielleitung holen" IsCheckable="False" Click="MenuItem_Click" Tag="ZugHolen" />
                     <Separator/>
                     <MenuItem Header="Zugreihenfolge" IsCheckable="False" Click="MenuItem_Click" Tag="Zugreihenfolge" />
                 </MenuItem>

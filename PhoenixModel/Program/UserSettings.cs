@@ -18,6 +18,7 @@ namespace PhoenixModel.Program {
         private string _databaseLocationZugdaten = string.Empty;
         private string _passwordReich = string.Empty;
         private string _databaseLocationFeindaufklärung = string.Empty;
+        private string _serverFreigabe = string.Empty;
         private int _selectedReich = -1;
         private int _selectedZug = -1;
         private bool _showKüstenRegel = true;
@@ -179,6 +180,23 @@ namespace PhoenixModel.Program {
                 if (_databaseLocationFeindaufklärung != value) {
                     _databaseLocationFeindaufklärung = value;
                     OnPropertyChanged(nameof(DatabaseLocationFeindaufklärung));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Die Netzwerkfreigabe der Spielleitung, etwa \\192.168.1.66\PZEData.
+        ///
+        /// Darunter liegt je Reich ein Verzeichnis mit den Zugverzeichnissen. Ist der Server nicht
+        /// erreichbar - auf dem Gelände kommt das vor - wird der Zug stattdessen aus einem Archiv
+        /// geholt, das die Spielleitung per Datenträger herausgibt.
+        /// </summary>
+        public string ServerFreigabe {
+            get => _serverFreigabe;
+            set {
+                if (_serverFreigabe != value) {
+                    _serverFreigabe = value;
+                    OnPropertyChanged(nameof(ServerFreigabe));
                 }
             }
         }
