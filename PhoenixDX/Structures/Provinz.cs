@@ -65,7 +65,10 @@ namespace PhoenixDX.Structures {
         /// <param name="scale">Der Skalierungsfaktor.</param>
         /// <returns>Die Position der Provinz auf der Karte.</returns>
         public Vektor GetMapPosition(Vektor scale) {
-            if (scale.X != _scale.X || scale.X != _scale.Y) {
+            // Verglichen wird gegen die zuletzt verwendete Skalierung. Hier stand vorher zweimal
+            // scale.X - dadurch wurde eine geänderte Höhe nicht bemerkt, solange die Breite gleich
+            // blieb, und die Provinzen behielten ihre alte senkrechte Position.
+            if (scale.X != _scale.X || scale.Y != _scale.Y) {
                 _scale.X = scale.X;
                 _scale.Y = scale.Y;
                 float x = (X - 1) * ColumnWidth * scale.X;

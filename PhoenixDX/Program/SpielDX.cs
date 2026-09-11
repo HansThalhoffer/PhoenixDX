@@ -239,6 +239,44 @@ namespace PhoenixDX.Program {
             _cameraPosition += delta;
             _isMoving = true;
         }
+
+        /// <summary>
+        /// Wie viele Feldbreiten schwarzer Rand jenseits der Karte sichtbar sein dürfen.
+        /// Ein schmaler Rand zeigt dem Benutzer, dass die Karte hier zu Ende ist.
+        /// </summary>
+        const float _randInFeldern = 1f;
+
+        /// <summary>
+        /// Begrenzt die Kamera so, dass die Karte nicht vollständig aus dem Bild geschoben werden kann.
+        ///
+        /// Der sichtbare Ausschnitt in Kartenkoordinaten reicht von -Kameraposition bis
+        /// -Kameraposition + Fenstergröße, weil die Kamera als Ursprung des Viewports gesetzt wird.
+        /// Passt die Karte ganz ins Fenster, wird sie mittig gehalten.
+        /// </summary>
+        void BegrenzeKamera() {
+            if (Weltkarte == null)
+                return;
+            var karte = Weltkarte.GetKartenAusdehnung(_scale);
+            if (karte.IsEmpty)
+                return;
+
+            var feld = Gemark.GetMapSize();
+            int randX = Math.Max(1, (int)(feld.X * _randInFeldern));
+            int randY = Math.Max(1, (int)(feld.Y * _randInFeldern));
+
+            _cameraPosition.X = Begrenze(_cameraPosition.X, _clientWidth - karte.Right - randX, randX - karte.Left);
+            _cameraPosition.Y = Begrenze(_cameraPosition.Y, _clientHeight - karte.Bottom - randY, randY - karte.Top);
+        }
+
+        /// <summary>
+        /// Hält einen Wert zwischen zwei Grenzen. Liegt die Untergrenze über der Obergrenze - die
+        /// Karte ist dann kleiner als das Fenster - wird mittig ausgerichtet.
+        /// </summary>
+        private static int Begrenze(int wert, int minimum, int maximum) {
+            if (minimum > maximum)
+                return (minimum + maximum) / 2;
+            return Math.Clamp(wert, minimum, maximum);
+        }
         /// <summary>
         /// Konvertiert eine Client-Position in die virtuelle Bildschirmkoordinaten.
         /// </summary>
@@ -485,6 +523,9 @@ namespace PhoenixDX.Program {
 
             // entweder DoInitialization oder HandleInput
             _updateFunction();
+
+            // nach jeder Eingabe dafür sorgen, dass die Karte im Bild bleibt
+            BegrenzeKamera();
 
             base.Update(gameTime);
         }

@@ -27,6 +27,46 @@ namespace PhoenixDX.Structures {
         Dictionary<int, Reich> Reiche = [];
 
         /// <summary>
+        /// Die zuletzt berechnete Ausdehnung der Karte und die Skalierung, für die sie gilt
+        /// </summary>
+        private Rectangle _ausdehnung = Rectangle.Empty;
+        private Vector2 _ausdehnungScale = Vector2.Zero;
+
+        /// <summary>
+        /// Die Ausdehnung der gesamten Karte in Bildpunkten bei der übergebenen Skalierung.
+        ///
+        /// Wird gebraucht, um die Kamera zu begrenzen, damit sich die Karte nicht vollständig aus
+        /// dem Bild schieben lässt. Der Wert wird aus den tatsächlich vorhandenen Provinzen
+        /// ermittelt und für die jeweilige Skalierung gemerkt.
+        /// </summary>
+        /// <returns>ein leeres Rechteck, solange noch keine Provinzen geladen sind</returns>
+        public Rectangle GetKartenAusdehnung(Vector2 scale) {
+            if (Provinzen.Count == 0)
+                return Rectangle.Empty;
+            if (_ausdehnung.IsEmpty == false && _ausdehnungScale == scale)
+                return _ausdehnung;
+
+            float links = float.MaxValue, oben = float.MaxValue;
+            float rechts = float.MinValue, unten = float.MinValue;
+            foreach (var provinz in Provinzen.Values) {
+                var position = provinz.GetMapPosition(scale);
+                var größe = provinz.GetMapSize();
+                links = Math.Min(links, position.X);
+                oben = Math.Min(oben, position.Y);
+                rechts = Math.Max(rechts, position.X + größe.X);
+                unten = Math.Max(unten, position.Y + größe.Y);
+            }
+            if (links > rechts || oben > unten)
+                return Rectangle.Empty;
+
+            _ausdehnungScale = scale;
+            _ausdehnung = new Rectangle(
+                (int)Math.Floor(links), (int)Math.Floor(oben),
+                (int)Math.Ceiling(rechts - links), (int)Math.Ceiling(unten - oben));
+            return _ausdehnung;
+        }
+
+        /// <summary>
         /// Erstellt eine neue Instanz der Welt und initialisiert die Provinzen basierend auf der übergebenen Kartenstruktur.
         /// </summary>
         /// <param name="map">Die Kartenstruktur, die die KleinFelder aus SharedData.Map enthält.</param>
