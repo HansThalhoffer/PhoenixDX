@@ -1,4 +1,4 @@
-using PhoenixWPF.Database;
+﻿using PhoenixWPF.Database;
 using System.IO;
 
 namespace Tests {
@@ -35,7 +35,7 @@ namespace Tests {
 
         [Fact]
         public void EineFreigabeLiefertIhrenRechnernamen() {
-            Assert.Equal("192.168.1.66", SpielleitungsRückgabe.GetRechnername(@"\\192.168.1.66\PZEData"));
+            Assert.Equal("10.0.0.1", SpielleitungsRückgabe.GetRechnername(@"\\10.0.0.1\PZEData"));
             Assert.Equal("spielleitung", SpielleitungsRückgabe.GetRechnername(@"\\spielleitung\PZEData\Unterordner"));
             Assert.Null(SpielleitungsRückgabe.GetRechnername(@"C:\lokal\kein\unc"));
             Assert.Null(SpielleitungsRückgabe.GetRechnername(null));
@@ -53,8 +53,8 @@ namespace Tests {
 
         [Fact]
         public void DasSerververzeichnisFolgtDemAufbauDerAltanwendung() {
-            string verzeichnis = SpielleitungsRückgabe.BestimmeSerververzeichnis(@"\\192.168.1.66\PZEData", Reich, 171);
-            Assert.Equal(@"\\192.168.1.66\Theostelos\171", verzeichnis);
+            string verzeichnis = SpielleitungsRückgabe.BestimmeSerververzeichnis(@"\\spielleitung\PZEData", Reich, 171);
+            Assert.Equal(@"\\spielleitung\Theostelos\171", verzeichnis);
         }
 
         /// <summary>

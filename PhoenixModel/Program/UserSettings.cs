@@ -185,7 +185,7 @@ namespace PhoenixModel.Program {
         }
 
         /// <summary>
-        /// Die Netzwerkfreigabe der Spielleitung, etwa \\192.168.1.66\PZEData.
+        /// Die Netzwerkfreigabe der Spielleitung, etwa \\Server\PZEData.
         ///
         /// Darunter liegt je Reich ein Verzeichnis mit den Zugverzeichnissen. Ist der Server nicht
         /// erreichbar - auf dem Gelände kommt das vor - wird der Zug stattdessen aus einem Archiv

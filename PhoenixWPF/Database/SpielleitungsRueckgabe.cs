@@ -1,4 +1,4 @@
-using Ionic.Zip;
+﻿using Ionic.Zip;
 using PhoenixWPF.Program;
 using System.IO;
 using System.Net.NetworkInformation;
@@ -53,7 +53,7 @@ namespace PhoenixWPF.Database {
         /// <summary>
         /// Ist der Server der Spielleitung erreichbar?
         /// </summary>
-        /// <param name="freigabe">die Freigabe, etwa \\192.168.1.66\PZEData</param>
+        /// <param name="freigabe">die Freigabe, etwa \\Server\PZEData</param>
         public static bool IstErreichbar(string? freigabe, out string fehler) {
             fehler = string.Empty;
             string? rechner = GetRechnername(freigabe);
