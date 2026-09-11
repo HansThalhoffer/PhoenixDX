@@ -176,7 +176,8 @@ namespace PhoenixWPF.Database
                     return;
                 try {
                     if (connector != null) {
-                        var command = connector.OpenDBCommand();
+                        // der Befehl muss vor dem Schliessen der Verbindung freigegeben werden
+                        using var command = connector.OpenDBCommand();
                         table.Save(command);
                     }
                 }
@@ -194,7 +195,8 @@ namespace PhoenixWPF.Database
                     return;
                 try {
                     if (connector != null) {
-                        var command = connector.OpenDBCommand();
+                        // der Befehl muss vor dem Schliessen der Verbindung freigegeben werden
+                        using var command = connector.OpenDBCommand();
                         table.Insert(command);
                     }
                 }
@@ -212,7 +214,8 @@ namespace PhoenixWPF.Database
                     return;
                 try {
                     if (connector != null) {
-                        var command = connector.OpenDBCommand();
+                        // der Befehl muss vor dem Schliessen der Verbindung freigegeben werden
+                        using var command = connector.OpenDBCommand();
                         table.Delete(command);
                     }
                 }

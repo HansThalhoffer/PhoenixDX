@@ -128,4 +128,17 @@ public class DbCommandFacade : DbCommand {
     /// <param name="behavior">Das <see cref="CommandBehavior"/>, das das Verhalten des Datenlesers steuert.</param>
     /// <returns>Ein <see cref="DbDataReader"/>, der die Abfrageergebnisse enthält.</returns>
     protected override DbDataReader ExecuteDbDataReader(CommandBehavior behavior) => dbCommand.ExecuteReader(behavior);
+
+    /// <summary>
+    /// Gibt den gekapselten Befehl mit frei.
+    ///
+    /// Ohne diese Überschreibung blieb der innere Befehl liegen, auch wenn die Fassade freigegeben
+    /// wurde - die Fassade leitet zwar alles weiter, erbt aber die Freigabe von DbCommand und
+    /// wüsste sonst nichts von dem gekapselten Objekt.
+    /// </summary>
+    protected override void Dispose(bool disposing) {
+        if (disposing)
+            dbCommand.Dispose();
+        base.Dispose(disposing);
+    }
 }
