@@ -207,11 +207,29 @@ namespace PhoenixDX.Program {
             e.GraphicsDeviceInformation.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
         }
         /// <summary>
-        /// Berechnet die Skalierung basierend auf der virtuellen und der Client-Größe sowie dem Zoomfaktor.
+        /// Fensterhöhe, auf die sich der Zoomfaktor bezieht.
+        /// Auf einem Fenster dieser Höhe entspricht ein Zoom von 1 der Entwurfsgröße der Karte.
+        /// </summary>
+        const float _referenzHöhe = 1080f;
+
+        /// <summary>
+        /// Berechnet die Skalierung aus dem Zoomfaktor.
+        ///
+        /// Bewusst ohne die Fenstergröße: vorher wurde mit virtuelle Größe geteilt durch Clientgröße
+        /// gerechnet, und zwar für X und Y getrennt. Das hatte zwei Folgen. Erstens wurde die Karte
+        /// bei einem kleineren Fenster grösser statt kleiner, jede Größenänderung wirkte also wie
+        /// ein Zoom. Zweitens liefen X und Y auseinander, sobald das Fenster nicht im Verhältnis
+        /// 16:9 stand - die Sechsecke wurden dann in eine Richtung gestaucht.
+        ///
+        /// Die Skalierung hängt jetzt nur noch am Zoom. Eine Größenänderung zeigt damit mehr oder
+        /// weniger von der Karte, statt sie zu vergrößern - so wie man es von einer Karte erwartet.
+        /// Der Bezug auf <see cref="_referenzHöhe"/> ist so gewählt, dass sich auf einem 1080 Punkte
+        /// hohen Fenster gegenüber vorher nichts ändert.
         /// </summary>
         void _RecalcScale() {
-            _scale.X = _virtualWidth / (float)_clientWidth * Zoom;
-            _scale.Y = _virtualHeight / (float)_clientHeight * Zoom;
+            float skalierung = _virtualHeight / _referenzHöhe * Zoom;
+            _scale.X = skalierung;
+            _scale.Y = skalierung;
         }
 
         /// <summary>

@@ -145,7 +145,12 @@ namespace PhoenixDX.Structures {
         /// <param name="provinzCoords">Koordinaten der Provinz.</param>
         /// <param name="scale">Skalierungsfaktor.</param>
         public Vektor GetMapPosition(Microsoft.Xna.Framework.Vector2 provinzCoords, Vektor scale) {
-            if (scale.X != _scale.X || scale.X != _scale.Y) {
+            // Achtung: _mapCoords, _mapSize und _scale sind statisch. Das ist kein Cache je Feld,
+            // sondern ein gemeinsamer Zwischenspeicher für das gerade bearbeitete Feld - InKleinfeld
+            // wertet ihn unmittelbar nach diesem Aufruf aus. Deshalb muss hier bei jedem Aufruf
+            // gerechnet werden; eine Abkürzung "Skalierung unverändert" würde allen Feldern die
+            // Koordinaten des zuletzt berechneten geben.
+            {
                 _mapSize = new Microsoft.Xna.Framework.Vector2(Height * scale.X, Width * scale.Y);
                 _scale.X = scale.X;
                 _scale.Y = scale.Y;
