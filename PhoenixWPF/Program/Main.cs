@@ -1,6 +1,5 @@
 ﻿using PhoenixDX;
 using PhoenixModel.Database;
-using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.EventsAndArgs;
 using PhoenixModel.ExternalTables;
@@ -186,6 +185,15 @@ namespace PhoenixWPF.Program {
                 Settings.UserSettings.Zoom = Instance.SpielDXBridge.GetZoom();
                 Settings.UserSettings.CameraPosition = Instance.SpielDXBridge.GetCameraPosition();
             }
+        }
+
+        /// <summary>
+        /// Schreibt sofort alles weg, was noch in der Warteschlange liegt, statt auf den
+        /// Hintergrundtimer zu warten. Notwendig, bevor die Zugdatenbank kopiert oder weggegeben
+        /// wird - sonst fehlen in der Kopie die letzten Änderungen.
+        /// </summary>
+        public void SpeichereJetzt() {
+            PerformSave(null, EventArgs.Empty);
         }
 
         /// <summary>

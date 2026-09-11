@@ -89,6 +89,7 @@
                 <MenuItem Header="Zug" Name="ZugMenu" SubmenuOpened="ZugMenu_SubmenuOpened">
                     <MenuItem Header="Aktuelle Phase" Name="MenuPhaseAnzeige" IsEnabled="False" />
                     <MenuItem Header="Rüstphase beenden" Name="MenuNaechstePhase" IsCheckable="False" Click="MenuItem_Click" Tag="NaechstePhase" />
+                    <MenuItem Header="Zug abgeben" Name="MenuZugAbgeben" IsCheckable="False" Click="MenuItem_Click" Tag="ZugAbgeben" />
                     <Separator/>
                     <MenuItem Header="Zugreihenfolge" IsCheckable="False" Click="MenuItem_Click" Tag="Zugreihenfolge" />
                 </MenuItem>

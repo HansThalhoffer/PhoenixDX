@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using PhoenixModel.View;
+using PhoenixWPF.Database;
 using PhoenixWPF.Database.Generatoren;
 using PhoenixWPF.Dialogs;
 using PhoenixWPF.Program;
@@ -63,6 +64,60 @@ namespace PhoenixWPF
             var zug = ZugView.AktuellerZug;
             MenuPhaseAnzeige.Header = $"Zug {zug.Zug} - {zug.Beschreibung} - {ZugView.PhasenBeschreibung}";
             MenuNaechstePhase.IsEnabled = ZugView.Phase == Zugphase.Rüstphase;
+            MenuZugAbgeben.IsEnabled = ZugView.Phase != Zugphase.Abgeschlossen;
+        }
+
+        /// <summary>
+        /// Gibt den Zug ab: der laufende Zug wird abgeschlossen und die Datenbank des Folgezuges
+        /// angelegt. Vorher bekommt der Benutzer zu sehen, was das mit seinen Figuren macht.
+        /// </summary>
+        private void ZugAbgeben() {
+            var bericht = ZugabgabeView.ErstelleBericht();
+            if (bericht.KannAbgegebenWerden == false) {
+                SpielWPF.LogError("Der Zug kann nicht abgegeben werden", string.Join(" ", bericht.Hindernisse));
+                MessageBox.Show(bericht.Zusammenfassung, "Zugabgabe nicht möglich", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var antwort = MessageBox.Show(
+                bericht.Zusammenfassung + "\r\nDen Zug jetzt abgeben? Danach lässt sich in diesem Zug nichts mehr ändern.",
+                "Zug abgeben", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+            if (antwort != MessageBoxResult.Yes)
+                return;
+
+            var einstellungen = Main.Instance.Settings.UserSettings;
+            string quelle = einstellungen.DatabaseLocationZugdaten;
+            int zug = bericht.AktuellerZug.Zug;
+
+            bool überschreiben = false;
+            if (Zugabgabe.ZielExistiert(quelle, bericht.NächsterZug.Zug)) {
+                var nachfrage = MessageBox.Show(
+                    $"Für Zug {bericht.NächsterZug.Zug} gibt es bereits Zugdaten.\r\n\r\n"
+                    + "Wenn du den Zug erneut abgibst, geht alles verloren, was in diesem Folgezug schon gemacht wurde. Wirklich überschreiben?",
+                    "Zugdaten überschreiben", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
+                if (nachfrage != MessageBoxResult.Yes)
+                    return;
+                überschreiben = true;
+            }
+
+            // alles Offene wegschreiben, sonst fehlt es in der Kopie
+            Main.Instance.SpeichereJetzt();
+
+            var ergebnis = Zugabgabe.Durchführen(quelle, einstellungen.PasswordReich, zug, überschreiben);
+            if (ergebnis.Erfolgreich == false) {
+                SpielWPF.LogError(ergebnis.Meldung, ergebnis.Details);
+                MessageBox.Show($"{ergebnis.Meldung}\r\n\r\n{ergebnis.Details}", "Zugabgabe fehlgeschlagen", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            SpielWPF.LogInfo(ergebnis.Meldung, ergebnis.Details);
+            MessageBox.Show(
+                $"{ergebnis.Details}\r\n\r\n"
+                + $"Übernommen wurden {ergebnis.ÜbernommeneFiguren} Figuren"
+                + (ergebnis.AufgelösteFiguren > 0 ? $", {ergebnis.AufgelösteFiguren} sind aufgelöst worden" : string.Empty) + ".\r\n"
+                + $"Der Reichsschatz für Zug {bericht.NächsterZug.Zug} beträgt {ergebnis.NeuerReichsschatz} GS.\r\n\r\n"
+                + "Über \"Extras / Zug Wechseln\" geht es in den neuen Zug.",
+                "Zug abgegeben", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         /// <summary>
@@ -137,6 +192,9 @@ namespace PhoenixWPF
                     // Zug
                     case "NaechstePhase":
                         NächstePhase();
+                        break;
+                    case "ZugAbgeben":
+                        ZugAbgeben();
                         break;
                     case "Zugreihenfolge":
                         new ZugreihenfolgeDialog().Show();
