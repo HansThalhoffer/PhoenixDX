@@ -38,9 +38,21 @@ namespace PhoenixWPF.Program {
             info.Click += (s, e) => ZeigeInfo(gemark);
             menü.Items.Add(info);
 
+            // Das Untermenü erscheint immer, auch wenn nichts anzubieten ist - sonst fehlt es
+            // wortlos und man weiß nicht, ob die Funktion fehlt oder nur nichts da ist.
             var eigene = EigeneFiguren(gemark);
-            if (eigene.Count > 0)
+            if (eigene.Count > 0) {
                 menü.Items.Add(BaueMöglicheZüge(eigene));
+            }
+            else {
+                var fremde = SpielfigurenView.GetSpielfiguren(gemark).Count;
+                menü.Items.Add(new MenuItem {
+                    Header = fremde > 0
+                        ? $"Mögliche Züge (keine eigenen Einheiten, {fremde} fremde)"
+                        : "Mögliche Züge (hier steht nichts)",
+                    IsEnabled = false,
+                });
+            }
 
             // Eine Hervorhebung soll sich auch wieder loswerden lassen, ohne die Karte neu zu laden
             var löschen = new MenuItem { Header = "Hervorhebung aufheben" };
@@ -94,13 +106,20 @@ namespace PhoenixWPF.Program {
                     return;
                 }
 
+                var karte = Main.Map;
+                if (karte == null) {
+                    SpielWPF.LogError("Die Karte ist nicht ansprechbar",
+                        "Die Verbindung zur Kartendarstellung fehlt, deshalb lässt sich nichts hervorheben.");
+                    return;
+                }
+
                 var farbe = GetReichsfarbe(figur);
-                Main.Map?.HebeHervor(erreichbar.Select(k => new KleinfeldPosition(k.gf, k.kf)),
+                int hervorgehoben = karte.HebeHervor(erreichbar.Select(k => new KleinfeldPosition(k.gf, k.kf)),
                     farbe.R, farbe.G, farbe.B, Deckkraft);
 
                 SpielWPF.LogInfo($"{figur.Bezeichner} erreicht {erreichbar.Count} Felder",
-                    $"Mit {figur.bp} Bewegungspunkten ab {figur.CreateBezeichner()}. "
-                    + "Die Hervorhebung lässt sich über das Kontextmenü wieder aufheben.");
+                    $"Mit {figur.bp} Bewegungspunkten ab {figur.CreateBezeichner()}, hervorgehoben sind "
+                    + $"{hervorgehoben} in {farbe}. Die Hervorhebung lässt sich über das Kontextmenü wieder aufheben.");
             }
             catch (Exception ex) {
                 SpielWPF.LogError($"Die möglichen Züge von {figur.Bezeichner} liessen sich nicht ermitteln", ex.Message);

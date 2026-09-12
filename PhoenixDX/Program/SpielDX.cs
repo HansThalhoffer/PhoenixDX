@@ -401,8 +401,11 @@ namespace PhoenixDX.Program {
         /// <summary>
         /// Hebt Kleinfelder farbig hervor. Die Welt hält die Gemarken, deshalb geht es hier durch.
         /// </summary>
-        internal void HebeHervor(IEnumerable<KleinfeldPosition> felder, Color farbe) {
-            Weltkarte?.HebeHervor(felder, farbe);
+        internal int HebeHervor(IEnumerable<KleinfeldPosition> felder, Color farbe) {
+            if (Weltkarte == null)
+                return 0;
+            Weltkarte.HebeHervor(felder, farbe);
+            return Weltkarte.AnzahlHervorhebungen;
         }
 
         /// <summary>

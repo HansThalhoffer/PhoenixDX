@@ -277,8 +277,11 @@ namespace PhoenixDX {
         /// <param name="g">Grün, 0 bis 255</param>
         /// <param name="b">Blau, 0 bis 255</param>
         /// <param name="deckkraft">0 bis 1; darunter scheint das Gelände durch</param>
-        public void HebeHervor(IEnumerable<KleinfeldPosition> felder, byte r, byte g, byte b, float deckkraft = 0.45f) {
-            _game?.HebeHervor(felder, new Color(r, g, b) * deckkraft);
+        /// <returns>wieviele Kleinfelder tatsächlich hervorgehoben wurden</returns>
+        public int HebeHervor(IEnumerable<KleinfeldPosition> felder, byte r, byte g, byte b, float deckkraft = 0.45f) {
+            if (_game == null)
+                return 0;
+            return _game.HebeHervor(felder, new Color(r, g, b) * deckkraft);
         }
 
         /// <summary>

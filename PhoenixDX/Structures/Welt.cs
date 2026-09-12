@@ -185,6 +185,21 @@ namespace PhoenixDX.Structures {
         }
 
         /// <summary>
+        /// Wieviele Kleinfelder gerade hervorgehoben sind. Die Gemarken selbst sind nach aussen
+        /// nicht sichtbar, für einen Test genügt die Anzahl.
+        /// </summary>
+        public int AnzahlHervorhebungen {
+            get {
+                int anzahl = 0;
+                foreach (var provinz in Provinzen.Values)
+                    foreach (var gemark in provinz.Felder.Values)
+                        if (gemark.Hervorhebung != null)
+                            anzahl++;
+                return anzahl;
+            }
+        }
+
+        /// <summary>
         /// Nimmt jede Hervorhebung zurück
         /// </summary>
         public void LöscheHervorhebung() {
