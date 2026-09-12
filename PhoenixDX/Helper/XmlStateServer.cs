@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
@@ -30,6 +30,7 @@ namespace PhoenixDX.Helper {
                 Start(8080);
                 Application.ApplicationExit += (s, e) => Stop();
                 _xmlGenerator.Enqueue(new Func<string>(() => BaseInfo()));
+                _xmlGenerator.Enqueue(new Func<string>(() => AnmeldungsInfo.AlsXml()));
             }
             catch (Exception ex) {
                 Console.Error.WriteLine($"Fehler beim Starten des XmlStateServer: {ex.Message}");
