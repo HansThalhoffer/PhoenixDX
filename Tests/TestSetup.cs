@@ -234,6 +234,38 @@ namespace Tests {
         }
 
         /// <summary>
+        /// Räumt eine Spielwiese im Temp-Verzeichnis wieder ab.
+        ///
+        /// Nicht einfach Directory.Delete: der Access-Treiber gibt eine Datenbankdatei erst frei,
+        /// wenn die Verbindungsobjekte tatsächlich abgeräumt sind. Verschwindet die Datei vorher
+        /// unter ihm weg, stirbt der Prozess in der nativen Schicht - ohne verwertbare Ausnahme,
+        /// genau wie im Kommentar zum Verbindungspooling in AccessDatabase beschrieben. Der
+        /// Testlauf brach dadurch in etwa jedem zweiten Durchgang mit "Der Testhostprozess ist
+        /// abgestürzt" ab, an wechselnden Stellen.
+        ///
+        /// Deshalb erst die Finalizer durchlassen und dann löschen, notfalls in mehreren Anläufen.
+        /// </summary>
+        public static void RäumeAuf(string verzeichnis) {
+            if (Directory.Exists(verzeichnis) == false)
+                return;
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+
+            for (int versuch = 0; versuch < 5; versuch++) {
+                try {
+                    Directory.Delete(verzeichnis, true);
+                    return;
+                }
+                catch (IOException) { }
+                catch (UnauthorizedAccessException) { }
+                Thread.Sleep(200);
+            }
+            // die Spielwiese liegt im Temp, das räumt notfalls Windows auf
+        }
+
+        /// <summary>
         /// mit der PZE kann ProgramView.SelectedNation erst gesetzt werden
         /// </summary>
         public static void LoadPZE(bool resetPasssword, bool resetDB) {

@@ -139,7 +139,7 @@ namespace Tests {
             }
             finally {
                 TestSetup.LoadZugdaten(false, false);
-                try { Directory.Delete(spielwiese, true); } catch { /* die Spielwiese ist im Temp, das räumt notfalls Windows auf */ }
+                TestSetup.RäumeAuf(spielwiese);
             }
         }
 
@@ -168,7 +168,7 @@ namespace Tests {
                 PruefeArchiv(ergebnis.Archiv!, Path.GetFileName(kopie));
             }
             finally {
-                try { Directory.Delete(spielwiese, true); } catch { /* siehe oben */ }
+                TestSetup.RäumeAuf(spielwiese);
             }
         }
 
@@ -209,7 +209,7 @@ namespace Tests {
             }
             finally {
                 TestSetup.LoadZugdaten(false, false);
-                try { Directory.Delete(spielwiese, true); } catch { /* siehe oben */ }
+                TestSetup.RäumeAuf(spielwiese);
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿using PhoenixWPF.Database;
+using PhoenixWPF.Database;
 using System.IO;
 
 namespace Tests {
@@ -77,7 +77,7 @@ namespace Tests {
                 Assert.Equal(new FileInfo(TestSetup.ZugdatenPfad).Length, new FileInfo(ziel).Length);
             }
             finally {
-                try { Directory.Delete(spielwiese, true); } catch { /* liegt im Temp */ }
+                TestSetup.RäumeAuf(spielwiese);
             }
         }
 
@@ -110,7 +110,7 @@ namespace Tests {
                 Assert.Equal(new FileInfo(datenbank).Length, new FileInfo(ziel).Length);
             }
             finally {
-                try { Directory.Delete(spielwiese, true); } catch { /* liegt im Temp */ }
+                TestSetup.RäumeAuf(spielwiese);
             }
         }
 
@@ -140,7 +140,7 @@ namespace Tests {
                 Assert.Equal(new FileInfo(TestSetup.ZugdatenPfad).Length, new FileInfo(ziel).Length);
             }
             finally {
-                try { Directory.Delete(spielwiese, true); } catch { /* liegt im Temp */ }
+                TestSetup.RäumeAuf(spielwiese);
             }
         }
 
@@ -159,7 +159,7 @@ namespace Tests {
                 Assert.False(File.Exists(ziel));
             }
             finally {
-                try { Directory.Delete(spielwiese, true); } catch { /* liegt im Temp */ }
+                TestSetup.RäumeAuf(spielwiese);
             }
         }
     }
