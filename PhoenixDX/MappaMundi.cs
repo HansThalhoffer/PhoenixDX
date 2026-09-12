@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Drawing;
 using PhoenixDX.Program;
 using PhoenixModel.dbCrossRef;
@@ -256,6 +258,34 @@ namespace PhoenixDX {
         /// <param name="eventType">Der Typ des Mausereignisses.</param>
         public void SelectKleinfeld(int gf, int kf, MausEventArgs.MouseEventType eventType) {
             _OnMapEvent(new MapEventArgs(gf, kf, MapEventArgs.MapEventType.SelectGemark));
+        }
+
+        /// <summary>
+        /// Meldet der Oberfläche, dass zu diesem Kleinfeld ein Kontextmenü gewünscht ist.
+        /// Ausgelöst vom Rechtsklick auf die Karte.
+        /// </summary>
+        public void ÖffneKontextmenü(int gf, int kf) {
+            _OnMapEvent(new MapEventArgs(gf, kf, MapEventArgs.MapEventType.Kontextmenue));
+        }
+
+        /// <summary>
+        /// Hebt Kleinfelder auf der Karte farbig hervor, etwa die Felder, die eine Einheit noch
+        /// erreichen kann. Eine leere Liste nimmt die Hervorhebung zurück.
+        /// </summary>
+        /// <param name="felder">die hervorzuhebenden Kleinfelder</param>
+        /// <param name="r">Rot, 0 bis 255</param>
+        /// <param name="g">Grün, 0 bis 255</param>
+        /// <param name="b">Blau, 0 bis 255</param>
+        /// <param name="deckkraft">0 bis 1; darunter scheint das Gelände durch</param>
+        public void HebeHervor(IEnumerable<KleinfeldPosition> felder, byte r, byte g, byte b, float deckkraft = 0.45f) {
+            _game?.HebeHervor(felder, new Color(r, g, b) * deckkraft);
+        }
+
+        /// <summary>
+        /// Nimmt jede Hervorhebung auf der Karte zurück
+        /// </summary>
+        public void LöscheHervorhebung() {
+            _game?.HebeHervor([], Color.Transparent);
         }
         #endregion
 

@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Helper;
@@ -127,6 +127,11 @@ namespace PhoenixDX.Drawing {
                     if (ShowReichOverlay && gemark.ReichID > 0 && gemark.Reich != null) {
                         spriteBatch.Draw(_weiss, rScreenG, null, inKleinfeld ? Color.Plum : gemark.Reich.color * 0.5f);
                     }
+                    // Die Hervorhebung liegt über dem Gelände, aber unter der Auswahl: sie zeigt
+                    // eine Menge von Feldern, die Auswahl zeigt genau eines.
+                    if (gemark.Hervorhebung != null)
+                        spriteBatch.Draw(_weiss, rScreenG, null, gemark.Hervorhebung.Value);
+
                     if (gemark == selected) {
                         if (_toggle)
                             spriteBatch.Draw(_selection1, rScreenG, null, Color.White);

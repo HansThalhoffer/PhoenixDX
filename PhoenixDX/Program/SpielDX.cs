@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Drawing;
 using PhoenixModel.Helper;
@@ -32,6 +33,15 @@ namespace PhoenixDX.Program {
         /// wird von der Kamera benutzt, um nicht endlos zu bewegen
         /// </summary>
         bool _isMoving = false;
+        /// <summary>
+        /// Wurde die Karte mit gedrückter rechter Maustaste geschoben? Dann ist das Loslassen der
+        /// Taste kein Klick und öffnet kein Kontextmenü.
+        /// </summary>
+        bool _rechtsGeschoben = false;
+        /// <summary>
+        /// Ab wieviel Bildpunkten Bewegung ein Schieben gemeint ist und kein Klick
+        /// </summary>
+        const int SchiebeSchwelle = 3;
         /// <summary>
         /// Mausevents zum Verarbeiten
         /// </summary>
@@ -389,6 +399,13 @@ namespace PhoenixDX.Program {
         }
 
         /// <summary>
+        /// Hebt Kleinfelder farbig hervor. Die Welt hält die Gemarken, deshalb geht es hier durch.
+        /// </summary>
+        internal void HebeHervor(IEnumerable<KleinfeldPosition> felder, Color farbe) {
+            Weltkarte?.HebeHervor(felder, farbe);
+        }
+
+        /// <summary>
         /// Verarbeitet die Eingaben der Maus.
         /// Wird im Udate der GameEngine aufgerufen
         /// </summary>
@@ -416,11 +433,26 @@ namespace PhoenixDX.Program {
                             break;
                         }
                     case MausEventArgs.MouseEventType.RightButtonDown: {
+                            // Noch nichts tun: die rechte Taste schiebt auch die Karte. Erst beim
+                            // Loslassen steht fest, ob es ein Klick oder ein Schieben war.
+                            _rechtsGeschoben = false;
+                            break;
+                        }
+                    case MausEventArgs.MouseEventType.RightButtonUp: {
+                            // Ein Klick, kein Schieben: dann das Kontextmenü zu dem Feld unter dem
+                            // Mauszeiger öffnen.
+                            if (_rechtsGeschoben == false && _mouseOver != null)
+                                _wpfBridge.ÖffneKontextmenü(_mouseOver.Koordinaten.gf, _mouseOver.Koordinaten.kf);
+                            _rechtsGeschoben = false;
                             break;
                         }
                     case MausEventArgs.MouseEventType.MouseMove: {
                             if (_maus.RightButton == MausEventArgs.MouseButtonState.Pressed) {
                                 Position delta = _maus.ScreenPositionDelta;// * (int)(18f * Zoom);
+                                // Ein Zittern der Hand ist noch kein Schieben - sonst bliebe das
+                                // Kontextmenü bei der kleinsten Bewegung aus.
+                                if (Math.Abs(delta.X) + Math.Abs(delta.Y) > SchiebeSchwelle)
+                                    _rechtsGeschoben = true;
                                 MoveCamera(delta);
                             }
                             break;

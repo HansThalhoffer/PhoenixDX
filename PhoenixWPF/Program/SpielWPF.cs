@@ -1,4 +1,4 @@
-﻿using PhoenixModel.dbErkenfara;
+using PhoenixModel.dbErkenfara;
 using PhoenixModel.EventsAndArgs;
 using PhoenixModel.Program;
 using PhoenixModel.View;
@@ -46,6 +46,10 @@ namespace PhoenixWPF.Program {
                             }
                             Log(e.LogEntry);
                         }
+                        break;
+                    }
+                case MapEventArgs.MapEventType.Kontextmenue: {
+                        Kartenkontextmenue.Zeige(e.GF, e.KF);
                         break;
                     }
                 case MapEventArgs.MapEventType.Zoom: {

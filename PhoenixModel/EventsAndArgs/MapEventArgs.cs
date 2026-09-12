@@ -1,4 +1,4 @@
-﻿using PhoenixModel.Program;
+using PhoenixModel.Program;
 using PhoenixModel.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace PhoenixModel.EventsAndArgs {
     public class MapEventArgs {
         public enum MapEventType {
-            None, Loaded, SelectGemark, Log, Zoom, UpdateAll
+            None, Loaded, SelectGemark, Log, Zoom, UpdateAll, Kontextmenue
         }
 
         public int GF = 0, KF = 0;

@@ -660,8 +660,16 @@ namespace PhoenixModel.Rules {
         }
 
         /// <summary>
-        /// Alle Kleinfelder, die die Figur in diesem Zug noch erreichen kann - ohne das Feld,
-        /// auf dem sie gerade steht.
+        /// Alle Kleinfelder, die die Figur in diesem Zug noch erreichen kann.
+        ///
+        /// Das Feld, auf dem sie steht, ist dabei, wenn sie es verlassen und wieder betreten kann.
+        /// Das ist kein Versehen: Hin- und Herbewegen ist erlaubt und kostet Bewegungspunkte. Die
+        /// Suche laeuft ueber Zustaende aus Feld und ueberwundenen Hoehenstufen, deshalb kann
+        /// dasselbe Feld ueber einen Rundweg erneut auftauchen.
+        ///
+        /// Dass eine Figur Bewegungspunkte hat, heisst uebrigens nicht, dass sie ein Feld
+        /// erreicht: schwere Artillerie ist so langsam, dass einstellige Restpunkte fuer keinen
+        /// Schritt reichen. Dann kommt eine leere Liste zurueck.
         /// </summary>
         public static List<KleinFeld> GetErreichbareFelder(Spielfigur? figur) {
             List<KleinFeld> result = [];

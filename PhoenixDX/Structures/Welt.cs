@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Helper;
@@ -169,6 +169,30 @@ namespace PhoenixDX.Structures {
             }
 
         }
+        /// <summary>
+        /// Hebt eine Menge von Kleinfeldern farbig hervor und nimmt jede frühere Hervorhebung
+        /// zurück. Eine leere Liste löscht die Hervorhebung also.
+        /// </summary>
+        public void HebeHervor(IEnumerable<KleinfeldPosition> felder, Color farbe) {
+            LöscheHervorhebung();
+            foreach (var pos in felder) {
+                if (Provinzen.TryGetValue(pos.gf, out var provinz) == false)
+                    continue;
+                var gemark = provinz.GetKleinfeld(pos.kf);
+                if (gemark != null)
+                    gemark.Hervorhebung = farbe;
+            }
+        }
+
+        /// <summary>
+        /// Nimmt jede Hervorhebung zurück
+        /// </summary>
+        public void LöscheHervorhebung() {
+            foreach (var provinz in Provinzen.Values)
+                foreach (var gemark in provinz.Felder.Values)
+                    gemark.Hervorhebung = null;
+        }
+
         /// <summary>
         /// wir wollen nur 1x die Reiche hinzufügen
         /// </summary>

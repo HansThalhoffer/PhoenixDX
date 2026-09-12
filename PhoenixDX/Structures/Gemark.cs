@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Drawing;
@@ -84,6 +84,11 @@ namespace PhoenixDX.Structures {
         /// Gibt an, ob diese Gemarkung ausgewählt ist.
         /// </summary>
         public bool IsSelected { get; set; } = false;
+        /// <summary>
+        /// Eine Einfärbung, die über das Feld gelegt wird - etwa für die Felder, die eine Einheit
+        /// noch erreichen kann. Null heißt: keine Hervorhebung.
+        /// </summary>
+        public Microsoft.Xna.Framework.Color? Hervorhebung { get; set; } = null;
         /// <summary>
         /// Kartenkoordinaten der Gemarkung.
         /// </summary>
