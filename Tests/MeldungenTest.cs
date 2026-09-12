@@ -49,8 +49,62 @@ namespace Tests {
 
             // und wenn welche fehlen, sagt die eine Meldung, wieviele und welche
             if (gebäude.Count == 1) {
-                Assert.Contains("fehlen in der Bauwerkliste", gebäude[0].Titel);
+                Assert.Contains("Bauwerkliste", gebäude[0].Titel);
                 Assert.Contains("/", gebäude[0].Message);
+                // Nachgetragene Eintraege sind kein Missstand mehr, sondern eine Mitteilung.
+                // Nur was sich nicht nachtragen laesst, bleibt eine Warnung.
+                if (gebäude[0].Titel.Contains("nachgetragen"))
+                    Assert.Equal(LogEntry.LogType.Info, gebäude[0].Type);
+                else
+                    Assert.Equal(LogEntry.LogType.Warning, gebäude[0].Type);
+            }
+        }
+
+        /// <summary>
+        /// Die fehlenden Eintraege werden in der Bauwerkliste nachgetragen, sonst fehlten sie beim
+        /// naechsten Start wieder.
+        ///
+        /// Geprueft wird die Speicherwarteschlange, nicht die Datenbank: im Testlauf leert sie
+        /// niemand, die echten Kartendaten bleiben also unberuehrt.
+        /// </summary>
+        [StaFact]
+        public void DieFehlendenEintraegeWerdenNachgetragen() {
+            TestSetup.Setup();
+            TestSetup.LoadCrossRef(false, false);
+            TestSetup.LoadPZE(false, false);
+            SharedData.StoreQueue.Clear();
+
+            var meldungen = SammleBeim(() => TestSetup.LoadKarte(erzwingen: true));
+            var offen = SharedData.StoreQueue.ToList();
+            try {
+                var nachtrag = meldungen.FirstOrDefault(m => m.Titel.Contains("nachgetragen"));
+                if (nachtrag == null) {
+                    // in diesen Kartendaten fehlt nichts - dann darf auch nichts nachgetragen werden
+                    Assert.DoesNotContain(offen, e => e.Table is PhoenixModel.dbErkenfara.Gebäude);
+                    return;
+                }
+
+                var gebäude = offen.Where(e => e.Table is PhoenixModel.dbErkenfara.Gebäude).ToList();
+                Assert.True(gebäude.Count > 0, "Es wurde nichts zum Nachtragen vorgemerkt");
+
+                foreach (var eintrag in gebäude) {
+                    // eingefuegt, nicht aktualisiert - die Zeile gibt es ja noch nicht
+                    Assert.Equal(PhoenixModel.Database.DatabaseQueue.DatabaseQueueCommand.Insert, eintrag.Command);
+                    var haus = (PhoenixModel.dbErkenfara.Gebäude)eintrag.Table;
+                    Assert.False(string.IsNullOrEmpty(haus.Reich), $"{haus.Bezeichner} hat kein Reich");
+                    Assert.True(haus.gf > 0 && haus.kf > 0, $"{haus.Bezeichner} hat keine Position");
+
+                    // Und der entscheidende Punkt: der Speicherlauf ordnet einen Datensatz ueber
+                    // den Pfad einer der vier bekannten Datenbanken zu. Stimmt er nicht genau mit
+                    // dem ueberein, was in den Einstellungen steht, verwirft er den Datensatz mit
+                    // einem Protokolleintrag - der Nachtrag liefe dann ins Leere.
+                    Assert.Equal(TestSetup.KartenPfad, haus.Database);
+                }
+                Assert.Contains($"{gebäude.Count} Gebäude", nachtrag.Titel);
+            }
+            finally {
+                // nichts davon darf in die echten Kartendaten laufen
+                SharedData.StoreQueue.Clear();
             }
         }
 

@@ -267,6 +267,17 @@ namespace Tests {
         }
 
         /// <summary>
+        /// Der konfigurierte Pfad zur Kartendatenbank
+        /// </summary>
+        public static string KartenPfad {
+            get {
+                AppSettings settings = new AppSettings("Tests.jpk");
+                settings.InitializeSettings();
+                return StorageSystem.LocateFile(settings.UserSettings.DatabaseLocationKarte, "Erkenfara.mdb");
+            }
+        }
+
+        /// <summary>
         /// Räumt eine Spielwiese im Temp-Verzeichnis wieder ab.
         ///
         /// Mehrere Anläufe, weil eine gerade erst geschlossene Datenbankdatei kurz belegt sein

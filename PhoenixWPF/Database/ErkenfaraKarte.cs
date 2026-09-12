@@ -62,7 +62,8 @@ namespace PhoenixWPF.Program {
         {
             if (SharedData.Map != null && SharedData.Gebäude != null)
             {
-                List<string> ergänzt = [];
+                List<string> nachgetragen = [];
+                List<string> ohneReich = [];
                 var gebäudeInKarte = SharedData.Map.Values.Where(gemark => gemark.Baupunkte > 0);
                 foreach (var gemark in gebäudeInKarte)
                 {
@@ -76,7 +77,19 @@ namespace PhoenixWPF.Program {
                         // erste Zugriff auf ein Gemark auslöst, damit es nur eine Stelle dafür gibt
                         gebäude = BauwerkeView.ErgänzeFehlendesGebäude(gemark, stillschweigend: true);
                         if (gebäude != null)
-                            ergänzt.Add(gemark.Bezeichner);
+                        {
+                            // Der Eintrag wird in der Bauwerkliste nachgetragen, sonst fehlte er
+                            // beim nächsten Start wieder. Die Karte ist die gepflegte Tabelle und
+                            // gibt den Ausschlag; ein Reich braucht der Eintrag allerdings, sonst
+                            // stünde er unvollständig in der Datenbank.
+                            if (string.IsNullOrEmpty(gebäude.Reich))
+                                ohneReich.Add(gemark.Bezeichner);
+                            else
+                            {
+                                SharedData.StoreQueue.Insert(gebäude);
+                                nachgetragen.Add(gemark.Bezeichner);
+                            }
+                        }
                     }
                     if (gebäude != null)
                         gebäude.Bauwerknamen = gemark.Bauwerknamen;
@@ -85,13 +98,20 @@ namespace PhoenixWPF.Program {
                 // Eine Meldung statt einer je Gemark. Vorher standen beim Start zwei Dutzend
                 // gleichlautende Warnungen im Infotab, die jedes Mal wiederkamen - so oft, dass
                 // niemand mehr hinsieht.
-                if (ergänzt.Count > 0)
-                    ProgramView.LogWarning($"{ergänzt.Count} Gebäude fehlen in der Bauwerkliste",
-                        $"In der Karte stehen Gebäude, zu denen die Tabelle [bauwerkliste] der Erkenfarakarte.mdb "
-                        + $"keinen Eintrag führt: {string.Join(", ", ergänzt)}.\r\r"
-                        + "Die Karte ist die gepflegte Tabelle und gibt den Ausschlag; die Einträge wurden für "
-                        + "diese Sitzung ergänzt. In der Datenbank fehlen sie weiterhin, deshalb kommt diese "
-                        + "Meldung bei jedem Start wieder.");
+                if (nachgetragen.Count > 0)
+                    ProgramView.LogInfo($"{nachgetragen.Count} Gebäude in der Bauwerkliste nachgetragen",
+                        $"In der Karte standen Gebäude, zu denen die Tabelle [bauwerkliste] der Erkenfarakarte.mdb "
+                        + $"keinen Eintrag führte: {string.Join(", ", nachgetragen)}.\r\r"
+                        + "Die Karte ist die gepflegte Tabelle und gibt den Ausschlag; die Einträge wurden ergänzt "
+                        + "und werden in die Datenbank geschrieben. Beim nächsten Start sollte diese Meldung "
+                        + "ausbleiben. Der Spielleitung fehlen diese Einträge vermutlich ebenfalls.");
+
+                if (ohneReich.Count > 0)
+                    ProgramView.LogWarning($"{ohneReich.Count} Gebäude fehlen in der Bauwerkliste und haben kein Reich",
+                        $"Zu diesen Gemarken führt die Tabelle [bauwerkliste] keinen Eintrag, und die Karte nennt "
+                        + $"auch kein Reich dazu: {string.Join(", ", ohneReich)}.\r\r"
+                        + "Sie wurden für diese Sitzung ergänzt, aber nicht in die Datenbank geschrieben - ein "
+                        + "Eintrag ohne Reich wäre unvollständig. Hier sollte die Spielleitung nachsehen.");
             }
             // Die Reparatur läuft jetzt im Ladevorgang und damit auch dort, wo es gar keine
             // Anwendung mit Oberfläche gibt - etwa im Testlauf.
