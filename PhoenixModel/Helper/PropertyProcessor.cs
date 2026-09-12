@@ -53,8 +53,26 @@ namespace PhoenixModel.Helper {
         /// <param name="name">The name of the constant field.</param>
         /// <returns>The value of the constant field as a string, or an empty string if the field does not exist.</returns>
         public static void SetStaticValue<T>(string name, string value) {
-            var info = typeof(T).GetProperty(name, BindingFlags.Public | BindingFlags.Static);
+            SetStaticValue(typeof(T), name, value);
+        }
+
+        /// <summary>
+        /// Setzt eine statische Eigenschaft, wenn der Typ erst zur Laufzeit feststeht.
+        ///
+        /// Gebraucht wird das, um die statischen Datenbanknamen der Tabellenklassen zu sichern und
+        /// wiederherzustellen: an ihnen entscheidet der Speicherlauf, in welche Datei er schreibt.
+        /// </summary>
+        public static void SetStaticValue(Type typ, string name, string value) {
+            var info = typ.GetProperty(name, BindingFlags.Public | BindingFlags.Static);
             info?.SetValue(null, value);
+        }
+
+        /// <summary>
+        /// Liest eine statische Eigenschaft, wenn der Typ erst zur Laufzeit feststeht
+        /// </summary>
+        public static string GetStaticValue(Type typ, string name) {
+            var info = typ.GetProperty(name, BindingFlags.Public | BindingFlags.Static);
+            return info?.GetValue(null)?.ToString() ?? string.Empty;
         }
 
         /// <summary>
