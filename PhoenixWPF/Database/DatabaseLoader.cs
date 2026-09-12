@@ -1,4 +1,4 @@
-﻿using PhoenixModel.Database;
+using PhoenixModel.Database;
 using PhoenixModel.Helper;
 using PhoenixWPF.Program;
 using PhoenixModel.ViewModel;
@@ -205,6 +205,60 @@ namespace PhoenixWPF.Database
                 }
                 connector?.Close();
             }
+        }
+
+        /// <summary>
+        /// Schreibt mehrere Vorgänge über eine einzige Verbindung.
+        ///
+        /// Siehe <see cref="ILoadableDatabase.SchreibeAlle"/>: je Datensatz eine Verbindung zu
+        /// öffnen ist langsam und bringt den Access-Treiber sporadisch zum Absturz.
+        ///
+        /// Scheitert ein einzelner Vorgang, wird er protokolliert und die übrigen laufen weiter -
+        /// genauso wie zuvor, als jeder Vorgang seine eigene Verbindung hatte. Ein halb
+        /// geschriebener Speicherdurchgang ist immer noch besser als ein verworfener.
+        /// </summary>
+        protected void SchreibeAlle(IEnumerable<DatabaseQueue.DatabaseQueueItem> vorgänge, EncryptedString encryptedpassword, string databaseFileName) {
+            var liste = vorgänge.ToList();
+            if (liste.Count == 0)
+                return;
+
+            PasswordHolder holder = new(encryptedpassword);
+            using AccessDatabase connector = new(databaseFileName, holder.DecryptedPassword);
+            if (connector.Open() == false) {
+                SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error,
+                    $"Die Datenbank {databaseFileName} liess sich nicht öffnen",
+                    $"{liste.Count} Änderungen konnten nicht gespeichert werden."));
+                return;
+            }
+
+            try {
+                // der Befehl muss vor dem Schliessen der Verbindung freigegeben werden
+                using var command = connector.OpenDBCommand();
+                foreach (var vorgang in liste) {
+                    try {
+                        switch (vorgang.Command) {
+                            case DatabaseQueue.DatabaseQueueCommand.Insert:
+                                vorgang.Table.Insert(command);
+                                break;
+                            case DatabaseQueue.DatabaseQueueCommand.Delete:
+                                vorgang.Table.Delete(command);
+                                break;
+                            default:
+                                vorgang.Table.Save(command);
+                                break;
+                        }
+                    }
+                    catch (Exception ex) {
+                        SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error,
+                            $"Fehler beim Schreiben in die Tabelle {vorgang.Table.TableName}", ex.Message));
+                    }
+                }
+            }
+            catch (Exception ex) {
+                SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error,
+                    $"Fehler beim Speichern in der Datenbank {databaseFileName}", ex.Message));
+            }
+            connector.Close();
         }
 
         protected void Delete(IDatabaseTable table, EncryptedString encryptedpassword, string databaseFileName) {

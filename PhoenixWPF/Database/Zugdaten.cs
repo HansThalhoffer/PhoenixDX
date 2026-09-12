@@ -1,4 +1,4 @@
-﻿using PhoenixModel.Database;
+using PhoenixModel.Database;
 using PhoenixModel.ViewModel;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.EventsAndArgs;
@@ -63,6 +63,10 @@ namespace PhoenixWPF.Database {
                 ProgramView.Update(ViewEventArgs.ViewEventType.UpdateDiplomatie);
             }));
 
+        }
+
+        public void SchreibeAlle(IEnumerable<PhoenixModel.Database.DatabaseQueue.DatabaseQueueItem> vorgänge) {
+            SchreibeAlle(vorgänge, _encryptedpassword, _databaseFileName);
         }
 
         public void Save(IDatabaseTable table) {

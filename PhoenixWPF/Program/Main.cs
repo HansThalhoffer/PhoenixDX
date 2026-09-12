@@ -203,39 +203,42 @@ namespace PhoenixWPF.Program {
         /// <param name="e"></param>
         private void PerformSave(object? sender, EventArgs e) {
             try {
-                while (SharedData.StoreQueue.Count > 0) {
-                    SharedData.StoreQueue.TryDequeue(out var data);
-                    if (data != null) {
-                        ILoadableDatabase? db = null;
-                        if (data.Table.Database == Settings.UserSettings.DatabaseLocationCrossRef) {
-                            db = CreateCrossRef(data.Table.Database, Settings.UserSettings.PasswordCrossRef);
-                        }
-                        else if (data.Table.Database == Settings.UserSettings.DatabaseLocationKarte) {
-                            db = CreateKarte(data.Table.Database, Settings.UserSettings.PasswordKarte);
-                        }
-                        else if (data.Table.Database == Settings.UserSettings.DatabaseLocationZugdaten) {
-                            db = CreateZugdaten(data.Table.Database, Settings.UserSettings.PasswordReich);
-                        }
-                        else if (data.Table.Database == Settings.UserSettings.DatabaseLocationPZE) {
-                            db = CreatePZE(data.Table.Database, Settings.UserSettings.PasswordPZE);
-                        }
-                        else {
-                            SpielWPF.LogError($"Die Datenbank {data.Table.Database} ist unbenkannt", $"Die daten können nicht in der Tabelle {data.Table.TableName} gespeichert werden, wenn die Datenbank nicht bekannt ist");
-                        }
-                        if (db != null) {
-                            switch(data.Command) {
-                                case DatabaseQueue.DatabaseQueueCommand.Save:
-                                    db.Save(data.Table);
-                                    break;
-                                case DatabaseQueue.DatabaseQueueCommand.Insert:
-                                    db.Insert(data.Table);
-                                    break;
-                                case DatabaseQueue.DatabaseQueueCommand.Delete:
-                                    db.Delete(data.Table);
-                                    break;
-                            }
-                        }
+                // Erst die ganze Warteschlange leeren und nach Datenbank bündeln, dann je
+                // Datenbank eine Verbindung öffnen.
+                //
+                // Vorher bekam jeder einzelne Datensatz seine eigene Verbindung. Das kostete rund
+                // 185 Millisekunden je Datensatz - ein bewegtes Heer aus 50 Figuren hielt die
+                // Anwendung damit neun Sekunden auf - und brachte den Access-Treiber sporadisch
+                // zum Absturz: gemessen etwa eine Zugriffsverletzung in mso99Lwin32client.dll je
+                // 400 Verbindungen, die den Prozess ohne Ausnahme beendet. Über eine stehende
+                // Verbindung sind dieselben Schreibvorgänge stabil und hundertmal schneller.
+                List<DatabaseQueue.DatabaseQueueItem> offen = [];
+                while (SharedData.StoreQueue.TryDequeue(out var data)) {
+                    if (data != null)
+                        offen.Add(data);
+                }
+
+                foreach (var gruppe in offen.GroupBy(eintrag => eintrag.Table.Database)) {
+                    ILoadableDatabase? db = null;
+                    if (gruppe.Key == Settings.UserSettings.DatabaseLocationCrossRef) {
+                        db = CreateCrossRef(gruppe.Key, Settings.UserSettings.PasswordCrossRef);
                     }
+                    else if (gruppe.Key == Settings.UserSettings.DatabaseLocationKarte) {
+                        db = CreateKarte(gruppe.Key, Settings.UserSettings.PasswordKarte);
+                    }
+                    else if (gruppe.Key == Settings.UserSettings.DatabaseLocationZugdaten) {
+                        db = CreateZugdaten(gruppe.Key, Settings.UserSettings.PasswordReich);
+                    }
+                    else if (gruppe.Key == Settings.UserSettings.DatabaseLocationPZE) {
+                        db = CreatePZE(gruppe.Key, Settings.UserSettings.PasswordPZE);
+                    }
+                    else {
+                        SpielWPF.LogError($"Die Datenbank {gruppe.Key} ist unbekannt",
+                            $"Die Daten können nicht gespeichert werden, wenn die Datenbank nicht bekannt ist. "
+                            + $"Betroffen sind {gruppe.Count()} Änderungen in den Tabellen "
+                            + string.Join(", ", gruppe.Select(e => e.Table.TableName).Distinct()));
+                    }
+                    db?.SchreibeAlle(gruppe);
                 }
 
                 while (DatabaseLog.Cache.Count > 0) {

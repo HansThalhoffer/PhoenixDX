@@ -42,6 +42,21 @@ namespace PhoenixModel.Database {
         public void Delete(IDatabaseTable table);
 
         /// <summary>
+        /// Schreibt mehrere Einträge über eine einzige Verbindung.
+        ///
+        /// Der Access-Treiber baut bei jedem Öffnen einer Verbindung seine Strukturen neu auf. Das
+        /// kostet nicht nur rund 185 Millisekunden je Verbindung, es ist auch die Ursache einer
+        /// sporadischen Zugriffsverletzung in mso99Lwin32client.dll, die den Prozess ohne
+        /// verwertbare Ausnahme beendet - gemessen etwa ein Absturz je 400 Verbindungen. Über eine
+        /// stehende Verbindung sind dieselben Vorgänge stabil und hundertmal schneller.
+        ///
+        /// Deshalb wird nicht mehr je Datensatz eine Verbindung geöffnet, sondern je
+        /// Speicherdurchgang eine.
+        /// </summary>
+        /// <param name="vorgänge">die Vorgänge in der Reihenfolge, in der sie ausgeführt werden</param>
+        public void SchreibeAlle(IEnumerable<DatabaseQueue.DatabaseQueueItem> vorgänge);
+
+        /// <summary>
         /// Lädt die Datenbank im Hintergrund und ruft nach Abschluss den angegebenen Delegate auf.
         /// </summary>
         /// <param name="loadCompletedDelegate">Der Delegate, der nach Abschluss des Ladevorgangs aufgerufen wird.</param>

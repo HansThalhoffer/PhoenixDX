@@ -1,4 +1,4 @@
-﻿using LiveCharts.Wpf;
+using LiveCharts.Wpf;
 using PhoenixModel.Database;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
@@ -236,22 +236,18 @@ namespace Tests {
         /// <summary>
         /// Räumt eine Spielwiese im Temp-Verzeichnis wieder ab.
         ///
-        /// Nicht einfach Directory.Delete: der Access-Treiber gibt eine Datenbankdatei erst frei,
-        /// wenn die Verbindungsobjekte tatsächlich abgeräumt sind. Verschwindet die Datei vorher
-        /// unter ihm weg, stirbt der Prozess in der nativen Schicht - ohne verwertbare Ausnahme,
-        /// genau wie im Kommentar zum Verbindungspooling in AccessDatabase beschrieben. Der
-        /// Testlauf brach dadurch in etwa jedem zweiten Durchgang mit "Der Testhostprozess ist
-        /// abgestürzt" ab, an wechselnden Stellen.
+        /// Mehrere Anläufe, weil eine gerade erst geschlossene Datenbankdatei kurz belegt sein
+        /// kann und ein einzelner Versuch dann Reste liegen lässt. Klappt es am Ende trotzdem
+        /// nicht, ist das kein Grund, einen Test scheitern zu lassen - die Spielwiese liegt im
+        /// Temp-Verzeichnis.
         ///
-        /// Deshalb erst die Finalizer durchlassen und dann löschen, notfalls in mehreren Anläufen.
+        /// Hinweis: eine frühere Fassung dieses Kommentars hat dem Aufräumen die sporadischen
+        /// Abstürze des Testhosts angelastet. Das war falsch. Die Ursache lag im Speicherweg der
+        /// Anwendung, siehe SpeichernIntegrationTest.
         /// </summary>
         public static void RäumeAuf(string verzeichnis) {
             if (Directory.Exists(verzeichnis) == false)
                 return;
-
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
 
             for (int versuch = 0; versuch < 5; versuch++) {
                 try {
@@ -262,7 +258,6 @@ namespace Tests {
                 catch (UnauthorizedAccessException) { }
                 Thread.Sleep(200);
             }
-            // die Spielwiese liegt im Temp, das räumt notfalls Windows auf
         }
 
         /// <summary>

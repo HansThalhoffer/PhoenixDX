@@ -1,4 +1,4 @@
-﻿using PhoenixModel.Database;
+using PhoenixModel.Database;
 using PhoenixModel.dbCrossRef;
 using PhoenixModel.ViewModel;
 using PhoenixWPF.Program;
@@ -39,6 +39,10 @@ namespace PhoenixWPF.Database
                 }
                 connector?.Close();
             }
+        }
+
+        public void SchreibeAlle(IEnumerable<PhoenixModel.Database.DatabaseQueue.DatabaseQueueItem> vorgänge) {
+            SchreibeAlle(vorgänge, _encryptedpassword, _databaseFileName);
         }
 
         public void Save(IDatabaseTable table) {
