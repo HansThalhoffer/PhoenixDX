@@ -21,7 +21,7 @@ namespace Tests {
         [StaFact]
         public void NachDemLadenFehltKeinGebaeudeMehr() {
             TestSetup.Setup();
-            TestSetup.LoadKarte();
+            TestSetup.LoadKarte(erzwingen: true);
 
             Assert.NotNull(SharedData.Map);
             Assert.NotNull(SharedData.Gebäude);
@@ -52,8 +52,8 @@ namespace Tests {
             TestSetup.Setup();
             // GetGebaeude braucht die Ruestort-Referenz, deshalb die Crossref vor der Karte -
             // dieselbe Reihenfolge wie in Main.StartInstance
-            TestSetup.LoadCrossRef(false, false);
-            TestSetup.LoadKarte();
+            TestSetup.LoadCrossRef(false, false, erzwingen: true);
+            TestSetup.LoadKarte(erzwingen: true);
 
             var gemark = SharedData.Map!.Values.First(g => g.Baupunkte > 0);
             Assert.True(SharedData.Gebäude!.TryRemove(gemark.Bezeichner, out var entfernt));
@@ -80,7 +80,7 @@ namespace Tests {
         [StaFact]
         public void DieReparaturAendertBeimZweitenMalNichtsMehr() {
             TestSetup.Setup();
-            TestSetup.LoadKarte();
+            TestSetup.LoadKarte(erzwingen: true);
 
             int vorher = SharedData.Gebäude!.Count;
             foreach (var gemark in SharedData.Map!.Values.Where(g => g.Baupunkte > 0))

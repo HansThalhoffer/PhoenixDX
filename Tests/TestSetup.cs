@@ -79,7 +79,37 @@ namespace Tests {
             }
         }
 
-        public static void LoadCrossRef(bool resetPasssword, bool resetDB) {
+        /// <summary>
+        /// Welche Referenzdatenbanken in diesem Testlauf schon geladen sind.
+        ///
+        /// Karte, PZE und Crossreferenzen sind Nachschlagewerke: kein Test verändert sie, und
+        /// jeder Test braucht sie nur vorhanden. Sie trotzdem in jedem Test neu zu laden hat den
+        /// Lauf rund 400 Access-Verbindungen gekostet - und etwa jede vierhundertste Verbindung
+        /// endet in einer Zugriffsverletzung im Treiber, die den Testhost ohne Ausnahme beendet
+        /// (siehe SpeichernIntegrationTest). Deshalb wird je Datei nur einmal geladen.
+        ///
+        /// Die Zugdaten sind ausdrücklich nicht dabei: die verändern Tests sehr wohl, und das
+        /// erneute Laden stellt zwischen den Tests den Ausgangszustand wieder her.
+        /// </summary>
+        private static readonly Dictionary<string, string> _geladeneReferenzen = [];
+
+        /// <summary>
+        /// Ist diese Datei schon geladen? Merkt sie sich gleich als geladen vor.
+        /// </summary>
+        private static bool SchonGeladen(string was, string datei, bool erzwingen) {
+            if (erzwingen == false && _geladeneReferenzen.TryGetValue(was, out var bisher) && bisher == datei)
+                return true;
+            _geladeneReferenzen[was] = datei;
+            return false;
+        }
+
+        /// <summary>
+        /// Lässt die Referenzdaten beim nächsten Aufruf wieder wirklich laden. Für Tests, die das
+        /// Laden selbst prüfen.
+        /// </summary>
+        public static void VergissReferenzen() => _geladeneReferenzen.Clear();
+
+        public static void LoadCrossRef(bool resetPasssword, bool resetDB, bool erzwingen = false) {
             AppSettings settings = new AppSettings("Tests.jpk");
             settings.InitializeSettings();
 
@@ -100,6 +130,9 @@ namespace Tests {
             if (Application.Current == null) {
                 new Application();
             }
+
+            if (SchonGeladen("CrossRef", settings.UserSettings.DatabaseLocationCrossRef, erzwingen))
+                return;
 
             using (var db = new CrossRef(settings.UserSettings.DatabaseLocationCrossRef, settings.UserSettings.PasswordCrossRef)) {
                 db.Load();
@@ -263,7 +296,7 @@ namespace Tests {
         /// <summary>
         /// mit der PZE kann ProgramView.SelectedNation erst gesetzt werden
         /// </summary>
-        public static void LoadPZE(bool resetPasssword, bool resetDB) {
+        public static void LoadPZE(bool resetPasssword, bool resetDB, bool erzwingen = false) {
             AppSettings settings = new AppSettings("Tests.jpk");
             settings.InitializeSettings();
 
@@ -285,14 +318,17 @@ namespace Tests {
                 new Application();
             }
 
-            using (var db = new PZE(settings.UserSettings.DatabaseLocationPZE, settings.UserSettings.PasswordPZE)) {
+            // Die Auswahl des Reiches wird immer gesetzt, auch wenn die Datenbank schon geladen
+            // ist - Tests dürfen sie umstellen.
+            if (SchonGeladen("PZE", settings.UserSettings.DatabaseLocationPZE, erzwingen) == false) {
+                using var db = new PZE(settings.UserSettings.DatabaseLocationPZE, settings.UserSettings.PasswordPZE);
                 db.Load();
                 db.LoadBackgroundSynchronous();
             }
             ProgramView.SelectedNation = NationenView.GetNationFromString("Theostelos");
         }
 
-        public static void LoadKarte() {
+        public static void LoadKarte(bool erzwingen = false) {
             AppSettings settings = new AppSettings("Tests.jpk");
             settings.InitializeSettings();
             settings.UserSettings.DatabaseLocationKarte = StorageSystem.LocateFile(settings.UserSettings.DatabaseLocationKarte, "Erkenfara.mdb");
@@ -307,6 +343,9 @@ namespace Tests {
             if (Application.Current == null) {
                 new Application();
             }
+
+            if (SchonGeladen("Karte", settings.UserSettings.DatabaseLocationKarte, erzwingen))
+                return;
 
             using (var db = new ErkenfaraKarte(settings.UserSettings.DatabaseLocationKarte, settings.UserSettings.PasswordKarte)) { 
                 db.Load();

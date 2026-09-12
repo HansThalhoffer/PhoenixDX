@@ -54,7 +54,7 @@ namespace Tests
         public void LoadKarteTest()
         {
             TestSetup.Setup();
-            TestSetup.LoadKarte();
+            TestSetup.LoadKarte(erzwingen: true);
             Assert.NotNull(SharedData.Map);
             Assert.NotEmpty(SharedData.Map);
         }
@@ -63,7 +63,7 @@ namespace Tests
         [STAThread]
         public void LoadPZETest() {
             TestSetup.Setup();
-            TestSetup.LoadPZE(false, false);
+            TestSetup.LoadPZE(false, false, erzwingen: true);
             Assert.NotNull(SharedData.Nationen);
             Assert.NotEmpty(SharedData.Nationen);
         }
@@ -72,7 +72,7 @@ namespace Tests
         [STAThread]
         public void LoadCrossRefTest() {
             TestSetup.Setup();
-            TestSetup.LoadCrossRef(false, false);
+            TestSetup.LoadCrossRef(false, false, erzwingen: true);
             Assert.NotNull(SharedData.Kosten);
             Assert.NotEmpty(SharedData.Kosten);
         }

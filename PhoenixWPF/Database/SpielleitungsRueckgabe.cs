@@ -89,7 +89,7 @@ namespace PhoenixWPF.Database {
         /// Das Verzeichnis, in dem die Spielleitung den Zug eines Reiches ablegt.
         ///
         /// Die Altanwendung legt je Reich eine eigene Freigabe an und darunter je Zug ein
-        /// Verzeichnis: \\Server\&lt;Reich&gt;\&lt;Zug&gt;.
+        /// Verzeichnis: \\Server\&lt;Reich&gt;\&lt;Zug&gt;. Der Aufbau ist am Gelände bestätigt.
         /// </summary>
         public static string BestimmeSerververzeichnis(string freigabe, string reich, int zug) {
             string? rechner = GetRechnername(freigabe);
@@ -170,6 +170,10 @@ namespace PhoenixWPF.Database {
                         return RückgabeErgebnis.Fehler($"In {Path.GetFileName(archiv)} steckt keine {gesucht}",
                             "Enthalten ist: " + string.Join(", ", zip.Entries.Select(e => Path.GetFileName(e.FileName)).Take(10)));
 
+                    // Angenommen wird dasselbe Passwort, mit dem die Anwendung ihre eigenen Pakete
+                    // packt. Ob die Spielleitung ihre Rückgabearchive genauso verschlüsselt, ist
+                    // noch nicht geklärt - passt es nicht, scheitert das Auspacken hier mit einer
+                    // Meldung und die vorhandenen Zugdaten bleiben unangetastet.
                     eintrag.Password = PasswortProvider.ZipPasswort;
                     eintrag.Extract(zwischenlager, ExtractExistingFileAction.OverwriteSilently);
                     ausgepackt = Path.Combine(zwischenlager, eintrag.FileName.Replace('/', Path.DirectorySeparatorChar));

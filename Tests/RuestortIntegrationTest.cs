@@ -57,7 +57,8 @@ namespace Tests {
             int erstesMal = SharedData.RüstortReferenz!.Count;
             Assert.True(erstesMal > 0, "Die Ruestortreferenz ist schon beim ersten Laden leer");
 
-            TestSetup.LoadCrossRef(false, false);
+            // hier muss wirklich neu geladen werden - genau das ist der Prüfgegenstand
+            TestSetup.LoadCrossRef(false, false, erzwingen: true);
             Assert.Equal(erstesMal, SharedData.RüstortReferenz!.Count);
 
             // und die Zuordnung ueber die Baupunkte steht auch noch
