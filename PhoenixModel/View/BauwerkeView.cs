@@ -162,7 +162,7 @@ namespace PhoenixModel.View {
         /// und die Meldung erschien beim Start mal als Warnung, mal als Fehler, mal gar nicht.
         /// </summary>
         /// <returns>das ergänzte Gebäude, oder das bereits vorhandene, wenn ein anderer schneller war</returns>
-        public static Gebäude? ErgänzeFehlendesGebäude(KleinFeld gemark) {
+        public static Gebäude? ErgänzeFehlendesGebäude(KleinFeld gemark, bool stillschweigend = false) {
             if (SharedData.Gebäude == null)
                 return null;
 
@@ -170,14 +170,22 @@ namespace PhoenixModel.View {
                 gf = gemark.gf,
                 kf = gemark.kf,
                 Bauwerknamen = gemark.Bauwerknamen,
+                // Das Reich stand bisher nicht im ergänzten Eintrag. Für die Anzeige genügte das,
+                // für einen Eintrag in der Datenbank nicht - die Tabelle führt genau vier Spalten.
+                Reich = gemark.Nation?.DBname ?? string.Empty,
             };
 
             if (SharedData.Gebäude.TryAdd(gebäude.Bezeichner, gebäude) == false)
                 return SharedData.Gebäude[gebäude.Bezeichner];
 
-            ProgramView.LogWarning(gemark, $"Fehlendes Gebäude in der Bauwerktabelle mit dem Namen {gemark.Bauwerknamen}",
-                $"Durch einen Datenbankfehler hat das Gebäude auf {gemark.Bezeichner} keinen Eintrag in der Tabelle "
-                + "[bauwerkliste] in der Datenbank Ekrenfarakarte.mdb.\r\rDieser Fehler wurde automatisch korrigiert");
+            // Die Sammelreparatur beim Laden meldet selbst, und zwar einmal statt einundzwanzigmal.
+            // Hier meldet nur der Einzelfall, der beim Zugriff auffällt - der ist selten und
+            // deshalb eine Meldung wert.
+            if (stillschweigend == false)
+                ProgramView.LogWarning(gemark, $"Fehlendes Gebäude in der Bauwerktabelle mit dem Namen {gemark.Bauwerknamen}",
+                    $"In der Karte steht auf {gemark.Bezeichner} ein Gebäude, in der Tabelle [bauwerkliste] der "
+                    + "Erkenfarakarte.mdb fehlt der Eintrag.\r\rDer Eintrag wurde für diese Sitzung ergänzt; "
+                    + "in der Datenbank fehlt er weiterhin.");
             return gebäude;
         }
     }

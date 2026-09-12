@@ -62,6 +62,7 @@ namespace PhoenixWPF.Program {
         {
             if (SharedData.Map != null && SharedData.Gebäude != null)
             {
+                List<string> ergänzt = [];
                 var gebäudeInKarte = SharedData.Map.Values.Where(gemark => gemark.Baupunkte > 0);
                 foreach (var gemark in gebäudeInKarte)
                 {
@@ -69,12 +70,28 @@ namespace PhoenixWPF.Program {
                     // lookup in Bauwerktabelle
                     if (SharedData.Gebäude.ContainsKey(gemark.Bezeichner))
                         gebäude = SharedData.Gebäude[gemark.Bezeichner];
-                    // ergänzt die Datenbank falls notwendig - dieselbe Reparatur, die auch der
-                    // erste Zugriff auf ein Gemark auslöst, damit es nur eine Stelle dafür gibt
-                    gebäude ??= BauwerkeView.ErgänzeFehlendesGebäude(gemark);
+                    else
+                    {
+                        // ergänzt den Eintrag falls notwendig - dieselbe Reparatur, die auch der
+                        // erste Zugriff auf ein Gemark auslöst, damit es nur eine Stelle dafür gibt
+                        gebäude = BauwerkeView.ErgänzeFehlendesGebäude(gemark, stillschweigend: true);
+                        if (gebäude != null)
+                            ergänzt.Add(gemark.Bezeichner);
+                    }
                     if (gebäude != null)
                         gebäude.Bauwerknamen = gemark.Bauwerknamen;
                 }
+
+                // Eine Meldung statt einer je Gemark. Vorher standen beim Start zwei Dutzend
+                // gleichlautende Warnungen im Infotab, die jedes Mal wiederkamen - so oft, dass
+                // niemand mehr hinsieht.
+                if (ergänzt.Count > 0)
+                    ProgramView.LogWarning($"{ergänzt.Count} Gebäude fehlen in der Bauwerkliste",
+                        $"In der Karte stehen Gebäude, zu denen die Tabelle [bauwerkliste] der Erkenfarakarte.mdb "
+                        + $"keinen Eintrag führt: {string.Join(", ", ergänzt)}.\r\r"
+                        + "Die Karte ist die gepflegte Tabelle und gibt den Ausschlag; die Einträge wurden für "
+                        + "diese Sitzung ergänzt. In der Datenbank fehlen sie weiterhin, deshalb kommt diese "
+                        + "Meldung bei jedem Start wieder.");
             }
             // Die Reparatur läuft jetzt im Ladevorgang und damit auch dort, wo es gar keine
             // Anwendung mit Oberfläche gibt - etwa im Testlauf.
