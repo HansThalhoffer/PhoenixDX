@@ -126,6 +126,13 @@ namespace PhoenixWPF.Database {
                     Load<Schiffe>(connector, ref SharedData.Schiffe, Enum.GetNames(typeof(Schiffe.Felder)));
                     Load<Units>(connector, ref SharedData.Units_Zugdaten, Enum.GetNames(typeof(Units.Felder)));
                     Load<Zauberer>(connector, ref SharedData.Zauberer, Enum.GetNames(typeof(Zauberer.Felder)));
+
+                    // Die Bauauftraege des laufenden Zuges auf die Karte legen und ihre
+                    // Befehle in der Zughistorie wiederherstellen. Das stand frueher in
+                    // RuestungBauwerke.Load und lief damit auch fuer die rund vierzig alten
+                    // Zuege mit, die der Bericht der Handwerker liest - mit dem Ergebnis,
+                    // dass alte Bauauftraege auf der aktuellen Karte landeten.
+                    RuestungBauwerkeView.WendeAlleAn(SharedData.RuestungBauwerke);
                     ProgramView.OnViewEvent += ViewModel_OnViewEvent;
                 }
                 catch (Exception ex) {
@@ -135,7 +142,42 @@ namespace PhoenixWPF.Database {
             }
         }
 
-        public static List<BilanzEinnahmen> LoadBilanzEinnahmenHistory() {
+        /// <summary>
+        /// Die Tabellenklassen, die beim Lesen alter Zuege ihren statischen Datenbanknamen
+        /// verstellen wuerden.
+        /// </summary>
+        private static readonly Type[] HistorienTabellen = [
+            typeof(BilanzEinnahmen), typeof(RuestungBauwerke), typeof(RuestungRuestorte),
+            typeof(Ruestung), typeof(Units),
+        ];
+
+        /// <summary>
+        /// Fuehrt das Lesen alter Zuege aus und stellt hinterher wieder her, wohin gespeichert wird.
+        ///
+        /// Noetig, weil DatabaseName eine statische Eigenschaft je Tabellenklasse ist, die das
+        /// Laden jedesmal neu setzt - und der Speicherlauf entscheidet an genau diesem Wert, in
+        /// welche Datei ein Datensatz geht. Ohne diese Klammer zeigte der Speicherort nach dem
+        /// Bericht der Handwerker auf die Ruestungsdatenbank eines laengst vergangenen Zuges. Ein
+        /// danach erteilter Bauauftrag landete in keiner der bekannten Datenbanken und wurde
+        /// verworfen - mit einem Eintrag im Protokoll, aber ohne dass der Spieler etwas merkte.
+        /// </summary>
+        private static T MitUnveraendertemSpeicherort<T>(Func<T> lesen) {
+            Dictionary<Type, string> vorher = [];
+            foreach (var typ in HistorienTabellen)
+                vorher[typ] = PropertyProcessor.GetStaticValue(typ, "DatabaseName");
+            try {
+                return lesen();
+            }
+            finally {
+                foreach (var eintrag in vorher)
+                    PropertyProcessor.SetStaticValue(eintrag.Key, "DatabaseName", eintrag.Value);
+            }
+        }
+
+        public static List<BilanzEinnahmen> LoadBilanzEinnahmenHistory()
+            => MitUnveraendertemSpeicherort(LoadBilanzEinnahmenHistoryRoh);
+
+        private static List<BilanzEinnahmen> LoadBilanzEinnahmenHistoryRoh() {
             if (Main.Instance.Settings == null || SharedData.Nationen == null || Main.Instance.Settings.UserSettings.SelectedReich < 0)
                 return [];
 
@@ -223,7 +265,10 @@ namespace PhoenixWPF.Database {
             }
         }
 
-        public static List<IEigenschaftler> LoadBaukostenHistory() {
+        public static List<IEigenschaftler> LoadBaukostenHistory()
+            => MitUnveraendertemSpeicherort(LoadBaukostenHistoryRoh);
+
+        private static List<IEigenschaftler> LoadBaukostenHistoryRoh() {
             if (Main.Instance.Settings == null || SharedData.Nationen == null || Main.Instance.Settings.UserSettings.SelectedReich < 0)
                 return [];
             PrepareHistory();
@@ -287,7 +332,10 @@ namespace PhoenixWPF.Database {
         }
 
 
-        public static List<IEigenschaftler> LoadMobilisierungHistory() {
+        public static List<IEigenschaftler> LoadMobilisierungHistory()
+            => MitUnveraendertemSpeicherort(LoadMobilisierungHistoryRoh);
+
+        private static List<IEigenschaftler> LoadMobilisierungHistoryRoh() {
             if (Main.Instance.Settings == null || SharedData.Nationen == null || Main.Instance.Settings.UserSettings.SelectedReich < 0)
                 return [];
             PrepareHistory();

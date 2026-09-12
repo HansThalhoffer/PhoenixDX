@@ -41,8 +41,16 @@ namespace PhoenixModel.dbZugdaten {
             this.Kosten = DatabaseConverter.ToInt32(reader[(int)Felder.Kosten]);
             this.ID = DatabaseConverter.ToInt32(reader[(int)Felder.id]);
             this.ZugMonat = ProgramView.SelectedMonth;
-            RuestungBauwerkeView.UpdateKleinFeld(this);
-            RuestungBauwerkeView.ReconstructCommand(this);
+            // Bewusst ohne Nebenwirkung: frueher hat das Laden hier die Karte mit der
+            // Baustelle markiert und den Befehl in die Zughistorie zurueckgeschrieben. Das
+            // ist richtig fuer die Bauauftraege des laufenden Zuges - der Bericht der
+            // Handwerker liest aber die Ruestungstabellen von rund vierzig vergangenen
+            // Zuegen, und jede einzelne Zeile hat ihren alten Bauauftrag auf die aktuelle
+            // Karte gelegt. Ein Blick in den Bericht verfaelschte damit Karte und
+            // Zughistorie bis zum naechsten Neuladen.
+            //
+            // Die Bauauftraege wendet jetzt der Aufrufer an, siehe
+            // RuestungBauwerkeView.WendeAlleAn.
         }
 
         public void Save(DbCommand command)

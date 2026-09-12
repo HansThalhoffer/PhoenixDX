@@ -1,4 +1,4 @@
-﻿using PhoenixModel.Commands;
+using PhoenixModel.Commands;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.ViewModel;
 using System;
@@ -83,6 +83,22 @@ namespace PhoenixModel.View {
             }
 
             
+        }
+
+        /// <summary>
+        /// Wendet die Bauauftraege eines Zuges auf die Karte an und stellt die
+        /// zugehoerigen Befehle in der Zughistorie wieder her.
+        ///
+        /// Gehoert zum Laden der Zugdaten des laufenden Zuges. Nicht aufrufen fuer
+        /// vergangene Zuege - deren Bauauftraege gehoeren nicht auf die aktuelle Karte.
+        /// </summary>
+        public static void WendeAlleAn(IEnumerable<RuestungBauwerke>? bauwerke) {
+            if (bauwerke == null)
+                return;
+            foreach (var bauwerk in bauwerke) {
+                UpdateKleinFeld(bauwerk);
+                ReconstructCommand(bauwerk);
+            }
         }
 
         /// <summary>
