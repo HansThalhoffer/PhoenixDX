@@ -329,6 +329,162 @@ namespace PhoenixModel.Rules {
         }
 
         /// <summary>
+        /// Wieviel ein Kriegsschiff zur Heeresstärke beiträgt (Kampftabelle D150:
+        /// leichte Kriegsschiffe zählen fünffach, schwere zehnfach).
+        /// </summary>
+        public const int HeeresstärkeProLKS = 5;
+        public const int HeeresstärkeProSKS = 10;
+
+        /// <summary>
+        /// Ab dem wievielten Heerführer es nur noch einen halben Gutpunkt gibt, und ab wann gar
+        /// keinen mehr (Errata 26 zu Regelwerk 1.1.5: "Bei einem Heer können bis zu 200 Heerführer
+        /// stehen. Jeder dieser HF bringt 1 GP. Ab dem 101 HF nur noch 0,5 GP. Ab dem 201 HF
+        /// bringen diese einem Heer keine weiteren GP.")
+        /// </summary>
+        public const int HeerführerVollerWert = 100;
+        public const int HeerführerObergrenze = 200;
+
+        /// <summary>
+        /// Die Gutpunkte, die Heerführer einem Heer bringen.
+        ///
+        /// Die Kampftabelle rechnet hier schlicht mit der Anzahl (C146). Sie stammt von 2010, die
+        /// Staffelung aus Errata 26 von 2014 - deshalb gilt hier die Errata. Bei bis zu 100
+        /// Heerführern ist das dasselbe.
+        /// </summary>
+        public static double BerechneGutpunkteAusHeerführern(int heerführer) {
+            if (heerführer <= 0)
+                return 0;
+            if (heerführer <= HeerführerVollerWert)
+                return heerführer;
+            int halbe = Math.Min(heerführer, HeerführerObergrenze) - HeerführerVollerWert;
+            return HeerführerVollerWert + halbe * 0.5;
+        }
+
+        /// <summary>
+        /// Die Heeresstärke eines Heeres (Kampftabelle D150 und C150).
+        ///
+        /// Gezählt werden Krieger, Reiter und Schiffe nach Köpfen, Kriegsschiffe mit ihrem
+        /// Vielfachen. Landkatapulte gehen nicht ein. Gebannte Truppen werden abgezogen: sie sind
+        /// wehrlos und kämpfen nicht mit (Regelwerk 1.4.3).
+        /// </summary>
+        public static double BerechneHeeresstärke(TruppenSpielfigur? truppe, int gebannt = 0) {
+            if (truppe == null)
+                return 0;
+            double stärke = truppe.BaseTyp == FigurType.Schiff
+                ? truppe.staerke + truppe.LKP * HeeresstärkeProLKS + truppe.SKP * HeeresstärkeProSKS
+                : truppe.staerke;
+            return Math.Max(0, stärke - Math.Max(0, gebannt));
+        }
+
+        /// <summary>
+        /// Die Kampfstärke eines Heeres: "Kampfstärke(n) = Heeresstärke(n) * (1+ (GP(a) / 200)"
+        /// (Regelwerk 5.5, Kampftabelle C174).
+        ///
+        /// In die Gutpunkte gehen die Vorteile, die Heerführer, Zauberer und Charaktere ein - und
+        /// der Wurf mit dem W20: "Anschliessend würfeln beide Spielparteien mit einem W-20. Die
+        /// gewürfelte Zahl wird zu den Gutpunkten hinzu addiert." (Regelwerk 5.5)
+        /// </summary>
+        public const int Gutpunktteiler = 200;
+
+        public static double BerechneKampfstärke(double heeresstärke, double gutpunkte)
+            => heeresstärke * (1 + gutpunkte / Gutpunktteiler);
+
+        /// <summary>
+        /// Eine 10:1-Übermacht liegt vor, wenn die eigene Heeresstärke die gegnerische um mehr als
+        /// das Zehnfache übersteigt (Kampftabelle C171). Dann wird überrannt, statt zu kämpfen
+        /// (Regelwerk 5.4).
+        /// </summary>
+        public const int ÜbermachtVerhältnis = 10;
+
+        public static bool IstÜbermacht(double eigeneHeeresstärke, double fremdeHeeresstärke)
+            => eigeneHeeresstärke / ÜbermachtVerhältnis > fremdeHeeresstärke;
+
+        /// <summary>
+        /// Der Faktor, mit dem die Grössenverhältnisse die Verluste verschieben (Regelwerk 5.5,
+        /// Kampftabelle C187).
+        ///
+        /// Hat der Gewinner mehr Truppen, sinken seine Verluste; hat er weniger, steigen sie.
+        /// Das Regelwerk gibt die Eckwerte an: -0,2 bei doppelter, -0,3 bei dreifacher und -0,4
+        /// bei vierfacher Heeresstärke des Gewinners.
+        /// </summary>
+        public static double BerechneVerlustfaktor(double heeresstärkeVerlierer, double heeresstärkeGewinner) {
+            if (heeresstärkeVerlierer <= 0 || heeresstärkeGewinner <= 0)
+                return 0;
+            return heeresstärkeVerlierer < heeresstärkeGewinner
+                ? (heeresstärkeVerlierer - heeresstärkeGewinner) / 10 / heeresstärkeVerlierer - 0.1
+                : (heeresstärkeVerlierer - heeresstärkeGewinner) / 10 / heeresstärkeGewinner + 0.1;
+        }
+
+        /// <summary>
+        /// Die Verluste des Gewinners vor der Verrechnung der Gutpunkte:
+        /// "Verluste(gesamt) = Basisverluste * ( 1 + Faktor)", wobei die Heeresstärke des
+        /// Verlierers der Basisverlust ist (Regelwerk 5.5, Kampftabelle C189).
+        ///
+        /// Negative Verluste gibt es nicht (Regelwerk 5.5).
+        /// </summary>
+        public static double BerechneGesamtverluste(double heeresstärkeVerlierer, double heeresstärkeGewinner) {
+            double faktor = BerechneVerlustfaktor(heeresstärkeVerlierer, heeresstärkeGewinner);
+            return Math.Max(0, Math.Truncate(heeresstärkeVerlierer * (1 + faktor)));
+        }
+
+        /// <summary>
+        /// Der Gutpunktschnitt einer Seite: "GP(schnitt) = (KS(gesamt) / HS(gesamt) - 1) * 100"
+        /// (Regelwerk 5.5, Kampftabelle C191).
+        /// </summary>
+        public static double BerechneGutpunktschnitt(double kampfstärkeGesamt, double heeresstärkeGesamt)
+            => heeresstärkeGesamt <= 0 ? 0 : (kampfstärkeGesamt / heeresstärkeGesamt - 1) * 100;
+
+        /// <summary>
+        /// Die Gutpunktdifferenz, die die Verluste eines Siegerheeres mindert oder erhöht:
+        /// "GPF(diff) = (GP(Sieger)/2 - GP(schnitt)) / 100" (Regelwerk 5.5, Kampftabelle C192).
+        ///
+        /// Die Halbierung ist kein Versehen: "Gutpunkte wirken zu 50 % auf den Sieg und zu 50 %
+        /// auf die Verluste des eigenen Heeres" (Regelwerk 5.5). In die Kampfstärke gehen sie
+        /// voll ein, in die Verluste zur Hälfte.
+        /// </summary>
+        public static double BerechneGutpunktdifferenz(double gutpunkteSieger, double gutpunktschnittVerlierer)
+            => (gutpunkteSieger / 2 - gutpunktschnittVerlierer) / 100;
+
+        /// <summary>
+        /// Wendet die Gutpunktdifferenz auf die Verluste eines Siegerheeres an (Regelwerk 5.5,
+        /// Kampftabelle E200).
+        ///
+        /// Hat das Heer mehr Gutpunkte als der Schnitt des Verlierers, sinken seine Verluste,
+        /// sonst steigen sie.
+        /// </summary>
+        public static double WendeGutpunktdifferenzAn(double verluste, double gutpunktdifferenz)
+            => gutpunktdifferenz >= 0
+                ? verluste / (1 + gutpunktdifferenz)
+                : verluste * (1 + -1 * gutpunktdifferenz);
+
+        /// <summary>
+        /// Verteilt die Gesamtverluste auf die Heere des Gewinners:
+        /// "Verluste Einheit(m) = (HS(m) / HS(gesamt)) * Verluste(gesamt)" (Regelwerk 5.5,
+        /// Kampftabelle D200), und mindert sie anschliessend je Heer mit dessen Gutpunkten.
+        /// </summary>
+        /// <param name="gesamtverluste">die Verluste der Seite nach dem Grössenfaktor</param>
+        /// <param name="heere">je Heer die Heeresstärke und die Gutpunkte</param>
+        /// <param name="gutpunktschnittVerlierer">der Gutpunktschnitt der unterlegenen Seite</param>
+        /// <returns>je Heer die Verluste in Heeresstärke, in derselben Reihenfolge</returns>
+        public static double[] VerteileVerluste(double gesamtverluste,
+                                                IReadOnlyList<(double Heeresstärke, double Gutpunkte)> heere,
+                                                double gutpunktschnittVerlierer) {
+            var ergebnis = new double[heere.Count];
+            double gesamt = heere.Sum(heer => heer.Heeresstärke);
+            if (gesamt <= 0 || gesamtverluste <= 0)
+                return ergebnis;
+
+            for (int i = 0; i < heere.Count; i++) {
+                if (heere[i].Heeresstärke <= 0)
+                    continue;
+                double anteil = gesamtverluste * heere[i].Heeresstärke / gesamt;
+                double differenz = BerechneGutpunktdifferenz(heere[i].Gutpunkte, gutpunktschnittVerlierer);
+                ergebnis[i] = Math.Max(0, WendeGutpunktdifferenzAn(anteil, differenz));
+            }
+            return ergebnis;
+        }
+
+        /// <summary>
         /// Steht die Seite in einem Rüstort? Dann trägt der Rüstort den grössten Teil des
         /// Fernkampfschadens.
         /// </summary>

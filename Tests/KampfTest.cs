@@ -219,6 +219,177 @@ namespace Tests {
         }
 
         /// <summary>
+        /// Die Heeresstaerke zaehlt Koepfe; Kriegsschiffe zaehlen fuenf- und zehnfach, Gebannte
+        /// gar nicht (Kampftabelle D150 und C150).
+        /// </summary>
+        [Fact]
+        public void DieHeeresstaerkeZaehltKoepfeUndKriegsschiffe() {
+            Assert.Equal(10000, KampfRules.BerechneHeeresstärke(new Krieger { staerke = 10000 }));
+            Assert.Equal(9000, KampfRules.BerechneHeeresstärke(new Reiter { staerke = 9000 }));
+
+            // Landkatapulte gehen nicht in die Heeresstaerke ein
+            Assert.Equal(10000, KampfRules.BerechneHeeresstärke(new Krieger { staerke = 10000, LKP = 5, SKP = 3 }));
+
+            // Kriegsschiffe schon: 20 Schiffe + 4 LKS * 5 + 2 SKS * 10
+            Assert.Equal(20 + 20 + 20, KampfRules.BerechneHeeresstärke(new Schiffe { staerke = 20, LKP = 4, SKP = 2 }));
+
+            // gebannte Truppen sind wehrlos und kaempfen nicht mit
+            Assert.Equal(7000, KampfRules.BerechneHeeresstärke(new Krieger { staerke = 10000 }, gebannt: 3000));
+            Assert.Equal(0, KampfRules.BerechneHeeresstärke(new Krieger { staerke = 1000 }, gebannt: 5000));
+            Assert.Equal(0, KampfRules.BerechneHeeresstärke(null));
+        }
+
+        /// <summary>
+        /// Errata 26 zu Regelwerk 1.1.5: jeder Heerfuehrer bringt 1 GP, ab dem 101. nur noch 0,5,
+        /// ab dem 201. keinen mehr.
+        /// </summary>
+        [Theory]
+        [InlineData(0, 0)]
+        [InlineData(20, 20)]
+        [InlineData(100, 100)]
+        [InlineData(150, 125)]   // 100 + 50 * 0,5
+        [InlineData(200, 150)]   // 100 + 100 * 0,5
+        [InlineData(500, 150)]   // ab dem 201. bringt keiner mehr etwas
+        public void HeerfuehrerBringenGutpunkteNachErrata(int heerführer, double gutpunkte) {
+            Assert.Equal(gutpunkte, KampfRules.BerechneGutpunkteAusHeerführern(heerführer));
+        }
+
+        /// <summary>
+        /// "Kampfstaerke(n) = Heeresstaerke(n) * (1+ (GP(a) / 200)" (Regelwerk 5.5).
+        ///
+        /// Nachgerechnet am Beispiel des Regelwerks: Reich A verteidigt in einer Stadt (200 GP),
+        /// ein Burgherr mit 24 GP begleitet beide Heere.
+        /// </summary>
+        [Fact]
+        public void DieKampfstaerkeFolgtDemBeispielDesRegelwerks() {
+            // Die Nachkommastellen sind Binaerarithmetik: 22200 kommt als 22199,999999999996
+            // heraus. Die Toleranz von sechs Stellen faengt das ab, ohne etwas zu verdecken.
+            // ReichA_101: 10000 Krieger, 20 HF, Burgherr 24, Stadt 200
+            Assert.Equal(22200, KampfRules.BerechneKampfstärke(10000, 24 + 20 + 200), 6);
+            // ReichA_102: 9000 Reiter, 80 HF, Burgherr 24, Stadt 200
+            Assert.Equal(22680, KampfRules.BerechneKampfstärke(9000, 24 + 80 + 200), 6);
+            // ReichB_101: 60000 Krieger, 150 HF
+            Assert.Equal(105000, KampfRules.BerechneKampfstärke(60000, 150), 6);
+
+            // die Summe beider verteidigenden Heere, wie im Regelwerk: 44880 gegen 105000
+            Assert.Equal(44880, KampfRules.BerechneKampfstärke(10000, 244)
+                              + KampfRules.BerechneKampfstärke(9000, 304), 6);
+
+            // ohne Gutpunkte ist die Kampfstaerke die Heeresstaerke
+            Assert.Equal(500, KampfRules.BerechneKampfstärke(500, 0));
+        }
+
+        /// <summary>
+        /// Die 10:1-Uebermacht (Kampftabelle C171, Regelwerk 5.4).
+        /// </summary>
+        [Fact]
+        public void EineUebermachtBrauchtMehrAlsDasZehnfache() {
+            Assert.True(KampfRules.IstÜbermacht(10001, 1000));
+            Assert.False(KampfRules.IstÜbermacht(10000, 1000));   // genau zehnfach reicht nicht
+            Assert.False(KampfRules.IstÜbermacht(5000, 1000));
+            Assert.True(KampfRules.IstÜbermacht(1000, 0));
+        }
+
+        /// <summary>
+        /// Der Groessenfaktor der Verluste, gegen die Eckwerte des Regelwerks:
+        /// -0,2 bei doppelter, -0,3 bei dreifacher, -0,4 bei vierfacher Heeresstaerke.
+        /// </summary>
+        [Theory]
+        [InlineData(1000, 2000, -0.2)]
+        [InlineData(1000, 3000, -0.3)]
+        [InlineData(1000, 4000, -0.4)]
+        [InlineData(2000, 1000, 0.2)]
+        [InlineData(3000, 1000, 0.3)]
+        [InlineData(4000, 1000, 0.4)]
+        public void DerGroessenfaktorTrifftDieEckwerteDesRegelwerks(double verlierer, double gewinner, double erwartet) {
+            Assert.Equal(erwartet, KampfRules.BerechneVerlustfaktor(verlierer, gewinner), 10);
+        }
+
+        /// <summary>
+        /// Die ganze Verlustrechnung am durchgerechneten Beispiel des Regelwerks (Kapitel 5.5).
+        ///
+        /// Reich A verliert mit 19.000 Heeresstaerke und 44.880 Kampfstaerke gegen Reich B mit
+        /// 60.000 Heeresstaerke und 150 Gutpunkten. Das Regelwerk nennt jeden Zwischenwert, und
+        /// jeder davon kommt hier heraus.
+        /// </summary>
+        [Fact]
+        public void DieVerlustrechnungFolgtDemBeispielDesRegelwerks() {
+            double hsVerlierer = 19000, hsGewinner = 60000, ksVerlierer = 44880, gpGewinner = 150;
+
+            // "Faktor = ... = -0,32"
+            Assert.Equal(-0.32, KampfRules.BerechneVerlustfaktor(hsVerlierer, hsGewinner), 2);
+
+            // "19000 * (1+ (-0,32)) = 13000"
+            Assert.Equal(13000, KampfRules.BerechneGesamtverluste(hsVerlierer, hsGewinner));
+
+            // "GP(schnitt)Verlierer = ((44880 / 19000) -1) * 100 = 136,21"
+            double schnitt = KampfRules.BerechneGutpunktschnitt(ksVerlierer, hsVerlierer);
+            Assert.Equal(136.21, schnitt, 2);
+
+            // "GPF(diff) = (150 / 2 - 136,21) / 100 = -0,6121"
+            double differenz = KampfRules.BerechneGutpunktdifferenz(gpGewinner, schnitt);
+            Assert.Equal(-0.6121, differenz, 4);
+
+            // "Damit verliert ReichB: 13000 Basisverluste * 1,6121 = 20957 Mann."
+            double verluste = KampfRules.WendeGutpunktdifferenzAn(13000, differenz);
+            Assert.Equal(20957, verluste, 0);
+
+            // und ueber die Verteilung auf das eine Heer des Gewinners dasselbe Ergebnis
+            var verteilt = KampfRules.VerteileVerluste(13000, [(hsGewinner, gpGewinner)], schnitt);
+            Assert.Equal(20957, verteilt[0], 0);
+        }
+
+        /// <summary>
+        /// Mehr Gutpunkte als der Schnitt des Verlierers mindern die eigenen Verluste, weniger
+        /// erhoehen sie (Regelwerk 5.5, Faelle a und b).
+        /// </summary>
+        [Fact]
+        public void GutpunkteUeberDemSchnittMindernDieEigenenVerluste() {
+            // Schnitt 0, Sieger hat 200 GP: Differenz +1, Verluste halbieren sich
+            Assert.Equal(500, KampfRules.WendeGutpunktdifferenzAn(1000, KampfRules.BerechneGutpunktdifferenz(200, 0)));
+            // Sieger ohne Gutpunkte gegen einen Schnitt von 100: Differenz -1, Verluste verdoppeln sich
+            Assert.Equal(2000, KampfRules.WendeGutpunktdifferenzAn(1000, KampfRules.BerechneGutpunktdifferenz(0, 100)));
+            // gleichauf bleibt es beim Basiswert
+            Assert.Equal(1000, KampfRules.WendeGutpunktdifferenzAn(1000, KampfRules.BerechneGutpunktdifferenz(200, 100)));
+        }
+
+        /// <summary>
+        /// Negative Verluste gibt es nicht (Regelwerk 5.5).
+        /// </summary>
+        [Fact]
+        public void NegativeVerlusteGibtEsNicht() {
+            // eine erdrueckende Uebermacht triebe den Faktor weit unter -1: 100 gegen 100.000
+            // ergibt -100, die Verluste also rechnerisch -9900. Sie werden bei 0 gekappt.
+            Assert.True(KampfRules.BerechneVerlustfaktor(100, 100000) < -1);
+            Assert.Equal(0, KampfRules.BerechneGesamtverluste(100, 100000));
+
+            // ohne Verlierer gibt es nichts zu verlieren
+            Assert.Equal(0, KampfRules.BerechneGesamtverluste(0, 60000));
+            Assert.All(KampfRules.VerteileVerluste(0, [(1000, 50)], 10), wert => Assert.Equal(0, wert));
+
+            // Entartet: ohne Heeresstaerke des Gewinners greift kein Groessenfaktor, die
+            // Basisverluste bleiben stehen. Ein Gewinner ohne Truppen kommt im Spiel nicht vor.
+            Assert.Equal(0, KampfRules.BerechneVerlustfaktor(19000, 0));
+            Assert.Equal(19000, KampfRules.BerechneGesamtverluste(19000, 0));
+        }
+
+        /// <summary>
+        /// Die Verluste verteilen sich nach Heeresstaerke auf die Heere des Gewinners
+        /// (Regelwerk 5.5: "Verluste Einheit(m) = (HS(m) / HS(gesamt)) * Verluste(gesamt)").
+        /// </summary>
+        [Fact]
+        public void VerlusteVerteilenSichNachHeeresstaerke() {
+            // zwei gleich starke Heere mit gleichen Gutpunkten teilen sich die Verluste
+            var gleich = KampfRules.VerteileVerluste(1000, [(500, 100), (500, 100)], 50);
+            Assert.Equal(gleich[0], gleich[1], 6);
+
+            // ein Heer ohne Heeresstaerke bekommt nichts ab
+            var leer = KampfRules.VerteileVerluste(1000, [(1000, 0), (0, 0)], 0);
+            Assert.Equal(1000, leer[0]);
+            Assert.Equal(0, leer[1]);
+        }
+
+        /// <summary>
         /// Reiter sind im Tiefland, Hochland und in der Wueste im Vorteil, Krieger im Wald und im
         /// Sumpf (Kampftabelle Zeilen 26 und 27).
         /// </summary>
