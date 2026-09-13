@@ -1,4 +1,4 @@
-using PhoenixModel.EventsAndArgs;
+﻿using PhoenixModel.EventsAndArgs;
 using PhoenixModel.Program;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
@@ -162,6 +162,44 @@ namespace Tests {
                 if (entfernt != null)
                     SharedData.Gebäude![gemark.Bezeichner] = entfernt;
             }
+        }
+
+        /// <summary>
+        /// Was das Kontextmenue "In Zwischenablage kopieren" aus einem Eintrag macht: Kopfzeile,
+        /// darunter die Erklaerung. Ohne Erklaerung bleibt es bei der Kopfzeile - eine leere
+        /// Folgezeile waere beim Einfuegen nur im Weg.
+        /// </summary>
+        [Fact]
+        public void EinEintragWirdMitSeinerErklaerungKopiert() {
+            var mitText = new LogEntry(LogEntry.LogType.Warning, "Fehlendes Gebäude", "Auf 305/4 steht ein Haus");
+            Assert.Equal($"Fehlendes Gebäude{Environment.NewLine}Auf 305/4 steht ein Haus", mitText.AlsText());
+
+            var ohneText = new LogEntry(LogEntry.LogType.Info, "Alles in Ordnung", string.Empty);
+            Assert.Equal("Alles in Ordnung", ohneText.AlsText());
+            Assert.False(ohneText.AlsText().EndsWith(Environment.NewLine));
+        }
+
+        /// <summary>
+        /// Mehrere Eintraege kommen durch eine Leerzeile getrennt in die Zwischenablage. Eintraege
+        /// ohne Titel zeigt die Liste nicht an und duerfen auch im kopierten Text keine Luecke
+        /// hinterlassen.
+        /// </summary>
+        [Fact]
+        public void AlleAngezeigtenEintraegeKommenDurchLeerzeilenGetrenntZusammen() {
+            List<LogEntry> eintraege = [
+                new LogEntry(LogEntry.LogType.Warning, "Erste Warnung", "dazu die Erklärung"),
+                new LogEntry(LogEntry.LogType.Info, string.Empty, "ohne Titel, faellt weg"),
+                new LogEntry(LogEntry.LogType.Error, "Zweiter Fehler", string.Empty),
+            ];
+
+            string text = LogEntry.AlsText(eintraege);
+            string nl = Environment.NewLine;
+            Assert.Equal($"Erste Warnung{nl}dazu die Erklärung{nl}{nl}Zweiter Fehler", text);
+            Assert.DoesNotContain("faellt weg", text);
+
+            // und nichts anzuzeigen ergibt nichts zu kopieren, keine Ausnahme
+            Assert.Equal(string.Empty, LogEntry.AlsText([]));
+            Assert.Equal(string.Empty, LogEntry.AlsText(null));
         }
     }
 }

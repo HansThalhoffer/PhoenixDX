@@ -136,6 +136,70 @@ namespace PhoenixWPF.Pages {
             }
         }
 
+        /// <summary>
+        /// Ein Rechtsklick waehlt den Eintrag aus, auf dem er stattfindet. Von sich aus tut eine
+        /// ListBox das nicht - dann bezoege sich das Kontextmenue auf den zuletzt linksgeklickten
+        /// Eintrag, und kopiert wuerde etwas anderes als das, worauf der Mauszeiger steht.
+        /// </summary>
+        private void LogListBox_PreviewMouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            // Der Weg ueber ContainerFromElement statt ueber einen eigenen ItemContainerStyle:
+            // ein Stil ohne BasedOn wuerde den ListBoxItem-Stil des Dark-Themes verdraengen.
+            if (e.OriginalSource is DependencyObject angeklickt
+                && ItemsControl.ContainerFromElement(LogListBox, angeklickt) is ListBoxItem eintrag)
+            {
+                eintrag.IsSelected = true;
+            }
+        }
+
+        /// <summary>
+        /// Was nichts zu kopieren hat, wird abgeblendet statt wirkungslos angeboten.
+        /// </summary>
+        private void LogListBox_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            if (KopiereEintrag != null)
+                KopiereEintrag.IsEnabled = LogListBox.SelectedItem is LogEntry;
+            if (KopiereAlle != null)
+                KopiereAlle.IsEnabled = FilteredLogEntries.Count > 0;
+        }
+
+        private void KopiereEintrag_Click(object sender, RoutedEventArgs e)
+        {
+            if (LogListBox.SelectedItem is LogEntry eintrag)
+                KopiereInDieZwischenablage(eintrag.AlsText(), "Der Eintrag");
+        }
+
+        private void KopiereAlle_Click(object sender, RoutedEventArgs e)
+        {
+            KopiereInDieZwischenablage(LogEntry.AlsText(FilteredLogEntries),
+                $"Die {FilteredLogEntries.Count} angezeigten Eintraege");
+        }
+
+        /// <summary>
+        /// Legt Text in die Zwischenablage.
+        ///
+        /// Die Zwischenablage gehoert dem ganzen System und kann im Moment des Zugriffs einem
+        /// anderen Programm gehoeren; dann scheitert das Kopieren mit einer COM-Ausnahme. Das darf
+        /// nicht stillschweigend passieren - wer kopiert, fuegt gleich darauf woanders ein und
+        /// merkt sonst erst dort, dass nichts angekommen ist.
+        /// </summary>
+        private static void KopiereInDieZwischenablage(string text, string was)
+        {
+            if (string.IsNullOrEmpty(text))
+                return;
+            try
+            {
+                // true: der Text bleibt auch dann erhalten, wenn die Anwendung beendet wird
+                Clipboard.SetDataObject(text, true);
+            }
+            catch (Exception ex)
+            {
+                Program.SpielWPF.LogError($"{was} liess sich nicht in die Zwischenablage legen",
+                    "Die Zwischenablage wird gerade von einem anderen Programm belegt. "
+                    + $"Ein zweiter Versuch hilft meistens.{Environment.NewLine}{ex.Message}");
+            }
+        }
+
         [GeneratedRegex(@"\[(\d+)/(\d+)\]")]
         public static partial Regex KoordinatenRegex();
         

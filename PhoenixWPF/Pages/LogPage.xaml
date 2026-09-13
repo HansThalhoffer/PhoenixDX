@@ -21,7 +21,17 @@
                  FontFamily="Consolas" FontSize="12" 
                  MouseDoubleClick="LogListBox_MouseDoubleClick"
                  MouseRightButtonUp="LogListBox_MouseRightButtonUp"
+                 ContextMenuOpening="LogListBox_ContextMenuOpening"
+                 PreviewMouseRightButtonDown="LogListBox_PreviewMouseRightButtonDown"
                  >
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem x:Name="KopiereEintrag" Header="Eintrag in die Zwischenablage kopieren"
+                              Click="KopiereEintrag_Click"/>
+                    <MenuItem x:Name="KopiereAlle" Header="Alle angezeigten Einträge kopieren"
+                              Click="KopiereAlle_Click"/>
+                </ContextMenu>
+            </ListBox.ContextMenu>
             <ListBox.ItemTemplate>
                 <DataTemplate>
                 <Border Background="{Binding Type, Converter={StaticResource LogTypeToColorConverter}}" Padding="0" Margin="0">
