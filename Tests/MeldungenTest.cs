@@ -61,50 +61,62 @@ namespace Tests {
         }
 
         /// <summary>
-        /// Die fehlenden Eintraege werden in der Bauwerkliste nachgetragen, sonst fehlten sie beim
+        /// Die fehlenden Eintraege muessen in der Bauwerkliste landen, sonst fehlen sie beim
         /// naechsten Start wieder.
+        ///
+        /// Der Haken sitzt in der Reihenfolge: die Anwendung laedt die Karte VOR der PZE
+        /// (Main.Load: LoadCrossRef, LoadKarte, LoadPZE). Waehrend die Bauwerkliste repariert wird,
+        /// gibt es also noch keine Nationen, KleinFeld.Nation liefert null und der ergaenzte
+        /// Eintrag bleibt ohne Reich. Ohne Reich ist er unvollstaendig - die Tabelle fuehrt genau
+        /// vier Spalten - und wurde deshalb nie geschrieben.
+        ///
+        /// Die fruehere Fassung dieses Tests hat das nicht gefunden, weil sie die PZE vor der Karte
+        /// geladen hat. Sie pruefte damit eine Reihenfolge, die es in der Anwendung nicht gibt.
         ///
         /// Geprueft wird die Speicherwarteschlange, nicht die Datenbank: im Testlauf leert sie
         /// niemand, die echten Kartendaten bleiben also unberuehrt.
         /// </summary>
         [StaFact]
-        public void DieFehlendenEintraegeWerdenNachgetragen() {
+        public void DasReichWirdNachgereichtSonstLandetDerNachtragNieInDerDatenbank() {
             TestSetup.Setup();
             TestSetup.LoadCrossRef(false, false);
+            // die Reihenfolge der Anwendung: erst die Karte, dann die Reiche
+            TestSetup.LoadKarte(erzwingen: true);
             TestSetup.LoadPZE(false, false);
-            SharedData.StoreQueue.Clear();
 
-            var meldungen = SammleBeim(() => TestSetup.LoadKarte(erzwingen: true));
-            var offen = SharedData.StoreQueue.ToList();
-            try {
-                var nachtrag = meldungen.FirstOrDefault(m => m.Titel.Contains("nachgetragen"));
-                if (nachtrag == null) {
-                    // in diesen Kartendaten fehlt nichts - dann darf auch nichts nachgetragen werden
-                    Assert.DoesNotContain(offen, e => e.Table is PhoenixModel.dbErkenfara.Gebäude);
-                    return;
-                }
+            // Was die Reparatur erfunden hat, traegt IsNew; alles aus der Datenbank Geladene nicht.
+            var nachgetragen = SharedData.Gebäude!.Values.Where(gebäude => gebäude.IsNew).ToList();
+            if (nachgetragen.Count == 0)
+                return; // in diesen Kartendaten fehlt nichts
 
-                var gebäude = offen.Where(e => e.Table is PhoenixModel.dbErkenfara.Gebäude).ToList();
-                Assert.True(gebäude.Count > 0, "Es wurde nichts zum Nachtragen vorgemerkt");
+            // So sehen die Eintraege aus, wie Phase 1 sie hinterlaesst: Position und Name aus der
+            // Karte, kein Reich. Kopien, damit der Test die geteilten Daten nicht anfasst.
+            var offen = nachgetragen
+                .Select(gebäude => new PhoenixModel.dbErkenfara.Gebäude {
+                    gf = gebäude.gf,
+                    kf = gebäude.kf,
+                    Bauwerknamen = gebäude.Bauwerknamen,
+                })
+                .ToList();
+            Assert.All(offen, haus => Assert.True(string.IsNullOrEmpty(haus.Reich)));
 
-                foreach (var eintrag in gebäude) {
-                    // eingefuegt, nicht aktualisiert - die Zeile gibt es ja noch nicht
-                    Assert.Equal(PhoenixModel.Database.DatabaseQueue.DatabaseQueueCommand.Insert, eintrag.Command);
-                    var haus = (PhoenixModel.dbErkenfara.Gebäude)eintrag.Table;
-                    Assert.False(string.IsNullOrEmpty(haus.Reich), $"{haus.Bezeichner} hat kein Reich");
-                    Assert.True(haus.gf > 0 && haus.kf > 0, $"{haus.Bezeichner} hat keine Position");
+            var (vollständig, ohneReich) = BauwerkeView.VervollständigeReiche(offen);
 
-                    // Und der entscheidende Punkt: der Speicherlauf ordnet einen Datensatz ueber
-                    // den Pfad einer der vier bekannten Datenbanken zu. Stimmt er nicht genau mit
-                    // dem ueberein, was in den Einstellungen steht, verwirft er den Datensatz mit
-                    // einem Protokolleintrag - der Nachtrag liefe dann ins Leere.
-                    Assert.Equal(TestSetup.KartenPfad, haus.Database);
-                }
-                Assert.Contains($"{gebäude.Count} Gebäude", nachtrag.Titel);
-            }
-            finally {
-                // nichts davon darf in die echten Kartendaten laufen
-                SharedData.StoreQueue.Clear();
+            Assert.True(ohneReich.Count == 0,
+                $"Zu diesen Gemarken nennt die Karte kein Reich: {string.Join(", ", ohneReich)}");
+            Assert.Equal(offen.Count, vollständig.Count);
+
+            foreach (var haus in vollständig) {
+                Assert.False(string.IsNullOrEmpty(haus.Reich), $"{haus.Bezeichner} hat kein Reich");
+                Assert.True(haus.gf > 0 && haus.kf > 0, $"{haus.Bezeichner} hat keine Position");
+                // und zwar das Reich, das die Karte fuer diese Gemark nennt
+                Assert.Equal(SharedData.Map![haus.Bezeichner].Nation?.Reich, haus.Reich);
+
+                // Der entscheidende Punkt: der Speicherlauf ordnet einen Datensatz ueber den Pfad
+                // einer der vier bekannten Datenbanken zu. Stimmt er nicht genau mit dem ueberein,
+                // was in den Einstellungen steht, verwirft er den Datensatz mit einem
+                // Protokolleintrag - der Nachtrag liefe dann ins Leere.
+                Assert.Equal(TestSetup.KartenPfad, haus.Database);
             }
         }
 

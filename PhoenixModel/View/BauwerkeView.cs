@@ -151,6 +151,40 @@ namespace PhoenixModel.View {
         }
 
         /// <summary>
+        /// Trägt bei nachgetragenen Bauwerken das Reich aus der Karte nach.
+        ///
+        /// Beim Laden der Karte ist das Reich noch nicht zu ermitteln: KleinFeld.Nation braucht die
+        /// Nationen aus der PZE, und die sind zu diesem Zeitpunkt nicht geladen. Ein Eintrag ohne
+        /// Reich wäre in der Tabelle [bauwerkliste] unvollständig - die führt genau vier Spalten -
+        /// und darf so nicht in die Datenbank. Deshalb wird das Reich nachgereicht, sobald alles
+        /// geladen ist, und erst dann geschrieben.
+        ///
+        /// Die Spalte Reich führt den Reichsnamen, so wie ihn auch die vorhandenen Einträge tragen.
+        /// </summary>
+        /// <returns>
+        /// die Bauwerke, die damit vollständig sind und geschrieben werden können, und die
+        /// Bezeichner derer, zu denen die Karte kein Reich nennt
+        /// </returns>
+        public static (List<Gebäude> Vollständig, List<string> OhneReich) VervollständigeReiche(IEnumerable<Gebäude>? nachgetragene) {
+            List<Gebäude> vollständig = [];
+            List<string> ohneReich = [];
+            if (nachgetragene == null || SharedData.Map == null)
+                return (vollständig, ohneReich);
+
+            foreach (var gebäude in nachgetragene) {
+                if (SharedData.Map.TryGetValue(gebäude.Bezeichner, out var gemark) == false)
+                    continue;
+                if (gemark.Nation != null)
+                    gebäude.Reich = gemark.Nation.Reich;
+                if (string.IsNullOrEmpty(gebäude.Reich))
+                    ohneReich.Add(gebäude.Bezeichner);
+                else
+                    vollständig.Add(gebäude);
+            }
+            return (vollständig, ohneReich);
+        }
+
+        /// <summary>
         /// Legt einen fehlenden Eintrag in der Bauwerkliste an.
         ///
         /// In der Karte steht ein Gebäude, in der Tabelle [bauwerkliste] der Erkenfarakarte.mdb

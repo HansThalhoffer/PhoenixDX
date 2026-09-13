@@ -1,4 +1,4 @@
-using PhoenixModel.Database;
+﻿using PhoenixModel.Database;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.EventsAndArgs;
 using PhoenixModel.View;
@@ -56,14 +56,20 @@ namespace PhoenixWPF.Program {
         }
 
         /// <summary>
+        /// Die Bauwerke, die Phase 1 in der Bauwerkliste ergänzt hat. Sie warten auf ihr Reich:
+        /// das steht erst fest, wenn die Nationen geladen sind, und ohne Reich darf der Eintrag
+        /// nicht in die Datenbank. Phase 2 holt das nach.
+        /// </summary>
+        private readonly List<PhoenixModel.dbErkenfara.Gebäude> _nachgetragen = [];
+
+        /// <summary>
         /// Die Bauwerkliste ist kaputt in der Datenbank. Die Karte ist die gepflegte Mastertabelle und mit dieser Wird die Bauwerkliste korrigiert
         /// </summary>
         private void RepairBauwerklistePhase1()
         {
             if (SharedData.Map != null && SharedData.Gebäude != null)
             {
-                List<string> nachgetragen = [];
-                List<string> ohneReich = [];
+                _nachgetragen.Clear();
                 var gebäudeInKarte = SharedData.Map.Values.Where(gemark => gemark.Baupunkte > 0);
                 foreach (var gemark in gebäudeInKarte)
                 {
@@ -78,17 +84,11 @@ namespace PhoenixWPF.Program {
                         gebäude = BauwerkeView.ErgänzeFehlendesGebäude(gemark, stillschweigend: true);
                         if (gebäude != null)
                         {
-                            // Der Eintrag wird in der Bauwerkliste nachgetragen, sonst fehlte er
-                            // beim nächsten Start wieder. Die Karte ist die gepflegte Tabelle und
-                            // gibt den Ausschlag; ein Reich braucht der Eintrag allerdings, sonst
-                            // stünde er unvollständig in der Datenbank.
-                            if (string.IsNullOrEmpty(gebäude.Reich))
-                                ohneReich.Add(gemark.Bezeichner);
-                            else
-                            {
-                                SharedData.StoreQueue.Insert(gebäude);
-                                nachgetragen.Add(gemark.Bezeichner);
-                            }
+                            // Geschrieben wird hier noch nichts: das Reich lässt sich zu diesem
+                            // Zeitpunkt nicht ermitteln, weil KleinFeld.Nation die Nationen aus der
+                            // PZE braucht und die noch nicht geladen ist. Ein Eintrag ohne Reich
+                            // wäre unvollständig, deshalb schreibt erst Phase 2.
+                            _nachgetragen.Add(gebäude);
                         }
                     }
                     if (gebäude != null)
@@ -98,20 +98,13 @@ namespace PhoenixWPF.Program {
                 // Eine Meldung statt einer je Gemark. Vorher standen beim Start zwei Dutzend
                 // gleichlautende Warnungen im Infotab, die jedes Mal wiederkamen - so oft, dass
                 // niemand mehr hinsieht.
-                if (nachgetragen.Count > 0)
-                    ProgramView.LogInfo($"{nachgetragen.Count} Gebäude in der Bauwerkliste nachgetragen",
-                        $"In der Karte standen Gebäude, zu denen die Tabelle [bauwerkliste] der Erkenfarakarte.mdb "
-                        + $"keinen Eintrag führte: {string.Join(", ", nachgetragen)}.\r\r"
-                        + "Die Karte ist die gepflegte Tabelle und gibt den Ausschlag; die Einträge wurden ergänzt "
-                        + "und werden in die Datenbank geschrieben. Beim nächsten Start sollte diese Meldung "
-                        + "ausbleiben. Der Spielleitung fehlen diese Einträge vermutlich ebenfalls.");
-
-                if (ohneReich.Count > 0)
-                    ProgramView.LogWarning($"{ohneReich.Count} Gebäude fehlen in der Bauwerkliste und haben kein Reich",
-                        $"Zu diesen Gemarken führt die Tabelle [bauwerkliste] keinen Eintrag, und die Karte nennt "
-                        + $"auch kein Reich dazu: {string.Join(", ", ohneReich)}.\r\r"
-                        + "Sie wurden für diese Sitzung ergänzt, aber nicht in die Datenbank geschrieben - ein "
-                        + "Eintrag ohne Reich wäre unvollständig. Hier sollte die Spielleitung nachsehen.");
+                if (_nachgetragen.Count > 0)
+                    ProgramView.LogInfo($"{_nachgetragen.Count} Gebäude in der Bauwerkliste nachgetragen",
+                        $"In der Karte stehen Gebäude, zu denen die Tabelle [bauwerkliste] der Erkenfarakarte.mdb "
+                        + $"keinen Eintrag führt: {string.Join(", ", _nachgetragen.Select(gebäude => gebäude.Bezeichner))}.\r\r"
+                        + "Die Karte ist die gepflegte Tabelle und gibt den Ausschlag; die Einträge sind für diese "
+                        + "Sitzung ergänzt. Geschrieben werden sie, sobald die Reiche geladen sind - ohne Reich wäre "
+                        + "der Eintrag unvollständig. Der Spielleitung fehlen sie vermutlich ebenfalls.");
             }
             // Die Reparatur läuft jetzt im Ladevorgang und damit auch dort, wo es gar keine
             // Anwendung mit Oberfläche gibt - etwa im Testlauf.
@@ -126,25 +119,71 @@ namespace PhoenixWPF.Program {
         /// </summary>
         private void RepairBauwerklistePhase2()
         {
-            if (SharedData.Map != null && SharedData.Gebäude != null)
+            try
             {
-                foreach (var gebäude in SharedData.Gebäude.Values)
+                if (SharedData.Map != null && SharedData.Gebäude != null)
                 {
-                    var gemark = SharedData.Map[gebäude.Bezeichner];
-                    
-                    if (gemark.Nation != null)
-                        gebäude.Reich = gemark.Nation.Reich;
-                    if (gemark.Baupunkte == 0)
+                    foreach (var gebäude in SharedData.Gebäude.Values)
                     {
-                        ProgramView.LogWarning(gemark, $"Zerstörtes Gebäude in der Bauwerktabelle mit dem Namen {gebäude.Bauwerknamen}", $"Durch einen Datenbankfehler existiert das zerstörte Gebäude auf {gebäude.Bezeichner} noch in der Tabelle [bauwerkliste] in der Datenbank Ekrenfarakarte.mdb.\r\rDieser Fehler wurde automatisch korrigiert");
-                        gebäude.Zerstört = true;
+                        // Die Bauwerkliste kann Einträge zu Gemarken führen, die die Karte nicht
+                        // kennt. Ein Indexzugriff flöge hier mit einer Ausnahme heraus, und die
+                        // sähe niemand: Phase 2 läuft in einem Task.
+                        if (SharedData.Map.TryGetValue(gebäude.Bezeichner, out var gemark) == false)
+                            continue;
+
+                        if (gemark.Nation != null)
+                            gebäude.Reich = gemark.Nation.Reich;
+                        if (gemark.Baupunkte == 0)
+                        {
+                            ProgramView.LogWarning(gemark, $"Zerstörtes Gebäude in der Bauwerktabelle mit dem Namen {gebäude.Bauwerknamen}", $"Durch einen Datenbankfehler existiert das zerstörte Gebäude auf {gebäude.Bezeichner} noch in der Tabelle [bauwerkliste] in der Datenbank Ekrenfarakarte.mdb.\r\rDieser Fehler wurde automatisch korrigiert");
+                            gebäude.Zerstört = true;
+                        }
                     }
+                    SchreibeNachgetrageneBauwerke();
                 }
             }
-            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            catch (Exception ex)
+            {
+                SpielWPF.LogError("Die Bauwerkliste liess sich nicht vollständig reparieren", ex.Message);
+            }
+            Application.Current?.Dispatcher.BeginInvoke(new Action(() =>
             {
                 ProgramView.Update(ViewEventArgs.ViewEventType.UpdateGebäude);
             }));
+        }
+
+        /// <summary>
+        /// Schreibt die in Phase 1 ergänzten Bauwerke in die Datenbank.
+        ///
+        /// Erst hier ist das möglich: das Reich steht in der Karte als Nummer und wird über die
+        /// Nationen aufgelöst, die beim Laden der Karte noch nicht da sind. Phase 1 hat die
+        /// Einträge deshalb nur im Speicher angelegt - und genau daran ist die Reparatur bisher
+        /// gescheitert: ohne Reich galt jeder Eintrag als unvollständig, geschrieben wurde keiner,
+        /// und beim nächsten Start fehlten sie wieder.
+        /// </summary>
+        private void SchreibeNachgetrageneBauwerke()
+        {
+            if (_nachgetragen.Count == 0)
+                return;
+
+            var (vollständig, ohneReich) = BauwerkeView.VervollständigeReiche(_nachgetragen);
+            foreach (var gebäude in vollständig)
+                SharedData.StoreQueue.Insert(gebäude);
+            _nachgetragen.Clear();
+
+            if (vollständig.Count > 0)
+                ProgramView.LogInfo($"{vollständig.Count} Gebäude werden in der Bauwerkliste nachgetragen",
+                    $"Die Einträge zu {string.Join(", ", vollständig.Select(gebäude => gebäude.Bezeichner))} "
+                    + "werden in die Tabelle [bauwerkliste] der Erkenfarakarte.mdb geschrieben.\r\r"
+                    + "Beim nächsten Start sollte diese Meldung ausbleiben. Der Spielleitung fehlen diese "
+                    + "Einträge vermutlich ebenfalls.");
+
+            if (ohneReich.Count > 0)
+                ProgramView.LogWarning($"{ohneReich.Count} Gebäude fehlen in der Bauwerkliste und haben kein Reich",
+                    $"Zu diesen Gemarken führt die Tabelle [bauwerkliste] keinen Eintrag, und die Karte nennt "
+                    + $"auch kein Reich dazu: {string.Join(", ", ohneReich)}.\r\r"
+                    + "Sie wurden für diese Sitzung ergänzt, aber nicht in die Datenbank geschrieben - ein "
+                    + "Eintrag ohne Reich wäre unvollständig. Hier sollte die Spielleitung nachsehen.");
         }
 
         public void SchreibeAlle(IEnumerable<PhoenixModel.Database.DatabaseQueue.DatabaseQueueItem> vorgänge) {
