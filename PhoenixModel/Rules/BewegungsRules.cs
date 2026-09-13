@@ -1,4 +1,4 @@
-using PhoenixModel.dbCrossRef;
+﻿using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbPZE;
 using PhoenixModel.ExternalTables;
@@ -651,8 +651,14 @@ namespace PhoenixModel.Rules {
             rückwärts.Reverse();
             weg.Wegpunkte.AddRange(rückwärts);
 
-            int maxWegpunkte = figur is NamensSpielfigur ? Bewegungsspur.MaxWegpunkteNamensfigur : Bewegungsspur.MaxWegpunkteTruppe;
-            if (figur.schritt + weg.Wegpunkte.Count > maxWegpunkte) {
+            // Wie viele Wegpunkte schon belegt sind, sagt die Spur selbst - nicht der Zähler schritt.
+            // In den echten Zugdaten gibt es Figuren, deren x1/y1 gefüllt ist, während schritt auf 0
+            // steht (Theostelos Reiter 201 in Zug 40, von der Altanwendung so hinterlassen). Nach dem
+            // Zähler wäre dann ein Wegpunkt zu viel frei, und der letzte Schritt ginge beim Speichern
+            // verloren.
+            var spur = new Bewegungsspur(figur);
+            int maxWegpunkte = spur.MaxWegpunkte;
+            if (spur.Count + weg.Wegpunkte.Count > maxWegpunkte) {
                 fehler = $"Der Weg hat {weg.Wegpunkte.Count} Schritte, in der Zugdatenbank ist aber nur Platz für insgesamt {maxWegpunkte} Wegpunkte je Figur";
                 return null;
             }

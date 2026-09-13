@@ -233,5 +233,50 @@ namespace Tests {
             Assert.Equal(figurenAufFeldVorher, feld.Truppen.Count);
             Assert.Single(feld.Truppen.Where(t => t.Nummer == figur.Nummer && t.BaseTyp == figur.BaseTyp));
         }
+
+        /// <summary>
+        /// Der Platz fuer Wegpunkte richtet sich nach der Spur, nicht nach dem Zaehler schritt.
+        ///
+        /// In den echten Zugdaten stehen Figuren, deren x1/y1 gefuellt ist, waehrend schritt auf 0
+        /// steht - so hinterlaesst es die Altanwendung (Theostelos Reiter 201 in Zug 40). Wer dem
+        /// Zaehler glaubt, haelt eine volle Spur fuer leer und laesst Wege zu, deren letzte Schritte
+        /// beim Speichern verlorengehen.
+        /// </summary>
+        [StaFact]
+        public void EineVolleWegspurWirdAuchDannErkanntWennDerZaehlerLuegt() {
+            var figur = LadeUndFindeBewegbareFigur();
+            var erreichbar = BewegungsRules.GetErreichbareFelder(figur);
+            Assert.NotEmpty(erreichbar);
+            var ziel = erreichbar[erreichbar.Count - 1];
+
+            // ohne Zutun ist der Weg zu finden
+            Assert.NotNull(BewegungsRules.FindeWeg(figur, ziel, out _));
+
+            var spur = new Bewegungsspur(figur);
+            var original = new List<KleinfeldPosition>();
+            for (int i = 0; i < spur.Count; i++)
+                original.Add(spur[i]!);
+            int schrittVorher = figur.schritt;
+            try {
+                // Spur randvoll, Zaehler auf Null - genau die Kombination aus den echten Daten,
+                // nur auf die Spitze getrieben
+                spur.Clear();
+                for (int i = 0; i < spur.MaxWegpunkte; i++)
+                    Assert.True(spur.Add(new KleinfeldPosition(figur.gf, figur.kf)));
+                figur.schritt = 0;
+                Assert.Equal(spur.MaxWegpunkte, spur.Count);
+
+                var weg = BewegungsRules.FindeWeg(figur, ziel, out string fehler);
+                Assert.True(weg == null,
+                    "Bei voller Wegspur darf kein weiterer Weg mehr angeboten werden");
+                Assert.Contains("Wegpunkte", fehler);
+            }
+            finally {
+                spur.Clear();
+                foreach (var punkt in original)
+                    spur.Add(punkt);
+                figur.schritt = schrittVorher;
+            }
+        }
     }
 }
