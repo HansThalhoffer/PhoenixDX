@@ -48,6 +48,9 @@ namespace PhoenixWPF.Program {
                         }
                         break;
                     }
+                case MapEventArgs.MapEventType.Mauszeiger:
+                    Bewegungshinweis.Zeige(e.GF, e.KF);
+                    break;
                 case MapEventArgs.MapEventType.Kontextmenue: {
                         Kartenkontextmenue.Zeige(e.GF, e.KF);
                         break;

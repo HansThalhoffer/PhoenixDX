@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Drawing;
@@ -399,6 +399,35 @@ namespace PhoenixDX.Program {
         }
 
         /// <summary>
+        /// Das Kleinfeld, über dem der Mauszeiger zuletzt stand. Gemeldet wird nur ein Wechsel -
+        /// gezeichnet wird sechzigmal in der Sekunde, und so oft will das niemand hören.
+        /// </summary>
+        private string _gemeldetesMouseOver = string.Empty;
+
+        /// <summary>
+        /// Meldet der Oberfläche, wenn der Mauszeiger auf ein anderes Kleinfeld gewandert ist.
+        ///
+        /// Nur solange etwas hervorgehoben ist: ohne Hervorhebung gibt es nichts zu erklären, und
+        /// jede Mausbewegung über die Karte würde einen Sprung in den WPF-Dispatcher kosten.
+        /// </summary>
+        private void MeldeMauszeiger() {
+            if (Weltkarte == null || Weltkarte.AnzahlHervorhebungen == 0) {
+                _gemeldetesMouseOver = string.Empty;
+                return;
+            }
+            string jetzt = _mouseOver == null
+                ? string.Empty
+                : $"{_mouseOver.Koordinaten.gf}/{_mouseOver.Koordinaten.kf}";
+            if (jetzt == _gemeldetesMouseOver)
+                return;
+            _gemeldetesMouseOver = jetzt;
+            if (_mouseOver != null)
+                _wpfBridge.MauszeigerÜber(_mouseOver.Koordinaten.gf, _mouseOver.Koordinaten.kf);
+            else
+                _wpfBridge.MauszeigerÜber(0, 0);
+        }
+
+        /// <summary>
         /// Hebt Kleinfelder farbig hervor. Die Welt hält die Gemarken, deshalb geht es hier durch.
         /// </summary>
         internal int HebeHervor(IEnumerable<KleinfeldPosition> felder, Color farbe) {
@@ -634,6 +663,7 @@ namespace PhoenixDX.Program {
                 Vektor? mousePos = _maus.ScreenPosition == null ? null : ClientToVirtualScreen(_maus.ScreenPosition);
                 Rectangle visibleScreen = new Rectangle(_cameraPosition.X * -1, _cameraPosition.Y * -1, _clientWidth, _clientHeight);
                 _mouseOver = Weltkarte.Draw(_spriteBatch, _scale, mousePos, _isMoving, gameTime.TotalGameTime, _selected, visibleScreen);
+                MeldeMauszeiger();
             }
 
             // TODO: Add your drawing code here

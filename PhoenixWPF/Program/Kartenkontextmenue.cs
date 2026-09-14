@@ -1,4 +1,4 @@
-using PhoenixModel.dbErkenfara;
+﻿using PhoenixModel.dbErkenfara;
 using PhoenixModel.Rules;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
@@ -56,7 +56,10 @@ namespace PhoenixWPF.Program {
 
             // Eine Hervorhebung soll sich auch wieder loswerden lassen, ohne die Karte neu zu laden
             var löschen = new MenuItem { Header = "Hervorhebung aufheben" };
-            löschen.Click += (s, e) => Main.Map?.LöscheHervorhebung();
+            löschen.Click += (s, e) => {
+                Main.Map?.LöscheHervorhebung();
+                Bewegungshinweis.Beende();
+            };
             menü.Items.Add(new Separator());
             menü.Items.Add(löschen);
 
@@ -98,6 +101,7 @@ namespace PhoenixWPF.Program {
             try {
                 var erreichbar = BewegungsRules.GetErreichbareFelder(figur);
                 if (erreichbar.Count == 0) {
+                    Bewegungshinweis.Beende();
                     SpielWPF.LogInfo($"{figur.Bezeichner} kann sich nicht bewegen",
                         figur.bp <= 0
                             ? "Die Figur hat keine Bewegungspunkte mehr."
@@ -112,6 +116,9 @@ namespace PhoenixWPF.Program {
                         "Die Verbindung zur Kartendarstellung fehlt, deshalb lässt sich nichts hervorheben.");
                     return;
                 }
+
+                // Ab jetzt erklaert der Mauszeiger, warum ein Feld nicht dabei ist
+                Bewegungshinweis.Aktiviere(figur, erreichbar);
 
                 var farbe = GetReichsfarbe(figur);
                 int hervorgehoben = karte.HebeHervor(erreichbar.Select(k => new KleinfeldPosition(k.gf, k.kf)),

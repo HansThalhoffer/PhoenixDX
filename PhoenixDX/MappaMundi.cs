@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Drawing;
@@ -266,6 +266,16 @@ namespace PhoenixDX {
         /// </summary>
         public void ÖffneKontextmenü(int gf, int kf) {
             _OnMapEvent(new MapEventArgs(gf, kf, MapEventArgs.MapEventType.Kontextmenue));
+        }
+
+        /// <summary>
+        /// Meldet der Oberfläche, dass der Mauszeiger über einem anderen Kleinfeld steht.
+        ///
+        /// Wird nur gemeldet, solange auf der Karte etwas hervorgehoben ist - ohne Hervorhebung
+        /// gibt es nichts zu erklären, und die Meldung liefe bei jeder Mausbewegung ins Leere.
+        /// </summary>
+        public void MauszeigerÜber(int gf, int kf) {
+            _OnMapEvent(new MapEventArgs(gf, kf, MapEventArgs.MapEventType.Mauszeiger));
         }
 
         /// <summary>

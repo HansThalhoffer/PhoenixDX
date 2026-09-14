@@ -112,6 +112,14 @@ namespace PhoenixModel.Rules {
         public const int HöhenstufenKostenMitStraße = 1;
 
         /// <summary>
+        /// Gelände, das eine Figur überhaupt nicht betreten kann, steht in den BEW_* Tabellen mit
+        /// 99 Bewegungspunkten - mehr, als eine Figur je hat. Das ist eine Schreibweise der
+        /// Tabelle, kein Preis: der Unterschied zwischen "zu teuer" und "unmöglich" geht sonst
+        /// verloren.
+        /// </summary>
+        public const int BPUnpassierbar = 99;
+
+        /// <summary>
         /// Die Benutzung eines Teleportfeldes kostet 20 Bewegungspunkte (Regelwerk 6.6.5). Dieser Wert
         /// steht bereits in den BEW_* Tabellen beim Geländetyp 10 (auftauchpunkt) und wird von dort
         /// gelesen; die Konstante dient nur der Dokumentation und als Prüfwert.
@@ -692,6 +700,137 @@ namespace PhoenixModel.Rules {
                     result.Add(eintrag.Value.feld);
             }
             return result;
+        }
+
+        /// <summary>
+        /// Sammelt alle Gruende, warum die Figur dieses Feld nicht erreicht.
+        ///
+        /// Die Karte zeigt nur, wohin es geht. Warum es anderswohin nicht geht, ist die haeufigere
+        /// Frage - und die Antwort steht sonst nirgends: die Wegsuche verwirft einen Schritt und
+        /// behaelt den Grund fuer sich.
+        ///
+        /// Gesucht wird in zwei Schichten. Zuerst das, was am Zielfeld selbst liegt und von keinem
+        /// Weg abhaengt: Gelaende, das diese Figur gar nicht betreten kann, ein Teleportfeld, die
+        /// falsche Zugphase. Danach jeder der sechs Nachbarn: steht die Figur dort ueberhaupt
+        /// jemals, und wenn ja, woran scheitert der letzte Schritt?
+        ///
+        /// Eine leere Liste heisst, dass das Feld erreichbar ist.
+        /// </summary>
+        public static List<string> ErkläreUnerreichbarkeit(Spielfigur? figur, KleinFeld? ziel) {
+            List<string> gründe = [];
+            if (figur == null) {
+                gründe.Add("Es ist keine Spielfigur ausgewählt.");
+                return gründe;
+            }
+            if (ziel == null) {
+                gründe.Add("Dieses Feld liegt nicht auf der Karte.");
+                return gründe;
+            }
+
+            // 1. Was die Figur ueberhaupt am Ziehen hindert - dann eruebrigt sich der Rest
+            if (ZugView.KannBewegen == false) {
+                gründe.Add($"In der {ZugView.PhasenBeschreibung} wird nicht bewegt.");
+                return gründe;
+            }
+            if (figur.IsOnShip()) {
+                gründe.Add($"{figur.Bezeichner} ist auf der Flotte {((TruppenSpielfigur)figur).auf_Flotte} eingeschifft.");
+                return gründe;
+            }
+
+            var start = KleinfeldView.GetKleinfeld(figur);
+            if (start == null) {
+                gründe.Add($"{figur.Bezeichner} steht auf keinem bekannten Kleinfeld.");
+                return gründe;
+            }
+            if (figur.bp <= 0) {
+                gründe.Add($"{figur.Bezeichner} hat keine Bewegungspunkte mehr.");
+                return gründe;
+            }
+            // Auf dem eigenen Feld steht die Figur bereits - da ist nichts zu erklären. Es taucht
+            // in der Liste der erreichbaren Felder nur auf, wenn ein Rundweg dorthin zurückführt.
+            if (start.gf == ziel.gf && start.kf == ziel.kf)
+                return gründe;
+
+            // 2. Was am Zielfeld selbst liegt, unabhaengig vom Weg dorthin
+            bool wegerecht = HatWegerecht(figur, ziel);
+            var verbrauch = GetVerbrauch(figur, ziel.Gelaendetyp ?? 0, wegerecht, false);
+            if (verbrauch == null) {
+                gründe.Add($"Für {figur.Typ} gibt es keine Bewegungsdaten zum Geländetyp {ziel.Gelaendetyp}.");
+                return gründe;
+            }
+            if (verbrauch.BP >= BPUnpassierbar) {
+                // Damit ist alles gesagt. Die Nachbarfelder durchzugehen brächte nur noch
+                // "nicht genug Bewegungspunkte" - dieselbe Sache ein zweites Mal.
+                gründe.Add($"{ziel.Terrain.Name} ist für {figur.Typ} nicht passierbar.");
+                return gründe;
+            }
+            if (verbrauch.BP > figur.bp_max) {
+                // Nicht dasselbe wie unpassierbar: mit Wegerecht oder über eine Strasse kann
+                // genau dieses Gelände bezahlbar sein. Hier reicht es auch mit vollen Punkten nicht.
+                gründe.Add($"Ein Schritt auf {ziel.Terrain.Name} kostet {verbrauch.BP} BP"
+                    + $"{(wegerecht ? string.Empty : " (ohne Wegerecht)")}; {figur.Typ} hat höchstens {figur.bp_max}.");
+                return gründe;
+            }
+            if (verbrauch.BP > figur.bp)
+                gründe.Add($"Das Feld zu betreten kostet {verbrauch.BP} BP, {figur.Bezeichner} hat noch {figur.bp}.");
+
+            if (TeleportRules.IstTeleportfeld(ziel))
+                gründe.Add("Auf einem Teleportfeld muss der Auftauchpunkt ausgewählt werden; die Wegsuche führt nicht von selbst dorthin.");
+
+            // 3. Der letzte Schritt, von jedem Nachbarn aus
+            var suche = DurchsucheErreichbareFelder(figur);
+            if (suche == null)
+                return gründe;
+            var kosten = suche.Value.kosten;
+
+            List<string> unerreichbareNachbarn = [];
+            List<string> letzterSchritt = [];
+            bool irgendeinSchrittMöglich = false;
+
+            foreach (Direction richtung in Enum.GetValues<Direction>()) {
+                var nachbarPosition = KartenKoordinaten.GetNachbar(ziel, Gegenrichtung(richtung));
+                var nachbar = KleinfeldView.GetKleinfeld(nachbarPosition);
+                if (nachbar == null)
+                    continue;
+
+                string nachbarKey = nachbar.CreateBezeichner();
+                // alle Zustände, in denen die Figur auf diesem Nachbarn stehen kann
+                var zustände = kosten.Where(eintrag => eintrag.Key.Feld == nachbarKey).ToList();
+                if (zustände.Count == 0) {
+                    unerreichbareNachbarn.Add(nachbar.Bezeichner);
+                    continue;
+                }
+
+                // der aussagekräftigste Fehlschlag: der mit den wenigsten verbrauchten Punkten
+                SchrittErgebnis? bester = null;
+                foreach (var zustand in zustände.OrderBy(eintrag => eintrag.Value)) {
+                    var schritt = PrüfeSchritt(figur, nachbar, ziel, richtung,
+                        figur.bp - zustand.Value, zustand.Key.Höhenstufen);
+                    if (schritt.HasErrors == false) {
+                        irgendeinSchrittMöglich = true;
+                        break;
+                    }
+                    bester ??= schritt;
+                }
+                if (irgendeinSchrittMöglich == false && bester != null)
+                    letzterSchritt.Add($"Von {nachbar.Bezeichner} aus: {bester.Title}.");
+            }
+
+            // Der Schritt gelingt von irgendwoher: dann liegt es nicht am Weg. Übrig bleibt, was
+            // am Zielfeld selbst hängt - beim Teleportfeld etwa die fehlende Auswahl des
+            // Auftauchpunktes. Ist auch das leer, ist das Feld schlicht erreichbar.
+            if (irgendeinSchrittMöglich)
+                return gründe;
+
+            gründe.AddRange(letzterSchritt);
+            if (unerreichbareNachbarn.Count > 0)
+                gründe.Add(unerreichbareNachbarn.Count == 1
+                    ? $"{unerreichbareNachbarn[0]} ist selbst nicht erreichbar."
+                    : $"Diese Nachbarfelder sind selbst nicht erreichbar: {string.Join(", ", unerreichbareNachbarn)}.");
+
+            if (gründe.Count == 0)
+                gründe.Add($"{ziel.Bezeichner} ist mit {figur.bp} Bewegungspunkten nicht zu erreichen.");
+            return gründe;
         }
 
         #endregion
