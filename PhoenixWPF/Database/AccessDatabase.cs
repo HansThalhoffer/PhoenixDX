@@ -4,7 +4,9 @@ using PhoenixWPF.Program;
 using System;
 using System.Data;
 using System.Data.Common;
+using System.Collections.Generic;
 using System.Data.OleDb;
+using System.Linq;
 using System.Windows;
 
 namespace PhoenixWPF.Database
@@ -184,6 +186,41 @@ namespace PhoenixWPF.Database
         /// </summary>
         /// <param name="query">The SQL query to execute.</param>
         /// <returns>A DataTable containing the result set.</returns>
+        /// <summary>
+        /// Die Namen aller Tabellen der Datenbank, ohne die Systemtabellen von Access.
+        ///
+        /// Gebraucht für den Vergleich zweier Zugdatenbanken: welche Tabellen es gibt, steht
+        /// nirgends im Quelltext vollständig - die Anwendung lädt nur die, die sie kennt.
+        /// </summary>
+        public List<string> GetTabellennamen() {
+            List<string> namen = [];
+            var schema = _connection.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, [null, null, null, "TABLE"]);
+            if (schema == null)
+                return namen;
+            foreach (DataRow zeile in schema.Rows) {
+                string name = Convert.ToString(zeile["TABLE_NAME"]) ?? string.Empty;
+                if (string.IsNullOrEmpty(name) || name.StartsWith("MSys", StringComparison.OrdinalIgnoreCase))
+                    continue;
+                namen.Add(name);
+            }
+            namen.Sort(StringComparer.OrdinalIgnoreCase);
+            return namen;
+        }
+
+        /// <summary>
+        /// Die Spalten des Primärschlüssels einer Tabelle, in der Reihenfolge des Schlüssels.
+        /// Eine leere Liste heisst: die Tabelle hat keinen.
+        /// </summary>
+        public List<string> GetPrimärschluessel(string tabelle) {
+            List<string> spalten = [];
+            var schema = _connection.GetOleDbSchemaTable(OleDbSchemaGuid.Primary_Keys, [null, null, tabelle]);
+            if (schema == null)
+                return spalten;
+            foreach (DataRow zeile in schema.Rows.Cast<DataRow>().OrderBy(zeile => Convert.ToInt32(zeile["ORDINAL"] is DBNull ? 0 : zeile["ORDINAL"])))
+                spalten.Add(Convert.ToString(zeile["COLUMN_NAME"]) ?? string.Empty);
+            return spalten;
+        }
+
         public DataTable ExecuteQuery(string query)
         {
             if (string.IsNullOrWhiteSpace(query))

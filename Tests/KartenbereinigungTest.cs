@@ -34,6 +34,17 @@ namespace Tests {
             foreach (var daneben in new[] { "cleanupx", "clean", "/cleanup2", "", "   " })
                 Assert.False(Kommandozeile.IstGesetzt([daneben], "cleanup"), daneben);
 
+            // und die Schalter halten sich auseinander
+            Kommandozeile.Lies(["/vergleich"]);
+            Assert.True(Kommandozeile.Vergleich);
+            Assert.False(Kommandozeile.Bereinigung);
+            Kommandozeile.Lies(["/cleanup"]);
+            Assert.True(Kommandozeile.Bereinigung);
+            Assert.False(Kommandozeile.Vergleich);
+            Kommandozeile.Lies([]);
+            Assert.False(Kommandozeile.Bereinigung);
+            Assert.False(Kommandozeile.Vergleich);
+
             Assert.False(Kommandozeile.IstGesetzt(null, "cleanup"));
             Assert.False(Kommandozeile.IstGesetzt([], "cleanup"));
             // ohne Schalter passiert nichts - das ist der wichtigste Fall

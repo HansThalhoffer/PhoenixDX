@@ -15,15 +15,27 @@
         public const string SchalterBereinigung = "cleanup";
 
         /// <summary>
+        /// Vergleicht beim Start die Zugdaten des gewählten Monats mit denen des Vormonats und
+        /// schreibt das Ergebnis als Text - siehe <see cref="Database.Datenbankvergleich"/>.
+        /// </summary>
+        public const string SchalterVergleich = "vergleich";
+
+        /// <summary>
         /// Wurde die Anwendung mit /cleanup gestartet?
         /// </summary>
         public static bool Bereinigung { get; private set; } = false;
+
+        /// <summary>
+        /// Wurde die Anwendung mit /vergleich gestartet?
+        /// </summary>
+        public static bool Vergleich { get; private set; } = false;
 
         /// <summary>
         /// Wertet die Argumente des Programmstarts aus.
         /// </summary>
         public static void Lies(IEnumerable<string>? argumente) {
             Bereinigung = IstGesetzt(argumente, SchalterBereinigung);
+            Vergleich = IstGesetzt(argumente, SchalterVergleich);
         }
 
         /// <summary>

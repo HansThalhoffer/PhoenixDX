@@ -96,6 +96,10 @@ namespace PhoenixWPF.Program {
             LoadCrossRef(true);
             LoadKarte(true);
             if (SelectReich()) {
+                // vor dem Laden: der Vergleich liest die Zugdatenbanken, und der Access-Treiber
+                // mag es nicht, wenn gleichzeitig im Hintergrund geladen wird
+                if (Kommandozeile.Vergleich)
+                    VergleicheMitVormonat();
                 LoadZugdaten(true);
                 LoadFeinderkennung(true);
             }
@@ -548,6 +552,49 @@ namespace PhoenixWPF.Program {
             catch (Exception ex) {
                 SpielWPF.LogError("Die Bauwerkliste liess sich nicht bereinigen",
                     $"Es wurde nichts geloescht.\r\r{ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Vergleicht die Zugdaten des gewählten Monats mit denen des Vormonats - nur beim Start
+        /// mit /vergleich.
+        ///
+        /// Der Bericht zeigt, was zwischen den beiden Monaten passiert ist, also was die
+        /// Auswertung der Spielleitung getan hat. Genau daran lässt sich ablesen, ob die neue
+        /// Anwendung dasselbe tut.
+        /// </summary>
+        private void VergleicheMitVormonat() {
+            if (Settings == null)
+                return;
+            try {
+                string aktuell = Settings.UserSettings.DatabaseLocationZugdaten;
+                string? zugverzeichnis = Path.GetDirectoryName(aktuell);
+                string? wurzel = Path.GetDirectoryName(zugverzeichnis);
+                if (zugverzeichnis == null || wurzel == null
+                    || int.TryParse(Path.GetFileName(zugverzeichnis), out int zug) == false) {
+                    SpielWPF.LogWarning("Der Vormonat lässt sich nicht bestimmen",
+                        $"Aus {aktuell} ergibt sich kein Zugverzeichnis mit einer Nummer.");
+                    return;
+                }
+
+                string vormonat = Path.Combine(wurzel, (zug - 1).ToString(), Path.GetFileName(aktuell));
+                if (File.Exists(vormonat) == false) {
+                    SpielWPF.LogWarning($"Die Zugdaten von Monat {zug - 1} fehlen",
+                        $"Unter {vormonat} liegt keine Datei; es gibt nichts zu vergleichen.");
+                    return;
+                }
+
+                var ergebnis = Database.Datenbankvergleich.Vergleiche(vormonat, aktuell, Settings.UserSettings.PasswordReich);
+                string ziel = Path.Combine(zugverzeichnis,
+                    $"Vergleich_{zug - 1}_nach_{zug}_{Path.GetFileNameWithoutExtension(aktuell)}.txt");
+                File.WriteAllText(ziel, ergebnis.Bericht);
+
+                SpielWPF.LogInfo($"{ergebnis.Unterschiede} Unterschiede zwischen Monat {zug - 1} und {zug}",
+                    $"Der Bericht steht in {ziel}.\r\r"
+                    + "Er zeigt, was die Auswertung der Spielleitung an den Zugdaten geändert hat.");
+            }
+            catch (Exception ex) {
+                SpielWPF.LogError("Der Datenbankvergleich ist fehlgeschlagen", ex.Message);
             }
         }
 
