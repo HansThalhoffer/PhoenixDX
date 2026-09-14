@@ -26,19 +26,7 @@ namespace Tests {
         /// die Hintergrunddaten der Karte). Im Testlauf haengt es davon ab, welcher Test zuerst
         /// geladen hat - deshalb hier notfalls noch einmal in der richtigen Reihenfolge.
         /// </summary>
-        private static void LadeMitDiplomatie() {
-            TestSetup.Setup();
-            TestSetup.LoadCrossRef(false, false);
-            TestSetup.LoadKarte();
-            TestSetup.LoadPZE(false, false);
-            TestSetup.LoadZugdaten(false, false);
-
-            if (SharedData.Diplomatie != null && SharedData.Diplomatie.Count > 1)
-                return;
-
-            TestSetup.LoadKarte(true);
-            TestSetup.LoadZugdaten(false, false);
-        }
+        private static void LadeMitDiplomatie() => TestSetup.LadeMitDiplomatie();
 
         /// <summary>
         /// Die Diplomatietabelle traegt mehr als eine Zeile - sonst ist sie beim Laden

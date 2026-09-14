@@ -278,6 +278,33 @@ namespace Tests {
         }
 
         /// <summary>
+        /// Laedt alles, was es braucht, und sorgt dafuer, dass die Diplomatietabelle vollstaendig
+        /// dasteht.
+        ///
+        /// Ihr Schluessel entsteht beim Laden aus den aufgeloesten Reichsnamen. Sind die Reiche
+        /// noch nicht geladen, loesen alle Zeilen auf dasselbe Ersatzreich auf und die ganze
+        /// Tabelle faellt auf eine einzige Zeile zusammen - dann gibt es weder Wegerecht noch
+        /// Kuestenrecht, und jeder Test darueber ginge lautlos ins Leere.
+        ///
+        /// Die Anwendung laedt in der richtigen Reihenfolge (Main.StartInstance: erst PZE, dann
+        /// die Hintergrunddaten der Karte). Im Testlauf haengt es davon ab, welcher Test zuerst
+        /// geladen hat - deshalb hier notfalls noch einmal nach.
+        /// </summary>
+        public static void LadeMitDiplomatie() {
+            Setup();
+            LoadCrossRef(false, false);
+            LoadKarte();
+            LoadPZE(false, false);
+            LoadZugdaten(false, false);
+
+            if (SharedData.Diplomatie != null && SharedData.Diplomatie.Count > 1)
+                return;
+
+            LoadKarte(true);
+            LoadZugdaten(false, false);
+        }
+
+        /// <summary>
         /// Laedt die Feindaufklaerung - die fremden Einheiten, die auf der Karte zu sehen sind.
         ///
         /// Sie ist eine eigene Quelle neben den Zugdaten: KleinFeld.Truppen kennt nur die eigenen

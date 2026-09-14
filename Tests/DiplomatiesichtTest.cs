@@ -14,18 +14,7 @@ namespace Tests {
     public class DiplomatiesichtTest {
 
         private static void LadeMitDiplomatie() {
-            TestSetup.Setup();
-            TestSetup.LoadCrossRef(false, false);
-            TestSetup.LoadKarte();
-            TestSetup.LoadPZE(false, false);
-            TestSetup.LoadZugdaten(false, false);
-
-            // die Diplomatietabelle faellt zusammen, wenn sie vor den Reichen geladen wurde -
-            // siehe KonflikterkennungTest.DieDiplomatietabelleIstVollstaendigGeladen
-            if (SharedData.Diplomatie == null || SharedData.Diplomatie.Count <= 1) {
-                TestSetup.LoadKarte(true);
-                TestSetup.LoadZugdaten(false, false);
-            }
+            TestSetup.LadeMitDiplomatie();
             DiplomatieView.Vergiss();
         }
 
