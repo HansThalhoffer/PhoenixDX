@@ -297,6 +297,17 @@ namespace PhoenixModel.Commands {
                 if (HeeresRules.IstEroberungsfähig(truppe)) {
                     string marke = Eroberung == EroberungsModus.Erobern ? "E" : "P";
                     truppe.Befehl_erobert += $"{marke}:{ziel.gf}/{ziel.kf};";
+
+                    // Geplündert wird nur, wer sich diesen Monat nicht mehr bewegt: "Da die
+                    // Plünderung einer Gemark 1 Monat dauert, kann sich das plündernde Heer
+                    // diesen Monat nicht bewegen" (Regelwerk 3.2.2.1). Der Befehl bleibt
+                    // stehen - er ist die Ankündigung, gewertet wird bei der Spielleitung -,
+                    // aber der Spieler soll es wissen, bevor er weiterzieht.
+                    if (Eroberung == EroberungsModus.Plündern)
+                        ProgramView.LogInfo(ziel, $"{truppe.Bezeichner} plündert {ziel.CreateBezeichner()}",
+                            $"Das bringt {PlünderRules.BerechneBeute(ziel)} GS als sonstige Einnahme, "
+                            + "solange das Heer in diesem Monat stehen bleibt. Die Gemark bringt danach "
+                            + $"{PlünderRules.MonateOhneEinnahmen} Monate nichts mehr ein.");
                 }
                 else {
                     string was = Eroberung == EroberungsModus.Erobern ? "erobert" : "geplündert";

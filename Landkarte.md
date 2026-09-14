@@ -74,7 +74,7 @@ richtig ist. Gegen die Altanwendung PZE.NET ist hier nichts verglichen worden.
 | 3.1 Zugreihenfolge, Auftauchpunkt | **steht** | eigener Dialog, liest die Kartendatenbank |
 | 3.2.1 Gewöhnliche Einnahmen (Einwohner, Gelände, Bauwerke) | **steht** | `EinnahmenView`, Bericht des Kämmerers |
 | 3.2.2 Sonstige Einnahmen (Verkauf von Rüstgütern, Gefangenen, Gelände) | **fehlt** | kein Verkauf im Code |
-| 3.2.3 Plündereinnahmen | **halb** | der Befehl prüft jetzt die Eroberungsfähigkeit; die doppelte Einnahme und die acht Monate Sperre fehlen |
+| 3.2.3 Plündereinnahmen | **steht** | `PlünderRules`; die Spalte gepluendert der Karte trägt die acht Monate |
 | 3.2 Besondere Einnahmen | **steht** | Kampfeinnahmen, Transport in den Rüstort, Schenkung |
 | 3.3 Rüsten, Rüstkapazität, Rüstmonat | **steht** | `RuestRules` |
 | 3.3 Rüsten ausserhalb des Rüstmonats | **steht** | aus besonderen Einnahmen |
@@ -181,8 +181,9 @@ Erklärung, warum ein Feld unerreichbar ist, und die Kampfauswertung der Spielle
 
 3. ~~Nachbarunterstützung (5.5.1).~~ **Erledigt** — `KampfRules.FindeUnterstützer`.
 
-4. **Sonstige Einnahmen und Plündereinnahmen (3.2.2, 3.2.3).** Der Plünderbefehl wird vermerkt,
-   die Einnahme daraus nicht gerechnet; Verkäufe gibt es gar nicht.
+4. **Sonstige Einnahmen (3.2.2).** Verkäufe von Rüstgütern, Gefangenen und Gelände gibt es
+   nicht. Die Plündereinnahmen sind inzwischen gerechnet; wohin das Geld gebucht wird, lässt das
+   Regelwerk offen (siehe `PlünderRules`).
 
 5. **Bestiarium und Personal.** Beide Tabellen sind im Datenmodell, beide werden nicht geladen —
    eine auskommentierte Zeile je Tabelle plus die Sichten darauf.
