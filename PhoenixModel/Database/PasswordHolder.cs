@@ -93,6 +93,35 @@ namespace PhoenixModel.Database
         public PasswordHolder(EncryptedString password)
         {
             _encryptedPasswordBase64 = password;
+            WarneBeiKlartext(password);
+        }
+
+        /// <summary>
+        /// Meldet, wenn hier offensichtlich Klartext ankommt.
+        ///
+        /// EncryptedString entsteht implizit aus jeder Zeichenkette - wer versehentlich ein
+        /// Klartextpasswort uebergibt, legt es unveraendert ab. Auffallen wuerde das erst beim
+        /// naechsten Start, wenn sich der Wert nicht entschluesseln laesst und das Passwort erneut
+        /// abgefragt wird; woran es liegt, sieht man dem nicht an. Genau so ist es passiert.
+        ///
+        /// Ein verschluesselter Wert ist immer Base64 und enthaelt mindestens den 16 Byte langen
+        /// Initialisierungsvektor. Was das nicht erfuellt, war nie verschluesselt.
+        /// </summary>
+        private static void WarneBeiKlartext(string wert)
+        {
+            if (string.IsNullOrEmpty(wert))
+                return;   // kein hinterlegtes Passwort - der Normalfall beim ersten Start
+            try
+            {
+                if (Convert.FromBase64String(wert).Length > 16)
+                    return;
+            }
+            catch (FormatException) { }
+
+            View.ProgramView.LogWarning("Ein Passwort wurde unverschlüsselt abgelegt",
+                "Der Wert sieht nicht wie ein verschlüsseltes Passwort aus. Wahrscheinlich wurde "
+                + "Klartext an PasswordHolder uebergeben; dafür gibt es AusKlartext. So abgelegt "
+                + "lässt er sich beim nächsten Start nicht lesen und wird erneut abgefragt.");
         }
 
         /// <summary>
@@ -223,8 +252,9 @@ namespace PhoenixModel.Database
                 // Normalfall beim ersten Start und keine Meldung wert.
                 if (string.IsNullOrEmpty(encryptedPasswordBase64) == false)
                     View.ProgramView.LogWarning("Ein gespeichertes Passwort liess sich nicht entschlüsseln",
-                        "Die Verschlüsselung hängt am Rechnernamen: ein Passwort, das auf einem anderen Rechner "
-                        + "gespeichert wurde, lässt sich hier nicht lesen. Es wird neu abgefragt.\r\r"
+                        "Dafür gibt es zwei Gründe: entweder wurde es auf einem anderen Rechner gespeichert - "
+                        + "die Verschlüsselung hängt am Rechnernamen -, oder es wurde gar nicht erst "
+                        + "verschlüsselt abgelegt. Es wird neu abgefragt.\r\r"
                         + ex.Message);
                 return string.Empty;
             }

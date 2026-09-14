@@ -84,5 +84,33 @@ namespace Tests {
             var meldungen = SammleBeim(() => Assert.Equal(string.Empty, new PasswordHolder(leer).DecryptedPassword));
             Assert.Empty(meldungen);
         }
+
+        /// <summary>
+        /// Klartext, der als verschluesseltes Passwort abgelegt wird, faellt sofort auf.
+        ///
+        /// Genau das ist passiert: StartDialog.Password ist Klartext, und nachdem der
+        /// string-Konstruktor weg war, landete er unveraendert in den Einstellungen. Beim naechsten
+        /// Start liess er sich nicht entschluesseln, und die Anwendung fragte das Passwort jedes
+        /// Mal neu ab - ohne einen Hinweis, woran es liegt.
+        /// </summary>
+        [StaFact]
+        public void KlartextAlsVerschluesseltesPasswortFaelltAuf() {
+            PasswordHolder.EncryptedString klartext = "geheim123";
+            var meldungen = SammleBeim(() => new PasswordHolder(klartext));
+
+            Assert.Contains(meldungen, m => m.Type == LogEntry.LogType.Warning);
+            Assert.Contains(meldungen, m => m.Titel.Contains("unverschlüsselt"));
+        }
+
+        /// <summary>
+        /// Ein richtig verschluesseltes Passwort loest keine Meldung aus - sonst waere die Warnung
+        /// bei jedem Start zu sehen und damit wertlos.
+        /// </summary>
+        [StaFact]
+        public void EinRichtigVerschluesseltesPasswortMeldetSichNicht() {
+            var verschluesselt = PasswordHolder.AusKlartext("MeinGeheimes!42").EncryptedPasswordBase64;
+            var meldungen = SammleBeim(() => new PasswordHolder(verschluesselt));
+            Assert.Empty(meldungen);
+        }
     }
 }

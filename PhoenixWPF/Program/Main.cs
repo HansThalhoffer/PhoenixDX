@@ -278,9 +278,12 @@ namespace PhoenixWPF.Program {
                     bool? ok = dialog.ShowDialog();
                     if (ok != null && ok == true) {
                         if (dialog.IsSaveChecked == true) {
-                            holder = new(dialog.Password);
+                            // StartDialog.Password ist Klartext. Ein new PasswordHolder(...) mit
+                            // einer Zeichenkette legt sie unveraendert ab - beim naechsten Start
+                            // laesst sie sich dann nicht entschluesseln, und das Passwort wird
+                            // wieder abgefragt.
+                            holder = PasswordHolder.AusKlartext(dialog.Password);
                             Settings.UserSettings.PasswordReich = holder.EncryptedPasswordBase64;
-
                         }
                         else {
                             Settings.UserSettings.PasswordReich = string.Empty;
