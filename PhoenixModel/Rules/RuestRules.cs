@@ -172,8 +172,17 @@ namespace PhoenixModel.Rules {
                     + $"{bereits.Zauberer}, dieser Auftrag verlangt {umfang.Zauberer}.");
 
             // "Gerüstet werden darf nur mit den tatsächlich vorhandenen Mitteln." (Regelwerk 3.3)
-            if (ausBesonderenEinnahmen == false
-                && SchatzkammerView.HasEnoughMoney(gemark, umfang.Goldstücke) == false)
+            if (ausBesonderenEinnahmen) {
+                // Besondere Einnahmen liegen nicht im Reichsschatz, sondern bei den Truppen im
+                // Rüstort - und zwar bei denen, die schon zu Monatsbeginn dort standen.
+                int verfügbar = VerschiebeRules.BerechneBesondereEinnahmen(gemark);
+                if (umfang.Goldstücke > verfügbar)
+                    return Result.Fail($"In {gemark!.Bezeichner} liegen nicht genug besondere Einnahmen",
+                        $"Der Auftrag kostet {umfang.Goldstücke:N0} GS, dort stehen aber nur "
+                        + $"{verfügbar:N0} GS an Kampfeinnahmen bereit. Sie müssen zu Beginn des Monats "
+                        + "schon im Rüstort gewesen sein (Regelwerk 6.6).");
+            }
+            else if (SchatzkammerView.HasEnoughMoney(gemark, umfang.Goldstücke) == false)
                 return Result.Fail("Im Reichsschatz ist nicht genug Geld",
                     $"Der Auftrag kostet {umfang.Goldstücke:N0} GS, verfügbar sind noch "
                     + $"{SchatzkammerView.MoneyToSpendThisTurn():N0}.");

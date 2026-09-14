@@ -185,6 +185,79 @@ namespace PhoenixModel.Rules {
                 $"Ausgezahlt über den Rüstort auf {rüstort.Bezeichner}.");
         }
 
+        /// <summary>
+        /// Die besonderen Einnahmen, die in diesem Rüstort zum Rüsten bereitstehen.
+        ///
+        /// "Diese Gelder müssen erst in einen eigenen Rüstort transportiert werden, um zur
+        /// Verfügung zu stehen. Nur in diesem können sie im nächsten Monat ... verrüstet werden."
+        /// (Regelwerk 6.6)
+        ///
+        /// Gezählt wird deshalb der Stand zu Monatsbeginn: Kampfeinnahmen von eigenen Truppen, die
+        /// schon zu Beginn des Monats auf dieser Gemark standen. Wer in diesem Monat mit Beute in
+        /// den Rüstort einzieht, kann sie erst im nächsten verrüsten - genau das meint "im
+        /// nächsten Monat".
+        ///
+        /// Nur Kampfeinnahmen zählen, nicht das mitgeführte Gold: "Besondere Einnahmen sind
+        /// Kampfeinnahmen." Gold, das aus dem Reichsschatz stammt, würde sonst über den Umweg
+        /// einer Truppe ausserhalb der Rüstmonate verrüstbar.
+        /// </summary>
+        public static int BerechneBesondereEinnahmen(KleinFeld? rüstort) {
+            if (rüstort == null)
+                return 0;
+            int summe = 0;
+            foreach (var figur in SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation)) {
+                if (figur is not TruppenSpielfigur truppe)
+                    continue;
+                if (truppe.gf_von != rüstort.gf || truppe.kf_von != rüstort.kf)
+                    continue;
+                summe += truppe.Kampfeinnahmen_alt;
+            }
+            return summe;
+        }
+
+        /// <summary>
+        /// Prüft eine Schenkung aus dem Bestand einer Truppe.
+        ///
+        /// "Transportiertes Gold oder Kampfeinnahmen werden zur Schenkung, wenn die Einheit in
+        /// einem befreundeten Rüstort ist."
+        ///
+        /// Ob ein Reich befreundet ist, steht nicht in den Zugdaten - dort stehen nur Wegerecht
+        /// und Küstenrecht. Geprüft wird deshalb, was sich prüfen lässt: dass die Truppe in einem
+        /// fremden Rüstort steht und das Geld auch hat. Ob das Reich befreundet ist, muss der
+        /// Spieler wissen; die Meldung sagt das.
+        /// </summary>
+        public static Result PrüfeSchenkung(TruppenSpielfigur? truppe, Verschiebbar was, int menge) {
+            if (truppe == null)
+                return Result.Fail("Es ist keine Truppe ausgewählt", "Ohne Truppe gibt es nichts zu verschenken.");
+            if (was != Verschiebbar.Gold && was != Verschiebbar.Kampfeinnahmen)
+                return Result.Fail($"{GetBezeichnung(was)} lassen sich nicht verschenken",
+                    "Verschenkt werden nur Gold und Kampfeinnahmen.");
+
+            var vorprüfung = PrüfeMenge(truppe, was, menge);
+            if (vorprüfung.HasErrors)
+                return vorprüfung;
+
+            var gemark = KleinfeldView.GetKleinfeld(truppe);
+            if (gemark == null)
+                return Result.Fail($"{truppe.Bezeichner} steht auf keinem bekannten Kleinfeld", string.Empty);
+
+            var rüstort = BauwerkeView.GetRüstortNachKarte(gemark);
+            if (rüstort == null || (rüstort.KapazitätTruppen ?? 0) <= 0)
+                return Result.Fail($"Auf {gemark.Bezeichner} steht kein Rüstort",
+                    "Verschenkt wird in einem Rüstort des beschenkten Reiches.");
+
+            if (gemark.Nation == null)
+                return Result.Fail($"{gemark.Bezeichner} gehört keinem Reich",
+                    "Verschenkt wird in einem Rüstort des beschenkten Reiches.");
+            if (gemark.Nation == ProgramView.SelectedNation)
+                return Result.Fail($"{gemark.Bezeichner} ist ein eigener Rüstort",
+                    "Im eigenen Rüstort wird nicht verschenkt, sondern eingezahlt oder verrüstet.");
+
+            return Result.Success($"{menge} {GetBezeichnung(was)} von {truppe.Bezeichner} gehen an {gemark.Nation.Reich}",
+                $"Verschenkt im Rüstort auf {gemark.Bezeichner}. Ob {gemark.Nation.Reich} befreundet ist, "
+                + "steht nicht in den Zugdaten - das muss der Spieler selbst wissen.");
+        }
+
         private static Result PrüfeMenge(TruppenSpielfigur truppe, Verschiebbar was, int menge) {
             if (menge <= 0)
                 return Result.Fail("Es wurde nichts angegeben", $"Angegeben waren {menge} {GetBezeichnung(was)}.");
