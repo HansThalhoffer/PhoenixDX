@@ -258,9 +258,20 @@ namespace PhoenixModel.Rules {
             /// <summary>Die Verluste in Baupunkten, wie sie in die Umrechnung gegangen sind</summary>
             public double Baupunkte { get; set; }
 
-            public override string ToString()
-                => $"{Baupunkte:n0} BP: {Krieger} Krieger, {Reiter} Reiter, {Schiffe} Schiffe, "
-                 + $"{Heerführer} HF, {LKP} LKP, {SKP} SKP, {LKS} LKS, {SKS} SKS, {Pferde} Pferde";
+            /// <summary>
+            /// Die Verluste in Heeresstärke - das Mass des Nahkampfes, wie der Fernkampf in
+            /// Baupunkten rechnet
+            /// </summary>
+            public double Heeresstärke { get; set; }
+
+            /// <summary>Hat das Heer alles verloren?</summary>
+            public bool Aufgerieben { get; set; }
+
+            public override string ToString() {
+                string mass = Heeresstärke > 0 ? $"{Heeresstärke:n0} HS" : $"{Baupunkte:n0} BP";
+                return $"{mass}: {Krieger} Krieger, {Reiter} Reiter, {Schiffe} Schiffe, "
+                     + $"{Heerführer} HF, {LKP} LKP, {SKP} SKP, {LKS} LKS, {SKS} SKS, {Pferde} Pferde";
+            }
         }
 
         /// <summary>
@@ -288,6 +299,53 @@ namespace PhoenixModel.Rules {
 
             bool istSchiff = truppe.BaseTyp == FigurType.Schiff;
             if (istSchiff) {
+                verluste.Schiffe = Anteilig(truppe.staerke, anteil);
+                verluste.LKS = Anteilig(truppe.LKP, anteil);
+                verluste.SKS = Anteilig(truppe.SKP, anteil);
+            }
+            else {
+                if (truppe.BaseTyp == FigurType.Reiter)
+                    verluste.Reiter = Anteilig(truppe.staerke, anteil);
+                else
+                    verluste.Krieger = Anteilig(truppe.staerke, anteil);
+                verluste.LKP = Anteilig(truppe.LKP, anteil);
+                verluste.SKP = Anteilig(truppe.SKP, anteil);
+                verluste.Pferde = Anteilig(truppe.Pferde, anteil);
+            }
+            verluste.Heerführer = Anteilig(truppe.hf, anteil);
+            return verluste;
+        }
+
+        /// <summary>
+        /// Rechnet die Verluste eines Heeres im Nahkampf in verlorene Einheiten zurück
+        /// (Kampftabelle C200 bis F209).
+        ///
+        /// Der Nahkampf rechnet in Heeresstärke, nicht in Baupunkten: der Verlust wird ins
+        /// Verhältnis zur Heeresstärke des Heeres gesetzt, und dieser Anteil trifft jede Gattung.
+        /// "Ein Heer verliert durch den Nahkampf proportional zum Verlust an Heeresstärke auch HF
+        /// und Fernkampfwaffen." (Regelwerk 5.5)
+        ///
+        /// Anders als beim Beschuss gibt es hier kein Drittel für Gardeheere: die Kampftabelle
+        /// liest das Gardekennzeichen in Zeile 199 zwar ein, benutzt es in den Verlustzeilen aber
+        /// nicht. Ein Gardeheer bringt im Nahkampf seine 300 Gutpunkte mit, und die wirken über
+        /// die Kampfstärke und die Gutpunktdifferenz.
+        /// </summary>
+        /// <param name="truppe">das betroffene Heer</param>
+        /// <param name="verlusteInHeeresstärke">was dieses Heer an Heeresstärke verliert</param>
+        /// <param name="gebannt">wieviele seiner Truppen gebannt sind - sie kämpfen nicht mit</param>
+        public static Verluste BerechneNahkampfverluste(TruppenSpielfigur? truppe, double verlusteInHeeresstärke, int gebannt = 0) {
+            var verluste = new Verluste { Heeresstärke = Math.Max(0, verlusteInHeeresstärke) };
+            if (truppe == null || verlusteInHeeresstärke <= 0)
+                return verluste;
+
+            double gesamt = BerechneHeeresstärke(truppe, gebannt);
+            if (gesamt <= 0)
+                return verluste;
+
+            double anteil = Math.Min(1, verlusteInHeeresstärke / gesamt);
+            verluste.Aufgerieben = anteil >= 1;
+
+            if (truppe.BaseTyp == FigurType.Schiff) {
                 verluste.Schiffe = Anteilig(truppe.staerke, anteil);
                 verluste.LKS = Anteilig(truppe.LKP, anteil);
                 verluste.SKS = Anteilig(truppe.SKP, anteil);
@@ -434,7 +492,7 @@ namespace PhoenixModel.Rules {
         /// <summary>
         /// Eine 10:1-Übermacht liegt vor, wenn die eigene Heeresstärke die gegnerische um mehr als
         /// das Zehnfache übersteigt (Kampftabelle C171). Dann wird überrannt, statt zu kämpfen
-        /// (Regelwerk 5.4).
+        /// (Regelwerk 5.5).
         /// </summary>
         public const int ÜbermachtVerhältnis = 10;
 

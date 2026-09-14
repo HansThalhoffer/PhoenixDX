@@ -132,5 +132,10 @@ der Fernkampfwaffen; gilt die Tabelle, entfällt die Zerstörungschance für Bes
 * **Ein Rüstort in der Bauwerkliste hat keine Baupunkte, aber einen Rüstort-Eintrag in der
   Karte.** Das ist kein zerstörtes Bauwerk, sondern ein Widerspruch innerhalb der Karte; die
   Anwendung meldet es getrennt und lässt den Eintrag stehen.
+* **Im Nahkampf verlieren Katapulte mit, obwohl sie sich ergeben.** Das Regelwerk sagt, dass
+  Katapulte am Nahkampf nicht teilnehmen und sich immer ergeben (5.5); die Kampftabelle verteilt
+  die Verluste aber auch auf ihre Zeilen. Die Anwendung rechnet die Verluste wie die Tabelle und
+  zählt als Beute die Katapulte, die in den Nahkampf gegangen sind — bei einem aufgeriebenen Heer
+  die Hälfte davon, wie es das Regelwerk vorsieht.
 * **Die `settings`-Tabelle der Zugdatenbank läuft dem Zugverzeichnis voraus.** Die Anwendung
   rechnet mit dem Verzeichnis und der Schatzkammer, die übereinstimmen, und warnt.

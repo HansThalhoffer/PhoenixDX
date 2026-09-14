@@ -280,7 +280,7 @@ namespace Tests {
         }
 
         /// <summary>
-        /// Die 10:1-Uebermacht (Kampftabelle C171, Regelwerk 5.4).
+        /// Die 10:1-Uebermacht (Kampftabelle C171, Regelwerk 5.5).
         /// </summary>
         [Fact]
         public void EineUebermachtBrauchtMehrAlsDasZehnfache() {

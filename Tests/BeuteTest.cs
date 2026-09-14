@@ -144,7 +144,7 @@ namespace Tests {
 
         /// <summary>
         /// Katapulte ergeben sich im Nahkampf immer - Schiffe nicht, die verteidigen sich
-        /// (Regelwerk 5.4).
+        /// (Regelwerk 5.5). Ist das Heer aufgerieben, bleibt nur die Haelfte.
         /// </summary>
         [StaFact]
         public void KatapulteErgebenSichSchiffeNicht() {

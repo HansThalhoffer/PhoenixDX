@@ -115,13 +115,20 @@ namespace PhoenixModel.Rules {
         /// Die Katapulte, die dem Sieger in die Hände fallen.
         ///
         /// "Katapulte nehmen nicht am Nahkampf teil. Sie ergeben sich im Nahkampf also immer
-        /// automatisch (unabhängig von einer 10:1 Übermacht)." (Regelwerk 5.4)
+        /// automatisch (unabhängig von einer 10:1 Übermacht)." (Regelwerk 5.5)
+        ///
+        /// Ist das Heer aufgerieben, bleibt nur die Hälfte übrig: "Wird ein LKP/SKP Heer
+        /// aufgerieben so werden 50% der noch vorhandenen Katapulte als zerstört angesehen. Die
+        /// restlichen Katapulte werden vom Sieger erobert." (Regelwerk 5.5) Angebrochene Katapulte
+        /// gibt es nicht, deshalb wird abgerundet.
         ///
         /// Das gilt für die Katapulte zu Land. Kriegsschiffe sind keine Katapulte in diesem Sinne:
         /// sie verteidigen sich, solange sie nicht wehrlos sind.
         /// </summary>
-        /// <returns>die leichten und die schweren Katapulte des Verlierers</returns>
-        public static (int Leichte, int Schwere) BerechneKatapultbeute(IEnumerable<TruppenSpielfigur>? verlierer) {
+        /// <param name="verlierer">die unterlegenen Heere</param>
+        /// <param name="aufgerieben">ist von den Heeren nichts übrig geblieben?</param>
+        /// <returns>die leichten und die schweren Katapulte, die der Sieger übernimmt</returns>
+        public static (int Leichte, int Schwere) BerechneKatapultbeute(IEnumerable<TruppenSpielfigur>? verlierer, bool aufgerieben = false) {
             if (verlierer == null)
                 return (0, 0);
             int leichte = 0, schwere = 0;
@@ -131,7 +138,7 @@ namespace PhoenixModel.Rules {
                 leichte += heer.LKP;
                 schwere += heer.SKP;
             }
-            return (leichte, schwere);
+            return aufgerieben ? (leichte / 2, schwere / 2) : (leichte, schwere);
         }
 
         /// <summary>
