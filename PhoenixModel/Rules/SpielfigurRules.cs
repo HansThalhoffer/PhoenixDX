@@ -179,5 +179,46 @@ namespace PhoenixModel.Rules {
         public static bool CanCastDuell(Zauberer figur, KleinfeldPosition? kf = null) {
             return true;
         }
+
+        /// <summary>
+        /// Legt eine Rechenkopie eines Heeres an.
+        ///
+        /// Gebraucht wird sie in der Kampfauswertung: der Beschuss nimmt Truppen weg, bevor der
+        /// Nahkampf rechnet, und beides soll nachvollziehbar bleiben, ohne die Figuren des
+        /// Spielers zu verändern. Die Kopie ist deshalb ausdrücklich kein Spielstein: sie gehört
+        /// keiner Sammlung an, steht in keiner Datenbank und wird nie gespeichert. Kopiert wird
+        /// nur, was für den Kampf zählt.
+        /// </summary>
+        /// <returns>die Kopie, oder null bei einer Gattung ohne Entsprechung</returns>
+        public static TruppenSpielfigur? KopiereFürBerechnung(TruppenSpielfigur? vorbild) {
+            TruppenSpielfigur? kopie = vorbild switch {
+                Krieger => new Krieger(),
+                Reiter => new Reiter(),
+                Schiffe => new Schiffe(),
+                Kreaturen => new Kreaturen(),
+                _ => null,
+            };
+            if (kopie == null || vorbild == null)
+                return null;
+
+            kopie.Nummer = vorbild.Nummer;
+            kopie.Nation = vorbild.Nation;
+            kopie.staerke = vorbild.staerke;
+            kopie.hf = vorbild.hf;
+            kopie.LKP = vorbild.LKP;
+            kopie.SKP = vorbild.SKP;
+            kopie.Pferde = vorbild.Pferde;
+            kopie.Garde = vorbild.Garde;
+            kopie.isbanned = vorbild.isbanned;
+            kopie.GS = vorbild.GS;
+            kopie.Kampfeinnahmen = vorbild.Kampfeinnahmen;
+            kopie.auf_Flotte = vorbild.auf_Flotte;
+            kopie.gf_von = vorbild.gf_von;
+            kopie.kf_von = vorbild.kf_von;
+            kopie.gf_nach = vorbild.gf_nach;
+            kopie.kf_nach = vorbild.kf_nach;
+            return kopie;
+        }
+
     }
 }
