@@ -1,4 +1,4 @@
-using PhoenixModel.ExternalTables;
+﻿using PhoenixModel.ExternalTables;
 using PhoenixModel.ViewModel;
 
 namespace PhoenixModel.Rules {
@@ -38,6 +38,16 @@ namespace PhoenixModel.Rules {
         HinterFluß,
         /// <summary>Verteidigung hinter einem Wall</summary>
         HinterWall,
+        /// <summary>
+        /// Verteidigung hinter einer Kaianlage, wenn auf dem Feld kein Rüstort steht
+        /// (Regelwerk Anhang 10.1)
+        /// </summary>
+        HinterKaianlage,
+        /// <summary>
+        /// Verteidigung, wenn der Angreifer direkt auf das Feld ausschifft
+        /// (Regelwerk Anhang 10.1)
+        /// </summary>
+        GegenAusschiffendenAngreifer,
         /// <summary>Verteidigung aus einer eigenen Burg heraus</summary>
         AusBurg,
         /// <summary>Verteidigung aus einer eigenen Stadt heraus</summary>
@@ -83,6 +93,11 @@ namespace PhoenixModel.Rules {
             Kampfvorteil.HinterBrücke => 30,
             Kampfvorteil.HinterFluß => 50,
             Kampfvorteil.HinterWall => 50,
+            // Diese beiden stehen nur im Regelwerk (Anhang 10.1), nicht in der Kampftabelle:
+            // deren Vorteilsliste endet bei der Nachbarunterstützung. Sie werden deshalb nur
+            // gerechnet, wenn der Aufrufer sie ausdrücklich mitgibt - siehe ErgänzeKaianlage.
+            Kampfvorteil.HinterKaianlage => 30,
+            Kampfvorteil.GegenAusschiffendenAngreifer => 20,
             Kampfvorteil.AusBurg => 100,
             Kampfvorteil.AusStadt => 200,
             Kampfvorteil.AusFestung => 300,
@@ -490,6 +505,29 @@ namespace PhoenixModel.Rules {
         /// </summary>
         public static bool VerteidigtRüstort(IEnumerable<Kampfvorteil> vorteile)
             => vorteile.Any(v => Rüstortvorteile.Contains(v));
+
+        /// <summary>
+        /// Nimmt den Vorteil der Kaianlage in die Liste auf, wenn er gilt.
+        ///
+        /// Das Regelwerk (Anhang 10.1) gibt der Verteidigung hinter einer Kaianlage 30 Gutpunkte,
+        /// "wenn kein Rüstort auf dem Feld steht". Steht einer, zählt dessen Vorteil - die beiden
+        /// addieren sich nicht.
+        ///
+        /// Achtung: in der Kampftabelle der Spielleitung gibt es diese Zeile nicht; deren
+        /// Vorteilsliste endet bei der Nachbarunterstützung. Solange das nicht geklärt ist, rechnet
+        /// die Anwendung den Vorteil nicht von sich aus, sondern nur, wo er ausdrücklich
+        /// angefordert wird.
+        /// </summary>
+        /// <param name="vorteile">die bisher ermittelten Vorteile des Verteidigers</param>
+        /// <param name="hinterKaianlage">verteidigt er hinter einer Kaianlage?</param>
+        public static List<Kampfvorteil> ErgänzeKaianlage(IEnumerable<Kampfvorteil> vorteile, bool hinterKaianlage) {
+            List<Kampfvorteil> ergebnis = [.. vorteile];
+            if (hinterKaianlage == false || VerteidigtRüstort(ergebnis))
+                return ergebnis;
+            if (ergebnis.Contains(Kampfvorteil.HinterKaianlage) == false)
+                ergebnis.Add(Kampfvorteil.HinterKaianlage);
+            return ergebnis;
+        }
 
         /// <summary>
         /// Teilt den Fernkampfschaden zwischen Rüstort und Truppen auf.
