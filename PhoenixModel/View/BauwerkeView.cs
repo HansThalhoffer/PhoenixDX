@@ -151,6 +151,50 @@ namespace PhoenixModel.View {
         }
 
         /// <summary>
+        /// Die ergänzten Bauwerke, die noch auf ihr Reich warten.
+        ///
+        /// Beim Laden der Karte sind die Nationen noch nicht da (Main lädt CrossRef, Karte, PZE),
+        /// und ohne Reich darf der Eintrag nicht in die Datenbank - die Tabelle führt genau vier
+        /// Spalten. Sie sammeln sich deshalb hier, bis alles geladen ist.
+        /// </summary>
+        private static readonly List<Gebäude> _wartenAufReich = [];
+
+        /// <summary>
+        /// Wie viele ergänzte Bauwerke noch auf ihr Reich warten
+        /// </summary>
+        public static int AnzahlWartenderBauwerke { get { lock (_wartenAufReich) return _wartenAufReich.Count; } }
+
+        /// <summary>
+        /// Trägt bei den wartenden Bauwerken das Reich nach und stellt sie zum Schreiben ein.
+        ///
+        /// Aufzurufen, sobald die Nationen geladen sind. Was dann immer noch kein Reich hat, bleibt
+        /// liegen: die Karte nennt für diese Gemark keines, und ein unvollständiger Eintrag gehört
+        /// nicht in die Datenbank.
+        /// </summary>
+        /// <returns>die eingestellten Bauwerke und die Bezeichner derer ohne Reich</returns>
+        public static (List<Gebäude> Eingestellt, List<string> OhneReich) SchreibeWartendeBauwerke() {
+            List<Gebäude> wartende;
+            lock (_wartenAufReich) {
+                wartende = [.. _wartenAufReich];
+                _wartenAufReich.Clear();
+            }
+
+            // Wird die Karte erneut geladen, entsteht die Bauwerkliste neu. Die alten Objekte
+            // stehen dann nicht mehr darin, und sie zu schreiben brächte nichts - maßgeblich ist,
+            // was jetzt in der Liste steht. Das hält die Warteliste auch über mehrere Ladevorgänge
+            // frei von Karteileichen.
+            wartende = [.. wartende.Where(gebäude =>
+                SharedData.Gebäude != null
+                && SharedData.Gebäude.TryGetValue(gebäude.Bezeichner, out var aktuell)
+                && ReferenceEquals(aktuell, gebäude))];
+
+            var (vollständig, ohneReich) = VervollständigeReiche(wartende);
+            foreach (var gebäude in vollständig)
+                SharedData.StoreQueue.Insert(gebäude);
+            return (vollständig, ohneReich);
+        }
+
+        /// <summary>
         /// Trägt bei nachgetragenen Bauwerken das Reich aus der Karte nach.
         ///
         /// Beim Laden der Karte ist das Reich noch nicht zu ermitteln: KleinFeld.Nation braucht die
@@ -212,14 +256,26 @@ namespace PhoenixModel.View {
             if (SharedData.Gebäude.TryAdd(gebäude.Bezeichner, gebäude) == false)
                 return SharedData.Gebäude[gebäude.Bezeichner];
 
+            // Der Eintrag soll nicht nur diese Sitzung überleben, sondern in die Datenbank. Steht
+            // das Reich schon fest, kann er sofort eingestellt werden; sonst wartet er darauf, dass
+            // die Nationen geladen sind. Fehlte das hier, ergänzte der Einzelfall den Eintrag nur
+            // im Speicher - und beim nächsten Start stünde dieselbe Meldung wieder da.
+            bool wirdGeschrieben = string.IsNullOrEmpty(gebäude.Reich) == false;
+            if (wirdGeschrieben)
+                SharedData.StoreQueue.Insert(gebäude);
+            else
+                lock (_wartenAufReich) _wartenAufReich.Add(gebäude);
+
             // Die Sammelreparatur beim Laden meldet selbst, und zwar einmal statt einundzwanzigmal.
             // Hier meldet nur der Einzelfall, der beim Zugriff auffällt - der ist selten und
             // deshalb eine Meldung wert.
             if (stillschweigend == false)
                 ProgramView.LogWarning(gemark, $"Fehlendes Gebäude in der Bauwerktabelle mit dem Namen {gemark.Bauwerknamen}",
                     $"In der Karte steht auf {gemark.Bezeichner} ein Gebäude, in der Tabelle [bauwerkliste] der "
-                    + "Erkenfarakarte.mdb fehlt der Eintrag.\r\rDer Eintrag wurde für diese Sitzung ergänzt; "
-                    + "in der Datenbank fehlt er weiterhin.");
+                    + "Erkenfarakarte.mdb fehlt der Eintrag.\r\rDer Eintrag wurde ergänzt und "
+                    + (wirdGeschrieben
+                        ? "wird in die Datenbank geschrieben."
+                        : "wird geschrieben, sobald die Reiche geladen sind."));
             return gebäude;
         }
     }

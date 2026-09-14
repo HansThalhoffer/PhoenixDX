@@ -152,27 +152,45 @@ namespace Tests {
 
         /// <summary>
         /// Der Einzelfall, der erst beim Zugriff auffaellt, meldet sich weiterhin - der ist selten
-        /// und deshalb eine Meldung wert.
+        /// und deshalb eine Meldung wert. Aber er wird jetzt auch zum Schreiben vorgemerkt.
+        ///
+        /// Bisher hat nur die Sammelreparatur den Eintrag vorgemerkt. Der Einzelfall ergaenzte ihn
+        /// im Speicher und sagte dazu, in der Datenbank fehle er weiterhin - beim naechsten Start
+        /// stand dieselbe Meldung wieder da.
         /// </summary>
         [StaFact]
-        public void DerEinzelfallBeimZugriffMeldetSichWeiterhin() {
+        public void DerEinzelfallBeimZugriffWirdAuchVorgemerkt() {
             TestSetup.Setup();
             TestSetup.LoadCrossRef(false, false);
             TestSetup.LoadKarte();
 
             var gemark = SharedData.Map!.Values.First(k => k.Baupunkte > 0);
             Assert.True(SharedData.Gebäude!.TryRemove(gemark.Bezeichner, out var entfernt));
+            SharedData.StoreQueue.Clear();
+            int wartendVorher = BauwerkeView.AnzahlWartenderBauwerke;
             try {
                 var meldungen = SammleBeim(() => BauwerkeView.ErgänzeFehlendesGebäude(gemark));
                 Assert.Single(meldungen);
                 Assert.Contains("Fehlendes Gebäude", meldungen[0].Titel);
-                // und die Meldung verspricht nichts, was sie nicht haelt
+
+                // Die Meldung verspricht nichts, was sie nicht haelt - behauptet aber auch nicht
+                // mehr, der Eintrag bleibe in der Datenbank aus.
                 Assert.DoesNotContain("automatisch korrigiert", meldungen[0].Message);
-                Assert.Contains("für diese Sitzung", meldungen[0].Message);
+                Assert.DoesNotContain("fehlt er weiterhin", meldungen[0].Message);
+                Assert.Contains("geschrieben", meldungen[0].Message);
+
+                // Und das stimmt auch: der Eintrag ist entweder schon eingestellt oder wartet auf
+                // sein Reich. Was von beidem, haengt daran, ob die Nationen schon geladen sind.
+                bool eingestellt = SharedData.StoreQueue.ToList().Any(eintrag =>
+                    eintrag.Table is PhoenixModel.dbErkenfara.Gebäude haus && haus.Bezeichner == gemark.Bezeichner);
+                bool wartet = BauwerkeView.AnzahlWartenderBauwerke > wartendVorher;
+                Assert.True(eingestellt || wartet,
+                    "Der ergaenzte Eintrag ist weder eingestellt noch zum Schreiben vorgemerkt");
             }
             finally {
                 if (entfernt != null)
                     SharedData.Gebäude![gemark.Bezeichner] = entfernt;
+                SharedData.StoreQueue.Clear();
             }
         }
 
@@ -212,6 +230,67 @@ namespace Tests {
             // und nichts anzuzeigen ergibt nichts zu kopieren, keine Ausnahme
             Assert.Equal(string.Empty, LogEntry.AlsText([]));
             Assert.Equal(string.Empty, LogEntry.AlsText(null));
+        }
+
+        /// <summary>
+        /// Alles, was die Reparatur in der Bauwerkliste ergaenzt, muss auf dem Weg in die Datenbank
+        /// sein - sonst steht dieselbe Meldung beim naechsten Start wieder da.
+        ///
+        /// Es gibt zwei Wege dorthin, je nachdem, ob das Reich schon zu ermitteln ist: sofort in die
+        /// Speicherwarteschlange, oder erst auf die Warteliste und von dort, sobald die Nationen
+        /// geladen sind. Welcher Weg greift, haengt an der Ladereihenfolge - die Anwendung laedt die
+        /// Karte vor der PZE, ein Testlauf hat die Nationen oft schon. Der Test prueft deshalb nicht
+        /// den Weg, sondern das Ergebnis: am Ende ist jeder ergaenzte Eintrag eingestellt.
+        ///
+        /// Geprueft wird die Speicherwarteschlange, nicht die Datenbank: im Testlauf leert sie
+        /// niemand, die echten Kartendaten bleiben also unberuehrt.
+        /// </summary>
+        [StaFact]
+        public void JedesErgaenzteBauwerkLandetInDerSpeicherwarteschlange() {
+            TestSetup.Setup();
+            TestSetup.LoadCrossRef(false, false);
+            TestSetup.LoadPZE(false, false);
+
+            SharedData.StoreQueue.Clear();
+            try {
+                TestSetup.LoadKarte(erzwingen: true);
+
+                // Was die Reparatur erfunden hat, traegt IsNew; alles aus der Datenbank Geladene nicht.
+                var ergänzt = SharedData.Gebäude!.Values.Where(gebäude => gebäude.IsNew).ToList();
+                if (ergänzt.Count == 0)
+                    return; // in diesen Kartendaten fehlt nichts
+
+                // was noch wartet, jetzt nachziehen - die Anwendung tut das, sobald alles geladen ist
+                var (_, ohneReich) = BauwerkeView.SchreibeWartendeBauwerke();
+                Assert.True(ohneReich.Count == 0,
+                    $"Zu diesen Gemarken nennt die Karte kein Reich: {string.Join(", ", ohneReich)}");
+                Assert.Equal(0, BauwerkeView.AnzahlWartenderBauwerke);
+
+                var vorgemerkt = SharedData.StoreQueue.ToList()
+                    .Where(eintrag => eintrag.Table is PhoenixModel.dbErkenfara.Gebäude)
+                    .ToDictionary(eintrag => ((PhoenixModel.dbErkenfara.Gebäude)eintrag.Table).Bezeichner);
+
+                foreach (var haus in ergänzt) {
+                    Assert.True(vorgemerkt.ContainsKey(haus.Bezeichner),
+                        $"{haus.Bezeichner} wurde ergaenzt, aber nicht zum Schreiben vorgemerkt");
+
+                    var eintrag = vorgemerkt[haus.Bezeichner];
+                    // eingefuegt, nicht aktualisiert - die Zeile gibt es ja noch nicht
+                    Assert.Equal(PhoenixModel.Database.DatabaseQueue.DatabaseQueueCommand.Insert, eintrag.Command);
+                    Assert.False(string.IsNullOrEmpty(haus.Reich), $"{haus.Bezeichner} hat kein Reich");
+                    Assert.Equal(SharedData.Map![haus.Bezeichner].Nation?.Reich, haus.Reich);
+
+                    // Der entscheidende Punkt: der Speicherlauf ordnet einen Datensatz ueber den
+                    // Pfad einer der vier bekannten Datenbanken zu. Stimmt er nicht genau mit dem
+                    // ueberein, was in den Einstellungen steht, verwirft er den Datensatz mit einem
+                    // Protokolleintrag - der Nachtrag liefe dann ins Leere.
+                    Assert.Equal(TestSetup.KartenPfad, haus.Database);
+                }
+            }
+            finally {
+                // nichts davon darf in die echten Kartendaten laufen
+                SharedData.StoreQueue.Clear();
+            }
         }
     }
 }

@@ -56,9 +56,9 @@ namespace PhoenixWPF.Program {
         }
 
         /// <summary>
-        /// Die Bauwerke, die Phase 1 in der Bauwerkliste ergänzt hat. Sie warten auf ihr Reich:
-        /// das steht erst fest, wenn die Nationen geladen sind, und ohne Reich darf der Eintrag
-        /// nicht in die Datenbank. Phase 2 holt das nach.
+        /// Die Bauwerke, die Phase 1 in der Bauwerkliste ergänzt hat - nur für die Meldung.
+        /// Zum Schreiben vorgemerkt werden sie in <see cref="BauwerkeView"/>, gemeinsam mit denen,
+        /// die erst beim Zugriff auf ein Gemark auffallen.
         /// </summary>
         private readonly List<PhoenixModel.dbErkenfara.Gebäude> _nachgetragen = [];
 
@@ -153,23 +153,19 @@ namespace PhoenixWPF.Program {
         }
 
         /// <summary>
-        /// Schreibt die in Phase 1 ergänzten Bauwerke in die Datenbank.
+        /// Schreibt die ergänzten Bauwerke in die Datenbank.
         ///
-        /// Erst hier ist das möglich: das Reich steht in der Karte als Nummer und wird über die
-        /// Nationen aufgelöst, die beim Laden der Karte noch nicht da sind. Phase 1 hat die
-        /// Einträge deshalb nur im Speicher angelegt - und genau daran ist die Reparatur bisher
-        /// gescheitert: ohne Reich galt jeder Eintrag als unvollständig, geschrieben wurde keiner,
-        /// und beim nächsten Start fehlten sie wieder.
+        /// Erst hier ist das möglich: das Reich löst sich über die Nationen auf, und die sind beim
+        /// Laden der Karte noch nicht da. Genau daran ist die Reparatur bisher gescheitert - ohne
+        /// Reich galt jeder Eintrag als unvollständig, geschrieben wurde keiner, und beim nächsten
+        /// Start fehlten sie wieder.
         /// </summary>
         private void SchreibeNachgetrageneBauwerke()
         {
-            if (_nachgetragen.Count == 0)
+            if (BauwerkeView.AnzahlWartenderBauwerke == 0)
                 return;
 
-            var (vollständig, ohneReich) = BauwerkeView.VervollständigeReiche(_nachgetragen);
-            foreach (var gebäude in vollständig)
-                SharedData.StoreQueue.Insert(gebäude);
-            _nachgetragen.Clear();
+            var (vollständig, ohneReich) = BauwerkeView.SchreibeWartendeBauwerke();
 
             if (vollständig.Count > 0)
                 ProgramView.LogInfo($"{vollständig.Count} Gebäude werden in der Bauwerkliste nachgetragen",
