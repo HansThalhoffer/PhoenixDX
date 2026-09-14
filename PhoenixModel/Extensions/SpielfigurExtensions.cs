@@ -50,10 +50,19 @@ namespace PhoenixModel.Extensions {
 
 
         /// <summary>
-        /// Ermittelt ob die Figur auf einem Schiff ist
+        /// Ermittelt ob die Figur auf einem Schiff ist.
+        ///
+        /// Eingeschifft heisst: in auf_Flotte steht die Nummer der Flotte. In den echten Zugdaten
+        /// steht dort bei nicht eingeschifften Truppen aber nicht immer nichts, sondern manchmal
+        /// ein einzelnes Leerzeichen. Eine Pruefung auf IsNullOrEmpty haelt das fuer eine Flotte
+        /// und legt die Einheit fuer den ganzen Zug lahm - ohne dass es irgendwo auffiele, denn
+        /// eine eingeschiffte Truppe darf sich zu Recht nicht bewegen. Massgeblich ist deshalb, ob
+        /// ueberhaupt etwas Lesbares dort steht.
         /// </summary>
         public static bool IsOnShip(this Spielfigur spielfigur) {
-            return spielfigur.BaseTyp != ExternalTables.FigurType.Schiff && spielfigur is TruppenSpielfigur figur && string.IsNullOrEmpty(figur.auf_Flotte) == false;
+            return spielfigur.BaseTyp != ExternalTables.FigurType.Schiff
+                && spielfigur is TruppenSpielfigur figur
+                && string.IsNullOrWhiteSpace(figur.auf_Flotte) == false;
         }
 
 

@@ -2,6 +2,7 @@
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbPZE;
 using PhoenixModel.ExternalTables;
+using PhoenixModel.Extensions;
 using PhoenixModel.Helper;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
@@ -362,10 +363,11 @@ namespace PhoenixModel.Rules {
                 return SchrittErgebnis.Fehler($"In der {ZugView.PhasenBeschreibung} wird nicht bewegt",
                     "Erst wenn die Rüstphase abgeschlossen ist, können Figuren bewegt werden.");
 
-            // Eingeschiffte Truppen bewegen sich nicht selbst, sondern werden von der Flotte getragen
-            if (figur is TruppenSpielfigur truppe && figur.BaseTyp != FigurType.Schiff && string.IsNullOrEmpty(truppe.auf_Flotte) == false)
+            // Eingeschiffte Truppen bewegen sich nicht selbst, sondern werden von der Flotte getragen.
+            // Was als eingeschifft gilt, sagt IsOnShip - ein Leerzeichen in auf_Flotte ist keine Flotte.
+            if (figur.IsOnShip())
                 return SchrittErgebnis.Fehler("Diese Einheit ist eingeschifft",
-                    $"{figur.Bezeichner} befindet sich auf der Flotte {truppe.auf_Flotte} und muss erst ausgeschifft werden");
+                    $"{figur.Bezeichner} befindet sich auf der Flotte {((TruppenSpielfigur)figur).auf_Flotte} und muss erst ausgeschifft werden");
 
             // Ein Teleportfeld führt nicht auf das Nachbarfeld, sondern auf den zugehörigen Auftauchpunkt
             ergebnis.Teleportpunkt = ziel.TerrainType == TerrainType.Auftauchpunkt
