@@ -107,6 +107,16 @@ namespace PhoenixModel.View {
             return SelectedNation == SharedData.Map[position.CreateBezeichner()].Nation;
         }
 
+        /// <summary>
+        /// Gibt einen fertigen Eintrag in denselben Strom wie alle anderen Meldungen.
+        ///
+        /// Wichtig, damit es nur einen Weg gibt: was daran vorbeigeht, sieht im Testlauf niemand
+        /// und landet ohne Oberflaeche nirgends.
+        /// </summary>
+        public static void Log(LogEntry eintrag) {
+            _OnViewEvent(new ViewEventArgs(0, 0, eintrag));
+        }
+
         public static void LogError(string titel, string msg) {
             _OnViewEvent(new ViewEventArgs(0, 0, new LogEntry(LogEntry.LogType.Error, titel, msg)));
         }

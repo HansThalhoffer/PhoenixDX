@@ -27,19 +27,22 @@ namespace PhoenixModel.Database {
         /// Speichert einen Eintrag in einer Tabelle in der Datenbank.
         /// </summary>
         /// <param name="table">Die zu speichernde Datenbanktabelle.</param>
-        public void Save(IDatabaseTable table);
+        /// <returns>false, wenn nichts geschrieben wurde</returns>
+        public bool Save(IDatabaseTable table);
 
         /// <summary>
         /// Fügt einen Eintrag in eine Tabelle in der Datenbank.
         /// </summary>
         /// <param name="table">Die zu speichernde Datenbanktabelle.</param>
-        public void Insert(IDatabaseTable table);
+        /// <returns>false, wenn nichts geschrieben wurde</returns>
+        public bool Insert(IDatabaseTable table);
 
         /// <summary>
         /// Löscht einen Eintrag in einer Tabelle in der Datenbank.
         /// </summary>
         /// <param name="table">Die zu speichernde Datenbanktabelle.</param>
-        public void Delete(IDatabaseTable table);
+        /// <returns>false, wenn nichts geschrieben wurde</returns>
+        public bool Delete(IDatabaseTable table);
 
         /// <summary>
         /// Schreibt mehrere Einträge über eine einzige Verbindung.

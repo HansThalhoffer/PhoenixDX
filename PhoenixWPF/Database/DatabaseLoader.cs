@@ -1,5 +1,6 @@
-using PhoenixModel.Database;
+﻿using PhoenixModel.Database;
 using PhoenixModel.Helper;
+using PhoenixModel.View;
 using PhoenixWPF.Program;
 using PhoenixModel.ViewModel;
 using PhoenixModel.EventsAndArgs;
@@ -49,11 +50,11 @@ namespace PhoenixWPF.Database
                 }
                 catch (Exception ex)
                 {
-                    SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Öffnen der {collection.GetType()} Datenbank:{tableName}", $"{query} führte zu folgendem Fehler \n\r{ex.Message}"));
+                    ProgramView.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Öffnen der {collection.GetType()} Datenbank:{tableName}", $"{query} führte zu folgendem Fehler \n\r{ex.Message}"));
                 }
                 collection.CompleteAdding();
                 total = collection.Count();
-                SpielWPF.Log(new PhoenixModel.Program.LogEntry($"{total} {typeof(T).Name} geladen", $"Das Laden der Datenbanktabelle {tableName} war erfolgreich"));
+                ProgramView.Log(new PhoenixModel.Program.LogEntry($"{total} {typeof(T).Name} geladen", $"Das Laden der Datenbanktabelle {tableName} war erfolgreich"));
             }
         }
 
@@ -80,7 +81,7 @@ namespace PhoenixWPF.Database
             }
             collection.CompleteAdding();
             total = collection.Count();
-            SpielWPF.Log(new PhoenixModel.Program.LogEntry($"{total} {typeof(T).Name} geladen", $"Das Laden der Datenbanktabelle {tableName} war erfolgreich"));
+            ProgramView.Log(new PhoenixModel.Program.LogEntry($"{total} {typeof(T).Name} geladen", $"Das Laden der Datenbanktabelle {tableName} war erfolgreich"));
         }
 
         protected abstract void LoadInBackground();
@@ -101,7 +102,7 @@ namespace PhoenixWPF.Database
         {
             if (e.Cancelled)
             {
-                SpielWPF.LogError("Das Laden im Hintergrund war nicht erfolgreich", "Das Laden im Hintergrund wurde durch den Nutzer abgebrochen");
+                ProgramView.LogError("Das Laden im Hintergrund war nicht erfolgreich", "Das Laden im Hintergrund wurde durch den Nutzer abgebrochen");
             }
             if (_loadCompletedDelegate != null && (this as ILoadableDatabase) != null)
                 _loadCompletedDelegate((ILoadableDatabase)this);
@@ -139,7 +140,7 @@ namespace PhoenixWPF.Database
             }
             catch (Exception ex)
             {
-                SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Öffnen der Tabelle {tableName}: ", $"{query} erzeugte den Fehler: /n/r{ex.Message}"));
+                ProgramView.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Öffnen der Tabelle {tableName}: ", $"{query} erzeugte den Fehler: /n/r{ex.Message}"));
             }
             return total;
         }
@@ -163,47 +164,75 @@ namespace PhoenixWPF.Database
             }
             catch (Exception ex)
             {
-                SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Öffnen der Tabelle {tableName}: ", $"{query} erzeugte den Fehler: /n/r{ex.Message}"));
+                ProgramView.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Öffnen der Tabelle {tableName}: ", $"{query} erzeugte den Fehler: /n/r{ex.Message}"));
             }
             return total;
         }
 
 
-        protected void Save(IDatabaseTable table, EncryptedString encryptedpassword, string databaseFileName) {
+        /// <summary>
+        /// Schreibt einen einzelnen Datensatz.
+        /// </summary>
+        /// <returns>
+        /// false, wenn nichts geschrieben wurde. Das muss der Aufrufer wissen koennen: frueher
+        /// wurde jede Ausnahme nur protokolliert, und ein fehlgeschlagener Vorgang sah von aussen
+        /// aus wie ein erfolgreicher.
+        /// </returns>
+        protected bool Save(IDatabaseTable table, EncryptedString encryptedpassword, string databaseFileName) {
             PasswordHolder holder = new(encryptedpassword);
             using (AccessDatabase connector = new(databaseFileName, holder.DecryptedPassword)) {
-                if (connector?.Open() == false)
-                    return;
+                if (connector?.Open() == false) {
+                    ProgramView.LogError($"Die Datenbank {databaseFileName} liess sich nicht oeffnen",
+                        "Es wurde nichts geschrieben.");
+                    return false;
+                }
+                bool geschrieben = false;
                 try {
                     if (connector != null) {
                         // der Befehl muss vor dem Schliessen der Verbindung freigegeben werden
                         using var command = connector.OpenDBCommand();
                         table.Save(command);
+                        geschrieben = true;
                     }
                 }
                 catch (Exception ex) {
-                    SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Öffnen der Datenbank {databaseFileName}", ex.Message));
+                    ProgramView.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Öffnen der Datenbank {databaseFileName}", ex.Message));
                 }
                 connector?.Close();
+                return geschrieben;
             }
         }
 
-        protected void Insert(IDatabaseTable table, EncryptedString encryptedpassword, string databaseFileName) {
+        /// <summary>
+        /// Schreibt einen einzelnen Datensatz.
+        /// </summary>
+        /// <returns>
+        /// false, wenn nichts geschrieben wurde. Das muss der Aufrufer wissen koennen: frueher
+        /// wurde jede Ausnahme nur protokolliert, und ein fehlgeschlagener Vorgang sah von aussen
+        /// aus wie ein erfolgreicher.
+        /// </returns>
+        protected bool Insert(IDatabaseTable table, EncryptedString encryptedpassword, string databaseFileName) {
             PasswordHolder holder = new(encryptedpassword);
             using (AccessDatabase connector = new(databaseFileName, holder.DecryptedPassword)) {
-                if (connector?.Open() == false)
-                    return;
+                if (connector?.Open() == false) {
+                    ProgramView.LogError($"Die Datenbank {databaseFileName} liess sich nicht oeffnen",
+                        "Es wurde nichts geschrieben.");
+                    return false;
+                }
+                bool geschrieben = false;
                 try {
                     if (connector != null) {
                         // der Befehl muss vor dem Schliessen der Verbindung freigegeben werden
                         using var command = connector.OpenDBCommand();
                         table.Insert(command);
+                        geschrieben = true;
                     }
                 }
                 catch (Exception ex) {
-                    SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Speichern in der Datenbank {databaseFileName}", ex.Message));
+                    ProgramView.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Speichern in der Datenbank {databaseFileName}", ex.Message));
                 }
                 connector?.Close();
+                return geschrieben;
             }
         }
 
@@ -225,7 +254,7 @@ namespace PhoenixWPF.Database
             PasswordHolder holder = new(encryptedpassword);
             using AccessDatabase connector = new(databaseFileName, holder.DecryptedPassword);
             if (connector.Open() == false) {
-                SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error,
+                ProgramView.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error,
                     $"Die Datenbank {databaseFileName} liess sich nicht öffnen",
                     $"{liste.Count} Änderungen konnten nicht gespeichert werden."));
                 return;
@@ -249,34 +278,48 @@ namespace PhoenixWPF.Database
                         }
                     }
                     catch (Exception ex) {
-                        SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error,
+                        ProgramView.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error,
                             $"Fehler beim Schreiben in die Tabelle {vorgang.Table.TableName}", ex.Message));
                     }
                 }
             }
             catch (Exception ex) {
-                SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error,
+                ProgramView.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error,
                     $"Fehler beim Speichern in der Datenbank {databaseFileName}", ex.Message));
             }
             connector.Close();
         }
 
-        protected void Delete(IDatabaseTable table, EncryptedString encryptedpassword, string databaseFileName) {
+        /// <summary>
+        /// Schreibt einen einzelnen Datensatz.
+        /// </summary>
+        /// <returns>
+        /// false, wenn nichts geschrieben wurde. Das muss der Aufrufer wissen koennen: frueher
+        /// wurde jede Ausnahme nur protokolliert, und ein fehlgeschlagener Vorgang sah von aussen
+        /// aus wie ein erfolgreicher.
+        /// </returns>
+        protected bool Delete(IDatabaseTable table, EncryptedString encryptedpassword, string databaseFileName) {
             PasswordHolder holder = new(encryptedpassword);
             using (AccessDatabase connector = new(databaseFileName, holder.DecryptedPassword)) {
-                if (connector?.Open() == false)
-                    return;
+                if (connector?.Open() == false) {
+                    ProgramView.LogError($"Die Datenbank {databaseFileName} liess sich nicht oeffnen",
+                        "Es wurde nichts geschrieben.");
+                    return false;
+                }
+                bool geschrieben = false;
                 try {
                     if (connector != null) {
                         // der Befehl muss vor dem Schliessen der Verbindung freigegeben werden
                         using var command = connector.OpenDBCommand();
                         table.Delete(command);
+                        geschrieben = true;
                     }
                 }
                 catch (Exception ex) {
-                    SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Löschen in der Datenbank {databaseFileName}", ex.Message));
+                    ProgramView.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, $"Fehler beim Löschen in der Datenbank {databaseFileName}", ex.Message));
                 }
                 connector?.Close();
+                return geschrieben;
             }
         }
     }

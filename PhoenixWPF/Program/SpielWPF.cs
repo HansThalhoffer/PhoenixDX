@@ -1,4 +1,4 @@
-using PhoenixModel.dbErkenfara;
+﻿using PhoenixModel.dbErkenfara;
 using PhoenixModel.EventsAndArgs;
 using PhoenixModel.Program;
 using PhoenixModel.View;
@@ -63,20 +63,31 @@ namespace PhoenixWPF.Program {
 
         }
 
+        /// <summary>
+        /// Die Senke: hier landet eine Meldung in der Anzeige.
+        ///
+        /// Wird vom ViewEventHandler aufgerufen und darf deshalb nicht selbst wieder melden, sonst
+        /// dreht sich die Meldung im Kreis. Wer eine Meldung erzeugt, nimmt LogInfo/LogWarning/
+        /// LogError.
+        /// </summary>
         public static void Log(LogEntry logentry) {
             LogPage.AddToLog(logentry);
         }
 
+        // Erzeugte Meldungen laufen ueber ProgramView und damit denselben Weg wie die des Modells.
+        // Direkt in die Anzeige geschrieben waeren sie im Testlauf unsichtbar - und ohne
+        // Oberflaeche verschwinden sie ganz, weil LogPage.AddToLog dann sofort aussteigt. Genau so
+        // ist ein fehlgeschlagenes Loeschen einmal wie ein erfolgreiches ausgesehen.
         public static void LogInfo(string titel, string message) {
-            Log(new LogEntry(LogType.Info, titel, message));
+            ProgramView.LogInfo(titel, message);
         }
 
         public static void LogWarning(string titel, string message) {
-            Log(new LogEntry(LogType.Warning, titel, message));
+            ProgramView.LogWarning(titel, message);
         }
 
         public static void LogError(string titel, string message) {
-            Log(new LogEntry(LogType.Error, titel, message));
+            ProgramView.LogError(titel, message);
         }
 
         public void SelectGemark(MapEventArgs e) {

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using PhoenixModel.View;
 using PhoenixWPF.Program;
 using System;
 using System.Data;
@@ -62,7 +63,7 @@ namespace PhoenixWPF.Database
             string? provider = GetInstalledAceOleDbProvider();
             if (provider == null)
             {
-                SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, "Es ist kein Microsoft.ACE.OLEDB Treiber installiert. Bitte einen entsprechenden Treiber installieren", "Der 'Microsoft Access Database Engine 2016 Redistributable' Treiber für die Access Datenbank muss installiert sein. Normalerweise ist der automatisch mit dem Office installiert, hier anscheinend nicht. Die Installationsdateien befinden sich unter 'Redistribute' im Hauptverzeichnis. Sie könne auch bei Microsoft heruntergeladen werden."));
+                ProgramView.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, "Es ist kein Microsoft.ACE.OLEDB Treiber installiert. Bitte einen entsprechenden Treiber installieren", "Der 'Microsoft Access Database Engine 2016 Redistributable' Treiber für die Access Datenbank muss installiert sein. Normalerweise ist der automatisch mit dem Office installiert, hier anscheinend nicht. Die Installationsdateien befinden sich unter 'Redistribute' im Hauptverzeichnis. Sie könne auch bei Microsoft heruntergeladen werden."));
                 connectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=\"" + databaseFilePath + "\"; ";
             }
             else
@@ -153,7 +154,7 @@ namespace PhoenixWPF.Database
                 }
                 catch (Exception ex)
                 {
-                    SpielWPF.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, "Fehler beim Öffnen der PZE Datenbank", ex.Message));
+                    ProgramView.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, "Fehler beim Öffnen der PZE Datenbank", ex.Message));
                     return false;
                 }
             }
@@ -170,7 +171,7 @@ namespace PhoenixWPF.Database
             foreach (var command in _offeneLeseBefehle)
             {
                 try { command.Dispose(); }
-                catch (Exception ex) { SpielWPF.LogWarning("Ein Datenbankbefehl konnte nicht freigegeben werden", ex.Message); }
+                catch (Exception ex) { ProgramView.LogWarning("Ein Datenbankbefehl konnte nicht freigegeben werden", ex.Message); }
             }
             _offeneLeseBefehle.Clear();
 

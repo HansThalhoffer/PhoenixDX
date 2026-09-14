@@ -1,4 +1,4 @@
-using PhoenixModel.Database;
+﻿using PhoenixModel.Database;
 using PhoenixModel.ViewModel;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.EventsAndArgs;
@@ -69,16 +69,16 @@ namespace PhoenixWPF.Database {
             SchreibeAlle(vorgänge, _encryptedpassword, _databaseFileName);
         }
 
-        public void Save(IDatabaseTable table) {
-            Save(table, _encryptedpassword, _databaseFileName);
+        public bool Save(IDatabaseTable table) {
+            return Save(table, _encryptedpassword, _databaseFileName);
         }
 
-        public void Insert(IDatabaseTable table) {
-            Insert(table, _encryptedpassword, _databaseFileName);
+        public bool Insert(IDatabaseTable table) {
+            return Insert(table, _encryptedpassword, _databaseFileName);
         }
 
-        public void Delete(IDatabaseTable table) {
-            Delete(table, _encryptedpassword, _databaseFileName);
+        public bool Delete(IDatabaseTable table) {
+            return Delete(table, _encryptedpassword, _databaseFileName);
         }
 
         public void Load() {

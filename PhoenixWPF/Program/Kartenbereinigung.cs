@@ -77,7 +77,11 @@ namespace PhoenixWPF.Program {
                 foreach (var bezeichner in zuLoeschen) {
                     if (SharedData.Gebäude == null || SharedData.Gebäude.TryGetValue(bezeichner, out var gebäude) == false)
                         continue;
-                    db.Delete(gebäude);
+                    // Nur was wirklich aus der Datenbank verschwunden ist, gilt als geloescht.
+                    // Schlaegt es fehl, bleibt der Eintrag auch im Speicher stehen - sonst faende
+                    // ihn der naechste Start wieder und meldete ihn erneut.
+                    if (db.Delete(gebäude) == false)
+                        continue;
                     SharedData.Gebäude.TryRemove(bezeichner, out _);
                     geloescht.Add(bezeichner);
                 }
