@@ -47,6 +47,22 @@ public static class SpielfigurenView {
     /// </summary>
     /// <param name="nation"></param>
     /// <returns></returns>
+    /// <summary>
+    /// Die Figuren einer Gemark in der Reihenfolge, in der man sie zur Auswahl anbietet:
+    /// die eigenen zuerst, danach die fremden nach Reich.
+    ///
+    /// Fremde sind dabei, soweit die Feindaufklaerung sie aufgedeckt hat - auswaehlen laesst sich
+    /// nur, was einem gehoert, das entscheidet Spielfigur.Select. Sie wegzulassen waere aber
+    /// schlechter: auf einem Feld, auf dem etwas steht, soll man sehen, was dort steht.
+    /// </summary>
+    public static List<Spielfigur> GetSpielfigurenZurAuswahl(KleinfeldPosition gem) {
+        return [.. GetSpielfiguren(gem)
+            .OrderBy(figur => figur.Nation != null && figur.Nation == ProgramView.SelectedNation ? 0 : 1)
+            .ThenBy(figur => figur.Nation?.Reich ?? string.Empty)
+            .ThenBy(figur => figur.Typ.ToString())
+            .ThenBy(figur => figur.Nummer)];
+    }
+
     public static Armee GetSpielfiguren(Nation? nation) {
         if (nation == null)
             return [];

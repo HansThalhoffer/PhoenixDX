@@ -38,6 +38,8 @@ namespace PhoenixWPF.Program {
             info.Click += (s, e) => ZeigeInfo(gemark);
             menü.Items.Add(info);
 
+            menü.Items.Add(BaueSpielfiguren(gemark));
+
             // Das Untermenü erscheint immer, auch wenn nichts anzubieten ist - sonst fehlt es
             // wortlos und man weiß nicht, ob die Funktion fehlt oder nur nichts da ist.
             var eigene = EigeneFiguren(gemark);
@@ -64,6 +66,62 @@ namespace PhoenixWPF.Program {
             menü.Items.Add(löschen);
 
             menü.IsOpen = true;
+        }
+
+        /// <summary>
+        /// Das Untermenü mit den Spielfiguren der Gemark. Ein Klick wählt die Figur aus - damit
+        /// zeigt die Eigenschaftsanzeige sie an, und Umschalt+Klick auf die Karte bewegt sie.
+        ///
+        /// Fremde Figuren stehen mit ihrem Reich in der Liste, sind aber abgeblendet: auswählen
+        /// lässt sich nur, was einem gehört. Sie stattdessen wegzulassen hiesse zu verschweigen,
+        /// dass dort etwas steht.
+        /// </summary>
+        private static MenuItem BaueSpielfiguren(KleinFeld gemark) {
+            var alle = SpielfigurenView.GetSpielfigurenZurAuswahl(gemark);
+            if (alle.Count == 0)
+                return new MenuItem { Header = "Spielfiguren (hier steht nichts)", IsEnabled = false };
+
+            var menü = new MenuItem { Header = $"Spielfiguren ({alle.Count})" };
+            foreach (var figur in alle) {
+                bool eigene = figur.Nation != null && figur.Nation == ProgramView.SelectedNation;
+                var eintrag = new MenuItem {
+                    Header = eigene
+                        ? $"{figur.Typ} {figur.Nummer} - {figur.Stärke}"
+                        : $"{figur.Nation?.Reich}: {figur.Typ} {figur.Nummer} - {figur.Stärke}",
+                    IsEnabled = eigene,
+                };
+                if (eigene) {
+                    var gemerkt = figur;
+                    eintrag.Click += (s, e) => Wähle(gemerkt);
+                }
+                menü.Items.Add(eintrag);
+            }
+            return menü;
+        }
+
+        /// <summary>
+        /// Wählt eine Figur aus - denselben Weg, den auch die Figurenliste nimmt: die Karte rückt
+        /// auf das Feld und die Figur wird die aktuelle Auswahl.
+        /// </summary>
+        private static void Wähle(Spielfigur figur) {
+            try {
+                Main.Instance.Spiel?.SelectGemark(figur);
+                // Auswählen kann scheitern, ohne dass jemand etwas tut: Spielfigur.Select lässt
+                // nur eigene Figuren zu. Das wortlos zu übergehen wäre das Schlimmste.
+                //
+                // ReferenceEquals steht hier ausdrücklich, obwohl == dasselbe täte: Spielfigur
+                // erbt von KleinfeldPosition ein Equals nach gf/kf, zwei verschiedene Figuren
+                // desselben Feldes sind also Equals. Wer diese Zeile später auf Equals, Contains
+                // oder Distinct umstellt, prüft damit nicht mehr, was hier gemeint ist.
+                if (ReferenceEquals(Main.Instance.SelectionHistory.Current, figur) == false)
+                    SpielWPF.LogWarning($"{figur.Bezeichner} liess sich nicht auswählen",
+                        figur.Nation == ProgramView.SelectedNation
+                            ? "Die Auswahl wurde nicht übernommen."
+                            : $"Die Figur gehört {figur.Nation?.Reich ?? "einem anderen Reich"}; auswählen lässt sich nur, was einem selbst gehört.");
+            }
+            catch (Exception ex) {
+                SpielWPF.LogError($"{figur.Bezeichner} liess sich nicht auswählen", ex.Message);
+            }
         }
 
         /// <summary>
