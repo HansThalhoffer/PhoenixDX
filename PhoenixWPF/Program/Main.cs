@@ -608,8 +608,14 @@ namespace PhoenixWPF.Program {
         /// </summary>
         /// <param name="inBackground"></param>
         public void LoadFeinderkennung(bool inBackground = false) {
-            if (Settings == null || SharedData.Nationen == null || Settings.UserSettings.SelectedReich < 0)
+            // Ohne Reich gibt es keine Feindaufklärung: was fremd ist, entscheidet sich daran.
+            // Wortlos auszusteigen hiesse, eine leere Karte fuer eine friedliche zu halten.
+            if (Settings == null || SharedData.Nationen == null || Settings.UserSettings.SelectedReich < 0) {
+                SpielWPF.LogWarning("Die Feindaufklärung wurde nicht geladen",
+                    "Dafür müssen die Nationen geladen und ein Reich ausgewählt sein. "
+                    + "Auf der Karte fehlen dadurch alle fremden Einheiten.");
                 return;
+            }
             string databaseLocation = Settings.UserSettings.DatabaseLocationFeindaufklärung;
             if (string.IsNullOrEmpty(databaseLocation) && string.IsNullOrEmpty(Settings.DataRootPath) == false)
                 databaseLocation = Path.Combine(Settings.DataRootPath, AppSettings.DatabaseLocationFeindaufklärung);

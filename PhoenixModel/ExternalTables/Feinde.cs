@@ -61,21 +61,71 @@ namespace PhoenixModel.ExternalTables {
         }
 
         /// <summary>
-        /// lädt aus der Feindaufklaerung.dat die Daten und legt diese an
+        /// Die Zeilennummer des Pseudo-Eintrags, mit dem die Altanwendung den Zeitpunkt der letzten
+        /// Aktualisierung in der Datei ablegt. Er ist keine Einheit und gehört nicht auf die Karte.
         /// </summary>
-        /// <param name="inBackground"></param>
+        public const int Zeitstempeleintrag = 99999;
+
+        /// <summary>
+        /// Lädt die Feindaufklärung aus der Datei.
+        ///
+        /// Die Datei führt alle Einheiten, die das eigene Reich aufgeklärt hat - und je nach
+        /// Herkunft auch die eigenen. Eigene gehören nicht hinein: die stehen vollständig in den
+        /// Zugdaten, wären hier nur eine zweite, ältere Wahrheit und erschienen auf der Karte als
+        /// Fremde. Die Altanwendung filtert sie ebenso heraus.
+        ///
+        /// Was geladen wurde, wird gemeldet. Es gibt mehrere Dateien dieses Namens im Datenbestand,
+        /// und sie unterscheiden sich; ohne Meldung fällt eine veraltete nicht auf.
+        /// </summary>
         public static void LoadFeinderkennung(string databaseLocation) {
             if (!File.Exists(databaseLocation)) {
                 ProgramView.LogError("Zugdaten: Es wurde keine Feindaufklärung gefunden", $"Die Datei {databaseLocation} wurde nicht gefunden. Bitte überprüfe die Daten für die Anwendung.");
                 return;
             }
-            SharedData.Feinde = [];
-            List<Feinde> list = [];
-            foreach (var line in File.ReadAllLines(databaseLocation)) {
-                list.Add(new PhoenixModel.ExternalTables.Feinde(line));
+
+            List<Feinde> gelesen = [];
+            int leerzeilen = 0;
+            foreach (var zeile in File.ReadAllLines(databaseLocation)) {
+                if (string.IsNullOrWhiteSpace(zeile) || zeile.TrimStart().StartsWith('#')) {
+                    leerzeilen++;
+                    continue;
+                }
+                gelesen.Add(new Feinde(zeile));
             }
-            foreach (var feind in  list.Where(item => item.Nation != ProgramView.SelectedNation && item.gf > 0 && item.kf > 0 && item.kf <=48))
+
+            var eigenes = ProgramView.SelectedNation;
+            int eigene = 0, ohnePosition = 0, zeitstempel = 0;
+            List<Feinde> brauchbar = [];
+            foreach (var feind in gelesen) {
+                if (feind.Nummer == Zeitstempeleintrag || string.Equals(feind.Reich, "Update", StringComparison.OrdinalIgnoreCase)) {
+                    zeitstempel++;
+                    continue;
+                }
+                if (eigenes != null && feind.Nation == eigenes) {
+                    eigene++;
+                    continue;
+                }
+                // 0/0 heisst: die Einheit ist bekannt, aber nicht geortet. Zeichnen laesst sie
+                // sich nicht, verschweigen sollte man sie auch nicht.
+                if (feind.gf <= 0 || feind.kf <= 0 || feind.kf > 48) {
+                    ohnePosition++;
+                    continue;
+                }
+                brauchbar.Add(feind);
+            }
+            // SharedData.Feinde ist eine BlockingCollection - erst leeren, dann fuellen
+            SharedData.Feinde = [];
+            foreach (var feind in brauchbar)
                 SharedData.Feinde.Add(feind);
+
+            var reiche = brauchbar.Select(feind => feind.Reich).Distinct().OrderBy(reich => reich);
+            ProgramView.LogInfo($"{brauchbar.Count} fremde Einheiten aus der Feindaufklärung",
+                $"Gelesen aus {databaseLocation}.\r\r"
+                + $"{gelesen.Count} Einträge, davon {eigene} eigene übersprungen"
+                + (ohnePosition > 0 ? $", {ohnePosition} bekannt aber nicht geortet" : string.Empty)
+                + (zeitstempel > 0 ? $", {zeitstempel} Zeitstempeleintrag" : string.Empty)
+                + (leerzeilen > 0 ? $", {leerzeilen} Leerzeilen" : string.Empty)
+                + $".\r\rReiche: {string.Join(", ", reiche)}.");
         }
     }
 }
