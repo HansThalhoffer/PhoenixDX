@@ -278,6 +278,33 @@ namespace Tests {
         }
 
         /// <summary>
+        /// Laedt die Feindaufklaerung - die fremden Einheiten, die auf der Karte zu sehen sind.
+        ///
+        /// Sie ist eine eigene Quelle neben den Zugdaten: KleinFeld.Truppen kennt nur die eigenen
+        /// Figuren, KleinFeld.Fremd nur diese hier. Solange der Testlauf sie nicht geladen hat,
+        /// sieht jedes fremd besetzte Feld leer aus - und genau das hat einen Fehler im
+        /// Kontextmenue durchrutschen lassen.
+        /// </summary>
+        public static void LoadFeinderkennung(bool erzwingen = false) {
+            PhoenixModel.ExternalTables.Feinde.LoadFeinderkennung(Feindaufklärungsdatei);
+        }
+
+        /// <summary>
+        /// Der Pfad zur Feindaufklaerungsdatei.
+        ///
+        /// Hergeleitet aus dem Pfad der Karte statt aus den Einstellungen: AppSettings fuellt
+        /// DataRootPath erst, wenn jemand eine DatabaseLocation setzt, und eine frisch erzeugte
+        /// Instanz hat ihn deshalb leer. Ein Lader, der sich darauf verlaesst, laedt nichts und
+        /// sagt nichts - und jeder Test, der auf die Daten baut, geht leer durch.
+        /// </summary>
+        public static string Feindaufklärungsdatei {
+            get {
+                string wurzel = StorageSystem.ExtractBasePath(KartenPfad, "_Data");
+                return Path.Combine(wurzel, AppSettings.DatabaseLocationFeindaufklärung);
+            }
+        }
+
+        /// <summary>
         /// Das verschlüsselte Passwort der Kartendatenbank, so wie es die Anwendung führt
         /// </summary>
         public static string KartenPasswort {

@@ -47,7 +47,7 @@ namespace PhoenixWPF.Program {
                 menü.Items.Add(BaueMöglicheZüge(eigene));
             }
             else {
-                var fremde = SpielfigurenView.GetSpielfiguren(gemark).Count;
+                var fremde = SpielfigurenView.GetFeldbesetzung(gemark).Count;
                 menü.Items.Add(new MenuItem {
                     Header = fremde > 0
                         ? $"Mögliche Züge (keine eigenen Einheiten, {fremde} fremde)"
@@ -72,26 +72,26 @@ namespace PhoenixWPF.Program {
         /// Das Untermenü mit den Spielfiguren der Gemark. Ein Klick wählt die Figur aus - damit
         /// zeigt die Eigenschaftsanzeige sie an, und Umschalt+Klick auf die Karte bewegt sie.
         ///
-        /// Fremde Figuren stehen mit ihrem Reich in der Liste, sind aber abgeblendet: auswählen
-        /// lässt sich nur, was einem gehört. Sie stattdessen wegzulassen hiesse zu verschweigen,
-        /// dass dort etwas steht.
+        /// Angeboten wird, was auf dem Feld steht - eigene Figuren aus den Zugdaten und fremde
+        /// Einheiten aus der Feindaufklärung. Das sind zwei getrennte Quellen; wer nur die erste
+        /// abfragt, meldet auf einem Feld voller fremder Heere "hier steht nichts".
+        ///
+        /// Fremde stehen mit ihrem Reich in der Liste, sind aber abgeblendet: auswählen lässt sich
+        /// nur, was einem gehört. Sie wegzulassen hiesse zu verschweigen, dass dort etwas steht.
         /// </summary>
         private static MenuItem BaueSpielfiguren(KleinFeld gemark) {
-            var alle = SpielfigurenView.GetSpielfigurenZurAuswahl(gemark);
+            var alle = SpielfigurenView.GetFeldbesetzung(gemark);
             if (alle.Count == 0)
                 return new MenuItem { Header = "Spielfiguren (hier steht nichts)", IsEnabled = false };
 
             var menü = new MenuItem { Header = $"Spielfiguren ({alle.Count})" };
-            foreach (var figur in alle) {
-                bool eigene = figur.Nation != null && figur.Nation == ProgramView.SelectedNation;
+            foreach (var besetzung in alle) {
                 var eintrag = new MenuItem {
-                    Header = eigene
-                        ? $"{figur.Typ} {figur.Nummer} - {figur.Stärke}"
-                        : $"{figur.Nation?.Reich}: {figur.Typ} {figur.Nummer} - {figur.Stärke}",
-                    IsEnabled = eigene,
+                    Header = besetzung.Beschriftung,
+                    IsEnabled = besetzung.IstAuswählbar,
                 };
-                if (eigene) {
-                    var gemerkt = figur;
+                if (besetzung.IstAuswählbar) {
+                    var gemerkt = besetzung.Figur!;
                     eintrag.Click += (s, e) => Wähle(gemerkt);
                 }
                 menü.Items.Add(eintrag);

@@ -48,10 +48,64 @@ public static class SpielfigurenView {
     /// <param name="nation"></param>
     /// <returns></returns>
     /// <summary>
+    /// Ein Eintrag in der Figurenliste eines Kleinfeldes.
+    ///
+    /// Auf einem Feld koennen zwei ganz verschiedene Dinge stehen: eigene Figuren aus den
+    /// Zugdaten und fremde Einheiten aus der Feindaufklaerung. Das sind getrennte Quellen -
+    /// KleinFeld.Truppen kennt nur die erste, KleinFeld.Fremd nur die zweite. Wer nur eine
+    /// abfragt, meldet auf einem Feld voller fremder Heere "hier steht nichts".
+    /// </summary>
+    /// <param name="Beschriftung">wie der Eintrag in einer Liste heisst</param>
+    /// <param name="Nation">das Reich, dem die Einheit gehoert - soweit bekannt</param>
+    /// <param name="Figur">die Spielfigur, oder null bei einer nur aufgeklärten fremden Einheit</param>
+    /// <param name="Nummer">die Nummer der Einheit</param>
+    /// <param name="Art">was es ist - bei fremden der Text der Feindaufklaerung</param>
+    /// <param name="Stärke">die Stärke, soweit bekannt; bei fremden steht dort nichts</param>
+    public record class Feldeintrag(string Beschriftung, Nation? Nation, Spielfigur? Figur,
+                                    int Nummer, string Art, string Stärke) {
+        /// <summary>Auswählen laesst sich nur, was einem gehoert</summary>
+        public bool IstAuswählbar => Figur != null && Figur.Select();
+    }
+
+    /// <summary>
+    /// Alles, was auf einem Kleinfeld steht: die eigenen Figuren zuerst, danach die fremden
+    /// Einheiten, soweit die Feindaufklärung sie aufgedeckt hat.
+    ///
+    /// Fremde sind nur Beobachtungen - Reich, Art und Nummer, mehr weiss man nicht. Sie lassen
+    /// sich daher anzeigen, aber nicht auswaehlen.
+    /// </summary>
+    public static List<Feldeintrag> GetFeldbesetzung(KleinfeldPosition gem) {
+        List<Feldeintrag> result = [];
+        foreach (var figur in GetSpielfigurenZurAuswahl(gem)) {
+            bool eigen = figur.Nation != null && figur.Nation == ProgramView.SelectedNation;
+            result.Add(new Feldeintrag(
+                eigen ? $"{figur.Typ} {figur.Nummer} - {figur.Stärke}"
+                      : $"{figur.Nation?.Reich}: {figur.Typ} {figur.Nummer} - {figur.Stärke}",
+                figur.Nation, figur, figur.Nummer, figur.Typ.ToString(), figur.Stärke));
+        }
+
+        // Dieselbe Einheit kann in beiden Quellen stehen, wenn die Spielleitung alle Reiche
+        // geladen hat. Dann gilt die Figur aus den Zugdaten - die weiss mehr.
+        var bekannt = result
+            .Where(eintrag => eintrag.Figur != null)
+            .Select(eintrag => $"{eintrag.Nation?.Reich}/{eintrag.Figur!.Nummer}")
+            .ToHashSet();
+
+        foreach (var fremd in ExternalTables.Feinde.GetFeinde(gem)) {
+            if (bekannt.Contains($"{fremd.Nation?.Reich}/{fremd.Nummer}"))
+                continue;
+            string notiz = string.IsNullOrWhiteSpace(fremd.Notiz) ? string.Empty : $" ({fremd.Notiz.Trim()})";
+            result.Add(new Feldeintrag($"{fremd.Reich}: {fremd.Art} {fremd.Nummer}{notiz}",
+                fremd.Nation, null, fremd.Nummer, fremd.Art, string.Empty));
+        }
+        return result;
+    }
+
+    /// <summary>
     /// Die Figuren einer Gemark in der Reihenfolge, in der man sie zur Auswahl anbietet:
     /// die eigenen zuerst, danach die fremden nach Reich.
     ///
-    /// Fremde sind dabei, soweit die Feindaufklaerung sie aufgedeckt hat - auswaehlen laesst sich
+    /// Fremde sind dabei, soweit die Feindaufklärung sie aufgedeckt hat - auswaehlen laesst sich
     /// nur, was einem gehoert, das entscheidet Spielfigur.Select. Sie wegzulassen waere aber
     /// schlechter: auf einem Feld, auf dem etwas steht, soll man sehen, was dort steht.
     /// </summary>

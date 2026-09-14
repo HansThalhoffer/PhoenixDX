@@ -1,4 +1,4 @@
-using PhoenixModel.dbErkenfara;
+﻿using PhoenixModel.dbErkenfara;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using System.Windows;
@@ -38,21 +38,24 @@ namespace PhoenixWPF.Dialogs {
 
             EigenschaftenGrid.ItemsSource = gemark.Eigenschaften;
 
-            var figuren = SpielfigurenView.GetSpielfiguren(gemark);
-            FigurenGrid.ItemsSource = figuren
-                .Select(figur => new Figurenzeile {
-                    Reich = figur.Nation?.Reich ?? string.Empty,
-                    Nummer = figur.Nummer,
-                    Art = figur.Typ.ToString(),
-                    Stärke = figur.Stärke,
+            // Beide Quellen: eigene Figuren aus den Zugdaten und fremde Einheiten aus der
+            // Feindaufklaerung. Vorher stand hier nur die erste - und darunter die Zusage, fremde
+            // seien "soweit aufgeklaert" dabei. Sie waren es nie.
+            var besetzung = SpielfigurenView.GetFeldbesetzung(gemark);
+            FigurenGrid.ItemsSource = besetzung
+                .Select(eintrag => new Figurenzeile {
+                    Reich = eintrag.Nation?.Reich ?? string.Empty,
+                    Nummer = eintrag.Nummer,
+                    Art = eintrag.Art,
+                    Stärke = string.IsNullOrEmpty(eintrag.Stärke) ? "unbekannt" : eintrag.Stärke,
                 })
-                .OrderBy(zeile => zeile.Reich)
-                .ThenBy(zeile => zeile.Nummer)
                 .ToList();
 
-            FigurenLabel.Text = figuren.Count == 0
+            int fremde = besetzung.Count(eintrag => eintrag.Figur == null);
+            FigurenLabel.Text = besetzung.Count == 0
                 ? "Auf dieser Gemark steht nichts, was bekannt wäre."
-                : $"{figuren.Count} Figuren auf dieser Gemark - eigene vollständig, fremde nur soweit aufgeklärt.";
+                : $"{besetzung.Count} Figuren auf dieser Gemark"
+                  + (fremde == 0 ? "." : $", davon {fremde} nur aus der Feindaufklärung - dort ist die Stärke nicht bekannt.");
         }
 
         private void SchliessenButton_Click(object sender, RoutedEventArgs e) => Close();
