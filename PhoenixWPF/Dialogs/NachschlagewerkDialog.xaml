@@ -1,0 +1,28 @@
+<Window x:Class="PhoenixWPF.Dialogs.NachschlagewerkDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Icon="../Resources/phoenix.ico"
+        Title="Nachschlagewerk" Height="560" Width="900"
+        WindowStartupLocation="CenterOwner">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TabControl x:Name="Tabulator" TabStripPlacement="Bottom" Margin="5" Grid.Row="0">
+            <TabItem Header="Bestiarium" Tag="Bestiarium">
+                <Frame x:Name="Bestiarium" Source="/Pages/EigenschaftlerListGridPage.xaml" Tag="Bestiarium" />
+            </TabItem>
+            <TabItem Header="Personal" Tag="Personal">
+                <Frame x:Name="Personal" Source="/Pages/EigenschaftlerListGridPage.xaml" Tag="Personal" />
+            </TabItem>
+        </TabControl>
+
+        <TextBlock x:Name="HinweisLabel" Grid.Row="1" Margin="8,0,8,8" TextWrapping="Wrap"
+                   Foreground="#FF8080" />
+    </Grid>
+</Window>

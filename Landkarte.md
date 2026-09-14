@@ -126,7 +126,7 @@ Spielleitung werden eingetragen.
 |---|---|---|
 | 6.1 Handel und Schenkung | **steht** | Befehl, Seite, Prüfung im fremden Rüstort |
 | 6.2 Putschistenregel | **fehlt** | kommt im Code nicht vor |
-| 6.3 Kreaturen | **halb** | Datenklasse und Bewegung ja; das Bestiarium wird **nicht geladen** |
+| 6.3 Kreaturen | **halb** | Datenklasse, Bewegung und Bestiarium ja; welche Kreatur eine Figur ist, sagt das Datenmodell nicht — der Figur fehlt der Name |
 | 6.3 Artefakte | **fehlt** | |
 | 6.4 Audvacar, Handelskontor | **halb** | Audvacargeld ist in den Einstellungen und im Rüstort berücksichtigt; Handel dort fehlt |
 | 6.5 Invasoren | **halb** | nur ein Kennzeichen am Reich |
@@ -136,7 +136,7 @@ Spielleitung werden eingetragen.
 | 6.10 Abwesende Reiche, Ausscheiden | **fehlt** | Sache der Spielleitung, bisher nicht abgebildet |
 | 6.11 Events | **fehlt** | |
 | Lehen | **halb** | Anlegen und Verwalten gibt es als Seiten, das Menü dazu ist auskommentiert ("noch nicht vollständig umgesetzt") |
-| Personal | **fehlt** | Datenklasse vorhanden, wird **nicht geladen** |
+| Personal | **steht** | geladen und im Nachschlagewerk zu sehen; enthält personenbezogene Daten |
 
 ---
 
@@ -185,8 +185,9 @@ Erklärung, warum ein Feld unerreichbar ist, und die Kampfauswertung der Spielle
    nicht. Die Plündereinnahmen sind inzwischen gerechnet; wohin das Geld gebucht wird, lässt das
    Regelwerk offen (siehe `PlünderRules`).
 
-5. **Bestiarium und Personal.** Beide Tabellen sind im Datenmodell, beide werden nicht geladen —
-   eine auskommentierte Zeile je Tabelle plus die Sichten darauf.
+5. ~~Bestiarium und Personal.~~ **Erledigt** — beide werden geladen und stehen im Menü
+   *Nachschlagewerk*. Offen bleibt die Verbindung von einer Kreaturenfigur zu ihrem Eintrag: die
+   Figur führt keinen Namen, über den sich nachschlagen liesse.
 
 6. **Beförderungen (1.9), Hauptstadtverlegung (1.5.13), Heere auflösen (1.6).** Kleine,
    klar umrissene Befehle.

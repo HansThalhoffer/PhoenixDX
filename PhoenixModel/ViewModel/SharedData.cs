@@ -61,7 +61,14 @@ namespace PhoenixModel.ViewModel {
         public static BlockingCollection<Kreaturen>? Kreaturen = null;
         public static BlockingCollection<Krieger>? Krieger = null;
         public static BlockingCollection<Lehensvergabe>? Lehensvergabe = null;
-        // public static BlockingCollection<Personal>? Personal = null;
+        /// <summary>
+        /// Die Personalliste des Reiches aus den Zugdaten.
+        ///
+        /// Achtung: darin stehen Namen, Anschriften, Telefonnummern und Mailadressen wirklicher
+        /// Menschen. Sie gehören weder in eine Meldung noch in eine Zwischenablage noch in ein
+        /// Fehlerbild - wer damit arbeitet, lässt sie im Fenster.
+        /// </summary>
+        public static BlockingCollection<Personal>? Personal = null;
         public static BlockingCollection<Reiter>? Reiter = null;
         public static BlockingCollection<Ruestung>? Ruestung = null;
         public static BlockingCollection<RuestungBauwerke>? RuestungBauwerke = null;
@@ -72,6 +79,11 @@ namespace PhoenixModel.ViewModel {
         public static BlockingCollection<Units>? Units_Zugdaten = null;
         public static BlockingCollection<Zauberer>? Zauberer = null;
         public static BlockingCollection<ZugdatenSettings>? ZugdatenSettings = null;   
+
+        /// <summary>
+        /// Das Bestiarium aus der Kartendatenbank - ein Nachschlagewerk über die Kreaturen
+        /// </summary>
+        public static BlockingCollection<dbErkenfara.Bestiarium>? Bestiarium = null;
 
         // Feinderkennung - aus der Textdatei
         public static BlockingCollection<Feinde>? Feinde = null;

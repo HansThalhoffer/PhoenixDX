@@ -298,6 +298,14 @@ namespace PhoenixWPF
                         new KampfauswertungDialog().Show();
                         break;
 
+                    // Nachschlagewerk
+                    case "Bestiarium":
+                        new NachschlagewerkDialog().Show("Bestiarium");
+                        break;
+                    case "Personal":
+                        new NachschlagewerkDialog().Show("Personal");
+                        break;
+
                     // Extras
                     case "Zugwechsel":
                         Main.Instance.Zugwechsel();

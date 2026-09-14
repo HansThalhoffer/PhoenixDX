@@ -97,6 +97,10 @@
                 <MenuItem Header="Spielleitung">
                     <MenuItem Header="Kampfauswertung" IsCheckable="False" Click="MenuItem_Click" Tag="Kampfauswertung" />
                 </MenuItem>
+                <MenuItem Header="Nachschlagewerk">
+                    <MenuItem Header="Bestiarium" IsCheckable="False" Click="MenuItem_Click" Tag="Bestiarium" />
+                    <MenuItem Header="Personal" IsCheckable="False" Click="MenuItem_Click" Tag="Personal" />
+                </MenuItem>
                 <MenuItem Header="Extras">
                     <MenuItem Header="Zug Wechseln" IsCheckable="False"  Click="MenuItem_Click" Tag="Zugwechsel" />
                     <Separator/>

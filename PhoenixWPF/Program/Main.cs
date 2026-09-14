@@ -141,7 +141,7 @@ namespace PhoenixWPF.Program {
             SharedData.Kreaturen?.Dispose();
             SharedData.Krieger?.Dispose();
             SharedData.Lehensvergabe?.Dispose();
-            //  SharedData.Personal ?.Dispose();
+            SharedData.Personal?.Dispose();
             SharedData.Reiter?.Dispose();
             SharedData.RuestungBauwerke?.Dispose();
             SharedData.RuestungRuestorte?.Dispose();
@@ -157,7 +157,7 @@ namespace PhoenixWPF.Program {
             SharedData.Kreaturen=null;
             SharedData.Krieger=null;
             SharedData.Lehensvergabe=null;
-            //  SharedData.Personal =null;
+            SharedData.Personal = null;
             SharedData.Reiter=null;
             SharedData.RuestungBauwerke=null;
             SharedData.RuestungRuestorte=null;
