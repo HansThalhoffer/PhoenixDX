@@ -585,6 +585,58 @@ namespace PhoenixModel.Rules {
         }
 
         /// <summary>
+        /// Der Kampfvorteil, den ein Rüstort seinem Verteidiger bringt (Kampftabelle H38 bis H42).
+        ///
+        /// Burg 100, Stadt 200, Festung 300, Hauptstadt 400, Festungshauptstadt 500 - dieselbe
+        /// Reihe, die auch das Regelwerk bei den Bauwerken nennt (1.5.5 bis 1.5.9).
+        /// </summary>
+        public static Kampfvorteil? GetRüstortvorteil(dbCrossRef.Rüstort? rüstort) => rüstort?.Ruestort switch {
+            "Burg" => Kampfvorteil.AusBurg,
+            "Stadt" => Kampfvorteil.AusStadt,
+            "Festung" => Kampfvorteil.AusFestung,
+            "Hauptstadt" => Kampfvorteil.AusHauptstadt,
+            "Festungshauptstadt" => Kampfvorteil.AusFestungshauptstadt,
+            _ => null,
+        };
+
+        /// <summary>
+        /// Die Vorteile, die eine Gemark ihrem Verteidiger bringt (Regelwerk 5.5.1).
+        ///
+        /// "Eigene Heere, die einen Rüstort verteidigen, erhalten die GP des eigenen Rüstortes.
+        /// Heere, die einen fremden Rüstort verteidigen, erhalten 50 GP durch den Rüstort."
+        ///
+        /// Und: "Heere, die einen Rüstort angreifen oder verteidigen erhalten keine GP aus dem
+        /// Geländevorteil für Reiter oder Krieger." Wo ein Rüstort steht, zählt also nur er; das
+        /// Gelände bringt nur auf freiem Feld etwas.
+        ///
+        /// Nicht dabei: das Standardgelände (+50 nach 5.5.2). Welches Gelände das eines Reiches
+        /// ist, entscheidet die Gemark, auf der seine Hauptstadt erstmals errichtet wurde - das
+        /// steht nicht im Datenbestand.
+        /// </summary>
+        /// <param name="gemark">die umkämpfte Gemark</param>
+        /// <param name="verteidiger">das Reich, das sie verteidigt</param>
+        /// <param name="gattung">die Gattung des verteidigenden Heeres</param>
+        public static List<Kampfvorteil> BestimmeVerteidigungsvorteile(dbErkenfara.KleinFeld? gemark,
+                dbPZE.Nation? verteidiger, FigurType gattung) {
+            List<Kampfvorteil> vorteile = [];
+            if (gemark == null)
+                return vorteile;
+
+            var rüstort = View.BauwerkeView.GetRüstortNachKarte(gemark);
+            var vorteil = GetRüstortvorteil(rüstort);
+            if (vorteil != null) {
+                bool eigener = gemark.Nation != null && verteidiger != null && gemark.Nation.Equals(verteidiger);
+                vorteile.Add(eigener ? vorteil.Value : Kampfvorteil.AusFremdemRüstort);
+                return vorteile;
+            }
+
+            var gelände = GetGeländevorteil(gattung, gemark.TerrainType);
+            if (gelände != null)
+                vorteile.Add(gelände.Value);
+            return vorteile;
+        }
+
+        /// <summary>
         /// Steht die Seite in einem Rüstort? Dann trägt der Rüstort den grössten Teil des
         /// Fernkampfschadens.
         /// </summary>

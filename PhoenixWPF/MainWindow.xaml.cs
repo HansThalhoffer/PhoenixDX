@@ -293,6 +293,11 @@ namespace PhoenixWPF
                         new ZugreihenfolgeDialog().Show();
                         break;
 
+                    // Spielleitung
+                    case "Kampfauswertung":
+                        new KampfauswertungDialog().Show();
+                        break;
+
                     // Extras
                     case "Zugwechsel":
                         Main.Instance.Zugwechsel();

@@ -94,6 +94,9 @@
                     <Separator/>
                     <MenuItem Header="Zugreihenfolge" IsCheckable="False" Click="MenuItem_Click" Tag="Zugreihenfolge" />
                 </MenuItem>
+                <MenuItem Header="Spielleitung">
+                    <MenuItem Header="Kampfauswertung" IsCheckable="False" Click="MenuItem_Click" Tag="Kampfauswertung" />
+                </MenuItem>
                 <MenuItem Header="Extras">
                     <MenuItem Header="Zug Wechseln" IsCheckable="False"  Click="MenuItem_Click" Tag="Zugwechsel" />
                     <Separator/>
