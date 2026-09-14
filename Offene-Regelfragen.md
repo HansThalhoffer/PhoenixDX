@@ -141,6 +141,29 @@ Schiffe — eine Zeile in `BelagerungsRules`.
 
 ---
 
+## 7. Was wird bei der Hauptstadtverlegung aus den Baupunkten?
+
+**Was das Regelwerk sagt:** "Im ersten Monat der Verlegung wird aus der alten Hauptstadt eine
+Festung ... Im vierten Monat wird aus der zuvor bezeichneten Festung die neue Hauptstadt." Dazu
+50.000 GS im ersten Monat (1.5.13). Über die Baupunkte steht dort nichts.
+
+**Warum das eine Frage ist:** Eine Festung hat 3.000 Baupunkte, eine Hauptstadt 5.000 (1.5.7,
+1.5.8), und der Ausbau einer Festung zur Hauptstadt kostet 100.000 GS (1.5.8). Spränge die
+bezeichnete Festung im vierten Monat einfach auf 5.000 Baupunkte, wäre die Verlegung der halbe
+Preis für dasselbe Bauwerk — und ein Reich mit zusammengeschossener Hauptstadt käme durch eine
+Verlegung billiger zu einer heilen als durch Reparatur.
+
+**Was die Anwendung solange tut:** Sie erfindet keine Baupunkte. Verlegt wird die Bezeichnung: die
+alte Hauptstadt wird zur Festung und behält höchstens deren 3.000 Baupunkte, die neue Hauptstadt
+behält die Baupunkte ihrer Festung. Das Reich hat danach eine Hauptstadt, der 2.000 Baupunkte
+fehlen — für 100.000 GS aufzufüllen, genau der Preis aus 1.5.8. Die Verlegung kostet damit
+insgesamt 150.000 GS.
+
+**Was sich mit der Antwort ändert:** Soll die neue Hauptstadt sofort vollständig sein, wird aus
+`SetzeBezeichnung` ein `SetzeStufe` — eine Zeile in `HauptstadtRules`.
+
+---
+
 ## Nebenbefunde, die keine Frage sind, aber jemandem gehören
 
 * **Eine Kaianlage steht auf einer Gemark der Höhenstufe 2.** Nach Regelwerk 1.5.2 werden
@@ -165,5 +188,17 @@ Schiffe — eine Zeile in `BelagerungsRules`.
   die Verluste aber auch auf ihre Zeilen. Die Anwendung rechnet die Verluste wie die Tabelle und
   zählt als Beute die Katapulte, die in den Nahkampf gegangen sind — bei einem aufgeriebenen Heer
   die Hälfte davon, wie es das Regelwerk vorsieht.
+* **Ein beschädigter Rüstort behält in der Anwendung seine volle Stufe.** `GetRüstortNachKarte`
+  liefert zuerst die Stufe aus der Spalte `Ruestort` — also die, die dort stehen *soll* — und erst
+  wenn die leer ist, die zu den Baupunkten passende. Nach Regelwerk 1.5 zählt aber der tatsächliche
+  Stand: "Eine von Grund auf neu errichtete Stadt, die erst 1750 Baupunkte enthält, bietet nur die
+  Rüstkapazität der schon fertigen Burg!", und "Eine beschossene Festung wird mit 2499 Baupunkten
+  zur Stadt" (1.5.7). Einnahmen, Rüstkapazität, Kampfvorteil und Beute lesen alle diese eine
+  Funktion. Das trifft den Datenbestand unmittelbar: **die Hauptstadt von Theostelos (306/25) steht
+  mit 3.000 Baupunkten in der Karte**, hat also 2.000 zuwenig, gilt der Anwendung aber als volle
+  Hauptstadt — 5.000 GS Einnahmen statt 3.000 und 400 statt 300 Gutpunkten im Nahkampf. Der
+  Kommentar in `RuestRules.GetKapazität` geht bereits vom Gegenteil aus. Das lässt sich an einer
+  Stelle geradeziehen, ändert aber Einnahmen, Rüstung und Kampf im ganzen Spiel — deshalb steht es
+  hier und nicht im Code.
 * **Die `settings`-Tabelle der Zugdatenbank läuft dem Zugverzeichnis voraus.** Die Anwendung
   rechnet mit dem Verzeichnis und der Schatzkammer, die übereinstimmen, und warnt.

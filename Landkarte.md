@@ -45,7 +45,7 @@ richtig ist. Gegen die Altanwendung PZE.NET ist hier nichts verglichen worden.
 | 1.5 Strasse, Kaianlage, Brücke, Wall | **steht** | `ConstructRules`, `ConstructCommand` |
 | 1.5 Rüstorte bauen und ausbauen | **steht** | `RuestortRules`, `UpgradeCommand` |
 | 1.5.10–1.5.12 Reparieren | **halb** | Rüstorte und Bauwerke ja; beschädigte **Rüstgüter** (1.5.11) nur als Zerstörungschance gerechnet, nicht als Reparatur |
-| 1.5.13 Hauptstadtverlegung | **fehlt** | 50.000 GS, mehrmonatig — kommt im Code nicht vor |
+| 1.5.13 Hauptstadtverlegung | **steht** | `HauptstadtRules`, `HauptstadtverlegungCommand`; die vier Monate hält niemand nach |
 | 1.6 Bauwerke durch eigene Heere zerstören | **fehlt** | |
 | 1.6 Eigene Heere auflösen | **halb** | `ZugendeRules.IstAufgelöst` entfernt Heere ohne Heerführer; einen Auflösungsbefehl gibt es nicht |
 | 1.7 Belagerung | **steht** | `BelagerungsRules`; mindert Rüstkapazität und Großbaustelle |
@@ -189,10 +189,12 @@ Erklärung, warum ein Feld unerreichbar ist, und die Kampfauswertung der Spielle
    *Nachschlagewerk*. Offen bleibt die Verbindung von einer Kreaturenfigur zu ihrem Eintrag: die
    Figur führt keinen Namen, über den sich nachschlagen liesse.
 
-6. ~~Beförderungen (1.9).~~ **Erledigt** — `Befördere Charakter 601 zum Burgherrn` und
-   `Degradiere ...`; nach oben steigt nur das Maximum, nach unten fällt beides, ein Amt gibt es je
-   Reich einmal und nur mit dem passenden Rüstort. Offen bleiben **Hauptstadtverlegung (1.5.13)**
-   und **Heere auflösen / Bauwerke zerstören (1.6)** — kleine, klar umrissene Befehle.
+6. ~~Beförderungen (1.9), Hauptstadtverlegung (1.5.13).~~ **Erledigt** — `Befördere Charakter 601
+   zum Burgherrn` und `Degradiere ...`; nach oben steigt nur das Maximum, nach unten fällt beides,
+   ein Amt gibt es je Reich einmal und nur mit dem passenden Rüstort. Die Verlegung läuft in zwei
+   Schritten über vier Monate: `Verlege die Hauptstadt nach 204/37` und drei Monate später
+   `Vollende die Hauptstadtverlegung nach 204/37`. Offen bleibt **Heere auflösen / Bauwerke
+   zerstören (1.6)** — kleine, klar umrissene Befehle.
 
 7. **Gefangene (5.5, 5.8.4).** Beim Überrennen werden Truppen gefangen genommen; das Datenmodell
    kennt keine Gefangenen. Das ist der grösste der kleinen Punkte, weil es eine neue Spalte
