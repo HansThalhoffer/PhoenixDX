@@ -105,13 +105,15 @@ namespace Tests {
             LadeAlles();
             var reich = ProgramView.SelectedNation;
 
+            // Gefragt ist die Bezeichnung und nicht der Zustand: eine zusammengeschossene
+            // Hauptstadt bleibt die Hauptstadt des Reiches (siehe BeschaedigterRuestortTest).
             var hauptstadt = Hauptstadt();
-            Assert.True(HauptstadtRules.IstHauptstadt(BauwerkeView.GetRüstortNachKarte(hauptstadt)));
+            Assert.True(HauptstadtRules.IstHauptstadt(RuestortRules.GetSollstufe(hauptstadt)));
 
             // es gibt genau eine
             int gezaehlt = SharedData.Map!.Values.Count(gemark =>
                 gemark.Nation != null && gemark.Nation.Equals(reich)
-                && HauptstadtRules.IstHauptstadt(BauwerkeView.GetRüstortNachKarte(gemark)));
+                && HauptstadtRules.IstHauptstadt(RuestortRules.GetSollstufe(gemark)));
             Assert.Equal(1, gezaehlt);
 
             // und jedes andere Reich auch: die Karte fuehrt fuer jedes Reich genau eine
@@ -119,7 +121,7 @@ namespace Tests {
             // Festungshauptstadt besitzen" (Regelwerk 1.5.9)
             var jeReich = SharedData.Map!.Values
                 .Where(gemark => gemark.Nation != null
-                    && HauptstadtRules.IstHauptstadt(BauwerkeView.GetRüstortNachKarte(gemark)))
+                    && HauptstadtRules.IstHauptstadt(RuestortRules.GetSollstufe(gemark)))
                 .GroupBy(gemark => gemark.Nation!.Reich)
                 .ToList();
             Assert.True(jeReich.Count > 1, "Die Karte kennt nur ein Reich mit Hauptstadt");
@@ -127,14 +129,14 @@ namespace Tests {
 
             // Festungshauptstaedte zaehlen mit - sonst faende die Suche sie nicht
             Assert.Contains(SharedData.Map.Values, gemark =>
-                BauwerkeView.GetRüstortNachKarte(gemark)?.Ruestort == HauptstadtRules.Festungshauptstadt
-                && HauptstadtRules.IstHauptstadt(BauwerkeView.GetRüstortNachKarte(gemark)));
+                RuestortRules.GetSollstufe(gemark)?.Ruestort == HauptstadtRules.Festungshauptstadt
+                && HauptstadtRules.IstHauptstadt(RuestortRules.GetSollstufe(gemark)));
 
             // eine Festung ist keine Hauptstadt, eine Hauptstadt keine Festung
             var festung = Festung();
             Assert.True(HauptstadtRules.IstFestung(BauwerkeView.GetRüstortNachKarte(festung)));
             Assert.False(HauptstadtRules.IstHauptstadt(BauwerkeView.GetRüstortNachKarte(festung)));
-            Assert.False(HauptstadtRules.IstFestung(BauwerkeView.GetRüstortNachKarte(hauptstadt)));
+            Assert.False(HauptstadtRules.IstFestung(RuestortRules.GetSollstufe(hauptstadt)));
         }
 
         /// <summary>
@@ -213,17 +215,19 @@ namespace Tests {
             var festung = Festung();
             var zustand = new Zustand().Merke(hauptstadt, festung);
             try {
+                // eine Hauptstadt in vollem Stand - die des Testbestandes ist beschaedigt und
+                // traegt schon vorher nur eine Festung
+                hauptstadt.Baupunkte = 5000;
                 int einnahmenVorher = EinnahmenView.GetGebäudeEinnahmen(hauptstadt);
                 var kapazitaetVorher = RuestRules.GetKapazität(hauptstadt);
-                int baupunkteVorher = hauptstadt.Baupunkte;
 
                 var alte = HauptstadtRules.Beginne(festung);
                 Assert.Same(hauptstadt, alte);
 
-                Assert.Equal("Festung", BauwerkeView.GetRüstortNachKarte(hauptstadt)?.Ruestort);
+                Assert.Equal("Festung", RuestortRules.GetSollstufe(hauptstadt)?.Ruestort);
 
                 // die Baupunkte werden auf die Festung gedeckelt und nie erhoeht
-                Assert.Equal(Math.Min(baupunkteVorher, 3000), hauptstadt.Baupunkte);
+                Assert.Equal(3000, hauptstadt.Baupunkte);
 
                 // "dies ist bei der Einnahmeberechnung und bei der Ruestung zu beachten" - die
                 // Anwendung beachtet es von selbst, weil beide den Ruestort der Karte lesen
@@ -322,7 +326,7 @@ namespace Tests {
                 int baupunkteDerFestung = festung.Baupunkte;
                 Assert.True(HauptstadtRules.SchliesseAb(festung));
 
-                Assert.Equal("Hauptstadt", BauwerkeView.GetRüstortNachKarte(festung)?.Ruestort);
+                Assert.Equal("Hauptstadt", RuestortRules.GetSollstufe(festung)?.Ruestort);
                 Assert.Same(festung, HauptstadtRules.FindeHauptstadt(reich));
 
                 // die Bezeichnung wird verlegt, keine Baupunkte erfunden: der neuen Hauptstadt
@@ -331,7 +335,7 @@ namespace Tests {
                 Assert.Equal(5000 - 3000, RuestortRules.GetSchaden(festung));
 
                 // die alte ist eine Festung geblieben
-                Assert.Equal("Festung", BauwerkeView.GetRüstortNachKarte(hauptstadt)?.Ruestort);
+                Assert.Equal("Festung", RuestortRules.GetSollstufe(hauptstadt)?.Ruestort);
             }
             finally {
                 zustand.Stelle_wieder_her();
@@ -409,12 +413,12 @@ namespace Tests {
                 Assert.False(verlegung.ExecuteCommand().HasErrors);
 
                 // geaendert hat sich die alte Hauptstadt, nicht das Ziel
-                Assert.Equal("Festung", BauwerkeView.GetRüstortNachKarte(hauptstadt)?.Ruestort);
+                Assert.Equal("Festung", RuestortRules.GetSollstufe(hauptstadt)?.Ruestort);
                 Assert.True(HauptstadtRules.IstBestehendeFestung(festung));
 
                 Assert.True(verlegung.CanUndo);
                 Assert.False(verlegung.UndoCommand().HasErrors);
-                Assert.Equal("Hauptstadt", BauwerkeView.GetRüstortNachKarte(hauptstadt)?.Ruestort);
+                Assert.Equal("Hauptstadt", RuestortRules.GetSollstufe(hauptstadt)?.Ruestort);
                 Assert.Same(hauptstadt, HauptstadtRules.FindeHauptstadt(ProgramView.SelectedNation));
 
                 // und jetzt der vierte Monat, von Hand vorbereitet

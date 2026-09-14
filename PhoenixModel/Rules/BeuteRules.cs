@@ -32,7 +32,9 @@ namespace PhoenixModel.Rules {
         public static int GetRüstortbeute(Rüstort? rüstort) {
             if (rüstort == null)
                 return 0;
-            return rüstort.Ruestort switch {
+            // Zwischenstufen zählen als die fertige Stufe darunter: eine halb zur Festung
+            // ausgebaute Stadt ist eine Stadt.
+            return RuestortRules.GetGrundstufe(rüstort) switch {
                 "Burg" => 2000,
                 "Stadt" => 4000,
                 "Festung" => 6000,

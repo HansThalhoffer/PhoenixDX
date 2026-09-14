@@ -44,6 +44,7 @@ richtig ist. Gegen die Altanwendung PZE.NET ist hier nichts verglichen worden.
 | 1.4 Bannen von Rüstgütern | **steht** | Kosten und Wirkung gerechnet |
 | 1.5 Strasse, Kaianlage, Brücke, Wall | **steht** | `ConstructRules`, `ConstructCommand` |
 | 1.5 Rüstorte bauen und ausbauen | **steht** | `RuestortRules`, `UpgradeCommand` |
+| 1.5 Beschädigte Rüstorte zählen als die Stufe, die ihre Baupunkte tragen | **steht** | `BauwerkeView.GetRüstortNachKarte` liefert den Zustand, `RuestortRules.GetSollstufe` die Absicht |
 | 1.5.10–1.5.12 Reparieren | **halb** | Rüstorte und Bauwerke ja; beschädigte **Rüstgüter** (1.5.11) nur als Zerstörungschance gerechnet, nicht als Reparatur |
 | 1.5.13 Hauptstadtverlegung | **steht** | `HauptstadtRules`, `HauptstadtverlegungCommand`; die vier Monate hält niemand nach |
 | 1.6 Bauwerke durch eigene Heere zerstören | **fehlt** | |

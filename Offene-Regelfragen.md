@@ -170,8 +170,10 @@ insgesamt 150.000 GS.
   Kaianlagen immer in Höhenstufe 1 errichtet, und die Bauprüfung verbietet es entsprechend.
   Vermutlich Altbestand.
 * **Ein Rüstort in der Bauwerkliste hat keine Baupunkte, aber einen Rüstort-Eintrag in der
-  Karte.** Das ist kein zerstörtes Bauwerk, sondern ein Widerspruch innerhalb der Karte; die
-  Anwendung meldet es getrennt und lässt den Eintrag stehen.
+  Karte.** Die Anwendung meldet es getrennt und lässt den Eintrag stehen. Seit dem Geradeziehen der
+  beschädigten Rüstorte bringt so ein Feld keine Einnahmen und keine Rüstkapazität mehr: was für
+  keine Ausbaustufe reicht, steht nicht. Die Sollstufe bleibt in der Karte, damit der Wiederaufbau
+  weiss, was dort stand.
 * **Woran erkennt die Anwendung einen Ritter des Ritterordens?** Das Regelwerk gibt ihnen mit
   dem Ritterkampf (5.2) einen eigenen Schritt, der Charakterkampf und Rückzugsgefecht ersetzt.
   Im Datenbestand gibt es aber weder ein Reich dieses Namens noch ein Feld beim Charakter, das
@@ -188,17 +190,15 @@ insgesamt 150.000 GS.
   die Verluste aber auch auf ihre Zeilen. Die Anwendung rechnet die Verluste wie die Tabelle und
   zählt als Beute die Katapulte, die in den Nahkampf gegangen sind — bei einem aufgeriebenen Heer
   die Hälfte davon, wie es das Regelwerk vorsieht.
-* **Ein beschädigter Rüstort behält in der Anwendung seine volle Stufe.** `GetRüstortNachKarte`
-  liefert zuerst die Stufe aus der Spalte `Ruestort` — also die, die dort stehen *soll* — und erst
-  wenn die leer ist, die zu den Baupunkten passende. Nach Regelwerk 1.5 zählt aber der tatsächliche
-  Stand: "Eine von Grund auf neu errichtete Stadt, die erst 1750 Baupunkte enthält, bietet nur die
-  Rüstkapazität der schon fertigen Burg!", und "Eine beschossene Festung wird mit 2499 Baupunkten
-  zur Stadt" (1.5.7). Einnahmen, Rüstkapazität, Kampfvorteil und Beute lesen alle diese eine
-  Funktion. Das trifft den Datenbestand unmittelbar: **die Hauptstadt von Theostelos (306/25) steht
-  mit 3.000 Baupunkten in der Karte**, hat also 2.000 zuwenig, gilt der Anwendung aber als volle
-  Hauptstadt — 5.000 GS Einnahmen statt 3.000 und 400 statt 300 Gutpunkten im Nahkampf. Der
-  Kommentar in `RuestRules.GetKapazität` geht bereits vom Gegenteil aus. Das lässt sich an einer
-  Stelle geradeziehen, ändert aber Einnahmen, Rüstung und Kampf im ganzen Spiel — deshalb steht es
-  hier und nicht im Code.
+* **Wann genau fällt ein beschädigter Rüstort eine Stufe?** Seit dem Geradeziehen zählt der
+  tatsächliche Stand: ein Rüstort ist die höchste Stufe, die seine Baupunkte tragen (Regelwerk 1.5).
+  Die Referenztabelle ist dafür gebaut — Burg-I bis Burg-III tragen die Werte der fertigen Burg, wie
+  es das Beispiel in 1.5 verlangt. Die Bauwerkkapitel nennen aber andere Schwellen: "Eine
+  beschossene Festung wird mit 2499 Baupunkten zur Stadt" (1.5.7), "Eine Hauptstadt ... wird mit
+  3.499 Baupunkten zur Festung" (1.5.8), "Eine Festungshauptstadt wird mit 5499 Baupunkten zur
+  Hauptstadt" (1.5.9). Diese drei Zahlen liegen jeweils 500 über der nächstniedrigeren Stufe — nach
+  ihnen bliebe eine Festung bis 2500 Baupunkte eine Festung, nach der Tabelle ist sie ab 2999
+  eine Stadt. Der Unterschied ist eine Stufe im Kampf und bei den Einnahmen. Die Anwendung folgt der
+  Tabelle und dem Beispiel aus 1.5.
 * **Die `settings`-Tabelle der Zugdatenbank läuft dem Zugverzeichnis voraus.** Die Anwendung
   rechnet mit dem Verzeichnis und der Schatzkammer, die übereinstimmen, und warnt.

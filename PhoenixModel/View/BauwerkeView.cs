@@ -96,10 +96,32 @@ namespace PhoenixModel.View {
         }
 
         /// <summary>
-        /// Gibt den Rüstort basierend auf einer Kartenposition zurück.
+        /// Gibt den Rüstort zurück, der auf dieser Gemark tatsächlich steht.
+        ///
+        /// Die Karte führt zwei Angaben: die Spalte Ruestort nennt die Ausbaustufe, die dort stehen
+        /// <em>soll</em>, die Spalte Baupunkte den Zustand. Solange beide zusammenpassen, ist die
+        /// Antwort die Sollstufe. Fehlen Baupunkte, zählt der Zustand - das Regelwerk ist da
+        /// deutlich:
+        ///
+        /// "Eine von Grund auf neu errichtete Stadt, die erst 1750 Baupunkte enthält, bietet nur
+        /// die Rüstkapazität der schon fertigen Burg!" und "Eine Festung, die innerhalb einer Runde
+        /// von ihren 3000 Baupunkten 1500 verliert, ist nur noch eine halbfertige Stadt ... man
+        /// kann bis zur erneuten Fertigstellung der Stadt nur die Rüstkapazität einer Burg nutzen."
+        /// (Regelwerk 1.5)
+        ///
+        /// Die Referenztabelle ist dafür gebaut: die Zwischenstufen Burg-I bis Burg-III tragen die
+        /// Werte der fertigen Burg, Stadt-I bis Stadt-III die der fertigen Stadt. Gesucht wird also
+        /// die höchste Stufe, die die vorhandenen Baupunkte tragen - und nie eine höhere als die,
+        /// die dort stehen soll.
+        ///
+        /// Was nicht einmal mehr für die kleinste Stufe reicht, ist zerstört: dann steht dort
+        /// nichts mehr, und die Antwort ist null.
+        ///
+        /// Wer die Sollstufe braucht - für Schaden, Reparatur und Ausbau - nimmt
+        /// <see cref="Rules.RuestortRules.GetSollstufe"/>.
         /// </summary>
         /// <param name="pos">Die Position auf der Karte.</param>
-        /// <returns>Der entsprechende Rüstort oder null, falls nicht gefunden.</returns>
+        /// <returns>Der entsprechende Rüstort oder null, falls dort keiner (mehr) steht.</returns>
         public static Rüstort? GetRüstortNachKarte(KleinfeldPosition pos) {
             if (SharedData.Map == null)
                 return null;
@@ -107,8 +129,12 @@ namespace PhoenixModel.View {
             var gemark = SharedData.Map[pos.CreateBezeichner()];
             Rüstort? rüstortLautKarte = BauwerkeView.GetRuestortReferenz(gemark.Ruestort);
 
-            if (rüstortLautKarte != null)
-                return rüstortLautKarte;
+            if (rüstortLautKarte != null) {
+                // unbeschädigt - dann gilt, was dort stehen soll
+                if (gemark.Baupunkte >= (rüstortLautKarte.Baupunkte ?? 0))
+                    return rüstortLautKarte;
+                return GetErreichteStufe(gemark.Baupunkte);
+            }
 
             if (Rüstort.NachBaupunkten.ContainsKey(gemark.Baupunkte))
                 return Rüstort.NachBaupunkten[gemark.Baupunkte];
@@ -122,6 +148,23 @@ namespace PhoenixModel.View {
                 }
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Die höchste Ausbaustufe, die diese Baupunkte tragen.
+        ///
+        /// Das Dorf bleibt aussen vor: es steht mit null Baupunkten in der Referenz, und jede leere
+        /// Gemark hat ebenfalls null. Ein Dorf erkennt man daran, dass es in der Spalte Ruestort
+        /// steht - nicht daran, dass nichts gebaut wurde.
+        /// </summary>
+        /// <returns>die Stufe, oder null, wenn die Baupunkte für keine reichen</returns>
+        public static Rüstort? GetErreichteStufe(int baupunkte) {
+            if (baupunkte <= 0 || SharedData.RüstortReferenz == null)
+                return null;
+            return SharedData.RüstortReferenz
+                .Where(stufe => stufe.Baupunkte != null && stufe.Baupunkte > 0 && stufe.Baupunkte <= baupunkte)
+                .OrderByDescending(stufe => stufe.Baupunkte)
+                .FirstOrDefault();
         }
 
         /// <summary>

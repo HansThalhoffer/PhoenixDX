@@ -51,6 +51,27 @@ namespace PhoenixModel.Rules {
         public static int BerechneKosten(int baupunkte) => Math.Max(0, baupunkte) * KostenProBaupunkt;
 
         /// <summary>
+        /// Die fertige Stufe hinter einer Zwischenstufe: aus "Stadt-II" wird "Stadt".
+        ///
+        /// Die Referenztabelle führt zwischen zwei fertigen Rüstorten drei Zwischenstufen je 250
+        /// Baupunkte - Burg-I bis Burg-III zwischen Burg und Stadt. Sie tragen die Werte der
+        /// fertigen Burg (Regelwerk 1.5: "man kann bis zur erneuten Fertigstellung der Stadt nur
+        /// die Rüstkapazität einer Burg nutzen"), heissen aber anders. Wer einen Rüstort an seinem
+        /// Namen erkennt, fragt deshalb nach der Grundstufe.
+        /// </summary>
+        public static string? GetGrundstufe(string? stufenname) {
+            if (string.IsNullOrWhiteSpace(stufenname))
+                return null;
+            int strich = stufenname.IndexOf('-');
+            return strich < 0 ? stufenname : stufenname[..strich];
+        }
+
+        /// <summary>
+        /// Dasselbe für einen Rüstort aus der Referenztabelle
+        /// </summary>
+        public static string? GetGrundstufe(Rüstort? rüstort) => GetGrundstufe(rüstort?.Ruestort);
+
+        /// <summary>
         /// Die Ausbaustufe, die an diesem Kleinfeld stehen sollte
         /// </summary>
         public static Rüstort? GetSollstufe(KleinFeld? kleinfeld) {

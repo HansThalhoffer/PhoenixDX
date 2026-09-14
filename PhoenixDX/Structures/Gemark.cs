@@ -220,8 +220,15 @@ namespace PhoenixDX.Structures {
             }
             if (gem.Gebäude != null) {
                 try {
-                    string name = gem.Gebäude.Rüstort.Bauwerk;
-                    if (RuestortSymbol.Ruestorte.ContainsKey(name)) {
+                    // Der Rüstort ist die Stufe, die dort tatsächlich steht - bei einem
+                    // beschädigten Bauwerk also eine niedrigere als die eingetragene, und bei
+                    // einem, dessen Baupunkte für keine Stufe mehr reichen, gar keine. Dann
+                    // steht dort nichts mehr, was sich zeichnen liesse.
+                    string? name = gem.Gebäude.Rüstort?.Bauwerk;
+                    if (name == null) {
+                        // zerstört - kein Symbol
+                    }
+                    else if (RuestortSymbol.Ruestorte.ContainsKey(name)) {
                         // Layer_0.Add("Rüstort", RuestortSymbol.Ruestorte[name]);
                         Layer_0.Add(RuestortSymbol.Ruestorte[name]);
                     }

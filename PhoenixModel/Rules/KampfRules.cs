@@ -659,7 +659,8 @@ namespace PhoenixModel.Rules {
         /// Burg 100, Stadt 200, Festung 300, Hauptstadt 400, Festungshauptstadt 500 - dieselbe
         /// Reihe, die auch das Regelwerk bei den Bauwerken nennt (1.5.5 bis 1.5.9).
         /// </summary>
-        public static Kampfvorteil? GetRüstortvorteil(dbCrossRef.Rüstort? rüstort) => rüstort?.Ruestort switch {
+        public static Kampfvorteil? GetRüstortvorteil(dbCrossRef.Rüstort? rüstort)
+                => RuestortRules.GetGrundstufe(rüstort) switch {
             "Burg" => Kampfvorteil.AusBurg,
             "Stadt" => Kampfvorteil.AusStadt,
             "Festung" => Kampfvorteil.AusFestung,

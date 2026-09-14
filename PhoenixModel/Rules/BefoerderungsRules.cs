@@ -210,7 +210,8 @@ namespace PhoenixModel.Rules {
         /// <summary>
         /// Welches Amt ein Rüstort trägt - die Umkehrung von <see cref="GetErforderlichenRüstort"/>
         /// </summary>
-        public static Characterklasse GetKlasseZuRüstort(string? rüstort) => rüstort switch {
+        public static Characterklasse GetKlasseZuRüstort(string? rüstort)
+                => RuestortRules.GetGrundstufe(rüstort) switch {
             "Burg" => Characterklasse.BUH,
             "Stadt" => Characterklasse.STH,
             "Festung" => Characterklasse.FSH,

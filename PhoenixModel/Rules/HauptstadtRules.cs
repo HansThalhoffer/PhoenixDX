@@ -75,12 +75,12 @@ namespace PhoenixModel.Rules {
         /// Festungshauptstadt besitzen" (Regelwerk 1.5.9).
         /// </summary>
         public static bool IstHauptstadt(Rüstort? rüstort)
-            => rüstort?.Ruestort == Hauptstadt || rüstort?.Ruestort == Festungshauptstadt;
+            => RuestortRules.GetGrundstufe(rüstort) is Hauptstadt or Festungshauptstadt;
 
         /// <summary>
         /// Ist dieser Rüstort eine Festung - und keine Festungshauptstadt?
         /// </summary>
-        public static bool IstFestung(Rüstort? rüstort) => rüstort?.Ruestort == Festung;
+        public static bool IstFestung(Rüstort? rüstort) => RuestortRules.GetGrundstufe(rüstort) == Festung;
 
         /// <summary>
         /// Die Ausbaustufe aus der Referenztabelle, über ihren Namen
@@ -93,6 +93,10 @@ namespace PhoenixModel.Rules {
         ///
         /// Keine zu haben ist ein gültiger Zustand: während einer Verlegung ist das so vorgesehen,
         /// und ein Reich kann seine Hauptstadt auch verlieren (Regelwerk 1.5.8).
+        ///
+        /// Gefragt ist hier die Bezeichnung, nicht der Zustand: eine zusammengeschossene Hauptstadt
+        /// bleibt die Hauptstadt des Reiches, auch wenn sie in diesem Monat nur die Einnahmen und
+        /// den Kampfvorteil einer Festung bringt. Deshalb die Sollstufe.
         /// </summary>
         public static KleinFeld? FindeHauptstadt(Nation? reich) {
             if (reich == null || SharedData.Map == null)
@@ -100,7 +104,7 @@ namespace PhoenixModel.Rules {
             foreach (var gemark in SharedData.Map.Values) {
                 if (gemark.Nation == null || gemark.Nation.Equals(reich) == false)
                     continue;
-                if (IstHauptstadt(BauwerkeView.GetRüstortNachKarte(gemark)))
+                if (IstHauptstadt(RuestortRules.GetSollstufe(gemark)))
                     return gemark;
             }
             return null;
@@ -125,18 +129,18 @@ namespace PhoenixModel.Rules {
         /// <summary>
         /// Steht auf diesem Feld eine bestehende Festung?
         ///
-        /// "bestehend" heisst fertig und unbeschädigt: die Karte führt in der Spalte Ruestort die
-        /// Stufe, die dort stehen soll, und in den Baupunkten den tatsächlichen Zustand. Eine
-        /// Festung, die auf 2.500 Baupunkte zusammengeschossen ist, ist noch als Festung
-        /// eingetragen, aber sie ist keine, in die man eine Hauptstadt verlegt.
+        /// "bestehend" heisst fertig und als Festung ausgewiesen: die Karte führt in der Spalte
+        /// Ruestort die Stufe, die dort stehen soll, und in den Baupunkten den tatsächlichen
+        /// Zustand. Eine Festung, die auf 2.500 Baupunkte zusammengeschossen ist, soll zwar eine
+        /// Festung sein, ist aber keine, in die man eine Hauptstadt verlegt - und eine beschädigte
+        /// Hauptstadt, die gerade nur eine Festung trägt, ist die Hauptstadt des Reiches und kein
+        /// Ziel.
         /// </summary>
         public static bool IstBestehendeFestung(KleinFeld? gemark) {
             if (gemark == null)
                 return false;
-            var stufe = BauwerkeView.GetRüstortNachKarte(gemark);
-            if (IstFestung(stufe) == false)
-                return false;
-            return gemark.Baupunkte >= (stufe?.Baupunkte ?? 0);
+            return IstFestung(RuestortRules.GetSollstufe(gemark))
+                && IstFestung(BauwerkeView.GetRüstortNachKarte(gemark));
         }
 
         /// <summary>

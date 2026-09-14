@@ -41,6 +41,9 @@ namespace PhoenixModel.ExternalTables
             { "Auftauchpunkt (unbekannt)", new Werte(0, 0) },
             // aus den Bauwerken
             { "Baustelle", new Werte ( 0, 0 ) },
+            // Das Dorf fehlte in dieser Tabelle, seine drei Baustufen standen darin. Gemeldet hat
+            // sich das erst, als beschädigte Rüstorte auf ihre tatsächliche Stufe fielen.
+            { "Dorf", new Werte ( 0, 0 ) },
             { "Dorf-I", new Werte ( 0, 0 ) },
             { "Dorf-II", new Werte ( 0, 0 ) },
             { "Dorf-III", new Werte ( 0, 0 ) },
