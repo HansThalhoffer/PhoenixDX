@@ -53,7 +53,7 @@ richtig ist. Gegen die Altanwendung PZE.NET ist hier nichts verglichen worden.
 | 1.8 Höchstgrenze 100.000 Raumpunkte | **steht** | `ÜberbesetzungRules` (Regelwerk 5.7) |
 | 1.8 "eroberungsfähiges Heer" (1000 RP + HF) | **steht** | `HeeresRules.IstEroberungsfähig`; benutzt beim Erobern, Stören und Unterstützen |
 | 1.9 Charaktere, Ämter, Gutpunkte | **steht** | `CharacterView`, Klassenstufen in `CharakterkampfRules` |
-| 1.9 Beförderung und Degradierung | **fehlt** | offenes Issue |
+| 1.9 Beförderung und Degradierung | **steht** | `BeförderungsRules`, `BeförderungCommand` |
 | 1.9 Charakterzauberer, Herrscherzauberer | **halb** | erkannt und im Kampf behandelt; eigene Regeln (Notteleportation) fehlen |
 
 ---
@@ -189,8 +189,10 @@ Erklärung, warum ein Feld unerreichbar ist, und die Kampfauswertung der Spielle
    *Nachschlagewerk*. Offen bleibt die Verbindung von einer Kreaturenfigur zu ihrem Eintrag: die
    Figur führt keinen Namen, über den sich nachschlagen liesse.
 
-6. **Beförderungen (1.9), Hauptstadtverlegung (1.5.13), Heere auflösen (1.6).** Kleine,
-   klar umrissene Befehle.
+6. ~~Beförderungen (1.9).~~ **Erledigt** — `Befördere Charakter 601 zum Burgherrn` und
+   `Degradiere ...`; nach oben steigt nur das Maximum, nach unten fällt beides, ein Amt gibt es je
+   Reich einmal und nur mit dem passenden Rüstort. Offen bleiben **Hauptstadtverlegung (1.5.13)**
+   und **Heere auflösen / Bauwerke zerstören (1.6)** — kleine, klar umrissene Befehle.
 
 7. **Gefangene (5.5, 5.8.4).** Beim Überrennen werden Truppen gefangen genommen; das Datenmodell
    kennt keine Gefangenen. Das ist der grösste der kleinen Punkte, weil es eine neue Spalte

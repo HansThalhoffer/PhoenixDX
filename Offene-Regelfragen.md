@@ -154,12 +154,13 @@ Schiffe — eine Zeile in `BelagerungsRules`.
   Im Datenbestand gibt es aber weder ein Reich dieses Namens noch ein Feld beim Charakter, das
   einen Orden festhielte. Die Regeln sind umgesetzt, aber wer ein Ritter ist, muss der Anwendung
   gesagt werden — solange bleibt der Ritterkampf ungenutzt.
-* * **Wieviele Gutpunkte hat ein Festungsherr?** Das Regelwerk nennt im Beförderungsbeispiel
-  (1.9.1) Burgherr 24, Stadthalter 36 und Herrscher 60 Gutpunkte, den Festungsherrn aber nirgends.
-  Die Anwendung ordnet ihn seinem Rang entsprechend zwischen Stadthalter und Herrscher mit 48 ein.
-  Der Wert dient nur dazu, das Amt eines Charakters zu schätzen, wenn seine Beschriftung es nicht
-  verrät.
-* * **Im Nahkampf verlieren Katapulte mit, obwohl sie sich ergeben.** Das Regelwerk sagt, dass
+* **Wieviele Gutpunkte haben Heerführer und Festungsherr?** Das Regelwerk nennt im
+  Beförderungsbeispiel (1.9.1) Burgherr 24, Stadthalter 36 und Herrscher 60 Gutpunkte — den
+  Heerführer und den Festungsherrn nirgends. Die Anwendung setzt sie ihrem Rang entsprechend an:
+  Heerführer 12, Festungsherr 48 zwischen Stadthalter und Herrscher. Beide Werte schätzen nicht
+  nur das Amt eines Charakters, wenn seine Beschriftung es nicht verrät, sondern sind seit den
+  Beförderungen auch das Maximum, das eine Beförderung in dieses Amt setzt (`BeförderungsRules`).
+* **Im Nahkampf verlieren Katapulte mit, obwohl sie sich ergeben.** Das Regelwerk sagt, dass
   Katapulte am Nahkampf nicht teilnehmen und sich immer ergeben (5.5); die Kampftabelle verteilt
   die Verluste aber auch auf ihre Zeilen. Die Anwendung rechnet die Verluste wie die Tabelle und
   zählt als Beute die Katapulte, die in den Nahkampf gegangen sind — bei einem aufgeriebenen Heer
