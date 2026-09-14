@@ -1,4 +1,4 @@
-using LiveCharts.Wpf;
+﻿using LiveCharts.Wpf;
 using PhoenixModel.Database;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
@@ -274,6 +274,25 @@ namespace Tests {
                 AppSettings settings = new AppSettings("Tests.jpk");
                 settings.InitializeSettings();
                 return StorageSystem.LocateFile(settings.UserSettings.DatabaseLocationKarte, "Erkenfara.mdb");
+            }
+        }
+
+        /// <summary>
+        /// Das verschlüsselte Passwort der Kartendatenbank, so wie es die Anwendung führt
+        /// </summary>
+        public static string KartenPasswort {
+            get {
+                AppSettings settings = new AppSettings("Tests.jpk");
+                settings.InitializeSettings();
+                // Derselbe Weg wie in LoadKarte, damit beide dasselbe liefern, auch wenn in den
+                // Einstellungen einmal etwas anderes stehen sollte.
+                //
+                // Der Wert ist verschluesselt. Wer daraus das Klartextpasswort braucht, muss ihn
+                // erst nach PasswordHolder.EncryptedString wandeln - ein PasswordHolder, der mit
+                // der Zeichenkette gefuettert wird, liefert etwas anderes, und der Treiber sagt
+                // dazu nur "Fehler bei einem aus mehreren Schritten bestehenden OLE DB-Vorgang".
+                PasswordHolder holder = new(settings.UserSettings.PasswordKarte, new TestPasswortProvider("Erkenfara.mdb"));
+                return holder.EncryptedPasswordBase64;
             }
         }
 

@@ -87,6 +87,9 @@ namespace PhoenixWPF.Program {
             LoadCrossRef(); // die referenzen vor der Karte laden, auch wenn es dann weniger zu sehen gibt - insgesamt geht das schneller
             LoadKarte();
             LoadPZE();
+            // nur auf ausdrueckliche Anforderung: /cleanup raeumt die Bauwerkliste auf
+            if (Kommandozeile.Bereinigung)
+                BereinigeKarte();
             // die Anteile laden, die im Hintergrund geladen werden können
             LoadCrossRef(true);
             LoadKarte(true);
@@ -492,6 +495,36 @@ namespace PhoenixWPF.Program {
         }
 
 
+
+        /// <summary>
+        /// Raeumt die Bauwerkliste auf - nur beim Start mit /cleanup.
+        ///
+        /// Laeuft nach dem Laden von Karte und PZE, weil der Abgleich die Karte braucht. Was
+        /// entfernt wird, sagt die Meldung; gesichert wird vorher.
+        /// </summary>
+        private void BereinigeKarte() {
+            if (Settings == null)
+                return;
+            try {
+                var ergebnis = Kartenbereinigung.Bereinige(
+                    Settings.UserSettings.DatabaseLocationKarte, Settings.UserSettings.PasswordKarte);
+
+                if (ergebnis.Geloescht.Count == 0) {
+                    SpielWPF.LogInfo("In der Bauwerkliste gab es nichts zu bereinigen",
+                        "Zu jedem Eintrag der Tabelle [bauwerksliste] fuehrt die Karte Baupunkte oder einen Ruestort.");
+                    return;
+                }
+
+                SpielWPF.LogInfo($"{ergebnis.Geloescht.Count} Eintraege aus der Bauwerkliste entfernt",
+                    $"Die Karte fuehrte zu diesen Gemarken weder Baupunkte noch einen Ruestort: "
+                    + $"{string.Join(", ", ergebnis.Geloescht)}.\r\r"
+                    + $"Vorher gesichert nach {ergebnis.Sicherung}.");
+            }
+            catch (Exception ex) {
+                SpielWPF.LogError("Die Bauwerkliste liess sich nicht bereinigen",
+                    $"Es wurde nichts geloescht.\r\r{ex.Message}");
+            }
+        }
 
         private ILoadableDatabase CreateKarte(string databaseLocation, string encryptedPassword) {
             return new ErkenfaraKarte(databaseLocation, encryptedPassword);
