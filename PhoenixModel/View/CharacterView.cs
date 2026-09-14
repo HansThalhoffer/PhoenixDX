@@ -23,6 +23,11 @@ namespace PhoenixModel.View {
             // heraus, und ein Herrscher liess die Anwendung mit einer IndexOutOfRangeException
             // stehen.
             string beschriftung = figur.Beschriftung.ToUpper();
+            // Ein Zivilist hat kein Amt - die Aufzählung führt ihn deshalb nicht, und die
+            // Kategorientabelle hat keinen Eintrag für ihn. Ohne diese Zeile fiele er in die
+            // Schätzung unten und käme als Heerführer heraus, weil der bei 0 Gutpunkten anfängt.
+            if (beschriftung.StartsWith("CIV") || beschriftung.StartsWith("ZIV"))
+                return null;
             if (beschriftung.StartsWith("BUH"))
                 return CrossrefCharaktere.Get(Characterklasse.BUH);
             else if (beschriftung.StartsWith("STH"))

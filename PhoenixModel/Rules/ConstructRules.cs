@@ -77,6 +77,59 @@ namespace PhoenixModel.Rules {
         /// <param name="kf">kleinfeld</param>
         /// <param name="direction">Richtung</param>
         /// <returns></returns>
+        /// <summary>
+        /// Verhindert ein fremdes Heer den Bau auf dieser Gemark?
+        ///
+        /// "Der Bau eines Bauwerks kann von einem nicht alliierten, eroberungsfähigen Heer
+        /// verhindert werden, wenn es in einer benachbarten Gemark steht und die Baustelle von
+        /// dort aus ungehindert betreten kann" (Regelwerk 1.5) - dasselbe gilt für die Reparatur
+        /// (1.5.10).
+        ///
+        /// Das Regelwerk unterscheidet, wo das Bauwerk liegt: "Bei Bauwerken IN einem Gemark: In
+        /// jedem umliegenden Gemark. Bei Bauwerken AN einer Gemarkseite: In diesem angrenzenden
+        /// Gemark." Für ein Bauwerk an einer Seite - Wall, Brücke, Kaianlage - wird deshalb die
+        /// Richtung mitgegeben; ohne Richtung zählen alle Nachbarn.
+        ///
+        /// Gesucht wird unter den Figuren, die der Fragende sieht: die Spielleitung kennt alle
+        /// Reiche, ein Spieler nur seine Feindaufklärung. Ohne Angabe wird genommen, was da ist.
+        /// </summary>
+        /// <param name="kf">die Gemark, auf der gebaut werden soll</param>
+        /// <param name="richtung">die Seite, wenn das Bauwerk an einer Gemarkseite liegt</param>
+        /// <param name="figuren">die fremden Figuren; ohne Angabe die der Spielleitung</param>
+        public static Result? WirdGestört(KleinFeld? kf, Direction? richtung = null, IEnumerable<Spielfigur>? figuren = null) {
+            if (kf == null)
+                return null;
+
+            var nachbarn = KleinfeldView.GetNachbarn(kf, 1, includeSelf: false)?.ToList() ?? [];
+            if (richtung != null) {
+                var seite = KartenKoordinaten.GetNachbar(kf, richtung.Value);
+                nachbarn = seite == null ? [] : [.. nachbarn.Where(feld => feld.Key == seite.Key)];
+            }
+            if (nachbarn.Count == 0)
+                return null;
+
+            foreach (var figur in figuren ?? Spielleitungsdaten.GetAlleFiguren()) {
+                if (figur is not TruppenSpielfigur heer || heer.Nation == null)
+                    continue;
+                var nachbar = nachbarn.FirstOrDefault(feld => feld.gf == heer.gf && feld.kf == heer.kf);
+                if (nachbar == null)
+                    continue;
+                if (DiplomatieRules.SindVerfeindet(heer.Nation, kf.Nation, kf) == false)
+                    continue;
+                if (HeeresRules.IstEroberungsfähig(heer) == false)
+                    continue;
+                var verbrauch = BewegungsRules.GetVerbrauch(heer, kf.Gelaendetyp ?? 0, wegerecht: true, straße: false);
+                if (verbrauch == null || verbrauch.BP >= BewegungsRules.BPUnpassierbar)
+                    continue;
+
+                return Result.Fail($"Die Baustelle auf {kf.Bezeichner} wird gestört",
+                    $"{heer.Bezeichner} steht auf {nachbar.CreateBezeichner()} und könnte die Baustelle betreten. "
+                    + "Ein nicht alliiertes, eroberungsfähiges Heer in einer benachbarten Gemark verhindert den Bau "
+                    + "(Regelwerk 1.5).");
+            }
+            return null;
+        }
+
         public static Result CanConstructBridge(KleinFeld kf, Direction direction) {
             if (IsNotAllowedOnWater(kf) is Result wasserTest && wasserTest.HasErrors)
                 return wasserTest;
@@ -249,6 +302,9 @@ namespace PhoenixModel.Rules {
 
             if (IsEnoughMoney(kf, KostenView.GetGSKosten(ConstructionElementType.Burg)) is Result moneyTest && moneyTest.HasErrors)
                 return moneyTest;
+
+            if (WirdGestört(kf) is Result störung && störung.HasErrors)
+                return störung;
 
             return Result.Success();
         }

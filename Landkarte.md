@@ -51,7 +51,7 @@ richtig ist. Gegen die Altanwendung PZE.NET ist hier nichts verglichen worden.
 | 1.7 Belagerung | **steht** | `BelagerungsRules`; mindert Rüstkapazität und Großbaustelle |
 | 1.8 Heere: Mindestgrösse, Nummernkreise, Teilen, Fusionieren | **steht** | `HeeresRules`, `SplitCommand`, `MergeCommand` |
 | 1.8 Höchstgrenze 100.000 Raumpunkte | **steht** | `ÜberbesetzungRules` (Regelwerk 5.7) |
-| 1.8 "eroberungsfähiges Heer" (1000 RP + HF) | **fehlt** | der Begriff kommt im Code nirgends vor, wird aber von vier Regeln gebraucht |
+| 1.8 "eroberungsfähiges Heer" (1000 RP + HF) | **steht** | `HeeresRules.IstEroberungsfähig`; benutzt beim Erobern, Stören und Unterstützen |
 | 1.9 Charaktere, Ämter, Gutpunkte | **steht** | `CharacterView`, Klassenstufen in `CharakterkampfRules` |
 | 1.9 Beförderung und Degradierung | **fehlt** | offenes Issue |
 | 1.9 Charakterzauberer, Herrscherzauberer | **halb** | erkannt und im Kampf behandelt; eigene Regeln (Notteleportation) fehlen |
@@ -74,7 +74,7 @@ richtig ist. Gegen die Altanwendung PZE.NET ist hier nichts verglichen worden.
 | 3.1 Zugreihenfolge, Auftauchpunkt | **steht** | eigener Dialog, liest die Kartendatenbank |
 | 3.2.1 Gewöhnliche Einnahmen (Einwohner, Gelände, Bauwerke) | **steht** | `EinnahmenView`, Bericht des Kämmerers |
 | 3.2.2 Sonstige Einnahmen (Verkauf von Rüstgütern, Gefangenen, Gelände) | **fehlt** | kein Verkauf im Code |
-| 3.2.3 Plündereinnahmen | **halb** | der Befehl kennt "und plündere", die Einnahme daraus wird nicht gerechnet |
+| 3.2.3 Plündereinnahmen | **halb** | der Befehl prüft jetzt die Eroberungsfähigkeit; die doppelte Einnahme und die acht Monate Sperre fehlen |
 | 3.2 Besondere Einnahmen | **steht** | Kampfeinnahmen, Transport in den Rüstort, Schenkung |
 | 3.3 Rüsten, Rüstkapazität, Rüstmonat | **steht** | `RuestRules` |
 | 3.3 Rüsten ausserhalb des Rüstmonats | **steht** | aus besonderen Einnahmen |
@@ -92,7 +92,7 @@ richtig ist. Gegen die Altanwendung PZE.NET ist hier nichts verglichen worden.
 | 4.2 Wegerecht, Strassen | **steht** | seit der Berichtigung der Diplomatiesicht |
 | 4.3 Transport und Ladung, Ein- und Ausschiffen | **steht** | `SchifffahrtsRules`, `EmbarkCommand` |
 | 4.3 Gold und Kampfeinnahmen umladen | **steht** | `VerschiebeRules` |
-| Erobern und Plündern beim Betreten | **halb** | wird vermerkt; ob das Heer eroberungsfähig ist, prüft niemand |
+| Erobern und Plündern beim Betreten | **steht** | nur ein eroberungsfähiges Heer nimmt Gelände; die Einnahme daraus fehlt noch |
 
 ---
 
@@ -109,7 +109,7 @@ Spielleitung werden eingetragen.
 | 5.4 Rückzugsgefecht | **steht** | Zulassung, freier Rückzug, Angriffssperre |
 | 5.4 Notteleportation der Charakterzauberer | **fehlt** | |
 | 5.5 Nahkampf | **steht** | Beispiel des Regelwerks geht durch |
-| 5.5.1 Nachbarunterstützung | **halb** | der Vorteil ist da, aber niemand ermittelt die unterstützenden Felder |
+| 5.5.1 Nachbarunterstützung | **steht** | `KampfRules.FindeUnterstützer` |
 | 5.5.2 Standardgelände (+50) | **blockiert** | welches Gelände ein Reich hat, steht nicht im Datenbestand |
 | 5.6 Kampfeinnahmen | **steht** | |
 | 5.7 Überbesetzung | **steht** | |
@@ -175,12 +175,11 @@ Erklärung, warum ein Feld unerreichbar ist, und die Kampfauswertung der Spielle
    der Lage der Heere gesucht. Offen blieb nur die Frage, ob eine Flotte belagern kann (Punkt 6
    der offenen Regelfragen).
 
-2. **Eroberungsfähiges Heer (1.8).** 1000 Raumpunkte plus Heerführer. Vier Regeln hängen daran:
-   Erobern beim Betreten, Verhindern von Bau und Reparatur, Nachbarunterstützung im Kampf und
-   das Zerstören von Bauwerken. Eine Methode, vier Anwendungsstellen.
+2. ~~Eroberungsfähiges Heer (1.8).~~ **Erledigt** — `HeeresRules.IstEroberungsfähig`, benutzt beim
+   Erobern und Plündern, beim Stören von Bau und Reparatur und bei der Nachbarunterstützung. Für
+   das Zerstören von Bauwerken (1.6) fehlt weiterhin der Befehl selbst.
 
-3. **Nachbarunterstützung (5.5.1).** Der Kampfvorteil ist da, aber niemand sucht die Felder. Mit
-   Punkt 2 zusammen ist das überschaubar.
+3. ~~Nachbarunterstützung (5.5.1).~~ **Erledigt** — `KampfRules.FindeUnterstützer`.
 
 4. **Sonstige Einnahmen und Plündereinnahmen (3.2.2, 3.2.3).** Der Plünderbefehl wird vermerkt,
    die Einnahme daraus nicht gerechnet; Verkäufe gibt es gar nicht.

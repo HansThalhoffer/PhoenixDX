@@ -65,6 +65,59 @@ namespace PhoenixModel.Rules {
         /// <summary>
         /// Die erste Nummer des Nummernkreises, in dem eine Truppe dieser Gattung geführt wird
         /// </summary>
+        /// <summary>
+        /// "Ein Landheer mit 1000 Raumpunkten plus Heerführer oder Adeliger gilt als
+        /// eroberungsfähiges Heer." (Regelwerk 1.8)
+        /// </summary>
+        public const int RaumpunkteFürEroberung = 1000;
+
+        /// <summary>
+        /// Ist dieses Heer eroberungsfähig?
+        ///
+        /// Drei Bedingungen aus Regelwerk 1.8: es ist ein Landheer, es hat mindestens 1000
+        /// Raumpunkte, und es führt einen Heerführer oder einen Adeligen.
+        ///
+        /// Die Raumpunkte des Heerführers zählen zu den 1000 mit - Raumpunkte sind Raumpunkte,
+        /// und dieselbe Rechnung begrenzt auch die Besetzung einer Gemark (1.8).
+        ///
+        /// Eine Flotte ist kein Landheer und erobert nichts - "Wassergemarken können nicht erobert
+        /// werden" (0.3). An dem Begriff hängen vier Regeln: das Erobern und Plündern beim Betreten
+        /// (3.2.2, 3.2.2.1), das Verhindern von Bau und Reparatur (1.5, 1.5.10), das Zerstören von
+        /// Bauwerken (1.6) und die Nachbarunterstützung im Kampf (5.5.1).
+        /// </summary>
+        public static bool IstEroberungsfähig(TruppenSpielfigur? heer) {
+            if (heer == null || heer.BaseTyp == FigurType.Schiff)
+                return false;
+            if (SpielfigurRules.BerechneRaumpunkte(heer) < RaumpunkteFürEroberung)
+                return false;
+            return heer.hf >= MinHeerführer || BegleitetEinAdliger(heer);
+        }
+
+        /// <summary>
+        /// Steht ein Adeliger bei diesem Heer?
+        ///
+        /// Das Regelwerk lässt den Adeligen den Heerführer ersetzen. Welcher Charakter zu welchem
+        /// Heer gehört, sagen die Zugdaten allerdings nicht verlässlich: die Spalte Einheit der
+        /// Charaktertabelle ist im Datenbestand leer. Auf dem Spielbrett steht der Adelige mit
+        /// seinem Heer auf derselben Gemark - genau das wird hier gezählt.
+        ///
+        /// Ein Zivilist zählt nicht: adelig sind Heerführer, Burgherr, Stadthalter, Festungsherr
+        /// und Herrscher (Regelwerk 1.9.1).
+        /// </summary>
+        public static bool BegleitetEinAdliger(TruppenSpielfigur? heer) {
+            if (heer == null || heer.Nation == null)
+                return false;
+            foreach (var figur in SpielfigurenView.GetSpielfiguren(heer.Nation)) {
+                if (figur is not Character charakter)
+                    continue;
+                if (charakter.gf != heer.gf || charakter.kf != heer.kf)
+                    continue;
+                if (CharakterkampfRules.GetKlassenstufe(charakter) > CharakterkampfRules.KlasseZivilist)
+                    return true;
+            }
+            return false;
+        }
+
         public static int GetStartNummer(FigurType baseTyp) => baseTyp switch {
             FigurType.Krieger => Krieger.StartNummer,
             FigurType.Reiter => Reiter.StartNummer,

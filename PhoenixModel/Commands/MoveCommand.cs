@@ -288,10 +288,22 @@ namespace PhoenixModel.Commands {
             figur.hoehenstufen = schritt.HöhenstufenGesamt;
             new Bewegungsspur(figur).Add(ziel);
 
-            // fremdes Gebiet wird auferobert oder geplündert
+            // Fremdes Gebiet wird auferobert oder geplündert - aber nur von einem
+            // eroberungsfähigen Heer: "Ein Landheer mit 1000 Raumpunkten plus Heerführer oder
+            // Adeliger gilt als eroberungsfähiges Heer" (Regelwerk 1.8). Auch das Plündern setzt
+            // das voraus (3.2.2.1). Wer zu klein ist, zieht durch, ohne etwas zu nehmen - und
+            // erfährt es, statt sich zu wundern.
             if (schritt.Erobert && figur is TruppenSpielfigur truppe) {
-                string marke = Eroberung == EroberungsModus.Erobern ? "E" : "P";
-                truppe.Befehl_erobert += $"{marke}:{ziel.gf}/{ziel.kf};";
+                if (HeeresRules.IstEroberungsfähig(truppe)) {
+                    string marke = Eroberung == EroberungsModus.Erobern ? "E" : "P";
+                    truppe.Befehl_erobert += $"{marke}:{ziel.gf}/{ziel.kf};";
+                }
+                else {
+                    string was = Eroberung == EroberungsModus.Erobern ? "erobert" : "geplündert";
+                    ProgramView.LogWarning(ziel, $"{truppe.Bezeichner} hat {ziel.CreateBezeichner()} nicht {was}",
+                        $"Dafür braucht es ein Landheer mit {HeeresRules.RaumpunkteFürEroberung} Raumpunkten "
+                        + "und einem Heerführer oder Adeligen (Regelwerk 1.8).");
+                }
             }
         }
 

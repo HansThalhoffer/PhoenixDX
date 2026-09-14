@@ -1,4 +1,5 @@
 ﻿using PhoenixModel.ExternalTables;
+using PhoenixModel.Extensions;
 using PhoenixModel.ViewModel;
 
 namespace PhoenixModel.Rules {
@@ -580,6 +581,74 @@ namespace PhoenixModel.Rules {
                 double anteil = gesamtverluste * heere[i].Heeresstärke / gesamt;
                 double differenz = BerechneGutpunktdifferenz(heere[i].Gutpunkte, gutpunktschnittVerlierer);
                 ergebnis[i] = Math.Max(0, WendeGutpunktdifferenzAn(anteil, differenz));
+            }
+            return ergebnis;
+        }
+
+        /// <summary>
+        /// Ein Heer, das von einer Nachbargemark aus unterstützt.
+        /// </summary>
+        public record class Unterstützer(KleinfeldPosition Gemark, TruppenSpielfigur Heer) {
+            public override string ToString() => $"{Heer.Bezeichner} auf {Gemark.CreateBezeichner()}";
+        }
+
+        /// <summary>
+        /// Sucht die Heere, die ein angegriffenes Heer aus der Nachbarschaft unterstützen können
+        /// (Regelwerk 5.5.1).
+        ///
+        /// "Ein benachbartes Heer kann im Kampf unterstützen. Unterstützen kann nur ein
+        /// eroberungsfähiges Heer. Pro Gemark kann ein Heer ein angegriffenes Heer mit 10
+        /// Gutpunkten unterstützen, wenn es auf einer zum angegriffenen Heer angrenzenden Gemark
+        /// steht und es die Gemark des angegriffenen Heeres direkt betreten könnte. ...
+        /// Transportierte Heere können nicht unterstützen."
+        ///
+        /// Zurück kommt höchstens ein Heer je Gemark - mehr zählen dort ohnehin nicht. Wer welches
+        /// Heer unterstützt, entscheidet die Spielleitung: "Stehen zwei oder mehr Heere auf einer
+        /// angegriffenen Gemark, so kann jedes dieser Heere unterstützt werden, wobei jedes Heer
+        /// nur einmal unterstützen kann."
+        /// </summary>
+        /// <param name="angegriffenes">das Heer, das unterstützt werden soll</param>
+        /// <param name="figuren">die Figuren, unter denen gesucht wird; ohne Angabe die eigenen</param>
+        public static List<Unterstützer> FindeUnterstützer(TruppenSpielfigur? angegriffenes,
+                IEnumerable<Spielfigur>? figuren = null) {
+            List<Unterstützer> ergebnis = [];
+            if (angegriffenes == null || angegriffenes.Nation == null)
+                return ergebnis;
+
+            var gemark = View.KleinfeldView.GetKleinfeld(angegriffenes);
+            if (gemark == null)
+                return ergebnis;
+            var nachbarn = View.KleinfeldView.GetNachbarn(gemark, 1, includeSelf: false)?.ToList() ?? [];
+            if (nachbarn.Count == 0)
+                return ergebnis;
+
+            var kandidaten = figuren ?? View.SpielfigurenView.GetSpielfiguren(angegriffenes.Nation);
+            foreach (var figur in kandidaten) {
+                if (figur is not TruppenSpielfigur heer || heer.Nation == null)
+                    continue;
+                if (ReferenceEquals(heer, angegriffenes))
+                    continue;
+                // Unterstützt wird, wer auf derselben Seite steht
+                if (DiplomatieRules.SindVerfeindet(heer.Nation, angegriffenes.Nation, gemark))
+                    continue;
+                // "Transportierte Heere können nicht unterstützen."
+                if (heer.IsOnShip())
+                    continue;
+                if (HeeresRules.IstEroberungsfähig(heer) == false)
+                    continue;
+
+                var nachbar = nachbarn.FirstOrDefault(feld => feld.gf == heer.gf && feld.kf == heer.kf);
+                if (nachbar == null)
+                    continue;
+                // "und es die Gemark des angegriffenen Heeres direkt betreten könnte"
+                var verbrauch = BewegungsRules.GetVerbrauch(heer, gemark.Gelaendetyp ?? 0, wegerecht: true, straße: false);
+                if (verbrauch == null || verbrauch.BP >= BewegungsRules.BPUnpassierbar)
+                    continue;
+                // Pro Gemark zählt ein Heer
+                if (ergebnis.Any(u => u.Gemark.Key == nachbar.Key))
+                    continue;
+
+                ergebnis.Add(new Unterstützer(new KleinfeldPosition(nachbar.gf, nachbar.kf), heer));
             }
             return ergebnis;
         }

@@ -170,6 +170,12 @@ namespace PhoenixModel.Rules {
             if (ConstructRules.IsEnoughMoney(kleinfeld, kosten) is Result geld && geld.HasErrors)
                 return geld;
 
+            // "allerdings kann die Reparatur eines Bauwerks von einem nicht alliierten,
+            // eroberungsfähigen Heer verhindert werden" (Regelwerk 1.5.10) - für den Ausbau
+            // gilt dasselbe (1.5).
+            if (ConstructRules.WirdGestört(kleinfeld) is Result störung && störung.HasErrors)
+                return störung;
+
             string was = art == Bauart.Reparatur ? "Die Reparatur" : "Der Ausbau";
             return Result.Success($"{was} auf {kleinfeld.Bezeichner} ist möglich",
                 $"{baupunkte} Baupunkte zu je {KostenProBaupunkt} GS kosten {kosten} GS.");
