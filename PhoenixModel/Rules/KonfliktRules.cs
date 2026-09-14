@@ -149,6 +149,72 @@ namespace PhoenixModel.Rules {
         }
 
         /// <summary>
+        /// Ein Zauberduell: zwei Zauberer verfeindeter Reiche in Reichweite zueinander.
+        /// </summary>
+        /// <param name="Eines">der eine Zauberer</param>
+        /// <param name="Anderes">der andere</param>
+        /// <param name="Entfernung">0, wenn sie auf derselben Gemark stehen, sonst 1</param>
+        public record class Zauberduell(NamensSpielfigur Eines, NamensSpielfigur Anderes, int Entfernung) {
+            public override string ToString()
+                => $"{Eines.Bezeichner} gegen {Anderes.Bezeichner} ({Entfernung} Gemarken)";
+        }
+
+        /// <summary>
+        /// Alle Zauberduelle aus den Daten, die die Spielleitung geladen hat
+        /// </summary>
+        public static List<Zauberduell> FindeZauberduelle() => FindeZauberduelle(Spielleitungsdaten.GetAlleFiguren());
+
+        /// <summary>
+        /// Sucht die Zauberduelle (Regelwerk 5.3).
+        ///
+        /// "Zum Zauberduell kommt es, wenn Zauberer von verfeindeten Reichen in der gleichen oder
+        /// in benachbarten Gemarken stehen."
+        ///
+        /// Anders als der Charakterkampf reicht das über die Gemark hinaus - deshalb steht es
+        /// neben <see cref="FindeKonflikte(IEnumerable{Spielfigur}?)"/> und nicht darin. Ob zwei
+        /// Reiche verfeindet sind, hängt am Gelände; hier zählt, ob sie es auf einer der beiden
+        /// Gemarken sind - wer sich über die Gemarkgrenze hinweg duelliert, steht nicht auf
+        /// demselben Boden.
+        ///
+        /// Der dritte Fall des Regelwerks bleibt aussen vor: ein Zauberspruch, der auf eine Gemark
+        /// mit einem Zauberer ausgesprochen wird oder dort wirkt. Das weiss die Zauberei, nicht
+        /// die Karte.
+        /// </summary>
+        public static List<Zauberduell> FindeZauberduelle(IEnumerable<Spielfigur>? figuren) {
+            List<Zauberduell> ergebnis = [];
+            if (figuren == null)
+                return ergebnis;
+
+            var zauberer = figuren
+                .OfType<NamensSpielfigur>()
+                .Where(figur => figur.BaseTyp == ExternalTables.FigurType.Zauberer
+                             && figur.Nation != null && Plausibilität.IsValid(figur))
+                .ToList();
+
+            for (int i = 0; i < zauberer.Count; i++) {
+                for (int j = i + 1; j < zauberer.Count; j++) {
+                    var eines = zauberer[i];
+                    var anderes = zauberer[j];
+                    if (eines.Nation!.Equals(anderes.Nation))
+                        continue;
+
+                    int entfernung = FernkampfRules.GetEntfernung(eines, anderes, 1);
+                    if (entfernung < 0)
+                        continue;
+
+                    var hier = KleinfeldView.GetKleinfeld(eines);
+                    var dort = KleinfeldView.GetKleinfeld(anderes);
+                    if (DiplomatieRules.SindVerfeindet(eines.Nation, anderes.Nation, hier) == false
+                     && DiplomatieRules.SindVerfeindet(eines.Nation, anderes.Nation, dort) == false)
+                        continue;
+
+                    ergebnis.Add(new Zauberduell(eines, anderes, entfernung));
+                }
+            }
+            return ergebnis;
+        }
+
+        /// <summary>
         /// Welche Art Kampf hier stattfindet.
         ///
         /// Stehen sich nur Charaktere gegenüber, ist es ein Charakterkampf (Regelwerk 5.3); sonst

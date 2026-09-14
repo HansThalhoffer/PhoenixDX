@@ -70,10 +70,10 @@ namespace Tests {
             Assert.Equal(3, ergebnis.Verfallene);
 
             // ohne Gegenueber gibt es keinen Kampf
-            var allein = CharakterkampfRules.WerteWürfelAus([6, 6], null);
+            var allein = CharakterkampfRules.WerteWürfelAus([6, 6], (IEnumerable<int>?)null);
             Assert.Equal(0, allein.TrefferEines);
             Assert.Equal(2, allein.Verfallene);
-            Assert.Equal(CharakterkampfRules.Würfelergebnis.Nichts, CharakterkampfRules.WerteWürfelAus(null, null));
+            Assert.Equal(CharakterkampfRules.Würfelergebnis.Nichts, CharakterkampfRules.WerteWürfelAus((IEnumerable<int>?)null, null));
         }
 
         /// <summary>
