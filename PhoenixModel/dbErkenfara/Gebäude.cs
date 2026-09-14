@@ -119,8 +119,18 @@ namespace PhoenixModel.dbErkenfara {
 
         }
 
-        public void Delete(DbCommand reader) {
-            throw new NotImplementedException();
+        /// <summary>
+        /// Entfernt die Zeile aus der Bauwerkliste.
+        ///
+        /// Gebraucht wird das fuer Eintraege, zu denen die Karte nichts mehr fuehrt - die Karte ist
+        /// die gepflegte Tabelle. Der Schnitt ist endgueltig, deshalb loescht die Anwendung von
+        /// sich aus nichts, sondern meldet solche Eintraege nur.
+        /// </summary>
+        public void Delete(DbCommand command) {
+            command.CommandText = $@"
+                DELETE FROM {TableName}
+                WHERE gf = {this.gf} AND kf = {this.kf} ";
+            command.ExecuteNonQuery();
         }
 
         public bool Select()
