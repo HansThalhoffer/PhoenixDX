@@ -323,6 +323,9 @@ namespace PhoenixModel.Commands {
         /// <param name="input"></param>
         /// <returns></returns>
         public ConstructionElementType parseConstructionElement(string input) {
+            // Mehrfache Leerzeichen wuerden jede Zuordnung verfehlen, und die Eingabe kommt von
+            // Hand: "Leichte  Katapulte" ist dasselbe wie "Leichte Katapulte".
+            input = System.Text.RegularExpressions.Regex.Replace(input?.Trim() ?? string.Empty, @"\s+", " ");
             return input.ToLower()
             switch {
                 "kai" => ConstructionElementType.Kai,
@@ -336,22 +339,32 @@ namespace PhoenixModel.Commands {
                 "schiff" => ConstructionElementType.S,
                 "schiffe" => ConstructionElementType.S,
                 "schiffen" => ConstructionElementType.S,
+                "pferd" => ConstructionElementType.P,
                 "pferde" => ConstructionElementType.P,
+                "pferden" => ConstructionElementType.P,
                 "lkp" => ConstructionElementType.LKP,
                 "leichte katapulte" => ConstructionElementType.LKP,
+                "leichten katapulten" => ConstructionElementType.LKP,
+                "leichtes katapult" => ConstructionElementType.LKP,
                 "leichte kp" => ConstructionElementType.LKP,
                 "skp" => ConstructionElementType.SKP,
                 "schwere katapulte" => ConstructionElementType.SKP,
+                "schweren katapulten" => ConstructionElementType.SKP,
+                "schweres katapult" => ConstructionElementType.SKP,
                 "schwere kp" => ConstructionElementType.SKP,
                 "lks" => ConstructionElementType.LKS,
                 "leichte kriegsschiffe" => ConstructionElementType.LKS,
+                "leichten kriegsschiffen" => ConstructionElementType.LKS,
                 "leichte ks" => ConstructionElementType.LKS,
                 "sks" => ConstructionElementType.SKS,
                 "schwere kriegsschiffe" => ConstructionElementType.SKS,
+                "schweren kriegsschiffen" => ConstructionElementType.SKS,
                 "schwere ks" => ConstructionElementType.SKS,
                 "heerführer" => ConstructionElementType.HF,
+                "heerführern" => ConstructionElementType.HF,
                 "hf" => ConstructionElementType.HF,
                 "za" => ConstructionElementType.ZA,
+                "zauberer" => ConstructionElementType.ZA,
                 "zauberer klasse a" => ConstructionElementType.ZA,
                 "zb" => ConstructionElementType.ZB,
                 "zauberer klasse b" => ConstructionElementType.ZB,

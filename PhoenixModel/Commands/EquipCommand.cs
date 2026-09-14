@@ -4,6 +4,7 @@ using PhoenixModel.dbCrossRef;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.Program;
+using PhoenixModel.Rules;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using System.Text.RegularExpressions;
@@ -66,63 +67,95 @@ namespace PhoenixModel.Commands {
             if (SharedData.Ruestung == null)
                 return new CommandResultError("Die Ruestung wurde nicht geladen", $"Der Befehl kann nicht ausgeführt werden, da die Ruestung aus der Zugdaten Datenbank nicht geladen wurden \r\n {this.CommandString}", this);
 
-            /*var kosten = SharedData.Kosten.Where(kosten => kosten.Unittyp == What.ToString()).First();
-            if (kosten == null)
-                return new CommandResultError($"Die Kostentablle enthält keinen Wert für {What}", $"Der Befehl kann nicht ausgeführt werden, da die Kostentabelle im Feld Unittyp das genannte Bauwerk nicht kennen \r\n {this.CommandString}");
-            */
-            return new CommandResultSuccess("Das ConstructCommand kann ausgeführt werden", $"Der Befehl kann ausgeführt werden:\r\n {this.CommandString}", this);
+            if (Equipment.Any(teil => teil.ConstructionElementType == ConstructionElementType.None))
+                return new CommandResultError("Ein Rüstgut wurde nicht erkannt",
+                    $"In '{this.CommandString}' steht ein Wort, das kein Rüstgut benennt.", this);
+            if (Equipment.Any(teil => teil.Count <= 0))
+                return new CommandResultError("Eine Stückzahl fehlt oder ist null",
+                    $"In '{this.CommandString}' ist nicht zu jedem Rüstgut eine Anzahl angegeben.", this);
+
+            // die eigentlichen Regeln des Rüstens (Regelwerk 3.3): Ort, Phase, Kapazität, Mittel
+            var gemark = KleinfeldView.GetKleinfeld(Location);
+            var regeln = Rules.RuestRules.Prüfe(gemark, CreateRuestung());
+            if (regeln.HasErrors)
+                return new CommandResultError(regeln.Title, regeln.Message, this);
+
+            return new CommandResultSuccess("Die Rüstung kann ausgeführt werden", $"Der Befehl kann ausgeführt werden:\r\n {this.CommandString}", this);
         }
 
+        /// <summary>
+        /// Baut aus dem Befehl den Ruestungsauftrag, wie ihn die Zugdatenbank fuehrt.
+        ///
+        /// Die Tabelle hat je Ruestgut eine Spalte; der Befehl nennt sie als Liste. Frueher stand
+        /// hier ein Auftrag aus lauter Nullen - er wurde gespeichert, aber er ruestete nichts.
+        ///
+        /// Nummer 0 heisst: ein neues Heer, dessen Nummer die Spielleitung vergibt. Wird zu einer
+        /// vorhandenen Einheit geruestet, traegt der Auftrag deren Nummer.
+        /// </summary>
         private Ruestung? CreateRuestung() {
-            if (Kosten != null && Location != null) {
-                return new Ruestung() {
-                    Nummer = 0,
-                    HF = 0,
-                    Z = 0,
-                    K = 0,
-                    R = 0,
-                    P = 0,
-                    LKS = 0,
-                    SKS = 0,
-                    LKP = 0,
-                    SKP = 0,
-                    GP_akt = 0,
-                    GP_ges = 0,
-                    Garde = 0,
-                    ZB = 0,
-                    S = 0,
-                    Neuruestung = 0,
-                    KF_Flotte = 0,
-                    GF_Flotte = 0,
-                    Name_x = string.Empty,
-                    Beschriftung = string.Empty,
-                    besRuestung = 0
-                };
+            if (Location == null)
+                return null;
+
+            var rüstung = new Ruestung() {
+                gf = Location.gf,
+                kf = Location.kf,
+                ZugMonat = ProgramView.SelectedMonth,
+                Nummer = TargetID ?? 0,
+                Name_x = string.Empty,
+                Beschriftung = string.Empty,
+            };
+
+            foreach (var teil in Equipment) {
+                if (teil.Count <= 0)
+                    continue;
+                switch (teil.ConstructionElementType) {
+                    case ConstructionElementType.K: rüstung.K += teil.Count; break;
+                    case ConstructionElementType.R: rüstung.R += teil.Count; break;
+                    case ConstructionElementType.P: rüstung.P += teil.Count; break;
+                    case ConstructionElementType.S: rüstung.S += teil.Count; break;
+                    case ConstructionElementType.LKP: rüstung.LKP += teil.Count; break;
+                    case ConstructionElementType.SKP: rüstung.SKP += teil.Count; break;
+                    case ConstructionElementType.LKS: rüstung.LKS += teil.Count; break;
+                    case ConstructionElementType.SKS: rüstung.SKS += teil.Count; break;
+                    case ConstructionElementType.HF: rüstung.HF += teil.Count; break;
+                    case ConstructionElementType.ZA: rüstung.Z += teil.Count; break;
+                    case ConstructionElementType.ZB: rüstung.ZB += teil.Count; break;
+                    default:
+                        // Bauwerke werden nicht hier geruestet, sondern mit dem ConstructCommand
+                        return null;
+                }
             }
-            return null;
+            return rüstung;
         }
 
+        /// <summary>Der eingestellte Auftrag, damit sich das Ruesten zuruecknehmen laesst</summary>
+        private Ruestung? _eingestellt = null;
 
         /// <summary>
         /// Versucht den Befehl rückgäng zu machen
         /// Wenn in der Datenbank etwas geschrieben werden musste, wird es auch gelöscht
         /// </summary>
         public override CommandResult UndoCommand() {
-            CommandResult result = CheckPreconditions();
-            if (result.HasErrors)
-                return result;
-            Ruestung? ruest = CreateRuestung();
-            if (ruest != null && SharedData.Ruestung != null) {
-                var existing = SharedData.Ruestung.Where(r => r.Equals(ruest)).First();
-                if (existing == null)
-                    return new CommandResultError("Der Auftrag für diese Rüstung existiert nicht und kann daher nicht rückgänig gemacht werden", $"Der Befehl kann nicht rückgängig gemacht werden, da er nicht in den Zugdaten gespeichert wurde\r\n {this.CommandString}", this);
-               // SharedData.Ruestung.Remove<Ruestung>(existing);
-                SharedData.StoreQueue.Delete(existing);
-            }
+            if (_eingestellt == null || SharedData.Ruestung == null)
+                return new CommandResultError("Diese Rüstung wurde nie eingestellt",
+                    $"Der Befehl lässt sich nicht zurücknehmen, weil er nichts in die Rüstungstabelle "
+                    + $"geschrieben hat:\r\n{this.CommandString}", this);
 
-            return new CommandResultError("Fehler", "Keine Ahnung warum", this);
+            // Aus der geteilten Liste nehmen und den Auftrag aus der Datenbank loeschen. Die
+            // Sammlung ist nach dem Laden geschlossen und muss dafuer wieder geoeffnet werden.
+            var verbleibend = SharedData.Ruestung.ReopenSharedData()
+                .Where(eintrag => ReferenceEquals(eintrag, _eingestellt) == false)
+                .ToList();
+            SharedData.Ruestung = [];
+            foreach (var eintrag in verbleibend)
+                SharedData.Ruestung.Add(eintrag);
+
+            SharedData.StoreQueue.Delete(_eingestellt);
+            var zurückgenommen = _eingestellt;
+            _eingestellt = null;
+            return new CommandResultSuccess("Die Rüstung wurde zurückgenommen",
+                $"Der Auftrag auf {zurückgenommen.gf}/{zurückgenommen.kf} wurde entfernt:\r\n{this.CommandString}", this);
         }
-
 
         /// <summary>
         /// Führt den Befehl aus und gibt das Ergebnis zurück. 
@@ -136,6 +169,7 @@ namespace PhoenixModel.Commands {
                 // Hinzufuegen wieder geoeffnet werden - sonst wirft Add eine Ausnahme
                 SharedData.Ruestung.ReopenSharedData().Add(ruest);
                 SharedData.StoreQueue.Insert(ruest);
+                _eingestellt = ruest;
                 return new CommandResultSuccess("Die Rüstung wurde ausgeführt", $"Der Befehl wurde ausgeführt:\r\n {this.CommandString}", this);
             }
 
@@ -188,25 +222,35 @@ namespace PhoenixModel.Commands {
                 // gearParts[1] = "2 Leichten Katapulten"   (if it exists)                
 
                 foreach (var part in gearParts) {
-                    // parse each item as: "<count> <whatever>"
-                    // e.g. "3 Heerführern", "2 Leichten Katapulten", etc.
-                    // A simple pattern: ^(?<count>\d+)\s+(?<desc>.*)$
-                    // to get the numeric part and the textual part:
+                    // Jeder Teil hat die Form "<Anzahl> <Rüstgut>", also "3 Heerführern" oder
+                    // "2 Leichten Katapulten".
+                    //
+                    // Hier stand frueher ein Zugriff auf die Gruppen "equipment" und "strength" -
+                    // die gibt es in keinem der beiden Ausdruecke. Jedes Rüstgut wurde damit zu
+                    // (None, 0): der Befehl liess sich lesen und ausführen und rüstete nichts.
                     var itemMatch = Regex.Match(part.Trim(), @"^(?<count>\d+)\s+(?<desc>.+)$");
-                    if (itemMatch.Success) {
-                        int count = int.Parse(itemMatch.Groups["count"].Value);
-                        string desc = itemMatch.Groups["desc"].Value.Trim(); // "Heerführern", "Leichten Katapulten" etc.
+                    if (itemMatch.Success == false)
+                        return Fail(out command);
 
-                        eq.Add(new ConstructionElement(parseConstructionElement(match.Groups["equipment"].Value), ParseInt(match.Groups["strength"].Value)));
-                    }
-                    else {
-                        // If it doesn't match e.g. "<count> <desc>", handle error or log
-                    }
+                    int count = int.Parse(itemMatch.Groups["count"].Value);
+                    string desc = itemMatch.Groups["desc"].Value.Trim();
+                    eq.Add(new ConstructionElement(parseConstructionElement(desc), count));
+                }
+                if (eq.Count == 0)
+                    return Fail(out command);
+
+                var ziel = ConstructionElementType.None;
+                int? zielId = null;
+                if (match.Groups["unitType"].Success) {
+                    ziel = parseConstructionElement(match.Groups["unitType"].Value);
+                    zielId = ParseInt(match.Groups["unitId"].Value);
                 }
 
                 command = new EquipCommand(commandString, ParseLocation(match.Groups["loc"].Value)) {
                     Equipment = eq,
                     Location = ParseLocation(match.Groups["loc"].Value),
+                    Target = ziel,
+                    TargetID = zielId,
                 };
             }
             catch (Exception ex) {
