@@ -175,6 +175,33 @@ namespace PhoenixModel.Rules {
         }
 
         /// <summary>
+        /// Die Baupunkte eines Heeres, soweit sie im Fernkampf getroffen werden können.
+        ///
+        /// "Werden gebannte und ungebannte Truppen von Fernkampfwaffen beschossen, so werden nur
+        /// die ungebannten Truppen getroffen. Die ungebannten Truppen ziehen den gesamten Schaden
+        /// auf sich." (Regelwerk 5.1)
+        ///
+        /// Abgezogen wird deshalb, was die gebannten Köpfe an Baupunkten ausmachen. Gebannt sind
+        /// immer Krieger oder Reiter, nicht die Fernkampfwaffen - die bleiben im Ziel.
+        ///
+        /// Die Kampftabelle kennt die Zahl der gebannten Truppen zwar (Zeile 97), zieht sie aber
+        /// nur von der Heeresstärke ab. Hier gilt das Regelwerk: wer gebannt ist, zieht keinen
+        /// Beschuss auf sich.
+        /// </summary>
+        public static double BerechneWirksameBaupunkte(TruppenSpielfigur? truppe, int gebannt) {
+            double gesamt = BerechneBaupunkte(truppe);
+            if (truppe == null || gebannt <= 0 || gesamt <= 0)
+                return gesamt;
+
+            double proKopf = truppe.BaseTyp switch {
+                FigurType.Reiter => BaupunkteProReiter,
+                FigurType.Schiff => BaupunkteProSchiff,
+                _ => BaupunkteProKrieger,
+            };
+            return Math.Max(0, gesamt - Math.Min(gebannt, truppe.staerke) * proKopf);
+        }
+
+        /// <summary>
         /// Der Schutzfaktor, mit dem Gutpunkte den Schaden mindern: Gutpunkte durch 100, plus eins
         /// (Kampftabelle C85 und E91; Errata 52 zu Regelwerk 5.1: "Jedes Heer wird danach von
         /// seinen eigenen GP nochmals geschützt. Gutpunkte Einheit /100+1").

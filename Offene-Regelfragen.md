@@ -1,6 +1,6 @@
 # Offene Regelfragen
 
-Vier Punkte, bei denen die Quellen sich widersprechen oder das Datenmodell etwas nicht kennt.
+Fünf Punkte, bei denen die Quellen sich widersprechen oder das Datenmodell etwas nicht kennt.
 Die Anwendung verhält sich jeweils so, dass nichts kaputtgeht, solange die Frage offen ist —
 was das konkret heißt, steht unten bei "Was die Anwendung solange tut".
 
@@ -90,6 +90,37 @@ als Kommentar in `RuestRules`, damit er nicht in Vergessenheit gerät.
 **Was sich mit der Antwort ändert:** Braucht es die Belagerung, muss zuerst geklärt werden, wo
 sie herkommt: aus den Zugdaten der Spielleitung, oder leitet die Anwendung sie selbst aus der
 Lage der Heere ab? Erst danach lässt sich die Prüfung ergänzen.
+
+---
+
+## 5. Wieviel Schaden zerstört ein Katapult — die Hälfte oder alles?
+
+**Widerspruch:** Das Regelwerk ist bei allen vier Fernkampfwaffen eindeutig: ein LKP hat 200
+Baupunkte und *"gilt mit nur noch 100 Baupunkten als zerstört"*, ein SKP hat 400 und ist bei 200
+hin, ebenso LKS (200/100) und SKS (400/200). Die Hälfte genügt also.
+
+Die **Kampftabelle** rechnet die Baupunktverluste anders in Stück zurück: sie teilt durch den
+*vollen* Wert (Zeile 103: Verlust mal 0,005, also ein Stück je 200 Baupunkte; Zeile 106: mal
+0,0025, ein Stück je 400). Nach der Tabelle braucht es doppelt so viel Beschuss, um dieselbe Zahl
+an Katapulten auszuschalten.
+
+Dazu passt, dass die Tabelle ein schweres Kriegsschiff in der Stärkespalte mit 200 Baupunkten
+führt (Zeile 104), es aber mit 400 zurückrechnet — innerhalb derselben Zeile.
+
+**Was dafür spricht, dass die Hälfte stimmt:** Regelwerk 1.5.11 beschreibt genau dazu die
+Zwischenstufe: eine angeschlagene Waffe wird nicht sicher zerstört, sondern mit einer
+Wahrscheinlichkeit, die dem Schadensanteil entspricht — *"Die Beschädigung einer Einheit wird in %
+umgerechnet und dies ergibt die Chance mit welcher die Einheit zerstört wird"*. Beide Beispiele
+dort rechnen gegen die **halben** Baupunkte. Und ausdrücklich: *"Um der SL die Arbeit zu
+erleichtern wird die Chance und das Ergebnis durch die IT, in der Auswertung ermittelt."*
+
+**Was die Anwendung solange tut:** Die Auswertung des Nahkampfes rechnet weiter wie die
+Kampftabelle, damit ihre Zahlen mit denen der Spielleitung übereinstimmen. Die Zerstörungschance
+nach 1.5.11 gibt es getrennt davon, mit der halben Grenze aus dem Regelwerk. Beides steht
+nebeneinander, statt dass eines das andere still überschreibt.
+
+**Was sich mit der Antwort ändert:** Gilt die Hälfte, ändert sich ein Faktor in der Rückrechnung
+der Fernkampfwaffen; gilt die Tabelle, entfällt die Zerstörungschance für Beschuss.
 
 ---
 
