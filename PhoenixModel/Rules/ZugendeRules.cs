@@ -143,16 +143,16 @@ namespace PhoenixModel.Rules {
         /// Die gespeicherten Raumpunkte laufen sonst weit auseinander: in den echten Zugdaten
         /// weicht bei 36 von 60 Figuren der Wert vom berechneten ab, oft steht dort schlicht 0.
         ///
-        /// Namensfiguren behalten ihr gespeichertes bp_max. Die Spielleitung hat entschieden, dass
-        /// Charaktere 21 Bewegungspunkte haben und die 42 nur zur See gilt; die Bewegungstabelle
-        /// BEW_Chars führt aber das Doppelte der Reiterkosten, und in den Zugdaten steht für jeden
-        /// Charakter 42. Solange beides nicht zusammenpasst, wäre ein Neuberechnen ein Halbieren -
-        /// und zwar ohne dass es jemandem auffällt. Siehe Offene-Regelfragen.md, Punkt 8.
+        /// Auch Namensfiguren bekommen ihren Wert frisch. Das war lange nicht so: solange offen
+        /// war, ob ein Charakter 21 oder 42 Bewegungspunkte hat, wäre ein Neuberechnen womöglich
+        /// ein lautloses Halbieren gewesen. Die Frage ist beantwortet - 21 nach Regelwerk, 42 in
+        /// der Skala der Bewegungstabelle, und die Zugdaten der Spielleitung führen genau diese 42
+        /// (siehe <see cref="BewegungsRules.BewegungspunkteCharakter"/>). Berechnet und gespeichert
+        /// stimmen damit überein.
         /// </summary>
         private static void FrischeWerte(Spielfigur figur) {
             figur.rp = SpielfigurRules.BerechneRaumpunkte(figur);
-            if (figur is TruppenSpielfigur)
-                figur.bp_max = BewegungsRules.BerechneBewegungspunkte(figur);
+            figur.bp_max = BewegungsRules.BerechneBewegungspunkte(figur);
             figur.bp = figur.bp_max;
         }
 

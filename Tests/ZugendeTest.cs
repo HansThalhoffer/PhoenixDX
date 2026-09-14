@@ -144,7 +144,11 @@ namespace Tests {
             Assert.Equal(12, charakter.GP_akt_alt);
             Assert.Equal(20, charakter.GP_ges_alt);
             Assert.Equal(17, charakter.GP_akt);
-            Assert.Equal(21, charakter.bp);
+
+            // Die Bewegungspunkte kommen frisch aus der Berechnung - auch bei Namensfiguren.
+            // Vorher stand hier die 21, mit der der Charakter angelegt wurde.
+            Assert.Equal(42, charakter.bp);
+            Assert.Equal(BewegungsRules.BerechneBewegungspunkte(charakter), charakter.bp);
 
             // ein zweiter Monat füllt nur noch bis zum Höchstwert auf
             charakter.gf_nach = 305;

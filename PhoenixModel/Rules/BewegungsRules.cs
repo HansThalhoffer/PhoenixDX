@@ -869,21 +869,44 @@ namespace PhoenixModel.Rules {
             // Ein Landheer, das transportiert, hat nur noch 9 BP (Regelwerk 4.3)
             if (figur is TruppenSpielfigur truppe && IstTransportierendesLandheer(truppe))
                 return 9;
-            // Ein Charakter zur See fährt mit seinem eigenen Schiff und hat dessen Punkte
-            if (IstCharakter(figur.Typ) && StehtAufWasser(figur))
-                return BewegungspunkteZurSee;
             return BerechneBewegungspunkte(figur.Typ);
         }
 
         /// <summary>
-        /// Die Bewegungspunkte eines Charakters, der zur See unterwegs ist.
+        /// Die Bewegungspunkte eines Charakters, wie das Regelwerk sie nennt: 21 zu Land, für den
+        /// Heerführercharakter (1.1) wie für den Zauberer, der sich "einzeln wie Reiter" bewegt.
         ///
-        /// "Charaktere verfügen über eigene Schiffe" (Regelwerk 0.3.2 und 1.9 in der Fassung der
-        /// Korrektur 22 vom Treffen am 21.06.2014: "und verfügen über ein eigenes Schiff (was nicht
-        /// in die Heeresstärke eingerechnet wird), welches Ihnen Bewegung auf Wasser ermöglicht").
-        /// Zu Wasser bewegt sich ein Charakter also wie ein Schiff, und ein Schiff hat 42.
+        /// Das ist die Regel. Was die Anwendung als Budget führt, steht in
+        /// <see cref="BewegungspunkteCharakter"/> - eine andere Zahl, dieselbe Reichweite.
         /// </summary>
-        public const int BewegungspunkteZurSee = 42;
+        public const int BewegungspunkteCharakterNachRegelwerk = 21;
+
+        /// <summary>
+        /// Das Budget, mit dem ein Charakter in dieser Anwendung losläuft: <b>42</b>.
+        ///
+        /// Das ist kein Widerspruch zu den 21 des Regelwerks, sondern dieselbe Reichweite in der
+        /// Skala der Bewegungstabelle. BEW_Chars in der crossref.mdb führt für Charaktere genau
+        /// das Doppelte der Reiterkosten - Tiefland 14 statt 7, Wald 20 statt 10, Bergland 42
+        /// statt 21, auf Strasse 8 statt 4 -, für Wasser und Tiefsee dagegen die Kosten eines
+        /// Schiffes, 7 und 12.
+        ///
+        /// Mit 42 Punkten in dieser Tabelle kommt ein Charakter
+        ///
+        /// * über Tiefland drei Felder weit - genau wie ein Reiter mit 21 Punkten,
+        /// * über Wasser sechs Felder weit - genau wie ein Schiff mit 42 Punkten.
+        ///
+        /// Damit trägt eine einzige Zahl beide Hälften der Regel: 21 zu Land und 42 zur See. Dass
+        /// ein Charakter überhaupt zur See fahren kann, steht in der Korrektur 22 des Regelwerks
+        /// vom Treffen am 21.06.2014: "und verfügen über ein eigenes Schiff (was nicht in die
+        /// Heeresstärke eingerechnet wird), welches Ihnen Bewegung auf Wasser ermöglicht" - und
+        /// dort steht auch, woran man sich zu halten hat: "Siehe dazu die Bewegungstabelle im
+        /// Anhang."
+        ///
+        /// Die Spielleitung hat im September 2026 entschieden, dass es bei dieser Tabelle bleibt.
+        /// Würde sie je auf Reiterkosten umgestellt, wäre hier 21 einzutragen und die Fahrt zur
+        /// See bräuchte einen eigenen Wert.
+        /// </summary>
+        public const int BewegungspunkteCharakter = 2 * BewegungspunkteCharakterNachRegelwerk;
 
         /// <summary>
         /// Heerführercharakter, Zauberer und Charakterzauberer - die drei Typen, die sich einzeln
@@ -891,17 +914,6 @@ namespace PhoenixModel.Rules {
         /// </summary>
         public static bool IstCharakter(FigurType typ)
             => typ is FigurType.Charakter or FigurType.Zauberer or FigurType.CharakterZauberer;
-
-        /// <summary>
-        /// Steht die Figur auf einem Wasserfeld?
-        ///
-        /// Gefragt wird nach dem Feld, auf dem sie ihre Bewegung beginnt. Ein Zauberer, der aufs
-        /// Wasser will, teleportiert dorthin und nimmt die Schiffsbewegung erst dann auf.
-        /// </summary>
-        public static bool StehtAufWasser(Spielfigur? figur) {
-            var feld = figur == null ? null : KleinfeldView.GetKleinfeld(figur);
-            return feld != null && feld.IsWasser;
-        }
 
         /// <summary>
         /// Die maximalen Bewegungspunkte eines Figurtyps nach Regelwerk Kapitel 1 (Tabelle 5).
@@ -916,18 +928,10 @@ namespace PhoenixModel.Rules {
                 FigurType.Schiff or FigurType.PiratenSchiff => 42,
                 FigurType.LeichtesKriegsschiff or FigurType.PiratenLeichtesKriegsschiff => 42,
                 FigurType.SchweresKriegsschiff or FigurType.PiratenSchweresKriegsschiff => 42,
-                // Charaktere haben 21 Bewegungspunkte - zu Land. Das Regelwerk nennt sie beim
-                // Heerführercharakter (1.1) und sagt beim Zauberer "Zauberer bewegen sich einzeln
-                // wie Reiter", also ebenfalls 21; die 42, die dort danebensteht, gilt für die
-                // Fahrt zur See. Dafür gibt es <see cref="BewegungspunkteZurSee"/>.
-                //
-                // Achtung beim Vergleich mit der Bewegungstabelle: BEW_Chars in der crossref.mdb
-                // führt für Charaktere genau das Doppelte der Reiterkosten (Tiefland 14 statt 7,
-                // Wald 20 statt 10, Bergland 42 statt 21), Wasser und Tiefsee dagegen zu
-                // Schiffskosten. In dieser Skala entspricht ein Budget von 42 der Reichweite eines
-                // Reiters mit 21. Mit 21 Punkten kommt ein Charakter dort nur halb so weit. Welche
-                // der beiden Skalen gilt, steht in Offene-Regelfragen.md.
-                FigurType.Charakter or FigurType.Zauberer or FigurType.CharakterZauberer => 21,
+                // Alle drei Charaktertypen gleich - warum die Zahl 42 heisst und trotzdem die
+                // 21 des Regelwerks meint, steht bei <see cref="BewegungspunkteCharakter"/>.
+                FigurType.Charakter or FigurType.Zauberer or FigurType.CharakterZauberer
+                    => BewegungspunkteCharakter,
                 _ => 0,
             };
         }

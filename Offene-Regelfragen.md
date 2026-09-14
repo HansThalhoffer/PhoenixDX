@@ -1,6 +1,6 @@
 # Offene Regelfragen
 
-Sieben offene Punkte, bei denen die Quellen sich widersprechen oder das Datenmodell etwas nicht
+Sechs offene Punkte, bei denen die Quellen sich widersprechen oder das Datenmodell etwas nicht
 kennt. Beantwortete Fragen bleiben stehen, damit nachvollziehbar bleibt, warum die Anwendung
 rechnet, wie sie rechnet.
 Die Anwendung verhält sich jeweils so, dass nichts kaputtgeht, solange die Frage offen ist —
@@ -24,10 +24,9 @@ und verfügen über ein eigenes Schiff (was nicht in die Heeresstärke eingerech
 Ihnen Bewegung auf Wasser ermöglicht. Und unter 0.3.2: (Charaktere verfügen über eigene Schiffe,
 siehe 1.9)."*
 
-**Umgesetzt** in `BewegungsRules.BerechneBewegungspunkte`: 21 für Charakter, Zauberer und
-Charakterzauberer, `BewegungspunkteZurSee` = 42, sobald die Figur auf einem Wasserfeld steht.
-
-**Was daraus als neue Frage folgt: in welcher Skala misst die Bewegungstabelle?** Siehe Punkt 8.
+**Umgesetzt** in `BewegungsRules`: die Regel steht als `BewegungspunkteCharakterNachRegelwerk`
+= 21 im Code. Als Budget führt die Anwendung 42, weil die Bewegungstabelle die Landkosten
+verdoppelt und damit dieselbe Reichweite meint — siehe Punkt 8, wo das ausgerechnet ist.
 
 ---
 
@@ -162,11 +161,13 @@ insgesamt 150.000 GS.
 
 ---
 
-## 8. In welcher Skala steht BEW_Chars?
+## 8. ~~In welcher Skala steht BEW_Chars?~~ — beantwortet
 
-**Befund:** Die Bewegungstabelle der Charaktere in der crossref.mdb führt für jedes Landgelände
-genau das **Doppelte** der Reiterkosten, für Wasser und Tiefsee dagegen die Kosten eines
-Schiffes:
+**Antwort der Spielleitung (September 2026): Es bleibt bei der Tabelle.**
+
+**Der Befund dahinter:** Die Bewegungstabelle der Charaktere in der crossref.mdb führt für jedes
+Landgelände genau das **Doppelte** der Reiterkosten, für Wasser und Tiefsee dagegen die Kosten
+eines Schiffes:
 
 | Gelände | Reiter | Charaktere | Schiff |
 |---|---|---|---|
@@ -178,24 +179,19 @@ Schiffes:
 | Wasser | unpassierbar | 7 | 7 |
 | Tiefsee | unpassierbar | 12 | 12 |
 
-**Warum das eine Frage ist:** In dieser Skala entspricht ein Budget von **42** genau der
-Reichweite, die das Regelwerk meint — drei Felder Tiefland wie ein Reiter mit 21, sechs Felder
-Wasser wie ein Schiff mit 42. Mit den beschlossenen **21** Punkten kommt ein Charakter über
-Tiefland nur **ein** Feld weit statt drei und über Wasser drei statt sechs. Die Zugdaten der
-Spielleitung führen für alle Charaktere 42; auch ein beobachteter Zug über sechs Wasserfelder
-hat genau 42 Punkte gekostet.
+**Was daraus folgt:** In dieser Skala trägt **eine einzige Zahl beide Hälften der Regel**. Mit 42
+Punkten kommt ein Charakter über Tiefland drei Felder weit — genau wie ein Reiter mit 21 — und
+über Wasser sechs Felder weit, genau wie ein Schiff mit 42. Die 21 des Regelwerks und die 42 der
+Zugdaten sind dasselbe, in zwei Skalen ausgedrückt.
 
-Entweder die Tabelle gehört auf Reiterkosten umgestellt (Tiefland 7 statt 14 und so fort, Wasser
-bei 3 oder 4), oder die 42 in den Zugdaten ist die richtige Zahl für diese Tabelle.
+**Umgesetzt:** `BewegungsRules.BewegungspunkteCharakter` = 2 × `BewegungspunkteCharakterNachRegelwerk`,
+also 42, mit der Herleitung im Code. Weil berechneter und gespeicherter Wert damit
+übereinstimmen — nachgeprüft an jeder Namensfigur des Bestands —, frischt `ZugendeRules` die
+Bewegungspunkte jetzt auch für Charaktere und Zauberer wieder auf. Das war jahrelang abgeschaltet,
+weil es ein lautloses Halbieren gewesen wäre.
 
-**Was die Anwendung solange tut:** Sie rechnet mit 21 zu Land und 42 zur See, wie beschlossen.
-Sie schreibt diesen Wert aber **nicht** in die Figuren: Namensfiguren behalten beim Zugwechsel
-ihr gespeichertes `bp_max` aus den Zugdaten, also die 42 der Spielleitung. Solange die Tabelle
-steht, wie sie steht, wäre das Neuberechnen ein Halbieren.
-
-**Was sich mit der Antwort ändert:** Entweder eine Zeile in `ZugendeRules.FrischeWerte`, damit
-Namensfiguren ihren Wert wieder mitbekommen — oder sieben Zeilen in der Tabelle `BEW_Chars` der
-crossref.mdb. Das ist eine Datenänderung und gehört der Spielleitung.
+**Falls die Tabelle je auf Reiterkosten umgestellt wird**, gehört in
+`BewegungspunkteCharakter` die 21, und die Fahrt zur See braucht einen eigenen Wert.
 
 ---
 

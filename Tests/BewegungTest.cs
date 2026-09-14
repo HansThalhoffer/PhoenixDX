@@ -97,51 +97,66 @@ namespace Tests {
             Assert.Equal(9, BewegungsRules.BerechneBewegungspunkte(FigurType.SchwereArtillerie));
             Assert.Equal(42, BewegungsRules.BerechneBewegungspunkte(FigurType.SchweresKriegsschiff));
 
-            // Charaktere haben zu Land 21 - der Heerfuehrercharakter wie der Zauberer, der sich
-            // "einzeln wie Reiter" bewegt. Die 42 gilt nur zur See (Entscheidung der
-            // Spielleitung, September 2026).
-            Assert.Equal(21, BewegungsRules.BerechneBewegungspunkte(FigurType.Charakter));
-            Assert.Equal(21, BewegungsRules.BerechneBewegungspunkte(FigurType.Zauberer));
-            Assert.Equal(21, BewegungsRules.BerechneBewegungspunkte(FigurType.CharakterZauberer));
+            // Alle drei Charaktertypen gleich. Die Zahl heisst 42 und meint die 21 des
+            // Regelwerks - warum, steht im naechsten Test.
+            Assert.Equal(42, BewegungsRules.BerechneBewegungspunkte(FigurType.Charakter));
+            Assert.Equal(42, BewegungsRules.BerechneBewegungspunkte(FigurType.Zauberer));
+            Assert.Equal(42, BewegungsRules.BerechneBewegungspunkte(FigurType.CharakterZauberer));
+            Assert.Equal(21, BewegungsRules.BewegungspunkteCharakterNachRegelwerk);
         }
 
         /// <summary>
+        /// Die Bewegungstabelle der Charaktere traegt beide Haelften der Regel: 21 Punkte zu Land,
+        /// 42 zur See (Entscheidung der Spielleitung, September 2026).
+        ///
+        /// Sie schafft das mit einer einzigen Zahl, weil BEW_Chars die Landkosten verdoppelt und
+        /// die Wasserkosten auf Schiffsniveau laesst. Geprueft wird deshalb nicht die Zahl, sondern
+        /// die Reichweite: soweit wie ein Reiter zu Land, soweit wie ein Schiff zur See.
+        ///
         /// "Charaktere verfuegen ueber eigene Schiffe" (Regelwerk 0.3.2 und 1.9 in der Fassung der
-        /// Korrektur 22 vom Treffen am 21.06.2014). Wer zur See faehrt, hat die Punkte eines
-        /// Schiffes - zu Land bleibt es bei 21.
+        /// Korrektur 22 vom Treffen am 21.06.2014, die ausdruecklich auf diese Tabelle verweist).
         /// </summary>
         [StaFact]
-        public void EinCharakterZurSeeFaehrtMitSeinemEigenenSchiff() {
+        public void DieCharaktertabelleTraegtBeideHaelftenDerRegel() {
             TestSetup.LadeMitDiplomatie();
 
-            var wasser = SharedData.Map!.Values.First(feld => feld.IsWasser);
-            var land = SharedData.Map.Values.First(feld => feld.IsWasser == false);
+            int Kosten(BewegungsArt art, TerrainType gelaende)
+                => BewegungsRules.GetBewegungsdaten(art, (int)gelaende)?.standart ?? -1;
 
-            // Die Position einer neuen Figur steht in gf_von/kf_von - gf und kf lesen daraus
-            var charakter = new Character { Nummer = 691, gf_von = land.gf, kf_von = land.kf };
-            Assert.False(BewegungsRules.StehtAufWasser(charakter));
-            Assert.Equal(21, BewegungsRules.BerechneBewegungspunkte(charakter));
+            // zu Land genau das Doppelte der Reiterkosten
+            Assert.Equal(2 * Kosten(BewegungsArt.Reiter, TerrainType.Tiefland),
+                             Kosten(BewegungsArt.Chars, TerrainType.Tiefland));
+            Assert.Equal(2 * Kosten(BewegungsArt.Reiter, TerrainType.Wald),
+                             Kosten(BewegungsArt.Chars, TerrainType.Wald));
+            Assert.Equal(2 * Kosten(BewegungsArt.Reiter, TerrainType.Bergland),
+                             Kosten(BewegungsArt.Chars, TerrainType.Bergland));
 
-            charakter.gf_von = wasser.gf;
-            charakter.kf_von = wasser.kf;
-            Assert.True(BewegungsRules.StehtAufWasser(charakter));
-            Assert.Equal(BewegungsRules.BewegungspunkteZurSee,
-                BewegungsRules.BerechneBewegungspunkte(charakter));
-            Assert.Equal(42, BewegungsRules.BewegungspunkteZurSee);
+            // zu Wasser dagegen die Kosten eines Schiffes
+            Assert.Equal(Kosten(BewegungsArt.Schiffe, TerrainType.Wasser),
+                         Kosten(BewegungsArt.Chars, TerrainType.Wasser));
+            Assert.Equal(Kosten(BewegungsArt.Schiffe, TerrainType.Tiefsee),
+                         Kosten(BewegungsArt.Chars, TerrainType.Tiefsee));
 
-            // dasselbe fuer den Zauberer, der dafuer aufs Wasser teleportiert
-            var zauberer = new Zauberer { Nummer = 692, gf_von = wasser.gf, kf_von = wasser.kf };
-            Assert.Equal(42, BewegungsRules.BerechneBewegungspunkte(zauberer));
+            // und damit die Reichweite: drei Felder Tiefland wie ein Reiter mit 21 ...
+            int charakter = BewegungsRules.BerechneBewegungspunkte(FigurType.Charakter);
+            int reiter = BewegungsRules.BerechneBewegungspunkte(FigurType.Reiter);
+            Assert.Equal(reiter / Kosten(BewegungsArt.Reiter, TerrainType.Tiefland),
+                      charakter / Kosten(BewegungsArt.Chars, TerrainType.Tiefland));
+            Assert.Equal(3, charakter / Kosten(BewegungsArt.Chars, TerrainType.Tiefland));
 
-            // ein Reiter dagegen faehrt nicht zur See - er kommt dort gar nicht hin
-            var reiter = new Reiter { Nummer = 693, staerke = 50, hf = 1, gf_von = wasser.gf, kf_von = wasser.kf };
-            Assert.Equal(21, BewegungsRules.BerechneBewegungspunkte(reiter));
+            // ... und sechs Felder Wasser wie ein Schiff mit 42
+            int schiff = BewegungsRules.BerechneBewegungspunkte(FigurType.Schiff);
+            Assert.Equal(schiff / Kosten(BewegungsArt.Schiffe, TerrainType.Wasser),
+                      charakter / Kosten(BewegungsArt.Chars, TerrainType.Wasser));
+            Assert.Equal(6, charakter / Kosten(BewegungsArt.Chars, TerrainType.Wasser));
+
+            // ein Reiter kommt dort ueberhaupt nicht hin - 99 heisst unpassierbar
+            Assert.Equal(99, Kosten(BewegungsArt.Reiter, TerrainType.Wasser));
 
             Assert.True(BewegungsRules.IstCharakter(FigurType.Charakter));
             Assert.True(BewegungsRules.IstCharakter(FigurType.Zauberer));
             Assert.True(BewegungsRules.IstCharakter(FigurType.CharakterZauberer));
             Assert.False(BewegungsRules.IstCharakter(FigurType.Reiter));
-            Assert.False(BewegungsRules.StehtAufWasser(null));
         }
 
         /// <summary>

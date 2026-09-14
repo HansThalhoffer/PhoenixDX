@@ -39,13 +39,41 @@ namespace Tests {
             Assert.Equal(42, BewegungsRules.BerechneBewegungspunkte(FigurType.LeichtesKriegsschiff));
             Assert.Equal(42, BewegungsRules.BerechneBewegungspunkte(FigurType.SchweresKriegsschiff));
 
-            // Charaktere haben zu Land 21 - der Heerfuehrercharakter wie der Zauberer, der sich
-            // "einzeln wie Reiter" bewegt. Die 42 gilt nur zur See, dafuer gibt es
-            // BewegungspunkteZurSee (Entscheidung der Spielleitung, September 2026).
-            Assert.Equal(21, BewegungsRules.BerechneBewegungspunkte(FigurType.Charakter));
-            Assert.Equal(21, BewegungsRules.BerechneBewegungspunkte(FigurType.Zauberer));
-            Assert.Equal(21, BewegungsRules.BerechneBewegungspunkte(FigurType.CharakterZauberer));
-            Assert.Equal(42, BewegungsRules.BewegungspunkteZurSee);
+            // Charaktere haben nach Regelwerk 21 Bewegungspunkte zu Land und 42 zur See. In der
+            // Skala der Tabelle BEW_Chars traegt die 42 beides - siehe
+            // BewegungTest.DieCharaktertabelleTraegtBeideHaelftenDerRegel.
+            Assert.Equal(21, BewegungsRules.BewegungspunkteCharakterNachRegelwerk);
+            Assert.Equal(42, BewegungsRules.BerechneBewegungspunkte(FigurType.Charakter));
+            Assert.Equal(42, BewegungsRules.BerechneBewegungspunkte(FigurType.Zauberer));
+            Assert.Equal(42, BewegungsRules.BerechneBewegungspunkte(FigurType.CharakterZauberer));
+        }
+
+        /// <summary>
+        /// Der berechnete Wert stimmt mit dem ueberein, den die Spielleitung in die Zugdaten
+        /// schreibt - fuer jeden Charakter und jeden Zauberer im Bestand.
+        ///
+        /// Darauf kommt es an, seit ZugendeRules die Bewegungspunkte auch fuer Namensfiguren frisch
+        /// berechnet. Waeren beide Werte verschieden, naehme der Zugwechsel jedem Charakter
+        /// lautlos etwas weg.
+        /// </summary>
+        [StaFact]
+        public void FuerNamensfigurenStimmtBerechnetMitGespeichert() {
+            LadeAlles();
+
+            var namensfiguren = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation)
+                .OfType<NamensSpielfigur>()
+                .Where(figur => figur.bp_max > 0)
+                .ToList();
+            Assert.True(namensfiguren.Count > 0, "Das eigene Reich hat keine Namensfiguren");
+
+            Assert.All(namensfiguren, figur => Assert.Equal(
+                BewegungsRules.BerechneBewegungspunkte(figur), figur.bp_max));
+
+            // und der Zugwechsel frischt den Wert auch bei ihnen auf
+            var charakter = new Character { Nummer = 694, gf_von = 305, kf_von = 24, bp = 0, bp_max = 7 };
+            ZugendeRules.SchiebeInNächstenZug(charakter);
+            Assert.Equal(BewegungsRules.BerechneBewegungspunkte(charakter), charakter.bp_max);
+            Assert.Equal(charakter.bp_max, charakter.bp);
         }
 
         /// <summary>
