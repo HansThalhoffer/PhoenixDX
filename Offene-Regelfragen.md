@@ -132,7 +132,12 @@ der Fernkampfwaffen; gilt die Tabelle, entfällt die Zerstörungschance für Bes
 * **Ein Rüstort in der Bauwerkliste hat keine Baupunkte, aber einen Rüstort-Eintrag in der
   Karte.** Das ist kein zerstörtes Bauwerk, sondern ein Widerspruch innerhalb der Karte; die
   Anwendung meldet es getrennt und lässt den Eintrag stehen.
-* **Im Nahkampf verlieren Katapulte mit, obwohl sie sich ergeben.** Das Regelwerk sagt, dass
+* **Wieviele Gutpunkte hat ein Festungsherr?** Das Regelwerk nennt im Beförderungsbeispiel
+  (1.9.1) Burgherr 24, Stadthalter 36 und Herrscher 60 Gutpunkte, den Festungsherrn aber nirgends.
+  Die Anwendung ordnet ihn seinem Rang entsprechend zwischen Stadthalter und Herrscher mit 48 ein.
+  Der Wert dient nur dazu, das Amt eines Charakters zu schätzen, wenn seine Beschriftung es nicht
+  verrät.
+* * **Im Nahkampf verlieren Katapulte mit, obwohl sie sich ergeben.** Das Regelwerk sagt, dass
   Katapulte am Nahkampf nicht teilnehmen und sich immer ergeben (5.5); die Kampftabelle verteilt
   die Verluste aber auch auf ihre Zeilen. Die Anwendung rechnet die Verluste wie die Tabelle und
   zählt als Beute die Katapulte, die in den Nahkampf gegangen sind — bei einem aufgeriebenen Heer

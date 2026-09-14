@@ -18,17 +18,21 @@ namespace PhoenixModel.View {
         /// <param name="figur"></param>
         /// <returns></returns>
         public static CrossrefCharaktere? GetAssumedCharacterKategorie(Character figur) {
+            // Nicht über den Index: die Aufzählung Characterklasse hat sechs Werte, die Tabelle
+            // hatte vier Einträge in anderer Reihenfolge. Ein Stadthalter kam so als Festungsherr
+            // heraus, und ein Herrscher liess die Anwendung mit einer IndexOutOfRangeException
+            // stehen.
             string beschriftung = figur.Beschriftung.ToUpper();
-            if (beschriftung.StartsWith("HF"))
-                return CrossrefCharaktere.Kategorien[(int)Characterklasse.HF];
-            else if (beschriftung.StartsWith("BUH"))
-                return CrossrefCharaktere.Kategorien[(int)Characterklasse.BUH];
+            if (beschriftung.StartsWith("BUH"))
+                return CrossrefCharaktere.Get(Characterklasse.BUH);
             else if (beschriftung.StartsWith("STH"))
-                return CrossrefCharaktere.Kategorien[(int)Characterklasse.STH];
+                return CrossrefCharaktere.Get(Characterklasse.STH);
             else if (beschriftung.StartsWith("FSH"))
-                return CrossrefCharaktere.Kategorien[(int)Characterklasse.FSH];
+                return CrossrefCharaktere.Get(Characterklasse.FSH);
             else if (beschriftung.StartsWith("HER"))
-                return CrossrefCharaktere.Kategorien[(int)Characterklasse.HER];
+                return CrossrefCharaktere.Get(Characterklasse.HER);
+            else if (beschriftung.StartsWith("HF"))
+                return CrossrefCharaktere.Get(Characterklasse.HF);
 
             foreach (var f in CrossrefCharaktere.Kategorien.Reverse()) {
                 if (f.MinGutPunkte <= figur.GP_ges) {
