@@ -1,6 +1,6 @@
 # Offene Regelfragen
 
-Fünf Punkte, bei denen die Quellen sich widersprechen oder das Datenmodell etwas nicht kennt.
+Sechs Punkte, bei denen die Quellen sich widersprechen oder das Datenmodell etwas nicht kennt.
 Die Anwendung verhält sich jeweils so, dass nichts kaputtgeht, solange die Frage offen ist —
 was das konkret heißt, steht unten bei "Was die Anwendung solange tut".
 
@@ -121,6 +121,23 @@ nebeneinander, statt dass eines das andere still überschreibt.
 
 **Was sich mit der Antwort ändert:** Gilt die Hälfte, ändert sich ein Faktor in der Rückrechnung
 der Fernkampfwaffen; gilt die Tabelle, entfällt die Zerstörungschance für Beschuss.
+
+---
+
+## 6. Kann eine Flotte belagern?
+
+**Widerspruch im selben Kapitel:** Regelwerk 1.7 sagt, die Belagerung werde eingeleitet, "wenn ein
+feindliches **Heer oder Flotte** auf einer angrenzenden Gemark steht". 1.7.1 schränkt aber ein, dass
+nur von den Gemarken aus belagert werden kann, "aus denen heraus sie auch betreten werden können".
+
+Eine Flotte kann einen Rüstort an Land nie betreten. Nimmt man beide Sätze wörtlich, belagert eine
+Flotte also nie etwas — und die Erwähnung der Flotte in 1.7 wäre sinnlos.
+
+**Was die Anwendung solange tut:** Sie hält sich an 1.7.1 und zählt nur, wer den Rüstort auch
+betreten könnte. Eine Flotte vor einer Küstenburg schnürt sie damit nicht ein.
+
+**Was sich mit der Antwort ändert:** Zählt die Flotte, entfällt die Betretbarkeitsprüfung für
+Schiffe — eine Zeile in `BelagerungsRules`.
 
 ---
 

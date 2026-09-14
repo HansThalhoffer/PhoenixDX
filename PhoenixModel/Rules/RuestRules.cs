@@ -25,9 +25,10 @@ namespace PhoenixModel.Rules {
     ///
     /// Beim Verrüsten besonderer Einnahmen werden diese Grenzen halbiert und abgerundet (3.3.1).
     ///
-    /// Nicht abgebildet ist die Belagerung: das Regelwerk nimmt belagerte Rüstorte von der Rüstung
-    /// aus (3.3 mit Verweis auf 1.7), aber im Datenmodell gibt es keinen Belagerungszustand. Wer
-    /// das ergänzt, muss hier nachziehen.
+    /// Die Belagerung mindert die Kapazität: je Gemark, von der aus belagert wird, um 15 Prozent
+    /// (Regelwerk 1.7.1). Sie wird nicht befohlen, sondern ergibt sich aus der Lage der Heere -
+    /// <see cref="BelagerungsRules"/> sucht sie. Ein Spieler sieht dafür nur seine
+    /// Feindaufklärung; was er nicht aufgeklärt hat, schnürt ihn hier auch nicht ein.
     /// </summary>
     public static class RuestRules {
 
@@ -40,6 +41,16 @@ namespace PhoenixModel.Rules {
         public record class Rüstkapazität(int Goldstücke, int Heerführer, int Zauberer) {
             /// <summary>Die halbierte und abgerundete Kapazität für besondere Einnahmen (Regelwerk 3.3.1)</summary>
             public Rüstkapazität Halbiert() => new(Goldstücke / 2, Heerführer / 2, Zauberer / 2);
+
+            /// <summary>
+            /// Die um eine Belagerung geminderte Kapazität (Regelwerk 1.7.1)
+            /// </summary>
+            public Rüstkapazität Gemindert(BelagerungsRules.Belagerung? belagerung)
+                => belagerung == null || belagerung.Besteht == false
+                    ? this
+                    : new(BelagerungsRules.Mindere(Goldstücke, belagerung),
+                          BelagerungsRules.Mindere(Heerführer, belagerung),
+                          BelagerungsRules.Mindere(Zauberer, belagerung));
 
             /// <summary>Nichts davon - für ein Feld ohne Rüstort</summary>
             public static readonly Rüstkapazität Keine = new(0, 0, 0);
@@ -63,7 +74,21 @@ namespace PhoenixModel.Rules {
                 rüstort.KapazitätTruppen ?? 0,
                 rüstort.KapazitätHF ?? 0,
                 rüstort.KapazitätZ ?? 0);
-            return ausBesonderenEinnahmen ? kapazität.Halbiert() : kapazität;
+            if (ausBesonderenEinnahmen)
+                kapazität = kapazität.Halbiert();
+            return kapazität.Gemindert(GetBelagerung(gemark));
+        }
+
+        /// <summary>
+        /// Die Belagerung, die auf diesem Rüstort liegt - aus der Sicht dessen, der fragt.
+        ///
+        /// Der Spieler sieht seine Feindaufklärung, die Spielleitung die Figuren aller Reiche.
+        /// Liegen beide vor, zählt die vollständigere: wer alle Reiche geladen hat, wertet aus.
+        /// </summary>
+        public static BelagerungsRules.Belagerung GetBelagerung(KleinFeld? gemark) {
+            if (Spielleitungsdaten.IstGeladen)
+                return BelagerungsRules.FindeBelagerung(gemark);
+            return BelagerungsRules.FindeBelagerungNachAufklärung(gemark);
         }
 
         /// <summary>
@@ -116,6 +141,11 @@ namespace PhoenixModel.Rules {
             if (gemark.Nation == null || gemark.Nation != ProgramView.SelectedNation)
                 return Result.Fail($"{gemark.Bezeichner} gehört nicht zum eigenen Reich",
                     "Bewegliche Rüstgüter dürfen nur in eigenen Rüstorten gerüstet werden (Regelwerk 3.3).");
+
+            var belagerung = GetBelagerung(gemark);
+            if (belagerung.Besteht && GetKapazität(gemark).Goldstücke <= 0)
+                return Result.Fail($"Der Rüstort auf {gemark.Bezeichner} ist vollständig belagert",
+                    belagerung.Beschreibung);
 
             var kapazität = GetKapazität(gemark);
             if (kapazität.Goldstücke <= 0)

@@ -48,7 +48,7 @@ richtig ist. Gegen die Altanwendung PZE.NET ist hier nichts verglichen worden.
 | 1.5.13 Hauptstadtverlegung | **fehlt** | 50.000 GS, mehrmonatig — kommt im Code nicht vor |
 | 1.6 Bauwerke durch eigene Heere zerstören | **fehlt** | |
 | 1.6 Eigene Heere auflösen | **halb** | `ZugendeRules.IstAufgelöst` entfernt Heere ohne Heerführer; einen Auflösungsbefehl gibt es nicht |
-| 1.7 Belagerung | **fehlt** | siehe unten, "Die grössten Lücken" |
+| 1.7 Belagerung | **steht** | `BelagerungsRules`; mindert Rüstkapazität und Großbaustelle |
 | 1.8 Heere: Mindestgrösse, Nummernkreise, Teilen, Fusionieren | **steht** | `HeeresRules`, `SplitCommand`, `MergeCommand` |
 | 1.8 Höchstgrenze 100.000 Raumpunkte | **steht** | `ÜberbesetzungRules` (Regelwerk 5.7) |
 | 1.8 "eroberungsfähiges Heer" (1000 RP + HF) | **fehlt** | der Begriff kommt im Code nirgends vor, wird aber von vier Regeln gebraucht |
@@ -171,11 +171,9 @@ Erklärung, warum ein Feld unerreichbar ist, und die Kampfauswertung der Spielle
 
 ## Die grössten Lücken, nach Nutzen sortiert
 
-1. **Belagerung (1.7).** Das Regelwerk beantwortet die Frage, die in `Offene-Regelfragen.md`
-   noch offen steht, selbst: *"Die Belagerung wird bei elektronischer Auswertung automatisch
-   eingeleitet, wenn ein feindliches Heer oder Flotte auf einer angrenzenden Gemark steht!"* Je
-   belagernder Gemark sinkt die mögliche Rüstung um 15 %, dasselbe gilt für Grossbaustellen. Das
-   ist mit Nachbarschaft und `DiplomatieRules` rechenbar — die Bausteine liegen alle da.
+1. ~~Belagerung (1.7).~~ **Erledigt** — `BelagerungsRules`, sie wird nicht befohlen, sondern aus
+   der Lage der Heere gesucht. Offen blieb nur die Frage, ob eine Flotte belagern kann (Punkt 6
+   der offenen Regelfragen).
 
 2. **Eroberungsfähiges Heer (1.8).** 1000 Raumpunkte plus Heerführer. Vier Regeln hängen daran:
    Erobern beim Betreten, Verhindern von Bau und Reparatur, Nachbarunterstützung im Kampf und

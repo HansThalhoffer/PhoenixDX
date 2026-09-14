@@ -92,6 +92,28 @@ namespace PhoenixModel.Rules {
         /// <param name="kleinfeld">das Kleinfeld mit dem Rüstort</param>
         /// <param name="art">Ausbau oder Reparatur</param>
         /// <param name="baupunkte">wieviele Baupunkte in diesem Monat gebaut werden</param>
+        /// <summary>
+        /// Wieviele Baupunkte in diesem Monat an dieser Baustelle dazukommen dürfen.
+        ///
+        /// Gewöhnlich <see cref="MaxBaupunkteProMonat"/>. Wird die Baustelle belagert, sinkt die
+        /// Grenze je Gemark, von der aus belagert wird, um 15 Prozent: "die monatlich maximal
+        /// mögliche Erhöhung der Baupunkte der Großbaustelle verringert sich pro Gemark von der
+        /// aus belagert wird um 15%" (Regelwerk 1.7.2). Als Großbaustelle gilt der Neuaufbau und
+        /// die Reparatur eines Rüstorts.
+        /// </summary>
+        public static int GetMaxBaupunkteProMonat(KleinFeld? kleinfeld)
+            => GetMaxBaupunkteProMonat(kleinfeld, out _);
+
+        /// <summary>
+        /// Dasselbe, und dazu die Belagerung, die dahinter steckt
+        /// </summary>
+        public static int GetMaxBaupunkteProMonat(KleinFeld? kleinfeld, out BelagerungsRules.Belagerung belagerung) {
+            belagerung = RuestRules.GetBelagerung(kleinfeld);
+            return belagerung.Besteht
+                ? BelagerungsRules.Mindere(MaxBaupunkteProMonat, belagerung)
+                : MaxBaupunkteProMonat;
+        }
+
         public static Result Prüfe(KleinFeld? kleinfeld, Bauart art, int baupunkte) {
             if (kleinfeld == null)
                 return Result.Fail("Es ist kein Kleinfeld ausgewählt", "Ohne Feld lässt sich nicht bauen.");
@@ -109,10 +131,15 @@ namespace PhoenixModel.Rules {
 
             if (baupunkte <= 0)
                 return Result.Fail("Es wurden keine Baupunkte angegeben", $"Angegeben waren {baupunkte}.");
-            if (baupunkte > MaxBaupunkteProMonat)
-                return Result.Fail($"Mehr als {MaxBaupunkteProMonat} Baupunkte gehen nicht in einem Monat",
-                    $"Angegeben waren {baupunkte}. Die Summe der Baupunkte einer Baustelle darf pro Monat um "
-                    + $"maximal {MaxBaupunkteProMonat} erhöht werden (Regelwerk 1.5).");
+            int obergrenze = GetMaxBaupunkteProMonat(kleinfeld, out var belagerung);
+            if (baupunkte > obergrenze) {
+                string grund = belagerung.Besteht
+                    ? $"Die Baustelle ist belagert: {belagerung.Beschreibung}. Statt {MaxBaupunkteProMonat} "
+                      + $"Baupunkten sind in diesem Monat nur {obergrenze} möglich (Regelwerk 1.7.2)."
+                    : $"Angegeben waren {baupunkte}. Die Summe der Baupunkte einer Baustelle darf pro Monat um "
+                      + $"maximal {MaxBaupunkteProMonat} erhöht werden (Regelwerk 1.5).";
+                return Result.Fail($"Mehr als {obergrenze} Baupunkte gehen nicht in einem Monat", grund);
+            }
 
             int schaden = GetSchaden(kleinfeld);
             if (art == Bauart.Reparatur) {
