@@ -17,6 +17,13 @@ namespace PhoenixModel.ExternalTables
         public string Farbname { get; private set; }
         public string FarbeHex { get; private set; }
 
+        /// <summary>
+        /// Nummer 0 ist kein Reich, sondern die Abwesenheit eines Reiches - die Karte sagt damit
+        /// "hier gehoert nichts jemandem". Das ist keine Angabe, die man irgendwo uebernehmen
+        /// sollte: sie wuerde einen vorhandenen Eintrag loeschen.
+        /// </summary>
+        public static int KeinReich = 0;
+
         public static int Piraten = 9;
 
         public static ReichTabelle? Find(string reichbezeichner)

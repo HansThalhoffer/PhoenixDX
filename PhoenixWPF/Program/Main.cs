@@ -501,8 +501,12 @@ namespace PhoenixWPF.Program {
         /// <summary>
         /// Raeumt die Bauwerkliste auf - nur beim Start mit /cleanup.
         ///
-        /// Laeuft nach dem Laden von Karte und PZE, weil der Abgleich die Karte braucht. Was
-        /// entfernt wird, sagt die Meldung; gesichert wird vorher.
+        /// Laeuft nach dem Laden von Karte und PZE: der Abgleich braucht die Karte, und die
+        /// Reichsnamen brauchen die Nationen aus der PZE. Und er muss vor Phase 2 der Reparatur
+        /// laufen, die das Reich im Speicher ohnehin nachzieht - danach waere kein Unterschied
+        /// mehr zu sehen und nichts mehr zu berichtigen.
+        ///
+        /// Was geschieht, sagen die Meldungen; gesichert wird vorher.
         /// </summary>
         private void BereinigeKarte() {
             if (Settings == null)
@@ -511,16 +515,32 @@ namespace PhoenixWPF.Program {
                 var ergebnis = Kartenbereinigung.Bereinige(
                     Settings.UserSettings.DatabaseLocationKarte, Settings.UserSettings.PasswordKarte);
 
-                if (ergebnis.Geloescht.Count == 0) {
+                if (ergebnis.Geloescht.Count == 0 && ergebnis.Berichtigt.Count == 0) {
                     SpielWPF.LogInfo("In der Bauwerkliste gab es nichts zu bereinigen",
-                        "Zu jedem Eintrag der Tabelle [bauwerksliste] fuehrt die Karte Baupunkte oder einen Ruestort.");
+                        "Jeder Eintrag der Tabelle [bauwerksliste] hat eine Entsprechung in der Karte, "
+                        + "und Reich und Bauwerkname stimmen ueberein.");
                     return;
                 }
 
-                SpielWPF.LogInfo($"{ergebnis.Geloescht.Count} Eintraege aus der Bauwerkliste entfernt",
-                    $"Die Karte fuehrte zu diesen Gemarken weder Baupunkte noch einen Ruestort: "
-                    + $"{string.Join(", ", ergebnis.Geloescht)}.\r\r"
-                    + $"Vorher gesichert nach {ergebnis.Sicherung}.");
+                if (ergebnis.Geloescht.Count > 0)
+                    SpielWPF.LogInfo($"{ergebnis.Geloescht.Count} Eintraege aus der Bauwerkliste entfernt",
+                        $"Die Karte fuehrte zu diesen Gemarken weder Baupunkte noch einen Ruestort: "
+                        + $"{string.Join(", ", ergebnis.Geloescht)}.\r\r"
+                        + $"Vorher gesichert nach {ergebnis.Sicherung}.");
+
+                if (ergebnis.Berichtigt.Count > 0)
+                    SpielWPF.LogInfo($"{ergebnis.Berichtigt.Count} Eintraege der Bauwerkliste berichtigt",
+                        $"Reich und Bauwerkname stammen jetzt aus der Karte: "
+                        + $"{string.Join(", ", ergebnis.Berichtigt)}.\r\r"
+                        + $"Vorher gesichert nach {ergebnis.Sicherung}.");
+
+                if (ergebnis.OhneAngabeInDerKarte.Count > 0)
+                    SpielWPF.LogWarning($"Zu {ergebnis.OhneAngabeInDerKarte.Count} Bauwerken schweigt die Karte",
+                        $"Die Karte nennt zu diesen Gemarken weder ein Reich noch einen Namen: "
+                        + $"{string.Join(", ", ergebnis.OhneAngabeInDerKarte)}.\r\r"
+                        + "Uebernommen wurde nichts - ein leerer Wert aus der Karte heisst "
+                        + "unbekannt, nicht niemand, und wuerde die vorhandene Angabe loeschen. "
+                        + "Hier sollte die Spielleitung nachsehen.");
             }
             catch (Exception ex) {
                 SpielWPF.LogError("Die Bauwerkliste liess sich nicht bereinigen",

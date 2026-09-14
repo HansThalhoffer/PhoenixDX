@@ -41,8 +41,8 @@ namespace PhoenixWPF.Database
             }
         }
 
-        public void SchreibeAlle(IEnumerable<PhoenixModel.Database.DatabaseQueue.DatabaseQueueItem> vorgänge) {
-            SchreibeAlle(vorgänge, _encryptedpassword, _databaseFileName);
+        public int SchreibeAlle(IEnumerable<PhoenixModel.Database.DatabaseQueue.DatabaseQueueItem> vorgänge) {
+            return SchreibeAlle(vorgänge, _encryptedpassword, _databaseFileName);
         }
 
         public bool Save(IDatabaseTable table) {

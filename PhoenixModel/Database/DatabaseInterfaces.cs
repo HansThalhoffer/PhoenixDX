@@ -57,7 +57,8 @@ namespace PhoenixModel.Database {
         /// Speicherdurchgang eine.
         /// </summary>
         /// <param name="vorgänge">die Vorgänge in der Reihenfolge, in der sie ausgeführt werden</param>
-        public void SchreibeAlle(IEnumerable<DatabaseQueue.DatabaseQueueItem> vorgänge);
+        /// <returns>die Anzahl der Vorgänge, die tatsächlich durchgelaufen sind</returns>
+        public int SchreibeAlle(IEnumerable<DatabaseQueue.DatabaseQueueItem> vorgänge);
 
         /// <summary>
         /// Lädt die Datenbank im Hintergrund und ruft nach Abschluss den angegebenen Delegate auf.

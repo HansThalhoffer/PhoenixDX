@@ -246,10 +246,11 @@ namespace PhoenixWPF.Database
         /// genauso wie zuvor, als jeder Vorgang seine eigene Verbindung hatte. Ein halb
         /// geschriebener Speicherdurchgang ist immer noch besser als ein verworfener.
         /// </summary>
-        protected void SchreibeAlle(IEnumerable<DatabaseQueue.DatabaseQueueItem> vorgänge, EncryptedString encryptedpassword, string databaseFileName) {
+        /// <returns>die Anzahl der Vorgänge, die tatsächlich durchgelaufen sind</returns>
+        protected int SchreibeAlle(IEnumerable<DatabaseQueue.DatabaseQueueItem> vorgänge, EncryptedString encryptedpassword, string databaseFileName) {
             var liste = vorgänge.ToList();
             if (liste.Count == 0)
-                return;
+                return 0;
 
             PasswordHolder holder = new(encryptedpassword);
             using AccessDatabase connector = new(databaseFileName, holder.DecryptedPassword);
@@ -257,9 +258,10 @@ namespace PhoenixWPF.Database
                 ProgramView.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error,
                     $"Die Datenbank {databaseFileName} liess sich nicht öffnen",
                     $"{liste.Count} Änderungen konnten nicht gespeichert werden."));
-                return;
+                return 0;
             }
 
+            int geschrieben = 0;
             try {
                 // der Befehl muss vor dem Schliessen der Verbindung freigegeben werden
                 using var command = connector.OpenDBCommand();
@@ -276,6 +278,7 @@ namespace PhoenixWPF.Database
                                 vorgang.Table.Save(command);
                                 break;
                         }
+                        geschrieben++;
                     }
                     catch (Exception ex) {
                         ProgramView.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error,
@@ -288,6 +291,7 @@ namespace PhoenixWPF.Database
                     $"Fehler beim Speichern in der Datenbank {databaseFileName}", ex.Message));
             }
             connector.Close();
+            return geschrieben;
         }
 
         /// <summary>

@@ -205,8 +205,8 @@ namespace PhoenixWPF.Program {
                     + "Eintrag ohne Reich wäre unvollständig. Hier sollte die Spielleitung nachsehen.");
         }
 
-        public void SchreibeAlle(IEnumerable<PhoenixModel.Database.DatabaseQueue.DatabaseQueueItem> vorgänge) {
-            SchreibeAlle(vorgänge, _encryptedpassword, _databaseFileName);
+        public int SchreibeAlle(IEnumerable<PhoenixModel.Database.DatabaseQueue.DatabaseQueueItem> vorgänge) {
+            return SchreibeAlle(vorgänge, _encryptedpassword, _databaseFileName);
         }
 
         public bool Save(IDatabaseTable table) {
