@@ -1,4 +1,4 @@
-using PhoenixModel.ExternalTables;
+﻿using PhoenixModel.ExternalTables;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 
@@ -133,6 +133,29 @@ namespace PhoenixModel.Rules {
         }
 
         /// <summary>
+        /// Frischt Raumpunkte und Bewegungspunkte zum Zugbeginn auf.
+        ///
+        /// Beides hängt an Werten, die sich im Lauf des Monats ändern: die Raumpunkte an
+        /// Stärke, Heerführern, Pferden und Katapulten, die Bewegungspunkte daran, ob das Heer
+        /// Ladung schleppt. Ein Heer, das Beute aufgenommen hat, zieht im nächsten Monat mit 9
+        /// statt 21 Punkten los; eines, das sie abgegeben hat, wieder mit 21.
+        ///
+        /// Die gespeicherten Raumpunkte laufen sonst weit auseinander: in den echten Zugdaten
+        /// weicht bei 36 von 60 Figuren der Wert vom berechneten ab, oft steht dort schlicht 0.
+        ///
+        /// Namensfiguren behalten ihr gespeichertes bp_max. Das Regelwerk nennt für den
+        /// Heerführercharakter 21 Bewegungspunkte, die Zugdaten der Spielleitung führen aber
+        /// für alle Charaktere 42. Solange das nicht geklärt ist, wäre ein Neuberechnen ein
+        /// Halbieren - und zwar ohne dass es jemandem auffällt.
+        /// </summary>
+        private static void FrischeWerte(Spielfigur figur) {
+            figur.rp = SpielfigurRules.BerechneRaumpunkte(figur);
+            if (figur is TruppenSpielfigur)
+                figur.bp_max = BewegungsRules.BerechneBewegungspunkte(figur);
+            figur.bp = figur.bp_max;
+        }
+
+        /// <summary>
         /// Die im abgelaufenen Zug erreichte Position wird zur Ausgangsposition des neuen Zuges.
         /// Aufgelöste Figuren verschwinden dabei von der Karte.
         /// </summary>
@@ -148,7 +171,7 @@ namespace PhoenixModel.Rules {
             figur.gf_nach = 0;
             figur.kf_nach = 0;
 
-            figur.bp = figur.bp_max;
+            FrischeWerte(figur);
             figur.hoehenstufen = 0;
             new Bewegungsspur(figur).Clear();
         }

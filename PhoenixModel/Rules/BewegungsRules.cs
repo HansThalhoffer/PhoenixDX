@@ -885,7 +885,11 @@ namespace PhoenixModel.Rules {
                 FigurType.Schiff or FigurType.PiratenSchiff => 42,
                 FigurType.LeichtesKriegsschiff or FigurType.PiratenLeichtesKriegsschiff => 42,
                 FigurType.SchweresKriegsschiff or FigurType.PiratenSchweresKriegsschiff => 42,
-                FigurType.Charakter or FigurType.Zauberer or FigurType.CharakterZauberer => 21,
+                // Der Heerführercharakter hat 21 Bewegungspunkte (Regelwerk 1.1). Zauberer
+                // bewegen sich zwar "einzeln wie Reiter", das Regelwerk nennt bei ihnen aber
+                // ausdrücklich 42 - und ein Charakterzauberer ist auch ein Zauberer.
+                FigurType.Charakter => 21,
+                FigurType.Zauberer or FigurType.CharakterZauberer => 42,
                 _ => 0,
             };
         }
