@@ -60,6 +60,12 @@ namespace PhoenixModel.Rules {
         ///
         /// Zehn Prozent je Vielfachem der gegnerischen Heeresstärke, höchstens alles. Ohne
         /// Gegner gibt es nichts zu kapern - wo kein Heer ist, ist auch keine Ladung.
+        ///
+        /// Die Kampftabelle rechnet den Beutefaktor mit der Kampfstärke statt der Heeresstärke
+        /// und kennt keine Obergrenze (G325: Kampfstärke durch Kampfstärke, mal 10/100). Hier
+        /// gilt das Regelwerk: "Anteilig von der Überlegenheit der Heeresstärke wird Ladung
+        /// gekapert." Mit Gutpunkten gerechnet käme bei gleicher Truppenzahl mehr heraus, nur
+        /// weil eine Seite besser aufgestellt ist.
         /// </summary>
         /// <returns>ein Anteil zwischen 0 und 1</returns>
         public static double BerechneKaperanteil(double eigeneHeeresstärke, double fremdeHeeresstärke) {
