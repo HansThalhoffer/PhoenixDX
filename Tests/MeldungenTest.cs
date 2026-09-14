@@ -292,5 +292,48 @@ namespace Tests {
                 SharedData.StoreQueue.Clear();
             }
         }
+
+        /// <summary>
+        /// Ein Ruestort in der Karte ohne Baupunkte ist kein zerstoertes Gebaeude.
+        ///
+        /// Bisher galt jeder Eintrag der Bauwerkliste als zerstoert, sobald die Karte dort null
+        /// Baupunkte fuehrte - und jeder ergab eine eigene Warnung mit dem Versprechen, der Fehler
+        /// sei "automatisch korrigiert". Beides stimmte nicht: fuehrt die Karte weiter einen
+        /// Ruestort, steht dort sehr wohl ein Bauwerk, und korrigiert wurde nie etwas - die Tabelle
+        /// hat gar kein Feld dafuer.
+        /// </summary>
+        [StaFact]
+        public void EinRuestortOhneBaupunkteGiltNichtAlsZerstoert() {
+            TestSetup.Setup();
+            TestSetup.LoadCrossRef(false, false);
+            TestSetup.LoadPZE(false, false);
+            TestSetup.LoadKarte(erzwingen: true);
+
+            var abgleich = BauwerkeView.MarkiereZerstörteBauwerke();
+
+            // Was als zerstoert gilt, fuehrt die Karte tatsaechlich nicht mehr
+            foreach (var bezeichner in abgleich.Zerstört) {
+                var gemark = SharedData.Map![bezeichner];
+                Assert.Equal(0, gemark.Baupunkte);
+                Assert.True(gemark.Ruestort == null || gemark.Ruestort == 0,
+                    $"{bezeichner} gilt als zerstoert, die Karte fuehrt aber Ruestort {gemark.Ruestort}");
+                Assert.True(SharedData.Gebäude![bezeichner].Zerstört);
+            }
+
+            // Und was noch einen Ruestort hat, bleibt unangetastet
+            foreach (var bezeichner in abgleich.MitRüstortOhneBaupunkte) {
+                var gemark = SharedData.Map![bezeichner];
+                Assert.Equal(0, gemark.Baupunkte);
+                Assert.True(gemark.Ruestort > 0);
+                Assert.False(SharedData.Gebäude![bezeichner].Zerstört,
+                    $"{bezeichner} fuehrt einen Ruestort und darf nicht als zerstoert gelten");
+            }
+
+            // Die beiden Gruppen ueberschneiden sich nicht und decken alles ab
+            Assert.Empty(abgleich.Zerstört.Intersect(abgleich.MitRüstortOhneBaupunkte));
+            int betroffen = SharedData.Gebäude!.Values.Count(gebäude =>
+                SharedData.Map!.TryGetValue(gebäude.Bezeichner, out var gemark) && gemark.Baupunkte == 0);
+            Assert.Equal(betroffen, abgleich.Zerstört.Count + abgleich.MitRüstortOhneBaupunkte.Count);
+        }
     }
 }

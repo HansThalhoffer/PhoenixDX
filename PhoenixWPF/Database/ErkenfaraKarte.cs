@@ -130,15 +130,10 @@ namespace PhoenixWPF.Program {
                         // sähe niemand: Phase 2 läuft in einem Task.
                         if (SharedData.Map.TryGetValue(gebäude.Bezeichner, out var gemark) == false)
                             continue;
-
                         if (gemark.Nation != null)
                             gebäude.Reich = gemark.Nation.Reich;
-                        if (gemark.Baupunkte == 0)
-                        {
-                            ProgramView.LogWarning(gemark, $"Zerstörtes Gebäude in der Bauwerktabelle mit dem Namen {gebäude.Bauwerknamen}", $"Durch einen Datenbankfehler existiert das zerstörte Gebäude auf {gebäude.Bezeichner} noch in der Tabelle [bauwerkliste] in der Datenbank Ekrenfarakarte.mdb.\r\rDieser Fehler wurde automatisch korrigiert");
-                            gebäude.Zerstört = true;
-                        }
                     }
+                    MeldeZerstörteBauwerke();
                     SchreibeNachgetrageneBauwerke();
                 }
             }
@@ -150,6 +145,34 @@ namespace PhoenixWPF.Program {
             {
                 ProgramView.Update(ViewEventArgs.ViewEventType.UpdateGebäude);
             }));
+        }
+
+        /// <summary>
+        /// Meldet, was in der Bauwerkliste steht, aber nicht mehr in der Karte.
+        ///
+        /// Eine Meldung je Gruppe statt einer je Gemark - und ohne das Versprechen, der Fehler sei
+        /// "automatisch korrigiert". Korrigiert wird nichts: die Tabelle [bauwerkliste] kennt kein
+        /// Feld für "zerstört", die Markierung lebt nur in dieser Sitzung. Wer das bereinigen will,
+        /// muss die Zeile löschen, und das ist nichts, was die Anwendung ungefragt tut.
+        /// </summary>
+        private void MeldeZerstörteBauwerke()
+        {
+            var abgleich = BauwerkeView.MarkiereZerstörteBauwerke();
+
+            if (abgleich.Zerstört.Count > 0)
+                ProgramView.LogWarning($"{abgleich.Zerstört.Count} Gebäude stehen in der Bauwerkliste, aber nicht mehr in der Karte",
+                    $"Zu diesen Gemarken führt die Tabelle [bauwerkliste] der Erkenfarakarte.mdb einen Eintrag, "
+                    + $"die Karte aber weder Baupunkte noch einen Rüstort: {string.Join(", ", abgleich.Zerstört)}.\r\r"
+                    + "Die Karte ist die gepflegte Tabelle und gibt den Ausschlag; die Einträge sind für diese "
+                    + "Sitzung als zerstört markiert. In der Datenbank stehen sie weiterhin - sie zu löschen "
+                    + "wäre nicht rückgängig zu machen, das gehört der Spielleitung.");
+
+            if (abgleich.MitRüstortOhneBaupunkte.Count > 0)
+                ProgramView.LogWarning($"{abgleich.MitRüstortOhneBaupunkte.Count} Rüstorte in der Karte haben keine Baupunkte",
+                    $"Die Karte führt zu diesen Gemarken einen Rüstort, aber null Baupunkte: "
+                    + $"{string.Join(", ", abgleich.MitRüstortOhneBaupunkte)}.\r\r"
+                    + "Das ist kein zerstörtes Bauwerk - dort steht laut Karte weiter eines - sondern ein "
+                    + "Widerspruch in der Karte selbst. Hier sollte die Spielleitung nachsehen.");
         }
 
         /// <summary>

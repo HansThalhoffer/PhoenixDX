@@ -151,6 +151,57 @@ namespace PhoenixModel.View {
         }
 
         /// <summary>
+        /// Das Ergebnis des Abgleichs der Bauwerkliste gegen die Karte.
+        /// </summary>
+        /// <param name="Zerstört">
+        /// Eintraege, zu denen die Karte weder Baupunkte noch einen Rüstort führt - dort steht
+        /// nichts mehr.
+        /// </param>
+        /// <param name="MitRüstortOhneBaupunkte">
+        /// Einträge, zu denen die Karte zwar keine Baupunkte, aber weiterhin einen Rüstort führt.
+        /// Das ist kein zerstörtes Gebäude, sondern ein Widerspruch in der Karte selbst.
+        /// </param>
+        public record class Bauwerkabgleich(List<string> Zerstört, List<string> MitRüstortOhneBaupunkte);
+
+        /// <summary>
+        /// Gleicht die Bauwerkliste gegen die Karte ab und markiert, was dort nicht mehr steht.
+        ///
+        /// Die Karte ist die gepflegte Tabelle. Führt sie zu einem Eintrag der Bauwerkliste weder
+        /// Baupunkte noch einen Rüstort, ist das Bauwerk weg - 707/23 heisst in der Karte
+        /// inzwischen "Ruine von Ascartia".
+        ///
+        /// Nicht dazu gehört ein Gemark, das zwar keine Baupunkte, aber noch einen Rüstort führt:
+        /// dort steht laut Karte weiter ein Bauwerk. Das als zerstört zu markieren hiesse, einen
+        /// vorhandenen Rüstort verschwinden zu lassen.
+        ///
+        /// Markiert wird nur im Speicher: die Tabelle [bauwerkliste] führt genau vier Spalten und
+        /// kennt kein Feld für "zerstört". Geändert wird an der Datenbank also nichts.
+        /// </summary>
+        public static Bauwerkabgleich MarkiereZerstörteBauwerke() {
+            List<string> zerstört = [];
+            List<string> mitRüstort = [];
+            if (SharedData.Gebäude == null || SharedData.Map == null)
+                return new Bauwerkabgleich(zerstört, mitRüstort);
+
+            foreach (var gebäude in SharedData.Gebäude.Values) {
+                // Die Bauwerkliste kann Einträge zu Gemarken führen, die die Karte nicht kennt.
+                if (SharedData.Map.TryGetValue(gebäude.Bezeichner, out var gemark) == false)
+                    continue;
+                if (gemark.Baupunkte != 0)
+                    continue;
+
+                if (gemark.Ruestort != null && gemark.Ruestort > 0) {
+                    mitRüstort.Add(gebäude.Bezeichner);
+                }
+                else {
+                    gebäude.Zerstört = true;
+                    zerstört.Add(gebäude.Bezeichner);
+                }
+            }
+            return new Bauwerkabgleich(zerstört, mitRüstort);
+        }
+
+        /// <summary>
         /// Die ergänzten Bauwerke, die noch auf ihr Reich warten.
         ///
         /// Beim Laden der Karte sind die Nationen noch nicht da (Main lädt CrossRef, Karte, PZE),
