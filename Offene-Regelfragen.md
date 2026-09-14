@@ -1,6 +1,8 @@
 # Offene Regelfragen
 
-Sechs Punkte, bei denen die Quellen sich widersprechen oder das Datenmodell etwas nicht kennt.
+Sieben offene Punkte, bei denen die Quellen sich widersprechen oder das Datenmodell etwas nicht
+kennt. Beantwortete Fragen bleiben stehen, damit nachvollziehbar bleibt, warum die Anwendung
+rechnet, wie sie rechnet.
 Die Anwendung verhält sich jeweils so, dass nichts kaputtgeht, solange die Frage offen ist —
 was das konkret heißt, steht unten bei "Was die Anwendung solange tut".
 
@@ -9,27 +11,23 @@ Repository öffentlich ist.
 
 ---
 
-## 1. Haben Charaktere 21 oder 42 Bewegungspunkte?
+## 1. ~~Haben Charaktere 21 oder 42 Bewegungspunkte?~~ — beantwortet
 
-**Widerspruch:** Das Regelwerk nennt in Kapitel 1.1 für den *Heerführercharakter* **21**
-Bewegungspunkte. Die Zugdaten der Spielleitung führen dagegen für **alle** Charaktere
-**42** — ausnahmslos.
+**Antwort der Spielleitung (September 2026):** **21, für alle Charaktere** — für den
+Heerführercharakter wie für den Zauberer. Die 42 gilt nur zur See. Man geht davon aus, dass
+jeder Charakter ein eigenes Schiff hat; ein Zauberer teleportiert bei Bedarf aufs Wasser und
+nimmt erst dort die Schiffsbewegung auf.
 
-**Was dafür spricht, dass 42 stimmt:** Ein Vergleich zweier aufeinanderfolgender Monate zeigt
-einen Charakter, der in einem Monat sechs Felder weit gezogen ist und dabei genau 42 Punkte
-verbraucht hat. Mit 21 Punkten wären das bei üblichen Geländekosten höchstens drei Schritte
-gewesen. Vermutlich meint die 21 im Regelwerk den Charakter *im Heer*, der sich mit dem Heer
-bewegt, nicht den allein reisenden.
+Das Regelwerk trägt das inzwischen selbst, in der Korrekturliste: *"22. Charakterbewegung auf
+Wasser (gefixt auf Treffen am 21.06.14) — Siehe dazu die Bewegungstabelle im Anhang. Unter 1.9:
+und verfügen über ein eigenes Schiff (was nicht in die Heeresstärke eingerechnet wird), welches
+Ihnen Bewegung auf Wasser ermöglicht. Und unter 0.3.2: (Charaktere verfügen über eigene Schiffe,
+siehe 1.9)."*
 
-Für Zauberer nennt das Regelwerk ausdrücklich 42; das ist bereits korrigiert.
+**Umgesetzt** in `BewegungsRules.BerechneBewegungspunkte`: 21 für Charakter, Zauberer und
+Charakterzauberer, `BewegungspunkteZurSee` = 42, sobald die Figur auf einem Wasserfeld steht.
 
-**Was die Anwendung solange tut:** Namensfiguren behalten beim Zugwechsel ihren gespeicherten
-Höchstwert. Würde sie ihn neu berechnen, nähme sie jedem Charakter lautlos die Hälfte seiner
-Bewegungspunkte.
-
-**Was sich mit der Antwort ändert:** Eine Zeile in `BewegungsRules.BerechneBewegungspunkte`.
-Lautet die Antwort 42, kann `ZugendeRules` den Höchstwert auch für Namensfiguren wieder
-mitberechnen.
+**Was daraus als neue Frage folgt: in welcher Skala misst die Bewegungstabelle?** Siehe Punkt 8.
 
 ---
 
@@ -161,6 +159,43 @@ insgesamt 150.000 GS.
 
 **Was sich mit der Antwort ändert:** Soll die neue Hauptstadt sofort vollständig sein, wird aus
 `SetzeBezeichnung` ein `SetzeStufe` — eine Zeile in `HauptstadtRules`.
+
+---
+
+## 8. In welcher Skala steht BEW_Chars?
+
+**Befund:** Die Bewegungstabelle der Charaktere in der crossref.mdb führt für jedes Landgelände
+genau das **Doppelte** der Reiterkosten, für Wasser und Tiefsee dagegen die Kosten eines
+Schiffes:
+
+| Gelände | Reiter | Charaktere | Schiff |
+|---|---|---|---|
+| Tiefland, Hochland, Wüste | 7 | 14 | — |
+| Wald, Sumpf | 10 | 20 | — |
+| Bergland | 21 | 42 | — |
+| auf Strasse | 4 / 5 / 7 | 8 / 10 / 14 | — |
+| Gebirge | unpassierbar | 42 | — |
+| Wasser | unpassierbar | 7 | 7 |
+| Tiefsee | unpassierbar | 12 | 12 |
+
+**Warum das eine Frage ist:** In dieser Skala entspricht ein Budget von **42** genau der
+Reichweite, die das Regelwerk meint — drei Felder Tiefland wie ein Reiter mit 21, sechs Felder
+Wasser wie ein Schiff mit 42. Mit den beschlossenen **21** Punkten kommt ein Charakter über
+Tiefland nur **ein** Feld weit statt drei und über Wasser drei statt sechs. Die Zugdaten der
+Spielleitung führen für alle Charaktere 42; auch ein beobachteter Zug über sechs Wasserfelder
+hat genau 42 Punkte gekostet.
+
+Entweder die Tabelle gehört auf Reiterkosten umgestellt (Tiefland 7 statt 14 und so fort, Wasser
+bei 3 oder 4), oder die 42 in den Zugdaten ist die richtige Zahl für diese Tabelle.
+
+**Was die Anwendung solange tut:** Sie rechnet mit 21 zu Land und 42 zur See, wie beschlossen.
+Sie schreibt diesen Wert aber **nicht** in die Figuren: Namensfiguren behalten beim Zugwechsel
+ihr gespeichertes `bp_max` aus den Zugdaten, also die 42 der Spielleitung. Solange die Tabelle
+steht, wie sie steht, wäre das Neuberechnen ein Halbieren.
+
+**Was sich mit der Antwort ändert:** Entweder eine Zeile in `ZugendeRules.FrischeWerte`, damit
+Namensfiguren ihren Wert wieder mitbekommen — oder sieben Zeilen in der Tabelle `BEW_Chars` der
+crossref.mdb. Das ist eine Datenänderung und gehört der Spielleitung.
 
 ---
 

@@ -39,11 +39,13 @@ namespace Tests {
             Assert.Equal(42, BewegungsRules.BerechneBewegungspunkte(FigurType.LeichtesKriegsschiff));
             Assert.Equal(42, BewegungsRules.BerechneBewegungspunkte(FigurType.SchweresKriegsschiff));
 
-            // Der Heerfuehrercharakter hat 21, der Zauberer 42 - das Regelwerk nennt beide
-            // ausdruecklich. Vorher stand hier fuer beide 21.
+            // Charaktere haben zu Land 21 - der Heerfuehrercharakter wie der Zauberer, der sich
+            // "einzeln wie Reiter" bewegt. Die 42 gilt nur zur See, dafuer gibt es
+            // BewegungspunkteZurSee (Entscheidung der Spielleitung, September 2026).
             Assert.Equal(21, BewegungsRules.BerechneBewegungspunkte(FigurType.Charakter));
-            Assert.Equal(42, BewegungsRules.BerechneBewegungspunkte(FigurType.Zauberer));
-            Assert.Equal(42, BewegungsRules.BerechneBewegungspunkte(FigurType.CharakterZauberer));
+            Assert.Equal(21, BewegungsRules.BerechneBewegungspunkte(FigurType.Zauberer));
+            Assert.Equal(21, BewegungsRules.BerechneBewegungspunkte(FigurType.CharakterZauberer));
+            Assert.Equal(42, BewegungsRules.BewegungspunkteZurSee);
         }
 
         /// <summary>
