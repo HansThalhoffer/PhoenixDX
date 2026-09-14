@@ -58,10 +58,12 @@ namespace PhoenixWPF.Program {
                         newStore.Deserialize(jsonString);
 
                         // Retrieve the UserSettings from the new store
+                        // Auf dem Stick stehen die Passwoerter im Klartext - sie werden hier mit
+                        // dem Namen dieses Rechners neu verschluesselt.
                         var loadedSettings = newStore.Get<UserSettings>();
-                        Settings.UserSettings.PasswordCrossRef = new PasswordHolder((string)loadedSettings.PasswordCrossRef).EncryptedPasswordBase64;
-                        Settings.UserSettings.PasswordKarte = new PasswordHolder((string)loadedSettings.PasswordKarte).EncryptedPasswordBase64;
-                        Settings.UserSettings.PasswordPZE = new PasswordHolder((string)loadedSettings.PasswordPZE).EncryptedPasswordBase64;
+                        Settings.UserSettings.PasswordCrossRef = PasswordHolder.AusKlartext(loadedSettings.PasswordCrossRef).EncryptedPasswordBase64;
+                        Settings.UserSettings.PasswordKarte = PasswordHolder.AusKlartext(loadedSettings.PasswordKarte).EncryptedPasswordBase64;
+                        Settings.UserSettings.PasswordPZE = PasswordHolder.AusKlartext(loadedSettings.PasswordPZE).EncryptedPasswordBase64;
                     }
                 }
                 catch { } // wenn das mit den Passwötern im USB Stick nicht klappt, dann sind wir schön schweigsam

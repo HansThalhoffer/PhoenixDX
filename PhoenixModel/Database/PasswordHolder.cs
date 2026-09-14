@@ -69,17 +69,27 @@ namespace PhoenixModel.Database
         { _encryptedPasswordBase64 = string.Empty; }
 
         /// <summary>
-        /// Erstellt eine neue Instanz von PasswordHolder mit einem NICHT verschlüsselten Passwort.
+        /// Erstellt eine neue Instanz aus einem Klartextpasswort und verschlüsselt es.
+        ///
+        /// Bewusst kein Konstruktor: EncryptedString lässt sich implizit aus einem string bilden,
+        /// und ein Konstruktor mit string hätte bei jedem Aufruf mit einer Zeichenkette gewonnen -
+        /// auch dort, wo die Zeichenkette ein bereits verschlüsseltes Passwort war. Das Passwort
+        /// wurde dann ein zweites Mal verschlüsselt, DecryptedPassword lieferte den Base64-Text
+        /// zurück statt des Klartextes, und die Datenbank liess sich damit nicht öffnen - ohne
+        /// dass irgendwo etwas schiefging. Man sieht die Spuren im Quelltext: an den Aufrufstellen
+        /// stehen Umwege wie (EncryptedString)x oder new EncryptedString(x), nur um den richtigen
+        /// Konstruktor zu treffen.
         /// </summary>
-        /// <param name="plainPassword">Das unverschlüsselte Passwort.</param>
-        public PasswordHolder(string plainPassword)
-        { 
-            _encryptedPasswordBase64 = EncryptPassword(plainPassword); 
+        /// <param name="klartext">Das unverschlüsselte Passwort.</param>
+        public static PasswordHolder AusKlartext(string klartext)
+        {
+            return new PasswordHolder { _encryptedPasswordBase64 = Encrypt(klartext, Environment.MachineName) };
         }
+
         /// <summary>
-        /// Erstellt eine neue Instanz von PasswordHolder mit einem verschlüsselten Passwort.
+        /// Erstellt eine neue Instanz von PasswordHolder mit einem bereits verschlüsselten Passwort.
         /// </summary>
-        /// <param name="plainPassword">Das unverschlüsselte Passwort.</param>
+        /// <param name="password">Das verschlüsselte Passwort.</param>
         public PasswordHolder(EncryptedString password)
         {
             _encryptedPasswordBase64 = password;
@@ -209,7 +219,13 @@ namespace PhoenixModel.Database
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error decrypting password: " + ex.Message);
+                // Ohne hinterlegtes Passwort ist hier nichts zu entschlüsseln - das ist der
+                // Normalfall beim ersten Start und keine Meldung wert.
+                if (string.IsNullOrEmpty(encryptedPasswordBase64) == false)
+                    View.ProgramView.LogWarning("Ein gespeichertes Passwort liess sich nicht entschlüsseln",
+                        "Die Verschlüsselung hängt am Rechnernamen: ein Passwort, das auf einem anderen Rechner "
+                        + "gespeichert wurde, lässt sich hier nicht lesen. Es wird neu abgefragt.\r\r"
+                        + ex.Message);
                 return string.Empty;
             }
         }

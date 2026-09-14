@@ -1,4 +1,4 @@
-using PhoenixModel.Database;
+﻿using PhoenixModel.Database;
 using PhoenixModel.Program;
 using PhoenixModel.dbErkenfara;
 using PhoenixWPF.Database;
@@ -83,7 +83,7 @@ namespace Tests
         {
            // Arrange
             string expected = "MySecurePassword123!";
-            PasswordHolder pwdHolder1 = new PasswordHolder(expected);
+            PasswordHolder pwdHolder1 = PasswordHolder.AusKlartext(expected);
             var encrypted = pwdHolder1.EncryptedPasswordBase64;
 
             PasswordHolder pwdHolder2 = new PasswordHolder(encrypted);
