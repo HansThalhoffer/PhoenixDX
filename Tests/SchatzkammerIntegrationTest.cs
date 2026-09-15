@@ -111,7 +111,10 @@ namespace Tests {
                 int berechnet = SchatzkammerRules.BerechneVerrüstet();
                 Assert.True(berechnet == abgerechnet.Verruestet,
                     $"Für Zug {vormonat} ergeben die Rüstungstabellen {berechnet} GS, "
-                    + $"abgerechnet wurden aber {abgerechnet.Verruestet} GS");
+                    + $"abgerechnet wurden aber {abgerechnet.Verruestet} GS. "
+                    + "Im Bestand ist das so und bleibt es, bis die Spielleitung es klärt - "
+                    + "siehe Offene-Regelfragen.md, Punkt 9. Der Test bleibt solange rot: "
+                    + "grün würde den Befund verstecken.");
             }
             finally {
                 // die folgenden Tests müssen wieder auf dem laufenden Zug arbeiten

@@ -1,7 +1,7 @@
 # Offene Regelfragen
 
-Sechs offene Punkte, bei denen die Quellen sich widersprechen oder das Datenmodell etwas nicht
-kennt. Beantwortete Fragen bleiben stehen, damit nachvollziehbar bleibt, warum die Anwendung
+Sieben offene Punkte, bei denen die Quellen sich widersprechen, das Datenmodell etwas nicht kennt
+oder die Daten sich selbst widersprechen. Beantwortete Fragen bleiben stehen, damit nachvollziehbar bleibt, warum die Anwendung
 rechnet, wie sie rechnet.
 Die Anwendung verhält sich jeweils so, dass nichts kaputtgeht, solange die Frage offen ist —
 was das konkret heißt, steht unten bei "Was die Anwendung solange tut".
@@ -192,6 +192,45 @@ weil es ein lautloses Halbieren gewesen wäre.
 
 **Falls die Tabelle je auf Reiterkosten umgestellt wird**, gehört in
 `BewegungspunkteCharakter` die 21, und die Fahrt zur See braucht einen eigenen Wert.
+
+---
+
+## 9. Sind in einem vergangenen Zug 18.000 GS an Bauaufträgen nicht abgerechnet worden?
+
+**Befund:** Für einen abgeschlossenen Zug ergeben die Rüstungstabellen der Zugdatenbank einen
+anderen Betrag als die Schatzkammer als verrüstet führt:
+
+| Posten | Betrag |
+|---|---|
+| Truppenrüstung | 217.830 GS |
+| Bauwerke (16 Aufträge) | 56.000 GS |
+| Rüstorte | 0 GS |
+| **Summe der Tabellen** | **273.830 GS** |
+| **Abgerechnet laut Schatzkammer** | **255.830 GS** |
+
+Die Differenz beträgt **18.000 GS** und ist genau **sechsmal 3.000 GS**. Unter den sechzehn
+Bauaufträgen stehen vier Wälle zu je 5.000 GS und zwölf Aufträge zu je 3.000 GS — Strassen und
+eine Brücke. Sechs dieser zwölf stecken also nicht im abgerechneten Betrag.
+
+**Warum das eine Frage ist:** Beide Zahlen stammen aus derselben Zugdatenbank, nur aus
+verschiedenen Tabellen. Entweder sind Bauaufträge nachgetragen worden, nachdem der Monat schon
+abgerechnet war, oder die Abrechnung der Spielleitung zählt bestimmte Aufträge nicht mit, oder in
+einzelnen Zeilen steht ein anderer Preis als der, der gebucht wurde. Welches davon zutrifft, kann
+die Anwendung nicht entscheiden — sie sieht nur das Ergebnis.
+
+**Ein Vorbehalt gehört dazu:** Die Zugdatenbank dieses Monats hat sich während der Arbeit an der
+Anwendung verändert; der Fingerabdruck der Datei weicht von dem ab, der zuvor genommen wurde. Es
+lässt sich deshalb nicht ausschliessen, dass die überzähligen Aufträge erst kürzlich entstanden
+sind und nicht von jeher in den Daten standen. Wer die Frage beantwortet, sollte das mitprüfen.
+
+**Was die Anwendung solange tut:** Sie rechnet, wie sie rechnet, und meldet den Widerspruch. Der
+Test `SchatzkammerIntegrationTest.VerruestetStimmtMitDemAbgerechnetenVormonatUeberein` schlägt
+deshalb fehl und bleibt rot, bis die Frage geklärt ist. Das ist Absicht: ein grüner Test würde den
+Befund verstecken.
+
+**Was sich mit der Antwort ändert:** Liegt es an den Daten, ändert sich am Programm nichts. Zählt
+die Abrechnung bestimmte Aufträge bewusst nicht mit, gehört diese Regel in
+`SchatzkammerRules.BerechneVerrüstet`.
 
 ---
 
