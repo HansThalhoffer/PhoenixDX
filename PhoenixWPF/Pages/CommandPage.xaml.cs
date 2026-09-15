@@ -75,9 +75,15 @@ namespace PhoenixWPF.Pages
             // Überprüft, ob Elemente aus der Sammlung entfernt wurden
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove) {
                 if (e.OldItems != null) {
-                    // Entfernt die zugehörigen Einträge aus der _commandList
-                    foreach (BaseCommand item in e.OldItems) {
-                        var entry = _commandList.Where(e => e.Command == item).First();
+                    // Entfernt die zugehörigen Einträge aus der _commandList.
+                    //
+                    // FirstOrDefault, nicht First: die Anzeige führt nicht zwingend jeden Befehl -
+                    // sie wird bei einem Wechsel der Auswahl neu aufgebaut und zeigt dann nur, was
+                    // zur Auswahl gehört. Ein Befehl, der dabei herausgefallen ist, liess First()
+                    // werfen, und zwar in einem Ereignis der Sammlung: die Ausnahme kam mitten im
+                    // Zurücknehmen hoch und beendete die Anwendung.
+                    foreach (BaseCommand befehl in e.OldItems) {
+                        var entry = _commandList.FirstOrDefault(eintrag => eintrag.Command == befehl);
                         if (entry != null) {
                             _commandList.Remove(entry);
                         }

@@ -93,9 +93,29 @@ namespace PhoenixModel.Commands {
                 diplomatiechange.ReferenzNation == this.ReferenzNation && diplomatiechange.Nation == this.Nation));
         }
 
+        /// <summary>
+        /// Die Zeile der Diplomatietabelle, um die es geht - oder null, wenn es sie nicht gibt.
+        ///
+        /// Es gibt sie nicht zwingend: die Tabelle führt eine Zeile je Reichspaar, und wer ein
+        /// Reich anspricht, das dort fehlt, bekommt nichts. Vorher stand hier First(), und die
+        /// Ausnahme kam mitten im Befehl hoch.
+        /// </summary>
+        private Diplomatiechange? FindeDiplomatiezeile()
+            => SharedData.Diplomatiechange?.FirstOrDefault(
+                d => d.ReferenzNation == ReferenzNation && d.Nation == Nation);
+
+        /// <summary>
+        /// Die Antwort, wenn die Diplomatiezeile fehlt
+        /// </summary>
+        private CommandResult FehlendeZeile()
+            => new CommandResultError("Für diese beiden Reiche gibt es keine Diplomatiezeile",
+                $"In der Tabelle der Diplomatie steht kein Eintrag für {Nation} gegenüber "
+                + $"{ReferenzNation}. Der Befehl kann nicht ausgeführt werden: {CommandString}", this);
+
         private bool IsLastCommand() {
             if (SharedData.Diplomatiechange != null) {
-                var item = SharedData.Diplomatiechange.Where(d => d.ReferenzNation == ReferenzNation && d.Nation == Nation).First();
+                // FirstOrDefault: gibt es die Zeile nicht, ist dieser Befehl auch nicht der letzte
+                var item = FindeDiplomatiezeile();
                 if (item != null) {
                     var diplomacyCommands = SharedData.Commands.GetCommands(item);
                     if (diplomacyCommands != null && diplomacyCommands.Last() == this)
@@ -147,7 +167,9 @@ namespace PhoenixModel.Commands {
             if (result.HasErrors)
                 return result;
             if (SharedData.Diplomatiechange != null) {
-                var item = SharedData.Diplomatiechange.Where(d => d.ReferenzNation == ReferenzNation && d.Nation == Nation).First();
+                var item = FindeDiplomatiezeile();
+                if (item == null)
+                    return FehlendeZeile();
                 if (Recht == BewegungsRecht.Wegerecht) {
                     item.Wegerecht = RemoveRecht != null && RemoveRecht == true ? 0 : 1;
                 }
@@ -175,7 +197,9 @@ namespace PhoenixModel.Commands {
 
 
             if (SharedData.Diplomatiechange != null) {
-                var item = SharedData.Diplomatiechange.Where(d => d.ReferenzNation == ReferenzNation && d.Nation == Nation).First();
+                var item = FindeDiplomatiezeile();
+                if (item == null)
+                    return FehlendeZeile();
                 if (Recht == BewegungsRecht.Wegerecht) {
                     item.Wegerecht = RemoveRecht != null && RemoveRecht == true ? 1 : 0;
                 }
