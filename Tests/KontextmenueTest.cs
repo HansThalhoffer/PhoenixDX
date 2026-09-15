@@ -96,6 +96,54 @@ namespace Tests {
         }
 
         /// <summary>
+        /// Die Hervorhebung kommt bis auf die Karte an - und zwar genau in der Bewegungsphase.
+        ///
+        /// Gemeldet war "das Hervorheben funktioniert nicht". Die Wegsuche war in Ordnung, die
+        /// Zeichnung auch; leer war die Liste, weil der Zug in der Ruestphase stand. Dieser Test
+        /// haelt beide Haelften fest: in der Ruestphase leuchtet nichts, in der Bewegungsphase
+        /// leuchtet etwas, und die Felder finden sich in der Kartenstruktur wieder.
+        ///
+        /// Gezeichnet wird hier nichts - dafuer braucht es MonoGame. Geprueft wird der Weg bis
+        /// dorthin, und genau dort lag frueher der Verdacht.
+        /// </summary>
+        [StaFact]
+        public void InDerBewegungsphaseLeuchtetEtwasAufDerKarte() {
+            LadeAlles();
+
+            var welt = new PhoenixDX.Structures.Welt(SharedData.Map!);
+            var farbe = new Microsoft.Xna.Framework.Color(255, 200, 0);
+
+            var beweglich = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation)
+                .Where(Plausibilität.IsValid)
+                .FirstOrDefault(f => BewegungsRules.GetErreichbareFelder(f).Count > 0);
+            Assert.True(beweglich != null, "Keine eigene Figur kann sich bewegen");
+
+            var erreichbar = BewegungsRules.GetErreichbareFelder(beweglich!);
+            welt.HebeHervor(erreichbar.Select(k => new KleinfeldPosition(k.gf, k.kf)), farbe);
+            Assert.True(welt.AnzahlHervorhebungen > 0,
+                $"{beweglich!.Bezeichner} erreicht {erreichbar.Count} Felder, hervorgehoben wird keines");
+            // kein Feld geht dabei verloren - sonst kennt die Karte Koordinaten nicht wieder
+            Assert.Equal(erreichbar.Select(k => k.Bezeichner).Distinct().Count(), welt.AnzahlHervorhebungen);
+
+            welt.LöscheHervorhebung();
+            Assert.Equal(0, welt.AnzahlHervorhebungen);
+
+            // und in der Ruestphase gibt es nichts hervorzuheben
+            int phaseVorher = ZugView.Settings!.Phase;
+            int monatVorher = ZugView.Settings!.Monat;
+            try {
+                TestSetup.SetzePhase(Zugphase.Rüstphase);
+                var inDerRüstphase = BewegungsRules.GetErreichbareFelder(beweglich!);
+                welt.HebeHervor(inDerRüstphase.Select(k => new KleinfeldPosition(k.gf, k.kf)), farbe);
+                Assert.Equal(0, welt.AnzahlHervorhebungen);
+            }
+            finally {
+                ZugView.Settings!.Phase = phaseVorher;
+                ZugView.Settings!.Monat = monatVorher;
+            }
+        }
+
+        /// <summary>
         /// Dass eine Figur Bewegungspunkte hat, heisst noch nicht, dass sie ein Feld erreicht:
         /// schwere Artillerie ist so langsam, dass einstellige Restpunkte fuer keinen Schritt
         /// reichen. Das Menue muss damit umgehen koennen, statt es fuer einen Fehler zu halten.

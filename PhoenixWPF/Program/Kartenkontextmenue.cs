@@ -140,7 +140,14 @@ namespace PhoenixWPF.Program {
         /// die diese Figur in diesem Zug noch erreichen kann.
         /// </summary>
         private static MenuItem BaueMöglicheZüge(List<Spielfigur> figuren) {
-            var züge = new MenuItem { Header = "Mögliche Züge" };
+            // Die Phase steht in der Überschrift, nicht erst in einer Meldung hinterher. In der
+            // Rüstphase bewegt sich nichts, und ohne diesen Hinweis sieht die leere Karte danach
+            // wie ein Programmfehler aus.
+            var züge = new MenuItem {
+                Header = ZugView.Phase == Zugphase.Rüstphase
+                    ? "Mögliche Züge (erst die Rüstphase beenden)"
+                    : "Mögliche Züge",
+            };
             foreach (var figur in figuren) {
                 // Der Höchstwert steht mit dabei: "1 BP" sieht aus wie ein Programmfehler, sobald
                 // die Karte daraufhin nichts hervorhebt. "1 von 21 BP" erklärt sich selbst.
@@ -160,6 +167,17 @@ namespace PhoenixWPF.Program {
         private static void ZeigeMöglicheZüge(Spielfigur figur) {
             try {
                 var erreichbar = BewegungsRules.GetErreichbareFelder(figur);
+
+                // Die Rüstphase ist kein Fehler, sondern eine Entscheidung, die noch aussteht -
+                // also wird sie hier gestellt und nicht in eine Meldung geschrieben, die im
+                // Protokoll untergeht. Wer zusieht, warum die Karte nichts hervorhebt, will genau
+                // das jetzt beantworten.
+                if (erreichbar.Count == 0 && ZugView.Phase == Zugphase.Rüstphase) {
+                    if (BeendeRüstphaseAufNachfrage() == false)
+                        return;
+                    erreichbar = BewegungsRules.GetErreichbareFelder(figur);
+                }
+
                 if (erreichbar.Count == 0) {
                     Bewegungshinweis.Beende();
                     // Den Grund kennen die Regeln - vorher stand hier geraten, es lae­ge an den
@@ -191,6 +209,32 @@ namespace PhoenixWPF.Program {
             catch (Exception ex) {
                 SpielWPF.LogError($"Die möglichen Züge von {figur.Bezeichner} liessen sich nicht ermitteln", ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Fragt, ob die Rüstphase jetzt beendet werden soll, und beendet sie gegebenenfalls.
+        ///
+        /// Dieselbe Frage stellt das Zug-Menü; sie hier zu wiederholen erspart den Umweg, wenn
+        /// jemand gerade wissen wollte, wohin eine Figur ziehen kann. Die Warnung ist dieselbe:
+        /// danach ist in diesem Zug nicht mehr zu rüsten und nicht mehr zu bauen.
+        /// </summary>
+        /// <returns>true, wenn die Rüstphase daraufhin beendet wurde</returns>
+        private static bool BeendeRüstphaseAufNachfrage() {
+            var antwort = MessageBox.Show(
+                "Der Zug steht in der Rüstphase; darin wird nicht bewegt (Regelwerk Kapitel 3).\r\n\r\n"
+                + "Die Rüstphase jetzt beenden? Danach kann in diesem Zug nicht mehr gerüstet und "
+                + "nicht mehr gebaut werden. Zurück geht es nicht.",
+                "Rüstphase beenden", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+            if (antwort != MessageBoxResult.Yes)
+                return false;
+
+            var ergebnis = ZugView.NächstePhase();
+            if (ergebnis.HasErrors) {
+                SpielWPF.LogError(ergebnis.Title, ergebnis.Message);
+                return false;
+            }
+            SpielWPF.LogInfo(ergebnis.Title, ergebnis.Message);
+            return true;
         }
 
         /// <summary>
