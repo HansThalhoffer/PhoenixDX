@@ -117,6 +117,15 @@ namespace PhoenixWPF.Program {
                     return;
                 }
 
+                // Sind die möglichen Züge einer Figur hervorgehoben, zieht ein Klick auf eines
+                // dieser Felder die Figur dorthin. Das ist der kurze Weg für den Normalfall;
+                // Umschalt+Klick bleibt für alles andere, es braucht keine Hervorhebung.
+                if (Helper.Bewegungssteuerung.IstZugklick(Bewegungshinweis.Figur, gem,
+                        Bewegungshinweis.IstHervorgehoben(gem))) {
+                    Helper.Bewegungssteuerung.ZieheDorthin(gem);
+                    return;
+                }
+
                 // Strg + Klick setzt oder entfernt eine eigene Markierung auf einem Feld des eigenen Reiches
                 if ((Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) && gem.Nation == ProgramView.SelectedNation) {
                     MarkerType mark = (gem.Mark == MarkerType.None) ? MarkerType.User : MarkerType.None;

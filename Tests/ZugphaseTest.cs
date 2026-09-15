@@ -22,18 +22,51 @@ namespace Tests {
         private static void SetzeZurueck() => ZugView.BestimmeAktuellenZug(ProgramView.SelectedMonth);
 
         /// <summary>
-        /// So sieht der Bestand aus: die settings-Zeile gehoert zu einem anderen Monat.
+        /// Der Abstand, um den die settings-Zeile im Bestand vorauslief: sieben Monate.
+        /// </summary>
+        private const int Vorlauf = 7;
+
+        /// <summary>
+        /// Versetzt die settings-Zeile in den Zustand, in dem die Zugdaten der Spielleitung
+        /// ankommen: ihr Monat gehoert zu einem anderen Zug, und ihre Phase steht auf
+        /// Bewegungsphase.
+        ///
+        /// Frueher war das der Zustand des Bestandes und einfach vorzufinden. Inzwischen stellt
+        /// die Anwendung den Monat beim ersten Phasenwechsel richtig, und in den Testdaten ist das
+        /// bereits geschehen. Der Fall muss deshalb hergestellt werden - sonst prueft ihn niemand
+        /// mehr, und genau er hatte die Anwendung lahmgelegt.
+        /// </summary>
+        private static void ZeileGehoertZuEinemAnderenMonat() {
+            var settings = ZugView.Settings!;
+            settings.Monat = ProgramView.SelectedMonth + Vorlauf;
+            settings.Phase = (int)Zugphase.Bewegungsphase;
+            SetzeZurueck();
+        }
+
+        /// <summary>
+        /// Gehoert die Zeile zu einem anderen Monat, sagt ihre Phase nichts ueber diesen Zug aus.
+        ///
+        /// So kamen die Zugdaten an: Verzeichnis 168 nannte Monat 175, 169 nannte 176, 170 nannte
+        /// 177, waehrend die Schatzkammer mit dem Verzeichnis uebereinstimmte.
         /// </summary>
         [StaFact]
-        public void DieSettingsZeileGehoertNichtZuDiesemZug() {
+        public void EineZeileAusEinemAnderenMonatZaehltNicht() {
             LadeAlles();
+            int monatVorher = ZugView.Settings!.Monat, phaseVorher = ZugView.Settings!.Phase;
+            try {
+                ZeileGehoertZuEinemAnderenMonat();
 
-            Assert.NotNull(ZugView.Settings);
-            Assert.NotEqual(ProgramView.SelectedMonth, ZugView.Settings!.Monat);
-            Assert.False(ZugView.PhaseStehtInDenZugdaten);
+                Assert.NotEqual(ProgramView.SelectedMonth, ZugView.Settings!.Monat);
+                Assert.False(ZugView.PhaseStehtInDenZugdaten);
 
-            // und die Schatzkammer haelt es mit dem Verzeichnis
-            Assert.Equal(ProgramView.SelectedMonth, ZugView.LetzterSchatzkammerMonat);
+                // und die Schatzkammer haelt es mit dem Verzeichnis
+                Assert.Equal(ProgramView.SelectedMonth, ZugView.LetzterSchatzkammerMonat);
+            }
+            finally {
+                ZugView.Settings!.Monat = monatVorher;
+                ZugView.Settings!.Phase = phaseVorher;
+                SetzeZurueck();
+            }
         }
 
         /// <summary>
@@ -43,14 +76,22 @@ namespace Tests {
         [StaFact]
         public void OhnePassendeZeileBeginntDerZugMitDemRuesten() {
             LadeAlles();
-            SetzeZurueck();
+            int monatVorher = ZugView.Settings!.Monat, phaseVorher = ZugView.Settings!.Phase;
+            try {
+                ZeileGehoertZuEinemAnderenMonat();
 
-            Assert.Equal((int)Zugphase.Bewegungsphase, ZugView.Settings!.Phase);
-            Assert.False(ZugView.PhaseStehtInDenZugdaten);
+                Assert.Equal((int)Zugphase.Bewegungsphase, ZugView.Settings!.Phase);
+                Assert.False(ZugView.PhaseStehtInDenZugdaten);
 
-            Assert.Equal(Zugphase.Rüstphase, ZugView.Phase);
-            Assert.True(ZugView.KannRüsten);
-            Assert.True(ProgramView.CanConstruct());
+                Assert.Equal(Zugphase.Rüstphase, ZugView.Phase);
+                Assert.True(ZugView.KannRüsten);
+                Assert.True(ProgramView.CanConstruct());
+            }
+            finally {
+                ZugView.Settings!.Monat = monatVorher;
+                ZugView.Settings!.Phase = phaseVorher;
+                SetzeZurueck();
+            }
         }
 
         /// <summary>
@@ -60,9 +101,9 @@ namespace Tests {
         [StaFact]
         public void DerPhasenwechselWirktAuchOhnePassendeZeile() {
             LadeAlles();
-            SetzeZurueck();
             int monatVorher = ZugView.Settings!.Monat, phaseVorher = ZugView.Settings!.Phase;
             try {
+                ZeileGehoertZuEinemAnderenMonat();
                 Assert.Equal(Zugphase.Rüstphase, ZugView.Phase);
 
                 var gewechselt = ZugView.NächstePhase();
@@ -96,9 +137,9 @@ namespace Tests {
         [StaFact]
         public void DieBeendeteRuestphaseUeberlebtDasNeuladen() {
             LadeAlles();
-            SetzeZurueck();
             int monatVorher = ZugView.Settings!.Monat, phaseVorher = ZugView.Settings!.Phase;
             try {
+                ZeileGehoertZuEinemAnderenMonat();
                 Assert.Equal(Zugphase.Rüstphase, ZugView.Phase);
                 Assert.False(ZugView.NächstePhase().HasErrors);
 
@@ -124,10 +165,10 @@ namespace Tests {
         [StaFact]
         public void InEinenAnderenZugLecktDiePhaseNicht() {
             LadeAlles();
-            SetzeZurueck();
             int monatVorher = ZugView.Settings!.Monat, phaseVorher = ZugView.Settings!.Phase;
             int zugVorher = ProgramView.SelectedMonth;
             try {
+                ZeileGehoertZuEinemAnderenMonat();
                 Assert.False(ZugView.NächstePhase().HasErrors);
                 Assert.Equal(Zugphase.Bewegungsphase, ZugView.Phase);
 
@@ -179,9 +220,9 @@ namespace Tests {
         public void EinAbgeschlossenerZugBleibtAbgeschlossen() {
             LadeAlles();
             var settings = ZugView.Settings!;
-            int phaseVorher = settings.Phase;
+            int monatVorher = settings.Monat, phaseVorher = settings.Phase;
             try {
-                SetzeZurueck();
+                ZeileGehoertZuEinemAnderenMonat();
                 Assert.False(ZugView.PhaseStehtInDenZugdaten);
 
                 settings.Phase = (int)Zugphase.Abgeschlossen;
@@ -194,6 +235,7 @@ namespace Tests {
                 Assert.Equal(Zugphase.Abgeschlossen, ZugView.Phase);
             }
             finally {
+                settings.Monat = monatVorher;
                 settings.Phase = phaseVorher;
                 SetzeZurueck();
             }
@@ -206,8 +248,19 @@ namespace Tests {
         [StaFact]
         public void AufDerEigenenGemarkLaesstSichWiederBauen() {
             LadeAlles();
-            SetzeZurueck();
+            int monatVorher = ZugView.Settings!.Monat, phaseVorher = ZugView.Settings!.Phase;
+            try {
+                ZeileGehoertZuEinemAnderenMonat();
+                PruefeDassGebautWerdenKann();
+            }
+            finally {
+                ZugView.Settings!.Monat = monatVorher;
+                ZugView.Settings!.Phase = phaseVorher;
+                SetzeZurueck();
+            }
+        }
 
+        private static void PruefeDassGebautWerdenKann() {
             var baubar = SharedData.Map!.Values.FirstOrDefault(gemark =>
                 gemark.Nation != null && gemark.Nation.Equals(ProgramView.SelectedNation)
                 && BauoptionenView.IstEtwasMöglich(gemark));

@@ -29,6 +29,15 @@ namespace PhoenixWPF.Program {
         internal static Spielfigur? Figur => _figur;
 
         /// <summary>
+        /// Gehoert dieses Feld zu den gerade hervorgehobenen?
+        ///
+        /// Massgeblich ist, was tatsaechlich leuchtet, und nicht eine zweite Rechnung: sonst
+        /// koennte ein Feld anklickbar sein, das gar nicht hervorgehoben ist - oder umgekehrt.
+        /// </summary>
+        internal static bool IstHervorgehoben(KleinFeld? feld)
+            => feld != null && _erreichbar.Contains(feld.Bezeichner);
+
+        /// <summary>
         /// Merkt sich, wessen Zuege hervorgehoben sind. Ab jetzt gibt es Hinweise.
         /// </summary>
         internal static void Aktiviere(Spielfigur figur, IEnumerable<KleinFeld> erreichbar) {

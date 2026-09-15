@@ -38,23 +38,13 @@ namespace PhoenixWPF.Program {
             info.Click += (s, e) => ZeigeInfo(gemark);
             menü.Items.Add(info);
 
-            menü.Items.Add(BaueSpielfiguren(gemark));
-
-            // Das Untermenü erscheint immer, auch wenn nichts anzubieten ist - sonst fehlt es
-            // wortlos und man weiß nicht, ob die Funktion fehlt oder nur nichts da ist.
-            var eigene = EigeneFiguren(gemark);
-            if (eigene.Count > 0) {
-                menü.Items.Add(BaueMöglicheZüge(eigene));
-            }
-            else {
-                var fremde = SpielfigurenView.GetFeldbesetzung(gemark).Count;
-                menü.Items.Add(new MenuItem {
-                    Header = fremde > 0
-                        ? $"Mögliche Züge (keine eigenen Einheiten, {fremde} fremde)"
-                        : "Mögliche Züge (hier steht nichts)",
-                    IsEnabled = false,
-                });
-            }
+            // Ein Untermenü, nicht zwei: "Spielfiguren" und "Mögliche Züge" führten dieselbe
+            // Liste und unterschieden sich nur darin, was der Klick auslöste. Jetzt tut er beides
+            // - die Figur wird ausgewählt und ihre Züge werden hervorgehoben.
+            //
+            // Es erscheint immer, auch wenn nichts anzubieten ist: fehlte es wortlos, wüsste
+            // niemand, ob die Funktion fehlt oder nur nichts auf dem Feld steht.
+            menü.Items.Add(BaueMöglicheZüge(gemark));
 
             // Eine Hervorhebung soll sich auch wieder loswerden lassen, ohne die Karte neu zu laden
             var löschen = new MenuItem { Header = "Hervorhebung aufheben" };
@@ -66,37 +56,6 @@ namespace PhoenixWPF.Program {
             menü.Items.Add(löschen);
 
             menü.IsOpen = true;
-        }
-
-        /// <summary>
-        /// Das Untermenü mit den Spielfiguren der Gemark. Ein Klick wählt die Figur aus - damit
-        /// zeigt die Eigenschaftsanzeige sie an, und Umschalt+Klick auf die Karte bewegt sie.
-        ///
-        /// Angeboten wird, was auf dem Feld steht - eigene Figuren aus den Zugdaten und fremde
-        /// Einheiten aus der Feindaufklärung. Das sind zwei getrennte Quellen; wer nur die erste
-        /// abfragt, meldet auf einem Feld voller fremder Heere "hier steht nichts".
-        ///
-        /// Fremde stehen mit ihrem Reich in der Liste, sind aber abgeblendet: auswählen lässt sich
-        /// nur, was einem gehört. Sie wegzulassen hiesse zu verschweigen, dass dort etwas steht.
-        /// </summary>
-        private static MenuItem BaueSpielfiguren(KleinFeld gemark) {
-            var alle = SpielfigurenView.GetFeldbesetzung(gemark);
-            if (alle.Count == 0)
-                return new MenuItem { Header = "Spielfiguren (hier steht nichts)", IsEnabled = false };
-
-            var menü = new MenuItem { Header = $"Spielfiguren ({alle.Count})" };
-            foreach (var besetzung in alle) {
-                var eintrag = new MenuItem {
-                    Header = besetzung.Beschriftung,
-                    IsEnabled = besetzung.IstAuswählbar,
-                };
-                if (besetzung.IstAuswählbar) {
-                    var gemerkt = besetzung.Figur!;
-                    eintrag.Click += (s, e) => Wähle(gemerkt);
-                }
-                menü.Items.Add(eintrag);
-            }
-            return menü;
         }
 
         /// <summary>
@@ -125,46 +84,71 @@ namespace PhoenixWPF.Program {
         }
 
         /// <summary>
-        /// Die Figuren des eigenen Reiches, die auf dieser Gemark stehen und sich bewegen können.
+        /// Das einzige Untermenü über das, was auf der Gemark steht.
+        ///
+        /// Angeboten wird alles - eigene Figuren aus den Zugdaten und fremde Einheiten aus der
+        /// Feindaufklärung. Das sind zwei getrennte Quellen; wer nur die erste abfragt, meldet auf
+        /// einem Feld voller fremder Heere "hier steht nichts".
+        ///
+        /// Fremde stehen mit ihrem Reich in der Liste, sind aber abgeblendet: auswählen lässt sich
+        /// nur, was einem gehört. Sie wegzulassen hiesse zu verschweigen, dass dort etwas steht.
+        ///
+        /// Ein Klick auf eine eigene Figur wählt sie aus <em>und</em> hebt ihre möglichen Züge
+        /// hervor. In der Bewegungsphase zieht ein Klick auf eines der hervorgehobenen Felder die
+        /// Figur dann dorthin.
         /// </summary>
-        private static List<Spielfigur> EigeneFiguren(KleinFeld gemark) {
-            return SpielfigurenView.GetSpielfiguren(gemark)
-                .Where(figur => figur.Nation != null && figur.Nation == ProgramView.SelectedNation)
-                .OrderBy(figur => figur.Typ.ToString())
-                .ThenBy(figur => figur.Nummer)
-                .ToList();
-        }
+        private static MenuItem BaueMöglicheZüge(KleinFeld gemark) {
+            var alle = SpielfigurenView.GetFeldbesetzung(gemark);
+            if (alle.Count == 0)
+                return new MenuItem { Header = "Mögliche Züge (hier steht nichts)", IsEnabled = false };
 
-        /// <summary>
-        /// Das Untermenü mit einem Eintrag je eigener Figur. Die Auswahl hebt die Felder hervor,
-        /// die diese Figur in diesem Zug noch erreichen kann.
-        /// </summary>
-        private static MenuItem BaueMöglicheZüge(List<Spielfigur> figuren) {
+            int eigene = alle.Count(besetzung => besetzung.IstAuswählbar);
             // Die Phase steht in der Überschrift, nicht erst in einer Meldung hinterher. In der
             // Rüstphase bewegt sich nichts, und ohne diesen Hinweis sieht die leere Karte danach
             // wie ein Programmfehler aus.
             var züge = new MenuItem {
-                Header = ZugView.Phase == Zugphase.Rüstphase
-                    ? "Mögliche Züge (erst die Rüstphase beenden)"
+                Header = eigene == 0 ? $"Mögliche Züge (keine eigenen Einheiten, {alle.Count} fremde)"
+                    : ZugView.Phase == Zugphase.Rüstphase ? "Mögliche Züge (erst die Rüstphase beenden)"
                     : "Mögliche Züge",
             };
-            foreach (var figur in figuren) {
-                // Der Höchstwert steht mit dabei: "1 BP" sieht aus wie ein Programmfehler, sobald
-                // die Karte daraufhin nichts hervorhebt. "1 von 21 BP" erklärt sich selbst.
+
+            foreach (var besetzung in alle) {
                 var eintrag = new MenuItem {
-                    Header = $"{figur.Typ} {figur.Nummer} - {figur.Stärke}, {figur.bp} von {figur.bp_max} BP",
+                    Header = Beschrifte(besetzung),
+                    IsEnabled = besetzung.IstAuswählbar,
                 };
-                var gemerkt = figur;
-                eintrag.Click += (s, e) => ZeigeMöglicheZüge(gemerkt);
+                if (besetzung.IstAuswählbar) {
+                    var gemerkt = besetzung.Figur!;
+                    eintrag.Click += (s, e) => {
+                        Wähle(gemerkt);
+                        ZeigeMöglicheZüge(gemerkt);
+                    };
+                }
                 züge.Items.Add(eintrag);
             }
             return züge;
         }
 
         /// <summary>
-        /// Zeigt die erreichbaren Felder einer Figur in der Farbe ihres Reiches.
+        /// Wie ein Eintrag heisst. Eigene Figuren tragen ihre Bewegungspunkte mit; von fremden
+        /// weiss man sie nicht.
+        ///
+        /// Der Höchstwert steht mit dabei: "1 BP" sieht aus wie ein Programmfehler, sobald die
+        /// Karte daraufhin nichts hervorhebt. "1 von 21 BP" erklärt sich selbst.
         /// </summary>
-        private static void ZeigeMöglicheZüge(Spielfigur figur) {
+        private static string Beschrifte(SpielfigurenView.Feldeintrag besetzung) {
+            if (besetzung.IstAuswählbar == false || besetzung.Figur == null)
+                return besetzung.Beschriftung;
+            return $"{besetzung.Beschriftung}, {besetzung.Figur.bp} von {besetzung.Figur.bp_max} BP";
+        }
+
+        /// <summary>
+        /// Zeigt die erreichbaren Felder einer Figur in der Farbe ihres Reiches.
+        ///
+        /// Wird auch nach einem Zug wieder aufgerufen: die Figur steht dann woanders, und was sie
+        /// von dort aus noch erreicht, ist neu zu rechnen.
+        /// </summary>
+        internal static void ZeigeMöglicheZüge(Spielfigur figur) {
             try {
                 var erreichbar = BewegungsRules.GetErreichbareFelder(figur);
 
@@ -204,7 +188,8 @@ namespace PhoenixWPF.Program {
 
                 SpielWPF.LogInfo($"{figur.Bezeichner} erreicht {erreichbar.Count} Felder",
                     $"Mit {figur.bp} Bewegungspunkten ab {figur.CreateBezeichner()}, hervorgehoben sind "
-                    + $"{hervorgehoben} in {farbe}. Die Hervorhebung lässt sich über das Kontextmenü wieder aufheben.");
+                    + $"{hervorgehoben} in {farbe}. Ein Klick auf eines davon zieht die Figur dorthin; "
+                    + "die Hervorhebung lässt sich über das Kontextmenü wieder aufheben.");
             }
             catch (Exception ex) {
                 SpielWPF.LogError($"Die möglichen Züge von {figur.Bezeichner} liessen sich nicht ermitteln", ex.Message);

@@ -144,6 +144,110 @@ namespace Tests {
         }
 
         /// <summary>
+        /// Das Untermenue fuehrt alles, was auf der Gemark steht - auswaehlbar ist nur das Eigene.
+        ///
+        /// "Spielfiguren" und "Moegliche Zuege" waren zwei Listen mit demselben Inhalt; jetzt ist
+        /// es eine. Fremde Einheiten muessen dabei bleiben: sie kommen aus der Feindaufklaerung
+        /// und nicht aus den Zugdaten, und ohne sie meldet ein Feld voller fremder Heere "hier
+        /// steht nichts".
+        /// </summary>
+        [StaFact]
+        public void DasUntermenueFuehrtAllesUndLaesstNurEigenesZu() {
+            LadeAlles();
+            var eigene = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation)
+                .Where(Plausibilität.IsValid).ToList();
+            Assert.True(eigene.Count > 0, "Das eigene Reich hat keine Figuren");
+
+            var gemark = KleinfeldView.GetKleinfeld(new KleinfeldPosition(eigene[0].gf, eigene[0].kf));
+            Assert.True(gemark != null, "Die Gemark der Figur liegt nicht auf der Karte");
+
+            var besetzung = SpielfigurenView.GetFeldbesetzung(gemark!);
+            Assert.NotEmpty(besetzung);
+
+            // auswaehlbar ist genau das Eigene
+            Assert.All(besetzung, eintrag => Assert.Equal(
+                eintrag.Figur != null && eintrag.Nation == ProgramView.SelectedNation,
+                eintrag.IstAuswählbar));
+            Assert.Contains(besetzung, eintrag => eintrag.IstAuswählbar);
+
+            // und jeder Eintrag traegt eine Beschriftung, sonst steht im Menue eine leere Zeile
+            Assert.All(besetzung, eintrag => Assert.False(string.IsNullOrWhiteSpace(eintrag.Beschriftung)));
+        }
+
+        /// <summary>
+        /// Was hervorgehoben ist, laesst sich auch wirklich anziehen.
+        ///
+        /// Seit ein Klick auf ein hervorgehobenes Feld die Figur dorthin bewegt, ist das keine
+        /// Feinheit mehr: ein Feld, das leuchtet, aber keinen Weg hat, sieht beim Klick wie eine
+        /// kaputte Anwendung aus. Die beiden Rechnungen sind verschieden - GetErreichbareFelder
+        /// sammelt die Suche ein, FindeWeg baut den Weg daraus und prueft zusaetzlich, ob in der
+        /// Zugdatenbank noch Platz fuer die Wegpunkte ist.
+        /// </summary>
+        [StaFact]
+        public void JedesHervorgehobeneFeldLaesstSichAnziehen() {
+            LadeAlles();
+
+            var beweglich = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation)
+                .Where(Plausibilität.IsValid)
+                .Select(f => (Figur: f, Felder: BewegungsRules.GetErreichbareFelder(f)))
+                .Where(paar => paar.Felder.Count > 0)
+                .ToList();
+            Assert.True(beweglich.Count > 0, "Keine eigene Figur kann sich bewegen");
+
+            int geprüft = 0;
+            foreach (var (figur, erreichbar) in beweglich) {
+                string eigenes = KleinfeldView.GetKleinfeld(figur)!.Bezeichner;
+                foreach (var feld in erreichbar) {
+                    // Auf dem eigenen Feld steht die Figur schon; dorthin wird nicht gezogen.
+                    if (feld.Bezeichner == eigenes)
+                        continue;
+                    var weg = BewegungsRules.FindeWeg(figur, feld, out string fehler);
+                    Assert.True(weg != null && weg.Wegpunkte.Count > 0,
+                        $"{feld.Bezeichner} ist fuer {figur.Bezeichner} hervorgehoben, aber nicht anziehbar: {fehler}");
+                    geprüft++;
+                }
+            }
+            Assert.True(geprüft > 0, "Kein einziges Feld geprueft");
+        }
+
+        /// <summary>
+        /// Ein Klick gilt nur dann als Zug, wenn er einer ist.
+        /// </summary>
+        [StaFact]
+        public void NurEinKlickAufEinLeuchtendesFeldIstEinZug() {
+            LadeAlles();
+            var figur = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation)
+                .Where(Plausibilität.IsValid)
+                .FirstOrDefault(f => BewegungsRules.GetErreichbareFelder(f).Count > 0);
+            Assert.True(figur != null, "Keine eigene Figur kann sich bewegen");
+
+            var eigenes = KleinfeldView.GetKleinfeld(figur!)!;
+            var ziel = BewegungsRules.GetErreichbareFelder(figur!)
+                .First(feld => feld.Bezeichner != eigenes.Bezeichner);
+
+            Assert.True(PhoenixWPF.Helper.Bewegungssteuerung.IstZugklick(figur, ziel, true));
+
+            // ohne Hervorhebung bleibt es ein gewoehnlicher Klick
+            Assert.False(PhoenixWPF.Helper.Bewegungssteuerung.IstZugklick(figur, ziel, false));
+            // ohne Figur ebenso
+            Assert.False(PhoenixWPF.Helper.Bewegungssteuerung.IstZugklick(null, ziel, true));
+            // und auf dem eigenen Feld steht die Figur schon - auch wenn ein Rundweg es hervorhebt
+            Assert.False(PhoenixWPF.Helper.Bewegungssteuerung.IstZugklick(figur, eigenes, true));
+
+            // in der Ruestphase wird nicht bewegt, also ist auch kein Klick ein Zug
+            int phaseVorher = ZugView.Settings!.Phase;
+            int monatVorher = ZugView.Settings!.Monat;
+            try {
+                TestSetup.SetzePhase(Zugphase.Rüstphase);
+                Assert.False(PhoenixWPF.Helper.Bewegungssteuerung.IstZugklick(figur, ziel, true));
+            }
+            finally {
+                ZugView.Settings!.Phase = phaseVorher;
+                ZugView.Settings!.Monat = monatVorher;
+            }
+        }
+
+        /// <summary>
         /// Dass eine Figur Bewegungspunkte hat, heisst noch nicht, dass sie ein Feld erreicht:
         /// schwere Artillerie ist so langsam, dass einstellige Restpunkte fuer keinen Schritt
         /// reichen. Das Menue muss damit umgehen koennen, statt es fuer einen Fehler zu halten.
