@@ -13,7 +13,9 @@ namespace PhoenixModel.ViewModel {
     /// Windrichtungen für die Texturen in Langform
     /// </summary>
     public enum DirectionNames {
-        Nordwesten = Direction.NW, Nordosten = Direction.NO, Osten = Direction.NO, Südosten = Direction.SO, Südwesten = Direction.SW, Westen = Direction.W
+        // Osten stand auf Direction.NO. Damit hatte der Wert 1 zwei Namen und der Wert 2 - der
+        // Osten - gar keinen: (DirectionNames)Direction.O schrieb eine nackte 2 in die Meldung.
+        Nordwesten = Direction.NW, Nordosten = Direction.NO, Osten = Direction.O, Südosten = Direction.SO, Südwesten = Direction.SW, Westen = Direction.W
     }
 
     public class KartenKoordinaten : KleinfeldPosition {

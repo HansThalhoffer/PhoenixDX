@@ -102,6 +102,12 @@
     </UserControl.Resources>
     <Canvas Width="800" Height="800" 
         VerticalAlignment="Bottom" HorizontalAlignment="Center">
+        <!-- Die Lage ueber dem Baustern: was hier geht, oder woran es liegt, dass nichts geht.
+             Ohne sie wirkte ein leerer Stern wie ein Fehler der Anwendung. -->
+        <TextBlock x:Name="LageText" Canvas.Left="60" Canvas.Top="150" Width="680"
+                   TextWrapping="Wrap" TextAlignment="Center" FontSize="34" Foreground="White"
+                   Text="Keine Gemark ausgewählt" />
+
         <Polygon Canvas.Top="220" Canvas.Left="195" 
         Points="350,50 575,200 575,500 350,650 125,500 125,200" 
         Fill="{StaticResource ColoredBrush}" Stroke="Black">

@@ -20,37 +20,47 @@ namespace PhoenixWPF.Pages.UserControls {
             InitializeComponent();
             if (Main.Instance.SelectionHistory != null)
                 Main.Instance.SelectionHistory.PropertyChanged += SelectionHistory_PropertyChanged;
-            // this.Visibility = Visibility.Hidden;
+            Zeige(null);
         }
 
-        private void SetKleinfeldVisibility(KleinFeld kf) {
+        /// <summary>
+        /// Zu welcher Schaltfläche eine Bauoption gehört: button_road_NO, button_wall_W, ...
+        /// </summary>
+        private static string Schaltflächenname(BauoptionenView.Bauoption option) {
+            string art = option.Art switch {
+                ConstructionElementType.Strasse => "road",
+                ConstructionElementType.Wall => "wall",
+                ConstructionElementType.Bruecke => "bridge",
+                ConstructionElementType.Kai => "kai",
+                _ => "burg",
+            };
+            return option.Richtung == null ? "button_burg" : $"button_{art}_{option.Richtung}";
+        }
+
+        /// <summary>
+        /// Zeigt den Baustern für die ausgewählte Gemark.
+        ///
+        /// Der Stern bleibt immer stehen - auch wenn nichts geht. Vorher verschwand er in diesem
+        /// Fall ganz oder wurde leer, und der Spieler stand ohne Erklärung da. Jetzt steht über ihm,
+        /// woran es liegt: keine Gemark ausgewählt, fremdes Gebiet, falsche Phase, oder an jeder
+        /// Kante steht schon etwas.
+        ///
+        /// Was möglich ist, trägt seinen Preis in der Kurzhilfe; was nicht möglich ist, verschwindet
+        /// wie bisher, damit der Stern lesbar bleibt - der Grund steht in der Lage darüber.
+        /// </summary>
+        private void Zeige(KleinFeld? kf) {
             Visibility = Visibility.Visible;
-            foreach (Direction dir in Enum.GetValues(typeof(Direction))) {
-                if (this.FindName($"button_bridge_{dir}") is Button buttonBridge) {
-                    buttonBridge.Visibility = ConstructRules.CanConstructBridge(kf, dir) ? Visibility.Visible : Visibility.Hidden;
-                }
-                else
-                    throw new Exception($"Da fehlt der Button button_bridge_{dir}");
 
-                if (this.FindName($"button_kai_{dir}") is Button buttonKai) {
-                    buttonKai.Visibility = ConstructRules.CanConstructKai(kf, dir) ? Visibility.Visible : Visibility.Hidden;
-                }
-                else
-                    throw new Exception($"Da fehlt der Button button_kai_{dir}");
+            var lage = BauoptionenView.BeschreibeLage(kf);
+            LageText.Text = lage.Title;
+            LageText.ToolTip = lage.Message;
 
-                if (this.FindName($"button_road_{dir}") is Button buttonRoad) {
-                    buttonRoad.Visibility = ConstructRules.CanConstructRoad(kf, dir) ? Visibility.Visible : Visibility.Hidden;
-                }
-                else
-                    throw new Exception($"Da fehlt der Button button_road_{dir}");
-
-                if (this.FindName($"button_wall_{dir}") is Button buttonWall) {
-                    buttonWall.Visibility = ConstructRules.CanConstructWall(kf, dir) ? Visibility.Visible : Visibility.Hidden;
-                }
-                else
-                    throw new Exception($"Da fehlt der Button button_wall_{dir}");
+            foreach (var option in BauoptionenView.Bestimme(kf)) {
+                if (FindName(Schaltflächenname(option)) is not Button schaltfläche)
+                    throw new Exception($"Da fehlt der Button {Schaltflächenname(option)}");
+                schaltfläche.Visibility = option.Möglich ? Visibility.Visible : Visibility.Hidden;
+                schaltfläche.ToolTip = option.Hinweis;
             }
-            button_burg.Visibility = ConstructRules.CanConstructCastle(kf) ? Visibility.Visible : Visibility.Hidden;
         }
 
         private void Construction_Button_Click(object sender, RoutedEventArgs e) {
@@ -101,7 +111,7 @@ namespace PhoenixWPF.Pages.UserControls {
                 if (string.IsNullOrEmpty(commandString) == false) {
                     if (CommandParser.ParseCommand(commandString, out var cmd) && cmd != null) {
                         var result = cmd.ExecuteCommand();
-                        SetKleinfeldVisibility(kf);
+                        Zeige(kf);
                         if (result.HasErrors)
                             SpielWPF.LogError(result.Title, result.Message);
 
@@ -153,14 +163,17 @@ namespace PhoenixWPF.Pages.UserControls {
             return (null, null);  // Return null if we couldn't determine the construction type or direction
         }
 
+        /// <summary>
+        /// Die Auswahl hat gewechselt.
+        ///
+        /// Auch eine fremde Gemark wird gezeigt - dann steht über dem Stern, dass sie nicht zum
+        /// eigenen Reich gehört. Nur wenn gar keine Gemark ausgewählt ist, etwa weil eine Spielfigur
+        /// angeklickt wurde, bleibt die alte Anzeige stehen: der Baustern gehört zur Gemark, und die
+        /// hat sich dann nicht geändert.
+        /// </summary>
         private void SelectionHistory_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) {
-            var selected = Main.Instance.SelectionHistory.Current;
-            // wenn ein Kleinfeld ausgewählt ist und es zum Reich des Users gehört, dann kann gebaut werden
-            if (selected != null && selected is KleinFeld kf && ProgramView.BelongsToUser(kf)) {
-                SetKleinfeldVisibility(kf);
-                return;
-            }
-            this.Visibility = Visibility.Hidden;
+            if (Main.Instance.SelectionHistory.Current is KleinFeld kf)
+                Zeige(kf);
         }
 
         private void button_burg_Click(object sender, RoutedEventArgs e) {
