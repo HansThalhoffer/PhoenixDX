@@ -115,7 +115,9 @@ namespace PhoenixModel.Commands {
         public override CommandResult UndoCommand() {
             RuestungBauwerke? bauwerk = CreateRuestungBauwerke();
             if (bauwerk != null && SharedData.RuestungBauwerke != null) {
-            var existing = SharedData.RuestungBauwerke.Where(bw => bw.Equals(bauwerk)).First();
+                // FirstOrDefault, nicht First: gibt es den Auftrag nicht mehr, soll die Prüfung
+                // darunter greifen und nicht eine Ausnahme mitten im Zurücknehmen hochkommen.
+                var existing = SharedData.RuestungBauwerke.FirstOrDefault(bw => bw.Equals(bauwerk));
                 if (existing == null)
                     return new CommandResultError("Der Auftrag für dieses Bauwerk existiert nicht und kann daher nicht rückgänig gemacht werden", $"Der Befehl kann nicht rückgängig gemacht werden, da er nicht in den Zugdaten gespeichert wurde\r\n {this.CommandString}", this);
                 SharedData.RuestungBauwerke.Remove(existing);
@@ -146,6 +148,7 @@ namespace PhoenixModel.Commands {
                     SharedData.RuestungBauwerke.ReopenSharedData();
                     SharedData.RuestungBauwerke.Add(bauwerk);
 
+
                     // wenn es eine Burg ist, dann braucht es ein Bauwerk
                     if (this.What == ConstructionElementType.Dorf || this.What == ConstructionElementType.Burg) {
                         BauwerkeView.AddBaustelle(SharedData.Map[bauwerk.CreateBezeichner()]);
@@ -153,6 +156,11 @@ namespace PhoenixModel.Commands {
 
                     RuestungBauwerkeView.UpdateKleinFeld(bauwerk);
                     IsExecuted = true;
+
+                    // Update trägt den Auftrag in die Speicherschlange ein. Dass dort "Update" und
+                    // nicht "Insert" steht, ist kein Versehen: RuestungBauwerke.Save setzt ein
+                    // UPDATE über die ID ab und legt die Zeile an, wenn keine getroffen wurde -
+                    // und eine neue Zeile hat die ID 0. So kommt der Bauauftrag in die Zugdaten.
                     Update(bauwerk, EventsAndArgs.ViewEventArgs.ViewEventType.UpdateKleinfeld);
                 }
                 catch (Exception ex) {
