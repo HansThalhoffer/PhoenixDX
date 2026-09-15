@@ -12,9 +12,9 @@ namespace PhoenixWPF.Program {
     /// <summary>
     /// Das Kontextmenü, das der Rechtsklick auf ein Kleinfeld öffnet.
     ///
-    /// Der Rechtsklick schiebt auch die Karte; das Menü erscheint deshalb nur, wenn die Maus
-    /// zwischen Drücken und Loslassen stehen geblieben ist. Diese Unterscheidung trifft die
-    /// Kartendarstellung, hier kommt nur noch das fertige Ereignis an.
+    /// Die rechte Taste tut nur noch dies; geschoben wird die Karte mit der mittleren oder mit
+    /// Strg und der linken (<see cref="PhoenixDX.Helper.Kartensteuerung"/>). Hier kommt nur das
+    /// fertige Ereignis an.
     /// </summary>
     internal static class Kartenkontextmenue {
 

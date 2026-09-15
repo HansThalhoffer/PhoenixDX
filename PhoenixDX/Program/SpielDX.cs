@@ -34,14 +34,14 @@ namespace PhoenixDX.Program {
         /// </summary>
         bool _isMoving = false;
         /// <summary>
-        /// Wurde die Karte mit gedrückter rechter Maustaste geschoben? Dann ist das Loslassen der
-        /// Taste kein Klick und öffnet kein Kontextmenü.
+        /// Wurde die linke Taste mit Strg gedrückt, um die Karte zu schieben? Dann ist das
+        /// Loslassen kein Klick. Siehe <see cref="Helper.Kartensteuerung"/>.
         /// </summary>
-        bool _rechtsGeschoben = false;
+        bool _strgLinksBegonnen = false;
         /// <summary>
-        /// Ab wieviel Bildpunkten Bewegung ein Schieben gemeint ist und kein Klick
+        /// Wurde dabei tatsächlich geschoben?
         /// </summary>
-        const int SchiebeSchwelle = 3;
+        bool _linksGeschoben = false;
         /// <summary>
         /// Mausevents zum Verarbeiten
         /// </summary>
@@ -451,6 +451,29 @@ namespace PhoenixDX.Program {
         internal void HörAufZuBlinken() => Weltkarte?.HörAufZuBlinken();
 
         /// <summary>
+        /// Ist eine der beiden Strg-Tasten unten?
+        /// </summary>
+        private static bool StrgGedrückt() {
+            var tasten = Microsoft.Xna.Framework.Input.Keyboard.GetState();
+            return tasten.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl)
+                || tasten.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightControl);
+        }
+
+        /// <summary>
+        /// Wählt das Kleinfeld unter dem Mauszeiger aus und meldet das der Oberfläche.
+        /// </summary>
+        private void WähleFeldUnterDemZeiger() {
+            if (_selected != null)
+                _selected.IsSelected = false;
+
+            _selected = _mouseOver;
+            if (_selected != null) {
+                _selected.IsSelected = true;
+                _wpfBridge.SelectKleinfeld(_selected.Koordinaten.gf, _selected.Koordinaten.kf, _maus.EventType);
+            }
+        }
+
+        /// <summary>
         /// Verarbeitet die Eingaben der Maus.
         /// Wird im Udate der GameEngine aufgerufen
         /// </summary>
@@ -463,41 +486,46 @@ namespace PhoenixDX.Program {
                 _isMoving = false;
                 switch (_maus.EventType) {
                     case MausEventArgs.MouseEventType.LeftButtonDown: { // single click
-
-                            if (_selected != null)
-                                _selected.IsSelected = false;
-
-                            _selected = _mouseOver;
-                            if (_selected != null) {
-                                _selected.IsSelected = true;
-                                _wpfBridge.SelectKleinfeld(_selected.Koordinaten.gf, _selected.Koordinaten.kf, _maus.EventType);
+                            // Mit Strg schiebt die linke Taste die Karte - für Mäuse ohne Rad.
+                            // Ob es ein Klick oder ein Schieben war, steht erst beim Loslassen
+                            // fest, denn ein Strg-Klick setzt weiterhin eine Markierung.
+                            if (Helper.Kartensteuerung.BeginntSchiebenMitLinks(StrgGedrückt())) {
+                                _strgLinksBegonnen = true;
+                                _linksGeschoben = false;
+                                break;
                             }
+                            WähleFeldUnterDemZeiger();
+                            break;
+                        }
+                    case MausEventArgs.MouseEventType.LeftButtonUp: {
+                            // Strg gehalten und nicht geschoben: dann war es doch ein Klick.
+                            if (_strgLinksBegonnen && _linksGeschoben == false)
+                                WähleFeldUnterDemZeiger();
+                            _strgLinksBegonnen = false;
+                            _linksGeschoben = false;
                             break;
                         }
                     case MausEventArgs.MouseEventType.MiddleButtonDown: {
+                            // Die mittlere Taste schiebt nur; sie wählt nichts aus.
                             break;
                         }
                     case MausEventArgs.MouseEventType.RightButtonDown: {
-                            // Noch nichts tun: die rechte Taste schiebt auch die Karte. Erst beim
-                            // Loslassen steht fest, ob es ein Klick oder ein Schieben war.
-                            _rechtsGeschoben = false;
                             break;
                         }
                     case MausEventArgs.MouseEventType.RightButtonUp: {
-                            // Ein Klick, kein Schieben: dann das Kontextmenü zu dem Feld unter dem
-                            // Mauszeiger öffnen.
-                            if (_rechtsGeschoben == false && _mouseOver != null)
+                            // Die rechte Taste tut nur noch eines: das Kontextmenü zu dem Feld
+                            // unter dem Mauszeiger öffnen. Geschoben wird mit der mittleren.
+                            if (_mouseOver != null)
                                 _wpfBridge.ÖffneKontextmenü(_mouseOver.Koordinaten.gf, _mouseOver.Koordinaten.kf);
-                            _rechtsGeschoben = false;
                             break;
                         }
                     case MausEventArgs.MouseEventType.MouseMove: {
-                            if (_maus.RightButton == MausEventArgs.MouseButtonState.Pressed) {
-                                Position delta = _maus.ScreenPositionDelta;// * (int)(18f * Zoom);
-                                // Ein Zittern der Hand ist noch kein Schieben - sonst bliebe das
-                                // Kontextmenü bei der kleinsten Bewegung aus.
-                                if (Math.Abs(delta.X) + Math.Abs(delta.Y) > SchiebeSchwelle)
-                                    _rechtsGeschoben = true;
+                            if (Helper.Kartensteuerung.SchiebtDieKarte(_maus, StrgGedrückt())) {
+                                Position delta = _maus.ScreenPositionDelta;
+                                // Ein Zittern der Hand ist noch kein Schieben - sonst verschluckte
+                                // die kleinste Bewegung die Markierung des Strg-Klicks.
+                                if (Helper.Kartensteuerung.IstSchieben(delta))
+                                    _linksGeschoben = true;
                                 MoveCamera(delta);
                             }
                             break;
@@ -514,7 +542,7 @@ namespace PhoenixDX.Program {
                             // 100f um es in Prozent umzuwandeln
                             float percent = _maus.WheelDelta / 120f * 4f / 100f;
 
-                            if (Microsoft.Xna.Framework.Input.Keyboard.GetState().IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
+                            if (StrgGedrückt())
                                 percent *= 3f;
 
                             // Alte Skalierung sichern
