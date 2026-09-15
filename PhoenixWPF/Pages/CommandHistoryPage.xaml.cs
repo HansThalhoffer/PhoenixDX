@@ -30,6 +30,27 @@ namespace PhoenixWPF.Pages {
         }
 
         /// <summary>
+        /// Ein Klick auf einen Eintrag führt die Karte zu der Gemark, auf die der Befehl zeigt -
+        /// bei einer Bewegung zum Ziel, denn dort steht die Figur.
+        ///
+        /// Zeigt der Befehl auf keine Gemark, passiert nichts: die Karte springt lieber gar nicht
+        /// als irgendwohin.
+        /// </summary>
+        private void CommandDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            try {
+                if (CommandDataGrid.SelectedItem is not CommandListEntry eintrag)
+                    return;
+                var ziel = PhoenixModel.View.BefehlszielView.GetZielfeld(eintrag.Command);
+                if (ziel == null)
+                    return;
+                Program.Main.Instance.Spiel?.SelectGemark(ziel);
+            }
+            catch (Exception ex) {
+                Program.Absturzbericht.Berichte("Beim Springen zur Gemark ging etwas schief", ex, tödlich: false);
+            }
+        }
+
+        /// <summary>
         /// Behandelt die Sammlung von Befehlen, wenn Elemente hinzugefügt oder entfernt werden.
         /// Wird aufgerufen, wenn sich die Sammlung ändert (z. B. bei Hinzufügen oder Entfernen von Befehlen).
         /// </summary>

@@ -51,6 +51,13 @@ namespace PhoenixModel.Commands {
         public bool IsExecuted { get; set; }
 
         /// <summary>
+        /// Woran der Befehl gearbeitet hat, soweit es die Sitzung noch weiss.
+        ///
+        /// Gebraucht, um zu einem Befehl die Gemark zu finden (siehe <see cref="View.BefehlszielView"/>).
+        /// </summary>
+        public ISelectable? Betroffen => _Selectable;
+
+        /// <summary>
         /// Der Zug, in dem dieser Befehl gegeben wurde.
         ///
         /// Vorbelegt mit dem Zug, der gerade gespielt wird - ein Befehl entsteht in dem Monat, in

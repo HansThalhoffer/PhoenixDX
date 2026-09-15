@@ -14,7 +14,8 @@
     </Page.Resources>
 
     <Grid>
-        <DataGrid x:Name="CommandDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+        <DataGrid x:Name="CommandDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                  SelectionChanged="CommandDataGrid_SelectionChanged">
             <DataGrid.Columns>
                 <!-- Readonly Checkbox -->
                 <DataGridCheckBoxColumn Header="Executed"
@@ -31,6 +32,11 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+
+                <!-- Die Gemark, auf die der Befehl zeigt; ein Klick auf die Zeile springt dorthin -->
+                <DataGridTextColumn Header="Gemark"
+                                    Binding="{Binding Zielfeld, Mode=OneWay}"
+                                    IsReadOnly="True"/>
 
                 <!-- Command String -->
                 <DataGridTextColumn Header="Command"

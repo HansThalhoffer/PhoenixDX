@@ -36,6 +36,17 @@ namespace PhoenixWPF.Helper {
         }
 
         /// <summary>
+        /// Die Gemark, auf die der Befehl zeigt - bei einer Bewegung das Ziel.
+        /// Leer, wenn der Befehl auf keine Gemark zeigt.
+        /// </summary>
+        public string Zielfeld {
+            get {
+                var feld = PhoenixModel.View.BefehlszielView.GetZielfeld(_command);
+                return feld == null ? string.Empty : feld.CreateBezeichner();
+            }
+        }
+
+        /// <summary>
         /// Ruft den zugeordneten Befehl ab.
         /// </summary>
         public BaseCommand Command {
