@@ -438,6 +438,19 @@ namespace PhoenixDX.Program {
         }
 
         /// <summary>
+        /// Lässt ein Kantenbauwerk auf der Karte blinken.
+        /// </summary>
+        internal bool LassBlinken(KleinfeldPosition? feld, PhoenixModel.Commands.ConstructionElementType art,
+                PhoenixModel.ViewModel.Direction richtung) {
+            return Weltkarte != null && Weltkarte.LassBlinken(feld, art, richtung);
+        }
+
+        /// <summary>
+        /// Nimmt jedes Blinken zurück.
+        /// </summary>
+        internal void HörAufZuBlinken() => Weltkarte?.HörAufZuBlinken();
+
+        /// <summary>
         /// Verarbeitet die Eingaben der Maus.
         /// Wird im Udate der GameEngine aufgerufen
         /// </summary>

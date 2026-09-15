@@ -300,6 +300,29 @@ namespace PhoenixDX {
         public void LöscheHervorhebung() {
             _game?.HebeHervor([], Color.Transparent);
         }
+
+        /// <summary>
+        /// Lässt ein einzelnes Kantenbauwerk blinken - einen Wall, eine Strasse, eine Brücke, eine
+        /// Kaianlage. Damit lässt sich zeigen, um welches Stück es geht, und nicht nur, auf welchem
+        /// Feld.
+        ///
+        /// Es blinkt immer nur eines: ein zweiter Aufruf löst das erste ab.
+        /// </summary>
+        /// <param name="feld">die Gemark, an deren Kante das Bauwerk liegt</param>
+        /// <param name="art">Wall, Strasse, Brücke oder Kai - anderes blinkt nicht</param>
+        /// <param name="richtung">die Kante</param>
+        /// <returns>true, wenn es blinkt</returns>
+        public bool LassBlinken(KleinfeldPosition? feld, PhoenixModel.Commands.ConstructionElementType art,
+                PhoenixModel.ViewModel.Direction richtung) {
+            return _game != null && _game.LassBlinken(feld, art, richtung);
+        }
+
+        /// <summary>
+        /// Nimmt jedes Blinken auf der Karte zurück
+        /// </summary>
+        public void HörAufZuBlinken() {
+            _game?.HörAufZuBlinken();
+        }
         #endregion
 
         #region Logs

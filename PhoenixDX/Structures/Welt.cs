@@ -200,6 +200,48 @@ namespace PhoenixDX.Structures {
         }
 
         /// <summary>
+        /// Lässt ein Kantenbauwerk blinken - einen Wall, eine Strasse, eine Brücke, eine Kaianlage.
+        ///
+        /// Es blinkt immer nur eines: ein zweiter Aufruf löst das erste ab. Null als Position
+        /// nimmt das Blinken zurück.
+        /// </summary>
+        /// <returns>true, wenn das Feld gefunden wurde</returns>
+        public bool LassBlinken(KleinfeldPosition? feld, PhoenixModel.Commands.ConstructionElementType art,
+                PhoenixModel.ViewModel.Direction richtung) {
+            HörAufZuBlinken();
+            if (feld == null || Provinzen.TryGetValue(feld.gf, out var provinz) == false)
+                return false;
+            var gemark = provinz.GetKleinfeld(feld.kf);
+            if (gemark == null)
+                return false;
+            gemark.BlinkendesBauwerk = (art, richtung);
+            return true;
+        }
+
+        /// <summary>
+        /// Nimmt jedes Blinken zurück
+        /// </summary>
+        public void HörAufZuBlinken() {
+            foreach (var provinz in Provinzen.Values)
+                foreach (var gemark in provinz.Felder.Values)
+                    gemark.BlinkendesBauwerk = null;
+        }
+
+        /// <summary>
+        /// Wieviele Kantenbauwerke gerade blinken - für einen Test genügt die Anzahl.
+        /// </summary>
+        public int AnzahlBlinkenderBauwerke {
+            get {
+                int anzahl = 0;
+                foreach (var provinz in Provinzen.Values)
+                    foreach (var gemark in provinz.Felder.Values)
+                        if (gemark.BlinkendesBauwerk != null)
+                            anzahl++;
+                return anzahl;
+            }
+        }
+
+        /// <summary>
         /// Nimmt jede Hervorhebung zurück
         /// </summary>
         public void LöscheHervorhebung() {

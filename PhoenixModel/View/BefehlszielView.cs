@@ -50,5 +50,19 @@ namespace PhoenixModel.View {
         /// Zeigt dieser Befehl überhaupt auf eine Gemark?
         /// </summary>
         public static bool HatZielfeld(BaseCommand? befehl) => GetZielfeld(befehl) != null;
+
+        /// <summary>
+        /// Das Bauwerk, um das es geht, und die Kante, an der es liegt.
+        ///
+        /// Ein Wall, eine Strasse, eine Brücke und eine Kaianlage liegen an einer Gemarkkante; auf
+        /// der Karte lässt sich genau dieses Stück hervorheben. Alles andere gehört der ganzen
+        /// Gemark - dann ist die Richtung null, und es blinkt das Feld.
+        /// </summary>
+        /// <returns>Art und Richtung, oder zweimal null, wenn der Befehl kein Bauwerk betrifft</returns>
+        public static (ConstructionElementType? Art, Direction? Richtung) GetZielbauwerk(BaseCommand? befehl) {
+            if (befehl is not ConstructCommand bau)
+                return (null, null);
+            return (bau.What, bau.Direction);
+        }
     }
 }

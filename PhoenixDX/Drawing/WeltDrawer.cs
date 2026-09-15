@@ -138,10 +138,43 @@ namespace PhoenixDX.Drawing {
                         else
                             spriteBatch.Draw(_selection2, rScreenG, null, Color.White);
                     }
+
+                    // Ein Kantenbauwerk blinkt: seine Textur für genau diese Richtung wird im
+                    // selben Takt über das Feld gelegt. So sieht man, um welches Stück es geht -
+                    // die Auswahl zeigt nur, auf welchem Feld.
+                    if (gemark.BlinkendesBauwerk != null && _toggle) {
+                        var textur = HoleKantentextur(gemark.BlinkendesBauwerk.Value.Art,
+                                                      gemark.BlinkendesBauwerk.Value.Richtung);
+                        if (textur != null)
+                            spriteBatch.Draw(textur, rScreenG, null, Color.Yellow);
+                    }
                 }
             }
             spriteBatch.End();
             return mouseover;
         }
+        /// <summary>
+        /// Die Textur eines Kantenbauwerks für eine einzelne Richtung.
+        ///
+        /// Die Adorner setzen sonst alle sechs Richtungen zu einem Bild zusammen; zum Blinken wird
+        /// genau eine gebraucht.
+        /// </summary>
+        private static Texture2D HoleKantentextur(PhoenixModel.Commands.ConstructionElementType art,
+                PhoenixModel.ViewModel.Direction richtung) {
+            try {
+                return art switch {
+                    PhoenixModel.Commands.ConstructionElementType.Wall => Structures.Wall.Texture.GetTexture(richtung),
+                    PhoenixModel.Commands.ConstructionElementType.Strasse => Structures.Strasse.Texture.GetTexture(richtung),
+                    PhoenixModel.Commands.ConstructionElementType.Bruecke => Structures.Bruecke.Texture.GetTexture(richtung),
+                    PhoenixModel.Commands.ConstructionElementType.Kai => Structures.Kai.Texture.GetTexture(richtung),
+                    _ => null,
+                };
+            }
+            catch (Exception) {
+                // Fehlt die Textur, blinkt eben nichts - das ist kein Grund, das Bild abzubrechen.
+                return null;
+            }
+        }
+
     }
 }

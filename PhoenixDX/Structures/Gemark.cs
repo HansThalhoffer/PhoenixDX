@@ -89,6 +89,16 @@ namespace PhoenixDX.Structures {
         /// noch erreichen kann. Null heißt: keine Hervorhebung.
         /// </summary>
         public Microsoft.Xna.Framework.Color? Hervorhebung { get; set; } = null;
+
+        /// <summary>
+        /// Das Kantenbauwerk, das an dieser Gemark blinken soll - Art und Richtung.
+        ///
+        /// Ein Wall, eine Strasse, eine Brücke und eine Kaianlage liegen an einer Kante und haben
+        /// je Richtung eine eigene Textur. Blinkt eines davon, wird diese Textur im Takt der
+        /// Auswahl über das Feld gelegt, damit man sieht, um welches Stück es geht. Null heisst:
+        /// hier blinkt nichts.
+        /// </summary>
+        public (PhoenixModel.Commands.ConstructionElementType Art, PhoenixModel.ViewModel.Direction Richtung)? BlinkendesBauwerk { get; set; } = null;
         /// <summary>
         /// Kartenkoordinaten der Gemarkung.
         /// </summary>

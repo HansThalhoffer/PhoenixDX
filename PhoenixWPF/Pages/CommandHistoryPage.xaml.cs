@@ -44,6 +44,14 @@ namespace PhoenixWPF.Pages {
                 if (ziel == null)
                     return;
                 Program.Main.Instance.Spiel?.SelectGemark(ziel);
+
+                // Und wenn der Befehl ein Kantenbauwerk betrifft, blinkt genau dieses Stück.
+                // Die Auswahl zeigt nur, auf welchem Feld; erst das Blinken zeigt, welcher Wall.
+                var (art, richtung) = PhoenixModel.View.BefehlszielView.GetZielbauwerk(eintrag.Command);
+                if (art != null && richtung != null)
+                    Program.Main.Map?.LassBlinken(ziel, art.Value, richtung.Value);
+                else
+                    Program.Main.Map?.HörAufZuBlinken();
             }
             catch (Exception ex) {
                 Program.Absturzbericht.Berichte("Beim Springen zur Gemark ging etwas schief", ex, tödlich: false);
