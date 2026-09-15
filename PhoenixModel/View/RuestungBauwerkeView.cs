@@ -72,7 +72,11 @@ namespace PhoenixModel.View {
                         Location = bauwerk,
                         What = what,
                         Kosten = kosten,
-                        IsExecuted = true
+                        IsExecuted = true,
+                        // Der Befehl gehört dem Monat seines Bauauftrags, nicht dem Augenblick,
+                        // in dem er wiederhergestellt wird. Nur so bleibt erkennbar, was aus dem
+                        // laufenden Zug stammt und sich zurücknehmen lässt.
+                        Zug = bauwerk.ZugMonat,
                     };
                     SharedData.CommandQueue.Enqueue(command);
                 }

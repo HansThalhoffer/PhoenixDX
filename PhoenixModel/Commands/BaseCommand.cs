@@ -51,6 +51,25 @@ namespace PhoenixModel.Commands {
         public bool IsExecuted { get; set; }
 
         /// <summary>
+        /// Der Zug, in dem dieser Befehl gegeben wurde.
+        ///
+        /// Vorbelegt mit dem Zug, der gerade gespielt wird - ein Befehl entsteht in dem Monat, in
+        /// dem er gegeben wird. Wiederhergestellte Befehle tragen den Monat ihres Auftrags nach
+        /// (siehe <see cref="View.RuestungBauwerkeView"/>).
+        /// </summary>
+        public int Zug { get; set; } = ProgramView.SelectedMonth;
+
+        /// <summary>
+        /// Gehört dieser Befehl zu dem Zug, der gerade gespielt wird?
+        ///
+        /// Zurücknehmen lässt sich nur, was im laufenden Zug gemacht wurde. Ein Befehl aus einem
+        /// vergangenen Monat ist längst ausgewertet: die Spielleitung hat ihn gerechnet, das
+        /// Ergebnis steht in den Daten des Folgemonats. Ihn hier zurückzunehmen würde die eigene
+        /// Karte gegen die Auswertung verschieben, ohne dass es jemandem auffällt.
+        /// </summary>
+        public bool GehörtZumAktuellenZug => Zug == ProgramView.SelectedMonth;
+
+        /// <summary>
         /// Erstellt eine neue Instanz der <see cref="BaseCommand"/>-Klasse.
         /// </summary>
         /// <param name="commandString">Die Befehlszeichenkette.</param>

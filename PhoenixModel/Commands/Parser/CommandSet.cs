@@ -35,7 +35,22 @@ namespace PhoenixModel.Commands.Parser {
         }
         static SynchronizationContext? _syncContext;
 
+        /// <summary>
+        /// Nimmt einen Befehl zurück.
+        ///
+        /// Zurücknehmen lässt sich nur, was im laufenden Zug gemacht wurde
+        /// (<see cref="BaseCommand.GehörtZumAktuellenZug"/>). Ein Befehl aus einem vergangenen
+        /// Monat ist ausgewertet; ihn zurückzunehmen würde die eigene Karte gegen die Auswertung
+        /// der Spielleitung verschieben.
+        /// </summary>
+        /// <returns>true, wenn der Befehl zurückgenommen wurde</returns>
         public bool Undo(BaseCommand command) {
+            if (command.GehörtZumAktuellenZug == false) {
+                ProgramView.LogWarning($"Der Befehl stammt aus Zug {command.Zug} und lässt sich nicht zurücknehmen",
+                    $"Gespielt wird Zug {ProgramView.SelectedMonth}. Zurücknehmen lässt sich nur, was im "
+                    + "laufenden Zug gemacht wurde - alles Ältere hat die Spielleitung längst ausgewertet.");
+                return false;
+            }
             if (command.CanUndo == true) {
                 var result = command.UndoCommand();
                 if (result.HasErrors == false) {
