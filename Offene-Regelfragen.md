@@ -231,5 +231,21 @@ weil es ein lautloses Halbieren gewesen wäre.
   ihnen bliebe eine Festung bis 2500 Baupunkte eine Festung, nach der Tabelle ist sie ab 2999
   eine Stadt. Der Unterschied ist eine Stufe im Kampf und bei den Einnahmen. Die Anwendung folgt der
   Tabelle und dem Beispiel aus 1.5.
-* **Die `settings`-Tabelle der Zugdatenbank läuft dem Zugverzeichnis voraus.** Die Anwendung
-  rechnet mit dem Verzeichnis und der Schatzkammer, die übereinstimmen, und warnt.
+* **Die `settings`-Tabelle der Zugdatenbank läuft dem Zugverzeichnis um sieben Monate voraus,
+  und ihre Phase steht überall auf Bewegungsphase.** Der Befund über drei Züge:
+
+  | Zugverzeichnis | `settings.Monat` | Schatzkammer | `settings.Phase` |
+  |---|---|---|---|
+  | 168 | 175 | 168 | 1 |
+  | 169 | 176 | 169 | 1 |
+  | 170 | 177 | 170 | 1 |
+
+  Verzeichnis und Schatzkammer stimmen überein, die settings-Zeile gehört zu einem anderen Monat.
+  Damit sagt auch ihre Phase nichts über diesen Zug aus — und weil dort überall 1 steht, also
+  Bewegungsphase, war die Rüstphase nie erreichbar: es liess sich in keinem Zug etwas bauen oder
+  rüsten.
+
+  Die Anwendung rechnet deshalb mit dem Verzeichnis und der Schatzkammer, warnt über den
+  Widerspruch und führt die Zugphase selbst, beginnend mit der Rüstphase
+  (`ZugView.PhaseStehtInDenZugdaten`). Ein gespeichertes *abgeschlossen* gilt weiterhin, das setzt
+  niemand versehentlich. Wird die Tabelle richtiggestellt, zählt ihre Phase wieder von selbst.

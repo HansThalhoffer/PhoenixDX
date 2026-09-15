@@ -189,6 +189,24 @@ namespace Tests {
             ProgramView.SelectedMonth = monat;
             ZugView.BestimmeAktuellenZug(monat);
 
+            SetzePhase(Zugphase.Bewegungsphase);
+        }
+
+        /// <summary>
+        /// Stellt die Zugphase auf den gewuenschten Wert.
+        ///
+        /// Die Testzugdaten fuehren keine Phase, die zu ihrem Zug gehoert - ihre settings-Zeile
+        /// gehoert zu einem anderen Monat (siehe <see cref="ZugView.PhaseStehtInDenZugdaten"/>).
+        /// Deshalb beginnt jeder geladene Zug in der Ruestphase, und wer bewegen oder zaubern will,
+        /// muss umstellen. Die Tests laden deshalb in der Bewegungsphase; Tests, die ruesten oder
+        /// bauen, stellen selbst zurueck.
+        ///
+        /// Am gespeicherten Wert wird dabei nichts vorbeigeschrieben: der Weg geht ueber
+        /// <see cref="ZugView.SetzePhase"/> wie in der Anwendung auch.
+        /// </summary>
+        public static void SetzePhase(Zugphase phase) {
+            if (ZugView.Settings != null && ZugView.Phase != phase)
+                ZugView.SetzePhase(phase, erzwingen: true);
         }
 
         /// <summary>

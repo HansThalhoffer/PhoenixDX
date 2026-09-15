@@ -23,8 +23,7 @@ namespace Tests {
         private static void LadeAlles() {
             TestSetup.LadeMitDiplomatie();
             // Ruestorte aendern sich in der Ruestphase
-            if (SharedData.ZugdatenSettings != null)
-                SharedData.ZugdatenSettings.Last().Phase = (int)Zugphase.Rüstphase;
+            TestSetup.SetzePhase(Zugphase.Rüstphase);
         }
 
         /// <summary>
@@ -259,16 +258,16 @@ namespace Tests {
                 Assert.True(HauptstadtRules.PrüfeBeginn(fremdeFestung).HasErrors);
 
                 var festung = Festung();
-                SharedData.ZugdatenSettings!.Last().Phase = (int)Zugphase.Bewegungsphase;
+                TestSetup.SetzePhase(Zugphase.Bewegungsphase);
                 var falschePhase = HauptstadtRules.PrüfeBeginn(festung);
                 Assert.True(falschePhase.HasErrors);
                 Assert.Contains("Rüstphase", falschePhase.Title);
 
-                SharedData.ZugdatenSettings.Last().Phase = (int)Zugphase.Rüstphase;
+                TestSetup.SetzePhase(Zugphase.Rüstphase);
                 Assert.False(HauptstadtRules.PrüfeBeginn(festung).HasErrors);
             }
             finally {
-                SharedData.ZugdatenSettings!.Last().Phase = (int)Zugphase.Rüstphase;
+                TestSetup.SetzePhase(Zugphase.Rüstphase);
                 SetzeSchatzkammer(schatz);
             }
         }

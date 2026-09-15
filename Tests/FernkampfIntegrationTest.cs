@@ -21,8 +21,7 @@ namespace Tests {
             TestSetup.LoadCrossRef(false, false);
             TestSetup.LoadZugdaten(false, false);
             // der Fernkampf gehört zum Spielzug, nicht zur Rüstphase
-            if (ZugView.Settings != null)
-                ZugView.Settings.Phase = (int)Zugphase.Bewegungsphase;
+            TestSetup.SetzePhase(Zugphase.Bewegungsphase);
         }
 
         /// <summary>

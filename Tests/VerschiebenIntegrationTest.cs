@@ -20,8 +20,7 @@ namespace Tests {
             TestSetup.LoadKarte();
             TestSetup.LoadPZE(false, false);
             TestSetup.LoadZugdaten(false, false);
-            if (ZugView.Settings != null)
-                ZugView.Settings.Phase = (int)Zugphase.Bewegungsphase;
+            TestSetup.SetzePhase(Zugphase.Bewegungsphase);
         }
 
         private static List<TruppenSpielfigur> Armee()

@@ -24,8 +24,7 @@ namespace Tests {
             TestSetup.LoadPZE(false, false);
             TestSetup.LoadZugdaten(false, false);
             // gebaut wird in der Ruestphase
-            if (ZugView.Settings != null)
-                ZugView.Settings.Phase = (int)Zugphase.Rüstphase;
+            TestSetup.SetzePhase(Zugphase.Rüstphase);
         }
 
         private static List<KleinFeld> EigeneRuestorte()

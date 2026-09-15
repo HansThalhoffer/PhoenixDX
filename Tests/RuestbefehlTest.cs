@@ -21,8 +21,7 @@ namespace Tests {
             TestSetup.LoadKarte();
             TestSetup.LoadPZE(false, false);
             TestSetup.LoadZugdaten(false, false);
-            if (ZugView.Settings != null)
-                ZugView.Settings.Phase = (int)Zugphase.Rüstphase;
+            TestSetup.SetzePhase(Zugphase.Rüstphase);
         }
 
         private static EquipCommand Lies(string befehl) {

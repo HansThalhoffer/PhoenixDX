@@ -59,15 +59,15 @@ namespace Tests {
             // und die Phase wechselt mit
             var vorher = ZugView.Phase;
             try {
-                SharedData.ZugdatenSettings!.Last().Phase = (int)Zugphase.Rüstphase;
+                TestSetup.SetzePhase(Zugphase.Rüstphase);
                 Assert.Contains("Rüstphase", ZugView.Titelzeile);
 
-                SharedData.ZugdatenSettings.Last().Phase = (int)Zugphase.Bewegungsphase;
+                TestSetup.SetzePhase(Zugphase.Bewegungsphase);
                 Assert.Contains("Bewegungsphase", ZugView.Titelzeile);
                 Assert.DoesNotContain("Rüstphase", ZugView.Titelzeile);
             }
             finally {
-                SharedData.ZugdatenSettings!.Last().Phase = (int)vorher;
+                TestSetup.SetzePhase(vorher);
             }
         }
 

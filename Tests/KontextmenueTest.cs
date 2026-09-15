@@ -21,8 +21,7 @@ namespace Tests {
             TestSetup.LoadPZE(false, false);
             TestSetup.LoadZugdaten(false, false);
             // bewegt wird im Spielzug, nicht in der Ruestphase
-            if (ZugView.Settings != null)
-                ZugView.Settings.Phase = (int)Zugphase.Bewegungsphase;
+            TestSetup.SetzePhase(Zugphase.Bewegungsphase);
         }
 
         /// <summary>Die Auswahl, die das Untermenue "Moegliche Zuege" fuellt</summary>

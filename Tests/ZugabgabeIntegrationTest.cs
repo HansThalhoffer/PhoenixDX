@@ -198,7 +198,7 @@ namespace Tests {
                 // die zweite Sperre ist die vorhandene Datei. Sie greift auch dann, wenn die
                 // Spielleitung den Zug wieder geöffnet hat, weil im Folgezug schon gearbeitet
                 // worden sein kann.
-                ZugView.Settings!.Phase = (int)Zugphase.Bewegungsphase;
+                TestSetup.SetzePhase(Zugphase.Bewegungsphase);
                 var dritterVersuch = Zugabgabe.Durchführen(kopie, TestSetup.ZugdatenPasswort, zug);
                 Assert.False(dritterVersuch.Erfolgreich);
                 Assert.Contains("gibt es bereits", dritterVersuch.Meldung);

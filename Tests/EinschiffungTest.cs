@@ -24,8 +24,7 @@ namespace Tests {
             TestSetup.LoadPZE(false, false);
             TestSetup.LoadZugdaten(false, false);
             BewegungsRules.ResetCache();
-            if (ZugView.Settings != null)
-                ZugView.Settings.Phase = (int)Zugphase.Bewegungsphase;
+            TestSetup.SetzePhase(Zugphase.Bewegungsphase);
         }
 
         /// <summary>

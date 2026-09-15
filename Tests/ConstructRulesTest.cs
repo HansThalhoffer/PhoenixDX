@@ -63,7 +63,7 @@ namespace Tests {
         private void IsRüstPhase_ShouldReturnError_WhenNotConstructionPhase() {
             Assert.NotNull(SharedData.ZugdatenSettings);
 
-            SharedData.ZugdatenSettings.Last().Phase = 01;
+            TestSetup.SetzePhase(Zugphase.Bewegungsphase);
             // Act
             var result = ConstructRules.IsRüstPhase();
 
@@ -71,7 +71,7 @@ namespace Tests {
             Assert.NotNull(result);
             Assert.True(result.HasErrors);
 
-            SharedData.ZugdatenSettings.Last().Phase = 0;
+            TestSetup.SetzePhase(Zugphase.Rüstphase);
             // Act
             result = ConstructRules.IsRüstPhase();
 

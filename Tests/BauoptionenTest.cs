@@ -20,7 +20,7 @@ namespace Tests {
 
         private static void SetzePhase(Zugphase phase) {
             if (SharedData.ZugdatenSettings != null)
-                SharedData.ZugdatenSettings.Last().Phase = (int)phase;
+                TestSetup.SetzePhase(phase);
         }
 
         private static KleinFeld EigeneGemark() {

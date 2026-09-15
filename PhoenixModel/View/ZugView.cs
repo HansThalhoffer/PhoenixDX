@@ -52,15 +52,50 @@ namespace PhoenixModel.View {
         public static Zugmonat AktuellerZug => new(ProgramView.SelectedMonth);
 
         /// <summary>
-        /// Die Phase, in der sich der Zug befindet
+        /// Die Phase, in der diese Sitzung steckt, solange die Zugdaten keine brauchbare führen.
+        /// </summary>
+        private static Zugphase? _phaseDieserSitzung = null;
+
+        /// <summary>
+        /// Gehört die settings-Zeile zu dem Zug, der gespielt wird?
+        ///
+        /// Nur dann sagt ihre Phase etwas über diesen Zug aus. Im Datenbestand ist das nicht so:
+        /// die Tabelle läuft dem Zugverzeichnis um sieben Monate voraus - in Verzeichnis 168 steht
+        /// Monat 175, in 169 steht 176, in 170 steht 177 -, während die Schatzkammer mit dem
+        /// Verzeichnis übereinstimmt. Die Zeile gehört also zu einem anderen Monat.
+        /// </summary>
+        public static bool PhaseStehtInDenZugdaten
+            => Settings != null && Settings.Monat == ProgramView.SelectedMonth;
+
+        /// <summary>
+        /// Die Phase, in der sich der Zug befindet.
+        ///
+        /// Der Zug beginnt mit dem Rüsten (Regelwerk 3.3); die Bewegungsphase folgt, wenn der
+        /// Spieler die Rüstphase beendet. Steht in den Zugdaten eine Phase, die zu diesem Zug
+        /// gehört, gilt sie. Sonst führt die Anwendung die Phase selbst und fängt beim Rüsten an.
+        ///
+        /// Das ist kein Schönheitsfehler, sondern hat die Anwendung lahmgelegt: in jedem Zug des
+        /// Bestandes steht Phase = 1, also Bewegungsphase, in einer Zeile, die zu einem anderen
+        /// Monat gehört. Damit war die Rüstphase nie erreichbar und es liess sich nichts bauen,
+        /// nichts rüsten - ohne dass irgendwo stand, warum.
+        ///
+        /// Ein abgeschlossener Zug bleibt dagegen abgeschlossen, auch wenn die Zeile sonst nicht
+        /// passt: diese Angabe setzt niemand versehentlich, und zurück geht es ohnehin nicht.
         /// </summary>
         public static Zugphase Phase {
             get {
                 var settings = Settings;
                 if (settings == null)
                     return Zugphase.Rüstphase;
+
                 // alles jenseits der bekannten Werte gilt als abgeschlossener Zug
-                return settings.Phase >= (int)Zugphase.Abgeschlossen ? Zugphase.Abgeschlossen : (Zugphase)settings.Phase;
+                if (settings.Phase >= (int)Zugphase.Abgeschlossen)
+                    return Zugphase.Abgeschlossen;
+
+                if (PhaseStehtInDenZugdaten == false)
+                    return _phaseDieserSitzung ?? Zugphase.Rüstphase;
+
+                return (Zugphase)settings.Phase;
             }
         }
 
@@ -162,6 +197,9 @@ namespace PhoenixModel.View {
                     $"Der Zug ist in der {PhasenBeschreibung}. Nur die Spielleitung kann eine bereits abgeschlossene Phase wieder öffnen.");
 
             settings.Phase = (int)phase;
+            // Auch merken: gehört die settings-Zeile zu einem anderen Monat, wird ihr Wert beim
+            // Lesen nicht beachtet, und der Phasenwechsel ginge sonst ins Leere.
+            _phaseDieserSitzung = phase;
             SharedData.StoreQueue.Enqueue(settings);
             ProgramView.LogInfo($"Der Zug ist jetzt in der {PhasenBeschreibung}",
                 $"Die Phase wurde von {alt} auf {phase} umgestellt.");
@@ -198,6 +236,8 @@ namespace PhoenixModel.View {
         /// <param name="monatAusVerzeichnis">der Zug, aus dessen Verzeichnis geladen wurde, oder 0</param>
         /// <returns>true, wenn alle Quellen übereinstimmen</returns>
         public static bool BestimmeAktuellenZug(int monatAusVerzeichnis = 0) {
+            // Ein anderer Zug wird geladen - die Phase der letzten Sitzung gilt nicht mehr
+            _phaseDieserSitzung = null;
             var ausDatenbank = MonatLautDatenbank;
             int ausSchatzkammer = LetzterSchatzkammerMonat;
 
@@ -223,7 +263,9 @@ namespace PhoenixModel.View {
                 ProgramView.LogWarning("Der Monat in der settings-Tabelle passt nicht zum Zugmonat",
                     $"Es wird mit Zug {gewählt} gerechnet, die Tabelle settings der Zugdatenbank gibt aber {ausDatenbank} an"
                     + (ausSchatzkammer > 0 ? $", während die Schatzkammer bis Monat {ausSchatzkammer} reicht" : string.Empty)
-                    + ". Die settings-Tabelle sollte richtiggestellt werden.");
+                    + ". Die settings-Tabelle sollte richtiggestellt werden. Solange sie nicht "
+                    + "stimmt, führt die Anwendung die Zugphase selbst und beginnt mit der Rüstphase; "
+                    + "die Phase aus der Tabelle bleibt unbeachtet.");
             }
 
             return stimmig;

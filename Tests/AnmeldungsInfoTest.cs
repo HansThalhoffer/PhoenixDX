@@ -52,14 +52,14 @@ namespace Tests {
             Assert.NotNull(ZugView.Settings);
             int phaseVorher = ZugView.Settings!.Phase;
             try {
-                ZugView.Settings.Phase = (int)Zugphase.Rüstphase;
+                TestSetup.SetzePhase(Zugphase.Rüstphase);
                 Assert.Equal("Rüstphase", Lies(AnmeldungsInfo.AlsXml()).Element("Phase")?.Value);
 
-                ZugView.Settings.Phase = (int)Zugphase.Bewegungsphase;
+                TestSetup.SetzePhase(Zugphase.Bewegungsphase);
                 Assert.Equal("Bewegungsphase", Lies(AnmeldungsInfo.AlsXml()).Element("Phase")?.Value);
             }
             finally {
-                ZugView.Settings.Phase = phaseVorher;
+                TestSetup.SetzePhase((Zugphase)phaseVorher);
             }
         }
 

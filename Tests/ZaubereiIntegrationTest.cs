@@ -21,8 +21,7 @@ namespace Tests {
             TestSetup.LoadPZE(false, false);
             TestSetup.LoadZugdaten(false, false);
             // gezaubert wird im Spielzug, nicht in der Ruestphase
-            if (ZugView.Settings != null)
-                ZugView.Settings.Phase = (int)Zugphase.Bewegungsphase;
+            TestSetup.SetzePhase(Zugphase.Bewegungsphase);
         }
 
         /// <summary>Alle Zauberer des eigenen Reiches, die auf der Karte stehen</summary>
@@ -376,7 +375,7 @@ namespace Tests {
             Assert.True(zauberer != null, "Kein allein stehender Zauberer mit genug Zauberkraft in den Zugdaten");
             var standort = ZaubereiRules.GetStandort(zauberer!);
 
-            ZugView.Settings!.Phase = (int)Zugphase.Rüstphase;
+            TestSetup.SetzePhase(Zugphase.Rüstphase);
             try {
                 var geprüft = ZaubereiRules.PrüfeWand(zauberer, Zauberspruch.WandErrichten, standort,
                     RichtungMitNachbar(standort), out _);
@@ -384,7 +383,7 @@ namespace Tests {
                 Assert.Contains("wird nicht gezaubert", geprüft.Title);
             }
             finally {
-                ZugView.Settings.Phase = (int)Zugphase.Bewegungsphase;
+                TestSetup.SetzePhase(Zugphase.Bewegungsphase);
             }
         }
 

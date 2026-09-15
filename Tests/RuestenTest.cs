@@ -19,8 +19,7 @@ namespace Tests {
             TestSetup.LoadKarte();
             TestSetup.LoadPZE(false, false);
             TestSetup.LoadZugdaten(false, false);
-            if (ZugView.Settings != null)
-                ZugView.Settings.Phase = (int)Zugphase.Rüstphase;
+            TestSetup.SetzePhase(Zugphase.Rüstphase);
         }
 
         /// <summary>Ein eigener Ruestort, in dem sich ruesten laesst</summary>
@@ -160,7 +159,7 @@ namespace Tests {
 
             int phaseVorher = ZugView.Settings!.Phase;
             try {
-                ZugView.Settings.Phase = (int)Zugphase.Bewegungsphase;
+                TestSetup.SetzePhase(Zugphase.Bewegungsphase);
 
                 var ausSchatz = RuestRules.Prüfe(gemark, kleiner, ausBesonderenEinnahmen: false);
                 Assert.True(ausSchatz.HasErrors, "In der Bewegungsphase darf der Reichsschatz nicht verrüstet werden");
@@ -171,7 +170,7 @@ namespace Tests {
                 Assert.DoesNotContain("wird nicht gerüstet", ausEinnahmen.Title);
             }
             finally {
-                ZugView.Settings.Phase = phaseVorher;
+                TestSetup.SetzePhase((Zugphase)phaseVorher);
             }
         }
 

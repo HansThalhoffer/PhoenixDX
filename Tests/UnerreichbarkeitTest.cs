@@ -21,8 +21,7 @@ namespace Tests {
             TestSetup.LoadPZE(false, false);
             TestSetup.LoadZugdaten(false, false);
             BewegungsRules.ResetCache();
-            if (ZugView.Settings != null)
-                ZugView.Settings.Phase = (int)Zugphase.Bewegungsphase;
+            TestSetup.SetzePhase(Zugphase.Bewegungsphase);
         }
 
         /// <summary>Eine eigene Figur, die sich tatsaechlich bewegen kann</summary>
@@ -143,13 +142,13 @@ namespace Tests {
 
             int phaseVorher = ZugView.Settings!.Phase;
             try {
-                ZugView.Settings.Phase = (int)Zugphase.Rüstphase;
+                TestSetup.SetzePhase(Zugphase.Rüstphase);
                 var gründe = BewegungsRules.ErkläreUnerreichbarkeit(figur, ziel);
                 Assert.Single(gründe);
                 Assert.Contains("wird nicht bewegt", gründe[0]);
             }
             finally {
-                ZugView.Settings.Phase = phaseVorher;
+                TestSetup.SetzePhase((Zugphase)phaseVorher);
             }
         }
 
