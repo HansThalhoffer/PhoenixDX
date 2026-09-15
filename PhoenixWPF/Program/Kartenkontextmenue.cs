@@ -160,10 +160,10 @@ namespace PhoenixWPF.Program {
                 var erreichbar = BewegungsRules.GetErreichbareFelder(figur);
                 if (erreichbar.Count == 0) {
                     Bewegungshinweis.Beende();
-                    SpielWPF.LogInfo($"{figur.Bezeichner} kann sich nicht bewegen",
-                        figur.bp <= 0
-                            ? "Die Figur hat keine Bewegungspunkte mehr."
-                            : "Von diesem Feld aus ist mit den verbleibenden Bewegungspunkten kein Nachbarfeld erreichbar.");
+                    // Den Grund kennen die Regeln - vorher stand hier geraten, es lae­ge an den
+                    // Bewegungspunkten, und der haeufigste Grund ist die Phase.
+                    var grund = BewegungsRules.ErkläreWarumNichtsErreichbar(figur);
+                    SpielWPF.LogInfo(grund.Title, grund.Message);
                     Main.Map?.LöscheHervorhebung();
                     return;
                 }

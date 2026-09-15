@@ -152,6 +152,40 @@ namespace Tests {
             }
         }
 
+        /// <summary>
+        /// Wenn gar kein Feld erreichbar ist, nennt die Regel den Grund - und in der Ruestphase ist
+        /// das die Phase und nicht die Bewegungspunkte.
+        ///
+        /// Das Kontextmenue hat frueher geraten, es laege an den Punkten. Seit die Anwendung jeden
+        /// Zug in der Ruestphase beginnt, ist das fast immer falsch.
+        /// </summary>
+        [StaFact]
+        public void OhneErreichbaresFeldNenntDieRegelDenGrund() {
+            LadeAlles();
+            var figur = FindeBeweglicheFigur();
+
+            int phaseVorher = ZugView.Settings!.Phase;
+            try {
+                TestSetup.SetzePhase(Zugphase.Rüstphase);
+                Assert.Empty(BewegungsRules.GetErreichbareFelder(figur));
+
+                var grund = BewegungsRules.ErkläreWarumNichtsErreichbar(figur);
+                Assert.True(grund.HasErrors);
+                Assert.Contains("Rüstphase", grund.Title);
+                Assert.Contains("Zug", grund.Message);
+                // und nicht das, was frueher geraten wurde
+                Assert.DoesNotContain("Bewegungspunkte mehr", grund.Title);
+            }
+            finally {
+                TestSetup.SetzePhase((Zugphase)phaseVorher);
+            }
+
+            // in der Bewegungsphase liegt es an der Figur
+            var erschoepft = BewegungsRules.ErkläreWarumNichtsErreichbar(null);
+            Assert.True(erschoepft.HasErrors);
+            Assert.Contains("keine Spielfigur", erschoepft.Title);
+        }
+
         /// <summary>Ohne Figur und ohne Feld gibt es trotzdem eine Antwort, keine Ausnahme.</summary>
         [Fact]
         public void OhneFigurOderFeldGibtEsEineAntwort() {

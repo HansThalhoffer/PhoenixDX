@@ -716,6 +716,40 @@ namespace PhoenixModel.Rules {
         ///
         /// Eine leere Liste heisst, dass das Feld erreichbar ist.
         /// </summary>
+        /// <summary>
+        /// Warum eine Figur überhaupt kein Feld erreicht.
+        ///
+        /// <see cref="ErkläreUnerreichbarkeit"/> beantwortet die Frage zu einem bestimmten Zielfeld;
+        /// hier geht es um den Fall, dass die Liste der erreichbaren Felder leer bleibt. Dann steht
+        /// der Grund an der Figur oder am Zug und nicht an einem Ziel.
+        ///
+        /// Der häufigste Grund ist die Phase: gerüstet wird zuerst, bewegt danach (Regelwerk 3).
+        /// Wer das nicht weiss, sucht den Fehler bei den Bewegungspunkten.
+        /// </summary>
+        /// <returns>Titel und Erklärung; HasErrors ist gesetzt, solange nichts geht</returns>
+        public static Result ErkläreWarumNichtsErreichbar(Spielfigur? figur) {
+            if (figur == null)
+                return Result.Fail("Es ist keine Spielfigur ausgewählt",
+                    "Bewegt wird eine Figur; wähle sie auf der Karte oder in der Figurenliste aus.");
+
+            if (ZugView.KannBewegen == false)
+                return Result.Fail($"In der {ZugView.PhasenBeschreibung} wird nicht bewegt",
+                    "Gerüstet wird zuerst, bewegt danach (Regelwerk Kapitel 3). Über das Menü "
+                    + "'Zug' lässt sich die Rüstphase beenden; danach sind die möglichen Züge zu sehen.");
+
+            if (figur.IsOnShip())
+                return Result.Fail($"{figur.Bezeichner} ist eingeschifft",
+                    "Eine eingeschiffte Figur bewegt sich mit ihrer Flotte und nicht von sich aus.");
+
+            if (figur.bp <= 0)
+                return Result.Fail($"{figur.Bezeichner} hat keine Bewegungspunkte mehr",
+                    $"Der Höchstwert liegt bei {figur.bp_max}; verbraucht ist alles davon.");
+
+            return Result.Fail($"{figur.Bezeichner} kommt von hier aus nicht weiter",
+                "Mit den verbleibenden Bewegungspunkten ist kein Nachbarfeld erreichbar. Der "
+                + "Mauszeiger über einem Feld nennt den Grund für dieses Feld.");
+        }
+
         public static List<string> ErkläreUnerreichbarkeit(Spielfigur? figur, KleinFeld? ziel) {
             List<string> gründe = [];
             if (figur == null) {
