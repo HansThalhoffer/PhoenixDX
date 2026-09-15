@@ -84,6 +84,45 @@ namespace PhoenixModel.View {
         };
 
         /// <summary>
+        /// Der Name der Anwendung, wie er im Fenstertitel steht
+        /// </summary>
+        public const string Anwendungsname = "Phoenix";
+
+        /// <summary>
+        /// Was der Fenstertitel zeigt: für welches Reich gespielt wird, welcher Zug läuft, in
+        /// welchem Monat er liegt, was für ein Monat das ist und in welcher Phase der Zug steckt.
+        ///
+        /// Etwa: <c>Phoenix - Theostelos - Zug 612, Larn (Sommer, Einnahmemonat) - Bewegungsphase</c>
+        ///
+        /// Zwei Dinge stecken in "was für ein Monat": der Rüst- oder Einnahmemonat aus dem
+        /// Jahreslauf (Regelwerk 3.2 und 3.3, siehe <see cref="Zugmonat"/>) und die Phase innerhalb
+        /// des eigenen Zuges. Das eine sagt, was dieser Monat im Spieljahr bedeutet, das andere,
+        /// was der Spieler gerade tun darf.
+        ///
+        /// Was noch nicht geladen ist, fehlt auch im Titel - dann steht dort, dass nichts geladen
+        /// ist. So sieht man auf einen Blick, ob die Anwendung überhaupt Daten hat.
+        /// </summary>
+        public static string Titelzeile {
+            get {
+                List<string> teile = [Anwendungsname];
+
+                string? reich = ProgramView.SelectedNation?.Reich;
+                if (string.IsNullOrWhiteSpace(reich) == false)
+                    teile.Add(reich);
+
+                var zug = AktuellerZug;
+                if (zug.IstGültig) {
+                    teile.Add($"Zug {zug.Zug}, {zug.Beschreibung}");
+                    teile.Add(PhasenBeschreibung);
+                }
+
+                if (teile.Count == 1)
+                    teile.Add("keine Zugdaten geladen");
+                return string.Join(" - ", teile);
+            }
+        }
+
+        /// <summary>
         /// Schaltet auf die nächste Phase weiter.
         ///
         /// Aus der Rüstphase geht es in die Bewegungsphase - danach kann nicht mehr gerüstet werden.

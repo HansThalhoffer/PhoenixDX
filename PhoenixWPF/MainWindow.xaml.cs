@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using PhoenixModel.EventsAndArgs;
 using PhoenixModel.View;
 using PhoenixWPF.Database;
 using PhoenixWPF.Database.Generatoren;
@@ -15,16 +16,43 @@ namespace PhoenixWPF
             InitializeComponent();
             this.Loaded += OnLoaded;
             this.Closing += OnClosing; ;
+            ProgramView.OnViewEvent += ViewModel_OnViewEvent;
         }
 
         private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e) {
+            ProgramView.OnViewEvent -= ViewModel_OnViewEvent;
             Main.Instance.StopInstance();
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             Main.Instance.StartInstance();
+            AktualisiereTitel();
             this.Loaded -= OnLoaded;
+        }
+
+        /// <summary>
+        /// Der Fenstertitel zeigt den Spielstand: Reich, Zug, Monat und Phase. Er wird
+        /// nachgezogen, wenn Daten geladen wurden oder sich im Grossen etwas geaendert hat -
+        /// etwa beim Phasenwechsel.
+        /// </summary>
+        private void ViewModel_OnViewEvent(object? sender, ViewEventArgs e) {
+            if (e.EventType == ViewEventArgs.ViewEventType.EverythingLoaded
+             || e.EventType == ViewEventArgs.ViewEventType.UpdateEverything)
+                AktualisiereTitel();
+        }
+
+        /// <summary>
+        /// Setzt den Fenstertitel neu.
+        ///
+        /// Die Ereignisse kommen aus dem Modell und damit oft von einem Ladethread; der Titel
+        /// gehoert aber dem Fenster. Deshalb der Umweg ueber den Dispatcher.
+        /// </summary>
+        private void AktualisiereTitel() {
+            if (Dispatcher.CheckAccess())
+                Title = ZugView.Titelzeile;
+            else
+                Dispatcher.BeginInvoke(new Action(AktualisiereTitel));
         }
 
         private void MenuItem_Checked(object sender, RoutedEventArgs e)

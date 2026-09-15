@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:PhoenixWPF"
         Icon="Resources/phoenix-circle.ico"
-        Title="Phoenix WPF App" Height="1080" Width="1920">
+        Title="Phoenix - keine Zugdaten geladen" Height="1080" Width="1920">
     <Window.Resources>
         <Style TargetType="{x:Type MenuItem}">
             <Setter Property="Margin" Value="10,2,10,2" />
