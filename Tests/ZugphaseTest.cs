@@ -61,7 +61,7 @@ namespace Tests {
         public void DerPhasenwechselWirktAuchOhnePassendeZeile() {
             LadeAlles();
             SetzeZurueck();
-            int phaseVorher = ZugView.Settings!.Phase;
+            int monatVorher = ZugView.Settings!.Monat, phaseVorher = ZugView.Settings!.Phase;
             try {
                 Assert.Equal(Zugphase.Rüstphase, ZugView.Phase);
 
@@ -74,13 +74,73 @@ namespace Tests {
 
                 // ein zweiter Wechsel geht nicht mehr
                 Assert.True(ZugView.NächstePhase().HasErrors);
-
-                // ein neu geladener Zug faengt wieder beim Ruesten an - die Phase der letzten
-                // Sitzung darf nicht in den naechsten Zug hinueberlecken
+            }
+            finally {
+                ZugView.Settings!.Monat = monatVorher;
+                ZugView.Settings!.Phase = phaseVorher;
                 SetzeZurueck();
+            }
+        }
+
+        /// <summary>
+        /// Die beendete Ruestphase uebersteht das Schliessen der Anwendung.
+        ///
+        /// Vorher lag sie nur in einem statischen Feld dieser Sitzung; beim naechsten Start stand
+        /// der Zug wieder in der Ruestphase, obwohl es laut Regelwerk kein Zurueck gibt. Gemeldet
+        /// wurde es als "Zuege 168, 169, 170: immer nur Ruestphase" - und damit war keine Figur zu
+        /// bewegen.
+        ///
+        /// Das Neuladen wird hier durch BestimmeAktuellenZug nachgestellt: es setzt die
+        /// Sitzungsphase zurueck, genau wie ein Neustart.
+        /// </summary>
+        [StaFact]
+        public void DieBeendeteRuestphaseUeberlebtDasNeuladen() {
+            LadeAlles();
+            SetzeZurueck();
+            int monatVorher = ZugView.Settings!.Monat, phaseVorher = ZugView.Settings!.Phase;
+            try {
+                Assert.Equal(Zugphase.Rüstphase, ZugView.Phase);
+                Assert.False(ZugView.NächstePhase().HasErrors);
+
+                // die Zeile gehoert jetzt zu diesem Zug - das ist der Ort, an dem die Phase bleibt
+                Assert.True(ZugView.PhaseStehtInDenZugdaten);
+                Assert.Equal(ProgramView.SelectedMonth, ZugView.Settings!.Monat);
+
+                SetzeZurueck();
+                Assert.Equal(Zugphase.Bewegungsphase, ZugView.Phase);
+                Assert.True(ZugView.KannBewegen);
+            }
+            finally {
+                ZugView.Settings!.Monat = monatVorher;
+                ZugView.Settings!.Phase = phaseVorher;
+                SetzeZurueck();
+            }
+        }
+
+        /// <summary>
+        /// In einen anderen Zug leckt sie dagegen nicht hinueber - dort faengt es wieder beim
+        /// Ruesten an.
+        /// </summary>
+        [StaFact]
+        public void InEinenAnderenZugLecktDiePhaseNicht() {
+            LadeAlles();
+            SetzeZurueck();
+            int monatVorher = ZugView.Settings!.Monat, phaseVorher = ZugView.Settings!.Phase;
+            int zugVorher = ProgramView.SelectedMonth;
+            try {
+                Assert.False(ZugView.NächstePhase().HasErrors);
+                Assert.Equal(Zugphase.Bewegungsphase, ZugView.Phase);
+
+                // der naechste Zug wird geoeffnet
+                ProgramView.SelectedMonth = zugVorher + 1;
+                SetzeZurueck();
+
+                Assert.False(ZugView.PhaseStehtInDenZugdaten);
                 Assert.Equal(Zugphase.Rüstphase, ZugView.Phase);
             }
             finally {
+                ProgramView.SelectedMonth = zugVorher;
+                ZugView.Settings!.Monat = monatVorher;
                 ZugView.Settings!.Phase = phaseVorher;
                 SetzeZurueck();
             }

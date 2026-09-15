@@ -63,6 +63,9 @@ namespace PhoenixModel.View {
         /// die Tabelle läuft dem Zugverzeichnis um sieben Monate voraus - in Verzeichnis 168 steht
         /// Monat 175, in 169 steht 176, in 170 steht 177 -, während die Schatzkammer mit dem
         /// Verzeichnis übereinstimmt. Die Zeile gehört also zu einem anderen Monat.
+        ///
+        /// Das bleibt so, bis der Spieler die Phase wechselt: <see cref="SetzePhase"/> stellt den
+        /// Monat dabei richtig, und von da an gehört die Zeile zu diesem Zug.
         /// </summary>
         public static bool PhaseStehtInDenZugdaten
             => Settings != null && Settings.Monat == ProgramView.SelectedMonth;
@@ -81,6 +84,10 @@ namespace PhoenixModel.View {
         ///
         /// Ein abgeschlossener Zug bleibt dagegen abgeschlossen, auch wenn die Zeile sonst nicht
         /// passt: diese Angabe setzt niemand versehentlich, und zurück geht es ohnehin nicht.
+        ///
+        /// Sobald der Spieler die Phase selbst wechselt, stellt <see cref="SetzePhase"/> den Monat
+        /// der Zeile richtig. Von da an gehört sie zu diesem Zug, und die Phase übersteht das
+        /// Schliessen der Anwendung.
         /// </summary>
         public static Zugphase Phase {
             get {
@@ -197,8 +204,30 @@ namespace PhoenixModel.View {
                     $"Der Zug ist in der {PhasenBeschreibung}. Nur die Spielleitung kann eine bereits abgeschlossene Phase wieder öffnen.");
 
             settings.Phase = (int)phase;
-            // Auch merken: gehört die settings-Zeile zu einem anderen Monat, wird ihr Wert beim
-            // Lesen nicht beachtet, und der Phasenwechsel ginge sonst ins Leere.
+
+            // Die Zeile bekommt den Monat, zu dem sie gehört.
+            //
+            // Ohne das hätte die Phase keinen Ort, an dem sie überlebt: die Zeile nennt einen
+            // anderen Monat, ihr Wert wird beim Lesen nicht beachtet, und beim nächsten Start
+            // stünde der Zug wieder in der Rüstphase - obwohl sie beendet wurde und es laut
+            // Regelwerk kein Zurück gibt. Genau das ist aufgefallen: Zug 168, 169 und 170 zeigten
+            // immer nur die Rüstphase, und damit war keine Figur zu bewegen.
+            //
+            // Je Zugdatenbank gibt es genau eine settings-Zeile, und die Datenbank gehört zu genau
+            // einem Zug. Der Monat, den sie nennt, ist also schlicht falsch, wenn er von dem des
+            // Verzeichnisses abweicht - die Schatzkammer derselben Datei hält es mit dem
+            // Verzeichnis. Richtiggestellt wird er nur hier, wo der Benutzer ohnehin eine
+            // Entscheidung über den Zug trifft, und er wird dabei genannt.
+            if (PhaseStehtInDenZugdaten == false) {
+                int falscherMonat = settings.Monat;
+                settings.Monat = ProgramView.SelectedMonth;
+                ProgramView.LogInfo($"Der Monat der settings-Tabelle wurde auf {settings.Monat} richtiggestellt",
+                    $"Dort stand {falscherMonat}, während Zugverzeichnis und Schatzkammer {settings.Monat} nennen. "
+                    + "Ohne die Richtigstellung wäre die Phase beim nächsten Start wieder verloren.");
+            }
+
+            // Auch für diese Sitzung merken - falls das Schreiben scheitert, gilt wenigstens hier
+            // die Phase, die der Benutzer gesetzt hat.
             _phaseDieserSitzung = phase;
             SharedData.StoreQueue.Enqueue(settings);
             ProgramView.LogInfo($"Der Zug ist jetzt in der {PhasenBeschreibung}",

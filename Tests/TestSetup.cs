@@ -203,10 +203,18 @@ namespace Tests {
         ///
         /// Am gespeicherten Wert wird dabei nichts vorbeigeschrieben: der Weg geht ueber
         /// <see cref="ZugView.SetzePhase"/> wie in der Anwendung auch.
+        ///
+        /// Der Monat der settings-Zeile wird hinterher wieder auf den Wert des Bestandes gesetzt.
+        /// SetzePhase stellt ihn richtig, damit die Phase einen Neustart uebersteht - fuer die
+        /// Tests soll der geladene Zustand aber weiter so aussehen wie die echten Daten, sonst
+        /// pruefte kein Test mehr den Fall "die Zeile gehoert zu einem anderen Monat".
         /// </summary>
         public static void SetzePhase(Zugphase phase) {
-            if (ZugView.Settings != null && ZugView.Phase != phase)
-                ZugView.SetzePhase(phase, erzwingen: true);
+            if (ZugView.Settings == null || ZugView.Phase == phase)
+                return;
+            int monat = ZugView.Settings.Monat;
+            ZugView.SetzePhase(phase, erzwingen: true);
+            ZugView.Settings.Monat = monat;
         }
 
         /// <summary>

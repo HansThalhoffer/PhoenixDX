@@ -287,4 +287,16 @@ die Abrechnung bestimmte Aufträge bewusst nicht mit, gehört diese Regel in
   Die Anwendung rechnet deshalb mit dem Verzeichnis und der Schatzkammer, warnt über den
   Widerspruch und führt die Zugphase selbst, beginnend mit der Rüstphase
   (`ZugView.PhaseStehtInDenZugdaten`). Ein gespeichertes *abgeschlossen* gilt weiterhin, das setzt
-  niemand versehentlich. Wird die Tabelle richtiggestellt, zählt ihre Phase wieder von selbst.
+  niemand versehentlich.
+
+  **Die Anwendung stellt den Monat inzwischen selbst richtig**, und zwar genau dann, wenn der
+  Spieler die Phase wechselt (`ZugView.SetzePhase`). Sie muss es: sonst hätte die beendete
+  Rüstphase keinen Ort, an dem sie überlebt — beim nächsten Start stünde der Zug wieder in der
+  Rüstphase, obwohl es laut Regelwerk kein Zurück gibt. Aufgefallen ist es als "Züge 168, 169, 170:
+  immer nur Rüstphase", und damit liess sich keine Figur bewegen.
+
+  Je Zugdatenbank gibt es genau eine `settings`-Zeile, und die Datei gehört zu genau einem Zug; der
+  Monat, den sie nennt, ist also schlicht falsch, wenn er vom Verzeichnis abweicht. Geschrieben
+  wird der berichtigte Wert mit einer Meldung, die beide Zahlen nennt. **Falls die Spielleitung die
+  177 in Verzeichnis 170 doch braucht, muss diese Richtigstellung wieder heraus** — dann wird ein
+  anderer Ort für die Phase gebraucht.
