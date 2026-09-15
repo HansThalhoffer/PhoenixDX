@@ -142,8 +142,10 @@ namespace PhoenixWPF.Program {
         private static MenuItem BaueMöglicheZüge(List<Spielfigur> figuren) {
             var züge = new MenuItem { Header = "Mögliche Züge" };
             foreach (var figur in figuren) {
+                // Der Höchstwert steht mit dabei: "1 BP" sieht aus wie ein Programmfehler, sobald
+                // die Karte daraufhin nichts hervorhebt. "1 von 21 BP" erklärt sich selbst.
                 var eintrag = new MenuItem {
-                    Header = $"{figur.Typ} {figur.Nummer} - {figur.Stärke}, {figur.bp} BP",
+                    Header = $"{figur.Typ} {figur.Nummer} - {figur.Stärke}, {figur.bp} von {figur.bp_max} BP",
                 };
                 var gemerkt = figur;
                 eintrag.Click += (s, e) => ZeigeMöglicheZüge(gemerkt);

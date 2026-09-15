@@ -186,6 +186,70 @@ namespace Tests {
             Assert.Contains("keine Spielfigur", erschoepft.Title);
         }
 
+        /// <summary>
+        /// Eine Einheit, die sich in diesem Zug schon bewegt hat, erfaehrt genau das - mit den
+        /// beiden Zahlen, um die es geht.
+        ///
+        /// Gemeldet wurde ein Reiter mit 1 von 21 Bewegungspunkten, der keine moeglichen Zuege
+        /// mehr anzeigte. Die Anwendung hatte recht und sah trotzdem kaputt aus: dass jeder
+        /// Nachbarschritt 4 Punkte kostet und die Einheit sechs Felder hinter sich hat, stand
+        /// nirgends.
+        /// </summary>
+        [StaFact]
+        public void EineErschoepfteEinheitNenntDieZahlen() {
+            LadeAlles();
+            var figur = FindeBeweglicheFigur();
+            var spur = new Bewegungsspur(figur);
+
+            int bpVorher = figur.bp;
+            int schrittVorher = figur.schritt;
+            int spurVorher = spur.Count;
+            try {
+                // ein Restpunkt - damit ist kein Schritt mehr zu bezahlen, aber es ist auch nicht
+                // der eigene Fall "gar keine Punkte mehr"
+                figur.bp = 1;
+                if (spurVorher == 0)
+                    spur.Add(KleinfeldView.GetKleinfeld(figur)!);
+                Assert.Empty(BewegungsRules.GetErreichbareFelder(figur));
+
+                var grund = BewegungsRules.ErkläreWarumNichtsErreichbar(figur);
+                Assert.True(grund.HasErrors);
+                // die Ueberschrift nennt den Stand
+                Assert.Contains($"1 von {figur.bp_max}", grund.Title);
+                // und der Text, woran es scheitert und was schon gelaufen ist
+                Assert.Contains("kostet", grund.Message);
+                Assert.Contains("In diesem Zug", grund.Message);
+                // nicht die Behauptung, es gaebe ueberhaupt keine Punkte mehr
+                Assert.DoesNotContain("keine Bewegungspunkte", grund.Title);
+            }
+            finally {
+                figur.bp = bpVorher;
+                while (new Bewegungsspur(figur).Count > spurVorher)
+                    new Bewegungsspur(figur).RemoveLast();
+                figur.schritt = schrittVorher;
+            }
+        }
+
+        /// <summary>
+        /// Ganz ohne Punkte bleibt es bei der eigenen, kuerzeren Auskunft.
+        /// </summary>
+        [StaFact]
+        public void OhneJedenPunktBleibtEsBeiDerKurzenAuskunft() {
+            LadeAlles();
+            var figur = FindeBeweglicheFigur();
+
+            int bpVorher = figur.bp;
+            try {
+                figur.bp = 0;
+                var grund = BewegungsRules.ErkläreWarumNichtsErreichbar(figur);
+                Assert.Contains("keine Bewegungspunkte mehr", grund.Title);
+                Assert.Contains($"{figur.bp_max} Bewegungspunkten", grund.Message);
+            }
+            finally {
+                figur.bp = bpVorher;
+            }
+        }
+
         /// <summary>Ohne Figur und ohne Feld gibt es trotzdem eine Antwort, keine Ausnahme.</summary>
         [Fact]
         public void OhneFigurOderFeldGibtEsEineAntwort() {

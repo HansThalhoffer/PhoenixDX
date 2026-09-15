@@ -741,13 +741,71 @@ namespace PhoenixModel.Rules {
                 return Result.Fail($"{figur.Bezeichner} ist eingeschifft",
                     "Eine eingeschiffte Figur bewegt sich mit ihrer Flotte und nicht von sich aus.");
 
+            // Was in diesem Zug schon gelaufen ist, steht in der Bewegungsspur. Ohne diesen Satz
+            // sieht eine erschöpfte Einheit aus wie eine kaputte Anwendung: die Karte zeigt nichts,
+            // und woher der Punktestand kommt, steht nirgends.
+            var spur = new Bewegungsspur(figur);
+            string bisher = spur.Count > 0
+                ? $"In diesem Zug ist {figur.Bezeichner} bereits {spur.Count} {(spur.Count == 1 ? "Feld" : "Felder")} weit gezogen. "
+                : string.Empty;
+
             if (figur.bp <= 0)
                 return Result.Fail($"{figur.Bezeichner} hat keine Bewegungspunkte mehr",
-                    $"Der Höchstwert liegt bei {figur.bp_max}; verbraucht ist alles davon.");
+                    bisher + $"Von {figur.bp_max} Bewegungspunkten ist keiner übrig; im nächsten Zug "
+                    + "steht wieder der volle Vorrat zur Verfügung.");
+
+            int? billigster = BilligsterNachbarschritt(figur);
+            if (billigster == null)
+                return Result.Fail($"{figur.Bezeichner} kommt von hier aus nicht weiter",
+                    bisher + $"Kein Nachbarfeld von {figur.CreateBezeichner()} ist für {figur.Typ} begehbar.");
+
+            // Restpunkte reichen für keinen einzigen Schritt. Das ist der häufigste Fall überhaupt
+            // und sieht ohne die beiden Zahlen wie ein Fehler aus.
+            if (billigster > figur.bp)
+                return Result.Fail($"{figur.Bezeichner} hat nur noch {figur.bp} von {figur.bp_max} Bewegungspunkten",
+                    bisher + $"Der billigste Schritt von {figur.CreateBezeichner()} aus kostet {billigster} BP. "
+                    + "Nicht verbrauchte Bewegungspunkte verfallen am Zugende (Regelwerk Kapitel 4); "
+                    + "im nächsten Zug ist die Einheit wieder voll beweglich.");
+
+            if (figur.hoehenstufen >= MaxHöhenstufenPunkte)
+                return Result.Fail($"{figur.Bezeichner} hat die Höhenstufen dieses Zuges verbraucht",
+                    bisher + $"Jede Einheit hat {MaxHöhenstufenPunkte} Höhenstufenpunkte je Zug (Regelwerk "
+                    + "Kapitel 4); sie sind aufgebraucht. Damit ist nur noch ein Schritt auf gleicher "
+                    + "Höhe möglich, und ein solcher liegt hier nicht an.");
 
             return Result.Fail($"{figur.Bezeichner} kommt von hier aus nicht weiter",
-                "Mit den verbleibenden Bewegungspunkten ist kein Nachbarfeld erreichbar. Der "
-                + "Mauszeiger über einem Feld nennt den Grund für dieses Feld.");
+                bisher + $"Mit {figur.bp} von {figur.bp_max} Bewegungspunkten ist kein Nachbarfeld "
+                + "erreichbar. Der Mauszeiger über einem Feld nennt den Grund für dieses Feld.");
+        }
+
+        /// <summary>
+        /// Was der billigste Schritt auf ein Nachbarfeld kosten würde - unabhängig davon, ob die
+        /// Figur ihn noch bezahlen kann.
+        ///
+        /// Genau diese Zahl fehlt der Erklärung sonst: "keine möglichen Züge" bei 1 von 21 Punkten
+        /// wird erst verständlich, wenn daneben steht, dass jeder Nachbar 4 kostet.
+        /// </summary>
+        /// <returns>die Kosten oder null, wenn kein Nachbarfeld für diese Figur begehbar ist</returns>
+        private static int? BilligsterNachbarschritt(Spielfigur figur) {
+            var start = KleinfeldView.GetKleinfeld(figur);
+            if (start == null)
+                return null;
+
+            int? billigster = null;
+            foreach (Direction richtung in Enum.GetValues<Direction>()) {
+                var ziel = KleinfeldView.GetKleinfeld(KartenKoordinaten.GetNachbar(start, richtung));
+                if (ziel == null)
+                    continue;
+                var gegenrichtung = Gegenrichtung(richtung);
+                var verbrauch = GetVerbrauch(figur, ziel.Gelaendetyp ?? 0,
+                    HatWegerecht(figur, ziel), HatStraße(start, ziel, richtung, gegenrichtung));
+                // 99 ist kein Preis, sondern die Schreibweise der Tabelle für unbegehbar
+                if (verbrauch == null || verbrauch.BP >= BPUnpassierbar)
+                    continue;
+                if (billigster == null || verbrauch.BP < billigster)
+                    billigster = verbrauch.BP;
+            }
+            return billigster;
         }
 
         public static List<string> ErkläreUnerreichbarkeit(Spielfigur? figur, KleinFeld? ziel) {
