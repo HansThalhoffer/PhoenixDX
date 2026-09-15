@@ -65,6 +65,20 @@ namespace PhoenixWPF.Pages {
         /// <param name="sender">Der Sender des Ereignisses (normalerweise die Sammlung selbst).</param>
         /// <param name="e">Die Ereignisdaten, die Informationen über die Änderung der Sammlung enthalten.</param>
         private void Commands_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
+            // Die Befehlsliste wird auch von der Karte aus geändert, und die läuft in einem eigenen
+            // Thread (MappaMundi startet ihn). Eine an ein DataGrid gebundene Sammlung darf aber
+            // nur vom Thread der Oberfläche aus geändert werden - sonst wirft WPF, und zwar mitten
+            // im Ausführen des Befehls.
+            //
+            // Genau so ist es gemeldet worden: die Bewegung per Klick auf ein hervorgehobenes Feld
+            // wurde ausgeführt, tauchte aber unter "Aktueller Zug" nicht auf und liess sich damit
+            // nicht mehr zurücknehmen. Befehle aus der Oberfläche - etwa ein Bauauftrag - kamen an,
+            // weil sie schon auf dem richtigen Thread entstanden.
+            if (Dispatcher.CheckAccess() == false) {
+                Dispatcher.Invoke(() => Commands_CollectionChanged(sender, e));
+                return;
+            }
+
             // Überprüft, ob Elemente aus der Sammlung entfernt wurden
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove) {
                 if (e.OldItems != null) {

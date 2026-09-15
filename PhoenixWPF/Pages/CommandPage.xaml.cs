@@ -44,6 +44,12 @@ namespace PhoenixWPF.Pages
         }
 
         private void SelectionHistory_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e) {
+            // Die Auswahl wechselt auch durch einen Klick auf die Karte, und die läuft in einem
+            // eigenen Thread - siehe den Hinweis in Commands_CollectionChanged.
+            if (Dispatcher.CheckAccess() == false) {
+                Dispatcher.Invoke(RefreshList);
+                return;
+            }
             RefreshList();
         }
 
@@ -72,6 +78,15 @@ namespace PhoenixWPF.Pages
         /// <param name="sender">Der Sender des Ereignisses (normalerweise die Sammlung selbst).</param>
         /// <param name="e">Die Ereignisdaten, die Informationen über die Änderung der Sammlung enthalten.</param>
         private void Commands_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) {
+            // Die Befehlsliste wird auch von der Karte aus geändert, und die läuft in einem eigenen
+            // Thread (MappaMundi startet ihn). Eine an ein DataGrid gebundene Sammlung darf nur vom
+            // Thread der Oberfläche aus geändert werden - sonst wirft WPF mitten im Ausführen des
+            // Befehls, und der Befehl fehlt anschliessend in jeder Liste.
+            if (Dispatcher.CheckAccess() == false) {
+                Dispatcher.Invoke(() => Commands_CollectionChanged(sender, e));
+                return;
+            }
+
             // Überprüft, ob Elemente aus der Sammlung entfernt wurden
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove) {
                 if (e.OldItems != null) {

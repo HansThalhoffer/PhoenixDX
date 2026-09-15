@@ -28,22 +28,22 @@ namespace PhoenixModel.Commands.Parser {
         /// Bewegungen wieder zu Befehlen, und ohne diese Grenze sammelte sich beim Blättern durch
         /// alte Züge alles an, was je gemacht wurde.
         /// </summary>
+        /// <remarks>
+        /// Hier stand einmal ein Umweg über einen SynchronizationContext, der die Änderung auf den
+        /// Thread der Oberfläche schieben sollte. Das Feld wurde nie gesetzt - der Compiler hat es
+        /// als CS0649 gemeldet -, der Umweg lief also immer ins Leere und sah nur so aus, als wäre
+        /// die Sache erledigt.
+        ///
+        /// Die Sammlung weiss nichts von Oberflächen und soll es auch nicht. Wer sie an ein
+        /// DataGrid bindet, muss die Änderung selbst auf seinen Thread holen; CommandPage und
+        /// CommanndHistoryPage tun das, seit eine von der Karte aus ausgelöste Bewegung in keiner
+        /// Liste ankam.
+        /// </remarks>
         public new void Add(BaseCommand command) {
             if (command.GehörtZumAktuellenZug == false)
                 return;
-
-            Dispatch(() => {
-                base.Add(command); // Safely modify collection
-                Console.WriteLine("Item added safely.");
-            });
+            base.Add(command);
         }
-        static void Dispatch(Action action) {
-            if (_syncContext != null)
-                _syncContext.Post(_ => action(), null);
-            else
-                action(); // If no context, run directly
-        }
-        static SynchronizationContext? _syncContext;
 
         /// <summary>
         /// Nimmt einen Befehl zurück.
