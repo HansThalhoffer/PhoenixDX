@@ -238,6 +238,12 @@ namespace PhoenixModel.View {
         public static bool BestimmeAktuellenZug(int monatAusVerzeichnis = 0) {
             // Ein anderer Zug wird geladen - die Phase der letzten Sitzung gilt nicht mehr
             _phaseDieserSitzung = null;
+            // und die Befehle des vorigen Monats gehören nicht in die Liste des laufenden
+            int fremde = SharedData.Commands.EntferneFremdeZüge();
+            if (fremde > 0)
+                ProgramView.LogInfo($"{fremde} Befehle aus einem anderen Zug wurden aus der Liste genommen",
+                    "Unter 'Aktueller Zug' steht, was in diesem Monat gemacht wurde. Ältere Befehle sind "
+                    + "längst ausgewertet und lassen sich nicht mehr zurücknehmen.");
             var ausDatenbank = MonatLautDatenbank;
             int ausSchatzkammer = LetzterSchatzkammerMonat;
 

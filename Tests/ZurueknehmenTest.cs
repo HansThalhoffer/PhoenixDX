@@ -88,6 +88,52 @@ namespace Tests {
         }
 
         /// <summary>
+        /// Die Liste "Aktueller Zug" nimmt nur auf, was zum laufenden Zug gehoert.
+        /// </summary>
+        [StaFact]
+        public void DieListeNimmtNurDenLaufendenZugAuf() {
+            LadeAlles();
+            int vorher = SharedData.Commands.Count;
+
+            var ausAnderemZug = new ConstructCommand("Errichte Straße im NW von 1/1") {
+                Zug = ProgramView.SelectedMonth - 1,
+            };
+            SharedData.Commands.Add(ausAnderemZug);
+            Assert.Equal(vorher, SharedData.Commands.Count);
+            Assert.DoesNotContain(ausAnderemZug, SharedData.Commands);
+
+            var ausDiesemZug = new ConstructCommand("Errichte Straße im NO von 1/1");
+            try {
+                SharedData.Commands.Add(ausDiesemZug);
+                Assert.Contains(ausDiesemZug, SharedData.Commands);
+            }
+            finally {
+                SharedData.Commands.Remove(ausDiesemZug);
+            }
+        }
+
+        /// <summary>
+        /// Und was schon drinsteht, fliegt beim Zugwechsel heraus.
+        /// </summary>
+        [StaFact]
+        public void BeimZugwechselFliegenFremdeBefehleHeraus() {
+            LadeAlles();
+
+            // ein Befehl des laufenden Zuges kommt hinein und wird nachtraeglich einem anderen
+            // Monat zugeschlagen - so, wie es beim Wechsel des Zuges passiert
+            var befehl = new ConstructCommand("Errichte Straße im O von 1/1");
+            SharedData.Commands.Add(befehl);
+            Assert.Contains(befehl, SharedData.Commands);
+
+            befehl.Zug = ProgramView.SelectedMonth - 1;
+            int gegangen = SharedData.Commands.EntferneFremdeZüge();
+
+            Assert.True(gegangen >= 1);
+            Assert.DoesNotContain(befehl, SharedData.Commands);
+            Assert.All(SharedData.Commands, b => Assert.True(b.GehörtZumAktuellenZug));
+        }
+
+        /// <summary>
         /// Auch ein Befehl aus einem kuenftigen Monat gehoert nicht hierher - das faellt an, wenn
         /// jemand einen alten Zug oeffnet, nachdem er im neuen schon gearbeitet hat.
         /// </summary>

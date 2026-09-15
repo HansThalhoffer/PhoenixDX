@@ -20,8 +20,18 @@ namespace PhoenixModel.Commands.Parser {
         public IEnumerable<BaseCommand> GetCommands(ISelectable selectable) {
             return this.Where(item => item.HasEffectOn(selectable));
         }
+        /// <summary>
+        /// Nimmt einen Befehl in die Liste des laufenden Zuges auf.
+        ///
+        /// Was zu einem anderen Monat gehört, bleibt draussen. Die Liste heisst "Aktueller Zug"
+        /// und soll auch nur den zeigen: beim Laden eines Zuges werden dessen Bauaufträge und
+        /// Bewegungen wieder zu Befehlen, und ohne diese Grenze sammelte sich beim Blättern durch
+        /// alte Züge alles an, was je gemacht wurde.
+        /// </summary>
         public new void Add(BaseCommand command) {
-            
+            if (command.GehörtZumAktuellenZug == false)
+                return;
+
             Dispatch(() => {
                 base.Add(command); // Safely modify collection
                 Console.WriteLine("Item added safely.");
@@ -44,6 +54,19 @@ namespace PhoenixModel.Commands.Parser {
         /// der Spielleitung verschieben.
         /// </summary>
         /// <returns>true, wenn der Befehl zurückgenommen wurde</returns>
+        /// <summary>
+        /// Wirft alles aus der Liste, was nicht zum laufenden Zug gehört.
+        ///
+        /// Gebraucht beim Zugwechsel: was vorher drinstand, gehört zum vorigen Monat.
+        /// </summary>
+        /// <returns>wieviele Befehle gegangen sind</returns>
+        public int EntferneFremdeZüge() {
+            var fremde = this.Where(befehl => befehl.GehörtZumAktuellenZug == false).ToList();
+            foreach (var befehl in fremde)
+                Remove(befehl);
+            return fremde.Count;
+        }
+
         public bool Undo(BaseCommand command) {
             if (command.GehörtZumAktuellenZug == false) {
                 ProgramView.LogWarning($"Der Befehl stammt aus Zug {command.Zug} und lässt sich nicht zurücknehmen",
