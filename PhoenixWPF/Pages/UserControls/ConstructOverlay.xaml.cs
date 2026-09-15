@@ -56,8 +56,13 @@ namespace PhoenixWPF.Pages.UserControls {
             LageText.ToolTip = lage.Message;
 
             foreach (var option in BauoptionenView.Bestimme(kf)) {
-                if (FindName(Schaltflächenname(option)) is not Button schaltfläche)
-                    throw new Exception($"Da fehlt der Button {Schaltflächenname(option)}");
+                // Eine fehlende Schaltfläche ist ein Fehler im XAML und nicht im Spiel - gemeldet
+                // wird er, aber er darf den Baustern nicht mitreissen.
+                if (FindName(Schaltflächenname(option)) is not Button schaltfläche) {
+                    SpielWPF.LogError($"Im Baustern fehlt die Schaltfläche {Schaltflächenname(option)}",
+                        $"Die Möglichkeit '{option.Bezeichnung}' lässt sich deshalb nicht anzeigen.");
+                    continue;
+                }
                 schaltfläche.Visibility = option.Möglich ? Visibility.Visible : Visibility.Hidden;
                 schaltfläche.ToolTip = option.Hinweis;
             }
@@ -74,7 +79,14 @@ namespace PhoenixWPF.Pages.UserControls {
 
             // Perform the construction logic based on the construction type and direction
             if (constructionType != null) {
-                Construct(constructionType.Value, direction);
+                try {
+                    Construct(constructionType.Value, direction);
+                }
+                catch (Exception ex) {
+                    // Ein Knopfdruck darf die Anwendung nicht beenden. Bis zur Ereignisschleife
+                    // durchgereicht, täte er genau das - ohne ein Wort.
+                    Absturzbericht.Berichte($"Beim Bauen von {constructionType} ging etwas schief", ex, tödlich: false);
+                }
             }
         }
 

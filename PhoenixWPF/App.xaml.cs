@@ -15,6 +15,9 @@ namespace PhoenixWPF
         /// </summary>
         protected override void OnStartup(StartupEventArgs e)
         {
+            // Zuerst das Netz, dann alles andere: was beim Start schiefgeht, soll auch berichtet
+            // werden und nicht nur das Fenster verschwinden lassen.
+            Program.Absturzbericht.Richte_ein(this);
             Program.Kommandozeile.Lies(e.Args);
             base.OnStartup(e);
         }

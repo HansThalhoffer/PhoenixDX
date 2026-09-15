@@ -141,9 +141,17 @@ namespace PhoenixModel.Rules {
                 return phaseTest;
 
 
+            // Am Kartenrand gibt es den Nachbarn nicht. Der Zugriff über den Indexer warf dort
+            // eine KeyNotFoundException mitten in den Klick - und weil niemand sie auffing,
+            // beendete sie die Anwendung wortlos. GetKleinfeld fragt nach, statt zu greifen.
             var pos = KartenKoordinaten.GetNachbar(kf, direction);
+            var nachbarfeld = KleinfeldView.GetKleinfeld(pos);
+            if (nachbarfeld == null)
+                return Result.Fail($"Im {direction} von {kf.Bezeichner} endet die Karte",
+                    "Dort ist keine Gemark, an die sich bauen liesse.");
+
             // nachbar muss selbe Höhenstufe haben
-            if (SharedData.Map != null && pos != null && SharedData.Map[pos.CreateBezeichner()].Terrain.Höhe == kf.Terrain.Höhe) {
+            if (nachbarfeld.Terrain?.Höhe == kf.Terrain?.Höhe) {
 
                 if (KleinfeldView.HasRiver(kf, direction) == false)
                     return Result.Fail($"Ohne Fluss keine Brücke", $"In dieser Richtung gibt es keinen Fluss {direction}");
@@ -238,8 +246,12 @@ namespace PhoenixModel.Rules {
                 return Result.Fail($"Hier ist schon ein Kai", $"In dieser Richtung {direction} braucht es keinen mehr");
 
             var pos = KartenKoordinaten.GetNachbar(kf, direction);
-            if (SharedData.Map != null && pos != null) {
-                if (SharedData.Map[pos.CreateBezeichner()].IsWasser) {
+            var nachbarfeld = KleinfeldView.GetKleinfeld(pos);
+            if (nachbarfeld == null)
+                return Result.Fail($"Im {direction} von {kf.Bezeichner} endet die Karte",
+                    "Dort ist keine Gemark, in die eine Kaianlage zeigen könnte.");
+            {
+                if (nachbarfeld.IsWasser) {
                     if (IsEnoughMoney(kf, KostenView.GetGSKosten(ConstructionElementType.Kai)) is Result moneyTest && moneyTest.HasErrors)
                         return moneyTest;
                     else
