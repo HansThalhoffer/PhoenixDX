@@ -1,4 +1,4 @@
-﻿using PhoenixModel.dbErkenfara;
+using PhoenixModel.dbErkenfara;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using PhoenixModel.Database;
@@ -203,6 +203,9 @@ namespace Tests {
                 Assert.Equal(1, ZaehleZeilen(sicherung!, opfer.gf, opfer.kf));
             }
             finally {
+                // Wer eine Datenbankdatei loeschen will, muss die offen gehaltene
+                // Verbindung zuerst schliessen - siehe DatenbankFreigabeTest.
+                PhoenixWPF.Database.AccessDatabase.SchliesseAlle();
                 gemarkDesOpfers.Baupunkte = baupunkteVorher;
                 gemarkDesOpfers.Ruestort = ruestortVorher;
                 File.Delete(kopie);

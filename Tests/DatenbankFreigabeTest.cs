@@ -4,13 +4,18 @@ using System.IO;
 namespace Tests {
 
     /// <summary>
-    /// Gibt eine geschlossene Datenbank ihre Datei wieder frei?
+    /// Gibt die Anwendung eine Datenbankdatei wieder frei - und wann?
     ///
-    /// Die Zugabgabe und die Rückgabe von der Spielleitung verlassen sich darauf: sie kopieren,
-    /// überschreiben und verschieben .mdb-Dateien direkt nachdem die Anwendung mit ihnen fertig
-    /// ist. Hält der Access-Treiber die Datei dann noch, schlägt das im besten Fall mit einer
-    /// Freigabeverletzung fehl - und im schlechtesten stirbt der Prozess in der nativen Schicht,
-    /// wie es der Kommentar zum Verbindungspooling in AccessDatabase beschreibt.
+    /// Die Zugabgabe und die Rueckgabe von der Spielleitung verlassen sich darauf: sie kopieren,
+    /// ueberschreiben und verschieben .mdb-Dateien. Haelt der Access-Treiber die Datei dann noch,
+    /// schlaegt das im besten Fall mit einer Freigabeverletzung fehl - und im schlechtesten
+    /// stirbt der Prozess in der nativen Schicht.
+    ///
+    /// <b>Der Vertrag hat sich geaendert.</b> Frueher galt: geschlossen heisst frei. Seit
+    /// AccessDatabase je Datei eine Verbindung offen haelt, gilt: frei ist die Datei nach
+    /// <see cref="AccessDatabase.SchliesseAlle"/>. Das Offenhalten ist der Grund, warum der
+    /// Treiber nicht mehr an der Zahl der Verbindungen stirbt - und SchliesseAlle ist der Preis
+    /// dafuer, den die dateianfassenden Stellen zahlen muessen.
     /// </summary>
     public class DatenbankFreigabeTest {
 
@@ -40,15 +45,20 @@ namespace Tests {
         }
 
         /// <summary>
-        /// Öffnen, lesen, schliessen - und die Datei muss sofort danach frei sein. Mehrfach, weil
-        /// die Abstürze dieser Sorte sporadisch auftreten.
+        /// Zehn Durchgaenge oeffnen, lesen, schliessen - und es bleibt bei <em>einer</em> Verbindung.
+        ///
+        /// Das ist der ganze Zweck der Uebung: der Access-Treiber stuerzt an der Zahl der
+        /// Verbindungen, nicht an der Zahl der Abfragen. Gemessen etwa eine Zugriffsverletzung je
+        /// 400 Verbindungen; ein voller Testlauf oeffnete 758 und stuerzte entsprechend etwa
+        /// zweimal ab.
         /// </summary>
         [StaFact]
-        public void EineGeschlosseneDatenbankGibtIhreDateiSofortFrei() {
+        public void ZehnDurchgaengeBrauchenNurEineVerbindung() {
             TestSetup.Setup();
             string kopie = ErstelleKopie(out string spielwiese);
             string passwort = new PhoenixModel.Database.PasswordHolder(TestSetup.ZugdatenPasswort).DecryptedPassword ?? string.Empty;
 
+            AccessDatabase.SchliesseAlle();
             try {
                 for (int durchgang = 1; durchgang <= 10; durchgang++) {
                     using (var db = new AccessDatabase(kopie, passwort)) {
@@ -60,22 +70,32 @@ namespace Tests {
                             Assert.True(gelesen > 0, $"Durchgang {durchgang}: nichts gelesen");
                         }
                     }
-                    Assert.True(IstFrei(kopie),
-                        $"Durchgang {durchgang}: die Datei ist nach dem Schliessen der Verbindung noch belegt. "
-                        + "Darauf bauen Zugabgabe und Rückgabe auf.");
                 }
+                Assert.Equal(1, AccessDatabase.AnzahlOffenerVerbindungen);
+
+                // solange sie offen ist, gehoert die Datei der Anwendung
+                Assert.False(IstFrei(kopie),
+                    "Die Datei ist frei, obwohl eine Verbindung offen gehalten werden sollte");
+
+                // und danach gehoert sie wieder niemandem
+                AccessDatabase.SchliesseAlle();
+                Assert.Equal(0, AccessDatabase.AnzahlOffenerVerbindungen);
+                Assert.True(IstFrei(kopie),
+                    "Nach SchliesseAlle ist die Datei noch belegt. Darauf bauen Zugabgabe und Rückgabe auf.");
             }
             finally {
+                AccessDatabase.SchliesseAlle();
                 TestSetup.RäumeAuf(spielwiese);
             }
         }
 
         /// <summary>
-        /// Derselbe Ablauf über den Lader, den die Anwendung wirklich benutzt: er öffnet die
-        /// Datenbank, füllt SharedData und schliesst wieder.
+        /// Derselbe Ablauf ueber den Lader, den die Anwendung wirklich benutzt: er oeffnet die
+        /// Datenbank, fuellt SharedData und schliesst wieder. Auch dreimaliges Laden kostet nur
+        /// eine Verbindung, und ersetzen laesst sich die Datei nach SchliesseAlle.
         /// </summary>
         [StaFact]
-        public void NachDemLadenDerZugdatenIstDieDateiFrei() {
+        public void DreimalLadenKostetEineVerbindungUndDanachIstDieDateiFrei() {
             TestSetup.Setup();
             TestSetup.LoadCrossRef(false, false);
             TestSetup.LoadKarte();
@@ -84,18 +104,45 @@ namespace Tests {
             string kopie = ErstelleKopie(out string spielwiese);
 
             try {
+                AccessDatabase.SchliesseAlle();
                 for (int durchgang = 1; durchgang <= 3; durchgang++) {
                     Assert.True(TestSetup.LadeZugdatenAusDatei(kopie, PhoenixModel.View.ProgramView.SelectedMonth),
                         $"Durchgang {durchgang}: die Kopie liess sich nicht laden");
-                    Assert.True(IstFrei(kopie),
-                        $"Durchgang {durchgang}: die Zugdatenbank ist nach dem Laden noch belegt");
                 }
+                Assert.Equal(1, AccessDatabase.AnzahlOffenerVerbindungen);
 
                 // und das ist die Operation, auf die es ankommt: ersetzen, wie es die Rückgabe tut
+                AccessDatabase.SchliesseAlle();
+                Assert.True(IstFrei(kopie), "Nach SchliesseAlle ist die Zugdatenbank noch belegt");
                 File.Copy(TestSetup.ZugdatenPfad, kopie, true);
             }
             finally {
+                AccessDatabase.SchliesseAlle();
                 TestSetup.LoadZugdaten(false, false);
+                TestSetup.RäumeAuf(spielwiese);
+            }
+        }
+
+        /// <summary>
+        /// Die Passwortprobe hinterlaesst nichts im Cache - sie wird auch mit einem falschen
+        /// Passwort gerufen, und eine Verbindung dazu will niemand offen halten.
+        /// </summary>
+        [StaFact]
+        public void DiePasswortprobeHinterlaesstNichts() {
+            TestSetup.Setup();
+            string kopie = ErstelleKopie(out string spielwiese);
+            string passwort = new PhoenixModel.Database.PasswordHolder(TestSetup.ZugdatenPasswort).DecryptedPassword ?? string.Empty;
+
+            try {
+                AccessDatabase.SchliesseAlle();
+                Assert.True(AccessDatabase.TestConnection(kopie, passwort, out string fehler), fehler);
+                Assert.False(AccessDatabase.TestConnection(kopie, "bestimmt-nicht-das-passwort", out _));
+
+                Assert.Equal(0, AccessDatabase.AnzahlOffenerVerbindungen);
+                Assert.True(IstFrei(kopie), "Die Passwortprobe hat die Datei nicht wieder freigegeben");
+            }
+            finally {
+                AccessDatabase.SchliesseAlle();
                 TestSetup.RäumeAuf(spielwiese);
             }
         }

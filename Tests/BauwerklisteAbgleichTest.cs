@@ -183,6 +183,9 @@ namespace Tests {
                 Assert.NotEqual(erwartet, LiesReich(sicherung!, gf, kf));
             }
             finally {
+                // Wer eine Datenbankdatei loeschen will, muss die offen gehaltene
+                // Verbindung zuerst schliessen - siehe DatenbankFreigabeTest.
+                PhoenixWPF.Database.AccessDatabase.SchliesseAlle();
                 File.Delete(kopie);
                 if (sicherung != null && File.Exists(sicherung))
                     File.Delete(sicherung);

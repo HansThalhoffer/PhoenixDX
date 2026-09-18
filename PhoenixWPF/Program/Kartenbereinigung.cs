@@ -1,4 +1,4 @@
-﻿using PhoenixModel.Database;
+using PhoenixModel.Database;
 using PhoenixModel.dbErkenfara;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.View;
@@ -47,6 +47,8 @@ namespace PhoenixWPF.Program {
         /// </summary>
         /// <returns>der Pfad der Sicherung</returns>
         public static string Sichere(string datenbankpfad) {
+            // Die Datenbank wird gleich kopiert - eine offen gehaltene Verbindung haelt sie fest.
+            Database.AccessDatabase.SchliesseAlle();
             string ordner = System.IO.Path.GetDirectoryName(datenbankpfad) ?? ".";
             string name = System.IO.Path.GetFileNameWithoutExtension(datenbankpfad);
             string ziel = System.IO.Path.Combine(ordner,
@@ -117,6 +119,11 @@ namespace PhoenixWPF.Program {
                     berichtigt.AddRange(zuBerichtigen.Take(geschrieben).Select(eintrag => eintrag.Gebäude.Bezeichner));
                 }
             }
+
+            // Die Bereinigung arbeitet auf einer Datei, die ihr von aussen genannt wurde - oft
+            // einer Kopie. Sie danach offen zu halten bringt nichts und hindert den Aufrufer
+            // daran, die Datei zu loeschen oder zu verschieben.
+            Database.AccessDatabase.SchliesseAlle();
             return new Ergebnis(sicherung, geloescht, abgleich.MitRüstortOhneBaupunkte, berichtigt, ohneAngabe);
         }
 

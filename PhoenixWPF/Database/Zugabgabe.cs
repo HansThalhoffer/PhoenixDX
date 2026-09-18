@@ -86,6 +86,9 @@ namespace PhoenixWPF.Database {
         /// im Folgezug schon gemacht wurde, und muss vom Benutzer ausdrücklich bestätigt werden.
         /// </param>
         public static ZugabgabeErgebnis Durchführen(string quelle, EncryptedString passwort, int aktuellerZug, bool zielÜberschreiben = false) {
+            // Die Datei wird gleich angefasst - offen gehaltene Verbindungen halten sie
+            // fest. Siehe AccessDatabase.SchliesseAlle.
+            AccessDatabase.SchliesseAlle();
             if (File.Exists(quelle) == false)
                 return ZugabgabeErgebnis.Fehler("Die Zugdatenbank existiert nicht",
                     $"Unter {quelle} liegt keine Datei. Ohne sie lässt sich der Zug nicht abgeben.");

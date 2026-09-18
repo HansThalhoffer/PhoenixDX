@@ -1,4 +1,4 @@
-﻿using Ionic.Zip;
+using Ionic.Zip;
 using PhoenixWPF.Program;
 using System.IO;
 using System.Net.NetworkInformation;
@@ -198,6 +198,8 @@ namespace PhoenixWPF.Database {
         /// Legt die geholte Datenbank an ihren Platz. Das Zielverzeichnis wird bei Bedarf angelegt.
         /// </summary>
         private static void LegeAb(string quelle, string zielDatenbank) {
+            // Das Ziel wird ueberschrieben - eine offen gehaltene Verbindung haelt es fest.
+            AccessDatabase.SchliesseAlle();
             string? verzeichnis = Path.GetDirectoryName(zielDatenbank);
             if (string.IsNullOrEmpty(verzeichnis) == false)
                 Directory.CreateDirectory(verzeichnis);

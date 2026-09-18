@@ -72,6 +72,10 @@ namespace PhoenixWPF.Database {
             => Packe(zugdatenPfad, Path.GetDirectoryName(zugdatenPfad), $"Ruestung_{GetReichsname(zugdatenPfad)}_{zug}.zip", überschreiben);
 
         private static UebergabeErgebnis Packe(string zugdatenPfad, string? verzeichnis, string archivname, bool überschreiben) {
+            // Gleich wird die Datei gepackt - eine offen gehaltene Verbindung haelt sie
+            // fest. Siehe AccessDatabase.SchliesseAlle.
+            AccessDatabase.SchliesseAlle();
+
             if (File.Exists(zugdatenPfad) == false)
                 return UebergabeErgebnis.Fehler("Die Zugdatenbank existiert nicht",
                     $"Unter {zugdatenPfad} liegt keine Datei, es gibt nichts zu packen.");

@@ -1,4 +1,4 @@
-﻿using PhoenixModel.Database;
+using PhoenixModel.Database;
 using PhoenixModel.ViewModel;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.EventsAndArgs;
@@ -253,6 +253,9 @@ namespace PhoenixWPF.Database {
                             if (File.Exists(extracted) == false) {
                                 SpielWPF.LogError($"Fehler beim Auspacken von {aktuelleDatenbank}", entry.Info);
                             }
+                            // Die Zieldatei wird ersetzt - eine offen gehaltene Verbindung
+                            // haelt sie fest.
+                            AccessDatabase.SchliesseAlle();
                             File.Move(extracted, aktuelleDatenbank, true);
                             Directory.Delete(Path.Combine(aktuellerPfad, "PZE.NET"), true);
                             if (File.Exists(aktuelleDatenbank) == false) {
