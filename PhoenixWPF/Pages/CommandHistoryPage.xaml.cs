@@ -23,10 +23,22 @@ namespace PhoenixWPF.Pages {
         public CommanndHistoryPage() {
             InitializeComponent();
             SharedData.Commands.CollectionChanged += Commands_CollectionChanged;
-            foreach (BaseCommand item in SharedData.Commands) {
-                _commandList.Add(new CommandListEntry(item));
-            }
+            FülleNeu();
             CommandDataGrid.ItemsSource = _commandList;
+        }
+
+        /// <summary>
+        /// Baut die Anzeige neu auf - der jüngste Befehl zuoberst.
+        ///
+        /// Absteigend, weil oben steht, was gerade passiert ist: wer einen Zug zurücknehmen oder
+        /// nachsehen will, was er eben getan hat, sucht ihn sonst am Ende einer langen Liste.
+        /// SharedData.Commands selbst bleibt in der Reihenfolge der Ausführung - dort hängt die
+        /// Bedeutung an ihr.
+        /// </summary>
+        private void FülleNeu() {
+            _commandList.Clear();
+            foreach (BaseCommand item in SharedData.Commands)
+                _commandList.Insert(0, new CommandListEntry(item));
         }
 
         /// <summary>
@@ -100,18 +112,15 @@ namespace PhoenixWPF.Pages {
             // Überprüft, ob Elemente zur Sammlung hinzugefügt wurden
             else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add) {
                 if (e.NewItems != null) {
-                    // Fügt die neuen Befehle als neue CommandListEntry-Objekte hinzu
+                    // Der jüngste Befehl kommt nach oben, nicht ans Ende - siehe FülleNeu.
                     foreach (BaseCommand item in e.NewItems) {
-                        _commandList.Add(new CommandListEntry(item));
+                        _commandList.Insert(0, new CommandListEntry(item));
                     }
                 }
             }
             // massive Änderungen, neu laden
             else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset) {
-                _commandList.Clear();
-                foreach (BaseCommand item in SharedData.Commands) {
-                    _commandList.Add(new CommandListEntry(item));
-                }
+                FülleNeu();
             }
 
             // Benachrichtigt jedes Element in _commandList, dass sich die Eigenschaft "CanUndo" geändert hat
