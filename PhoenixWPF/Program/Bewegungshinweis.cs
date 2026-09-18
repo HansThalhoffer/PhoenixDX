@@ -43,6 +43,9 @@ namespace PhoenixWPF.Program {
         internal static void Aktiviere(Spielfigur figur, IEnumerable<KleinFeld> erreichbar) {
             _figur = figur;
             _erreichbar = erreichbar.Select(feld => feld.Bezeichner).ToHashSet();
+            // Ab jetzt lohnt es sich, den Mauszeiger zu melden - vorher nicht.
+            if (Main.Map != null)
+                Main.Map.MauszeigerMelden = true;
             Verbirg();
         }
 
@@ -52,6 +55,8 @@ namespace PhoenixWPF.Program {
         internal static void Beende() {
             _figur = null;
             _erreichbar = [];
+            if (Main.Map != null)
+                Main.Map.MauszeigerMelden = false;
             Verbirg();
         }
 

@@ -1,4 +1,5 @@
 using PhoenixModel.dbErkenfara;
+using PhoenixModel.ExternalTables;
 using PhoenixModel.Rules;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
@@ -96,50 +97,66 @@ namespace Tests {
         }
 
         /// <summary>
-        /// Die Hervorhebung kommt bis auf die Karte an - und zwar genau in der Bewegungsphase.
+        /// Die Bewegungsanzeige setzt beide Farben - und zwar genau in der Bewegungsphase.
         ///
-        /// Gemeldet war "das Hervorheben funktioniert nicht". Die Wegsuche war in Ordnung, die
-        /// Zeichnung auch; leer war die Liste, weil der Zug in der Ruestphase stand. Dieser Test
-        /// haelt beide Haelften fest: in der Ruestphase leuchtet nichts, in der Bewegungsphase
-        /// leuchtet etwas, und die Felder finden sich in der Kartenstruktur wieder.
+        /// Hellgruen die Felder, die die Figur noch erreicht; kornblumenblau der Weg, den sie in
+        /// diesem Zug schon gelaufen ist. Das bedeutet Gegenteiliges, und wer es verwechselt,
+        /// haelt eine Wegspur fuer die moeglichen Zuege - die fuehrt naturgemaess nur in eine
+        /// Richtung. Genau so ist es gemeldet worden.
         ///
-        /// Gezeichnet wird hier nichts - dafuer braucht es MonoGame. Geprueft wird der Weg bis
-        /// dorthin, und genau dort lag frueher der Verdacht.
+        /// In der Ruestphase bleibt von der Reichweite nichts uebrig; die Wegspur steht trotzdem
+        /// da, denn gelaufen ist gelaufen.
+        ///
+        /// Gezeichnet wird hier nichts - dafuer braucht es MonoGame. Geprueft werden die
+        /// Markierungen, und die liegen im Modell.
         /// </summary>
         [StaFact]
-        public void InDerBewegungsphaseLeuchtetEtwasAufDerKarte() {
+        public void DieBewegungsanzeigeSetztBeideFarben() {
             LadeAlles();
-
-            var welt = new PhoenixDX.Structures.Welt(SharedData.Map!);
-            var farbe = new Microsoft.Xna.Framework.Color(255, 200, 0);
 
             var beweglich = SpielfigurenView.GetSpielfiguren(ProgramView.SelectedNation)
                 .Where(Plausibilität.IsValid)
-                .FirstOrDefault(f => BewegungsRules.GetErreichbareFelder(f).Count > 0);
-            Assert.True(beweglich != null, "Keine eigene Figur kann sich bewegen");
+                .FirstOrDefault(f => BewegungsRules.GetErreichbareFelder(f).Count > 0
+                    && new Bewegungsspur(f).Count > 0);
+            Assert.True(beweglich != null, "Keine eigene Figur ist gezogen und kann noch weiter");
 
-            var erreichbar = BewegungsRules.GetErreichbareFelder(beweglich!);
-            welt.HebeHervor(erreichbar.Select(k => new KleinfeldPosition(k.gf, k.kf)), farbe);
-            Assert.True(welt.AnzahlHervorhebungen > 0,
-                $"{beweglich!.Bezeichner} erreicht {erreichbar.Count} Felder, hervorgehoben wird keines");
-            // kein Feld geht dabei verloren - sonst kennt die Karte Koordinaten nicht wieder
-            Assert.Equal(erreichbar.Select(k => k.Bezeichner).Distinct().Count(), welt.AnzahlHervorhebungen);
-
-            welt.LöscheHervorhebung();
-            Assert.Equal(0, welt.AnzahlHervorhebungen);
-
-            // und in der Ruestphase gibt es nichts hervorzuheben
-            int phaseVorher = ZugView.Settings!.Phase;
-            int monatVorher = ZugView.Settings!.Monat;
             try {
-                TestSetup.SetzePhase(Zugphase.Rüstphase);
-                var inDerRüstphase = BewegungsRules.GetErreichbareFelder(beweglich!);
-                welt.HebeHervor(inDerRüstphase.Select(k => new KleinfeldPosition(k.gf, k.kf)), farbe);
-                Assert.Equal(0, welt.AnzahlHervorhebungen);
+                var erreichbar = BewegungView.ZeigeBewegung(beweglich);
+                Assert.NotEmpty(erreichbar);
+
+                // der gelaufene Weg ist blau
+                var spur = new Bewegungsspur(beweglich!).ToList();
+                foreach (var punkt in spur) {
+                    var feld = KleinfeldView.GetKleinfeld(punkt);
+                    Assert.True(feld != null, $"{punkt.CreateBezeichner()} liegt nicht auf der Karte");
+                    Assert.Equal(MarkerType.Weg, feld!.Mark);
+                }
+
+                // und die Reichweite gruen, soweit sie nicht vom Weg ueberdeckt wird
+                var aufDemWeg = spur.Select(p => p.CreateBezeichner()).ToHashSet();
+                int gruen = erreichbar.Count(feld => aufDemWeg.Contains(feld.Bezeichner) == false
+                    && feld.Mark == MarkerType.Bewegung);
+                Assert.True(gruen > 0, "Kein einziges erreichbares Feld ist als Reichweite markiert");
+
+                // in der Ruestphase bleibt die Wegspur, die Reichweite verschwindet
+                int phaseVorher = ZugView.Settings!.Phase;
+                int monatVorher = ZugView.Settings!.Monat;
+                try {
+                    TestSetup.SetzePhase(Zugphase.Rüstphase);
+                    var inDerRüstphase = BewegungView.ZeigeBewegung(beweglich);
+                    Assert.Empty(inDerRüstphase);
+                    foreach (var punkt in spur) {
+                        var feld = KleinfeldView.GetKleinfeld(punkt);
+                        Assert.Equal(MarkerType.Weg, feld!.Mark);
+                    }
+                }
+                finally {
+                    ZugView.Settings!.Phase = phaseVorher;
+                    ZugView.Settings!.Monat = monatVorher;
+                }
             }
             finally {
-                ZugView.Settings!.Phase = phaseVorher;
-                ZugView.Settings!.Monat = monatVorher;
+                BewegungView.VersteckeBewegung();
             }
         }
 

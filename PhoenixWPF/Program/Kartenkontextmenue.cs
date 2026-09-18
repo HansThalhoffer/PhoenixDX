@@ -1,11 +1,10 @@
-﻿using PhoenixModel.dbErkenfara;
+using PhoenixModel.dbErkenfara;
 using PhoenixModel.Rules;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
 using PhoenixWPF.Dialogs;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace PhoenixWPF.Program {
 
@@ -17,12 +16,6 @@ namespace PhoenixWPF.Program {
     /// fertige Ereignis an.
     /// </summary>
     internal static class Kartenkontextmenue {
-
-        /// <summary>
-        /// Die Deckkraft der Hervorhebung. Weniger als die Hälfte, damit das Gelände darunter
-        /// noch zu erkennen ist.
-        /// </summary>
-        private const float Deckkraft = 0.45f;
 
         /// <summary>
         /// Baut das Menü zu einem Kleinfeld und zeigt es an der Mausposition.
@@ -39,17 +32,19 @@ namespace PhoenixWPF.Program {
             menü.Items.Add(info);
 
             // Ein Untermenü, nicht zwei: "Spielfiguren" und "Mögliche Züge" führten dieselbe
-            // Liste und unterschieden sich nur darin, was der Klick auslöste. Jetzt tut er beides
-            // - die Figur wird ausgewählt und ihre Züge werden hervorgehoben.
+            // Liste und unterschieden sich nur darin, was der Klick auslöste. Jetzt wählt er
+            // aus - und an der Auswahl hängt die Anzeige der Bewegung.
             //
             // Es erscheint immer, auch wenn nichts anzubieten ist: fehlte es wortlos, wüsste
             // niemand, ob die Funktion fehlt oder nur nichts auf dem Feld steht.
             menü.Items.Add(BaueMöglicheZüge(gemark));
 
-            // Eine Hervorhebung soll sich auch wieder loswerden lassen, ohne die Karte neu zu laden
-            var löschen = new MenuItem { Header = "Hervorhebung aufheben" };
+            // Die Bewegungsanzeige soll sich auch wieder loswerden lassen, ohne die Karte neu zu
+            // laden. Eigene Markierungen des Benutzers bleiben dabei stehen - entfernt wird nur,
+            // was die Bewegungsanzeige selbst gesetzt hat.
+            var löschen = new MenuItem { Header = "Bewegungsanzeige aufheben" };
             löschen.Click += (s, e) => {
-                Main.Map?.LöscheHervorhebung();
+                BewegungView.VersteckeBewegung();
                 Bewegungshinweis.Beende();
             };
             menü.Items.Add(new Separator());
@@ -61,10 +56,20 @@ namespace PhoenixWPF.Program {
         /// <summary>
         /// Wählt eine Figur aus - denselben Weg, den auch die Figurenliste nimmt: die Karte rückt
         /// auf das Feld und die Figur wird die aktuelle Auswahl.
+        ///
+        /// Mehr ist hier nicht zu tun. An der Auswahl hängt die Anzeige der Bewegung: hellgrün die
+        /// erreichbaren Felder, kornblumenblau der schon gelaufene Weg, dazu die Begründung am
+        /// Mauszeiger und die Bewegung per Klick. Das Menü ist die <em>Auswahl</em> - und dafür
+        /// gebraucht, weil auf einem Feld mehrere Einheiten stehen können und die Karte allein
+        /// nicht weiss, welche gemeint ist.
+        ///
+        /// Steht der Zug noch in der Rüstphase, ist nichts erreichbar; dann wird gefragt, ob sie
+        /// beendet werden soll, und die Anzeige danach aufgefrischt.
         /// </summary>
         private static void Wähle(Spielfigur figur) {
             try {
                 Main.Instance.Spiel?.SelectGemark(figur);
+                BieteDasEndeDerRüstphaseAn(figur);
                 // Auswählen kann scheitern, ohne dass jemand etwas tut: Spielfigur.Select lässt
                 // nur eigene Figuren zu. Das wortlos zu übergehen wäre das Schlimmste.
                 //
@@ -93,9 +98,9 @@ namespace PhoenixWPF.Program {
         /// Fremde stehen mit ihrem Reich in der Liste, sind aber abgeblendet: auswählen lässt sich
         /// nur, was einem gehört. Sie wegzulassen hiesse zu verschweigen, dass dort etwas steht.
         ///
-        /// Ein Klick auf eine eigene Figur wählt sie aus <em>und</em> hebt ihre möglichen Züge
-        /// hervor. In der Bewegungsphase zieht ein Klick auf eines der hervorgehobenen Felder die
-        /// Figur dann dorthin.
+        /// Ein Klick auf eine eigene Figur wählt sie aus; an der Auswahl hängt die Anzeige der
+        /// Bewegung. Genau dafür wird das Menü gebraucht: auf einem Feld können mehrere Einheiten
+        /// stehen, und die Karte allein weiss nicht, welche gemeint ist.
         /// </summary>
         private static MenuItem BaueMöglicheZüge(KleinFeld gemark) {
             var alle = SpielfigurenView.GetFeldbesetzung(gemark);
@@ -119,10 +124,7 @@ namespace PhoenixWPF.Program {
                 };
                 if (besetzung.IstAuswählbar) {
                     var gemerkt = besetzung.Figur!;
-                    eintrag.Click += (s, e) => {
-                        Wähle(gemerkt);
-                        ZeigeMöglicheZüge(gemerkt);
-                    };
+                    eintrag.Click += (s, e) => Wähle(gemerkt);
                 }
                 züge.Items.Add(eintrag);
             }
@@ -143,57 +145,24 @@ namespace PhoenixWPF.Program {
         }
 
         /// <summary>
-        /// Zeigt die erreichbaren Felder einer Figur in der Farbe ihres Reiches.
+        /// Erreicht die Figur nichts, weil der Zug noch in der Rüstphase steht, wird das hier
+        /// gefragt statt in eine Protokollzeile geschrieben, die niemand sucht.
         ///
-        /// Wird auch nach einem Zug wieder aufgerufen: die Figur steht dann woanders, und was sie
-        /// von dort aus noch erreicht, ist neu zu rechnen.
+        /// Die Phase ist kein Fehler, sondern eine Entscheidung, die noch aussteht. Wer gerade
+        /// wissen wollte, wohin eine Figur ziehen kann, will sie jetzt beantworten.
         /// </summary>
-        internal static void ZeigeMöglicheZüge(Spielfigur figur) {
-            try {
-                var erreichbar = BewegungsRules.GetErreichbareFelder(figur);
-
-                // Die Rüstphase ist kein Fehler, sondern eine Entscheidung, die noch aussteht -
-                // also wird sie hier gestellt und nicht in eine Meldung geschrieben, die im
-                // Protokoll untergeht. Wer zusieht, warum die Karte nichts hervorhebt, will genau
-                // das jetzt beantworten.
-                if (erreichbar.Count == 0 && ZugView.Phase == Zugphase.Rüstphase) {
-                    if (BeendeRüstphaseAufNachfrage() == false)
-                        return;
-                    erreichbar = BewegungsRules.GetErreichbareFelder(figur);
-                }
-
-                if (erreichbar.Count == 0) {
-                    Bewegungshinweis.Beende();
-                    // Den Grund kennen die Regeln - vorher stand hier geraten, es lae­ge an den
-                    // Bewegungspunkten, und der haeufigste Grund ist die Phase.
-                    var grund = BewegungsRules.ErkläreWarumNichtsErreichbar(figur);
-                    SpielWPF.LogInfo(grund.Title, grund.Message);
-                    Main.Map?.LöscheHervorhebung();
-                    return;
-                }
-
-                var karte = Main.Map;
-                if (karte == null) {
-                    SpielWPF.LogError("Die Karte ist nicht ansprechbar",
-                        "Die Verbindung zur Kartendarstellung fehlt, deshalb lässt sich nichts hervorheben.");
-                    return;
-                }
-
-                // Ab jetzt erklaert der Mauszeiger, warum ein Feld nicht dabei ist
-                Bewegungshinweis.Aktiviere(figur, erreichbar);
-
-                var farbe = GetReichsfarbe(figur);
-                int hervorgehoben = karte.HebeHervor(erreichbar.Select(k => new KleinfeldPosition(k.gf, k.kf)),
-                    farbe.R, farbe.G, farbe.B, Deckkraft);
-
-                SpielWPF.LogInfo($"{figur.Bezeichner} erreicht {erreichbar.Count} Felder",
-                    $"Mit {figur.bp} Bewegungspunkten ab {figur.CreateBezeichner()}, hervorgehoben sind "
-                    + $"{hervorgehoben} in {farbe}. Ein Klick auf eines davon zieht die Figur dorthin; "
-                    + "die Hervorhebung lässt sich über das Kontextmenü wieder aufheben.");
+        private static void BieteDasEndeDerRüstphaseAn(Spielfigur figur) {
+            if (ZugView.Phase != Zugphase.Rüstphase)
+                return;
+            if (BewegungsRules.GetErreichbareFelder(figur).Count > 0)
+                return;
+            if (BeendeRüstphaseAufNachfrage() == false) {
+                var grund = BewegungsRules.ErkläreWarumNichtsErreichbar(figur);
+                SpielWPF.LogInfo(grund.Title, grund.Message);
+                return;
             }
-            catch (Exception ex) {
-                SpielWPF.LogError($"Die möglichen Züge von {figur.Bezeichner} liessen sich nicht ermitteln", ex.Message);
-            }
+            // Die Anzeige hing an der Auswahl und lief vorhin ins Leere - jetzt noch einmal.
+            Main.Instance.SelectionHistory.Refresh();
         }
 
         /// <summary>
@@ -220,17 +189,6 @@ namespace PhoenixWPF.Program {
             }
             SpielWPF.LogInfo(ergebnis.Title, ergebnis.Message);
             return true;
-        }
-
-        /// <summary>
-        /// Die Farbe des Reiches, zu dem die Figur gehört. Kennt das Reich keine, wird eine
-        /// auffällige Ersatzfarbe genommen - die Hervorhebung soll ja gesehen werden.
-        /// </summary>
-        private static Color GetReichsfarbe(Spielfigur figur) {
-            var farbe = figur.Nation?.Farbe;
-            if (farbe == null)
-                return Colors.Yellow;
-            return Color.FromRgb(farbe.Value.R, farbe.Value.G, farbe.Value.B);
         }
 
         private static void ZeigeInfo(KleinFeld gemark) {

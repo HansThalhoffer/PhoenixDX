@@ -407,11 +407,12 @@ namespace PhoenixDX.Program {
         /// <summary>
         /// Meldet der Oberfläche, wenn der Mauszeiger auf ein anderes Kleinfeld gewandert ist.
         ///
-        /// Nur solange etwas hervorgehoben ist: ohne Hervorhebung gibt es nichts zu erklären, und
-        /// jede Mausbewegung über die Karte würde einen Sprung in den WPF-Dispatcher kosten.
+        /// Nur wenn die Oberfläche etwas damit anfängt - sie sagt es über
+        /// <see cref="MappaMundi.MauszeigerMelden"/>. Sonst kostete jede Mausbewegung über die
+        /// Karte einen Sprung in den WPF-Dispatcher, und gezeichnet wird sechzigmal je Sekunde.
         /// </summary>
         private void MeldeMauszeiger() {
-            if (Weltkarte == null || Weltkarte.AnzahlHervorhebungen == 0) {
+            if (Weltkarte == null || _wpfBridge.MauszeigerMelden == false) {
                 _gemeldetesMouseOver = string.Empty;
                 return;
             }

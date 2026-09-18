@@ -92,8 +92,9 @@ namespace PhoenixWPF.Helper {
                 return;
             }
 
+            // Die Auswahl bleibt auf der Figur; das Auffrischen rechnet die Anzeige neu, weil die
+            // Figur jetzt woanders steht.
             Main.Instance.SelectionHistory.Refresh();
-            Kartenkontextmenue.ZeigeMöglicheZüge(figur);
         }
 
         /// <summary>

@@ -82,7 +82,13 @@ namespace PhoenixWPF.Pages.UserControls {
             textBewegungspunkte.Text = figur.bp_max > 0 ? $"{figur.bp} / {figur.bp_max} BP" : string.Empty;
 
             // in der Karte den bisherigen Weg und die verbleibende Reichweite zeigen
-            BewegungView.ZeigeBewegung(figur);
+            var erreichbar = BewegungView.ZeigeBewegung(figur);
+
+            // Von hier an erklärt der Mauszeiger, warum ein Feld nicht dabei ist, und ein Klick
+            // auf ein erreichbares Feld zieht die Figur dorthin. Beides hing früher an einer
+            // eigenen Hervorhebung aus dem Kontextmenü; jetzt hängt es an der Auswahl, und damit
+            // gibt es nur noch eine Anzeige statt zweier übereinander.
+            Program.Bewegungshinweis.Aktiviere(figur, erreichbar);
         }
 
         /// <summary>
@@ -116,6 +122,7 @@ namespace PhoenixWPF.Pages.UserControls {
             }
             _figur = null;
             BewegungView.VersteckeBewegung();
+            Program.Bewegungshinweis.Beende();
             this.Visibility = Visibility.Hidden;
         }
     }

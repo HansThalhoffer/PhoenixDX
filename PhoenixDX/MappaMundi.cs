@@ -270,13 +270,23 @@ namespace PhoenixDX {
 
         /// <summary>
         /// Meldet der Oberfläche, dass der Mauszeiger über einem anderen Kleinfeld steht.
-        ///
-        /// Wird nur gemeldet, solange auf der Karte etwas hervorgehoben ist - ohne Hervorhebung
-        /// gibt es nichts zu erklären, und die Meldung liefe bei jeder Mausbewegung ins Leere.
         /// </summary>
         public void MauszeigerÜber(int gf, int kf) {
             _OnMapEvent(new MapEventArgs(gf, kf, MapEventArgs.MapEventType.Mauszeiger));
         }
+
+        /// <summary>
+        /// Soll der Mauszeiger überhaupt gemeldet werden?
+        ///
+        /// Nur solange die Oberfläche etwas damit anfängt - zurzeit ist das der Hinweis, warum ein
+        /// Feld für die ausgewählte Figur nicht erreichbar ist. Sonst kostete jede Mausbewegung
+        /// über die Karte einen Sprung in den WPF-Dispatcher, und gezeichnet wird sechzigmal in
+        /// der Sekunde.
+        ///
+        /// Vorher hing das daran, ob auf der Karte etwas hervorgehoben war. Das war eine Kopplung
+        /// an eine ganz andere Anzeige: verschwand die Hervorhebung, verstummte auch der Hinweis.
+        /// </summary>
+        public bool MauszeigerMelden { get; set; } = false;
 
         /// <summary>
         /// Hebt Kleinfelder auf der Karte farbig hervor, etwa die Felder, die eine Einheit noch

@@ -25,13 +25,22 @@ namespace PhoenixModel.View {
         /// <summary>
         /// Zeigt in der Karte, welchen Weg die Figur in diesem Zug bereits zurückgelegt hat
         /// und welche Kleinfelder sie mit den verbleibenden Bewegungspunkten noch erreichen kann.
+        ///
+        /// Die beiden Farben bedeuten Gegenteiliges: der zurückgelegte Weg liegt hinter der Figur,
+        /// die Reichweite vor ihr. Wer das verwechselt, hält eine Wegspur für die möglichen Züge -
+        /// und die führt naturgemäß nur in eine Richtung.
         /// </summary>
-        public static void ZeigeBewegung(Spielfigur? figur) {
+        /// <returns>
+        /// die erreichbaren Kleinfelder, damit der Aufrufer sie weiterverwenden kann, ohne die
+        /// Wegsuche ein zweites Mal laufen zu lassen
+        /// </returns>
+        public static List<KleinFeld> ZeigeBewegung(Spielfigur? figur) {
             VersteckeBewegung();
             if (figur == null || SharedData.Map == null || SharedData.Map.IsAddingCompleted == false)
-                return;
+                return [];
 
-            foreach (var feld in BewegungsRules.GetErreichbareFelder(figur))
+            var erreichbar = BewegungsRules.GetErreichbareFelder(figur);
+            foreach (var feld in erreichbar)
                 Markiere(feld, MarkerType.Bewegung);
 
             // der bereits zurückgelegte Weg liegt optisch über der Reichweite
@@ -43,6 +52,7 @@ namespace PhoenixModel.View {
                 if (feld != null)
                     Markiere(feld, MarkerType.Weg);
             }
+            return erreichbar;
         }
 
         /// <summary>
