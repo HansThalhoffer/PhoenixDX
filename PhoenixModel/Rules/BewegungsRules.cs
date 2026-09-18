@@ -389,14 +389,25 @@ namespace PhoenixModel.Rules {
             ergebnis.Kai = HatKai(start, ziel, richtung, gegenrichtung);
             ergebnis.Wegerecht = HatWegerecht(figur, ziel);
 
-            // 1. Bewegungspunkte. Die Tabelle liefert 99 für Gelände, das diese Figur nicht betreten
-            //    kann - das schlägt dann unten als "nicht genug Bewegungspunkte" durch.
+            // 1. Bewegungspunkte
             var verbrauch = GetVerbrauch(figur, ziel.Gelaendetyp ?? 0, ergebnis.Wegerecht, ergebnis.Straße);
             if (verbrauch == null)
                 return SchrittErgebnis.Fehler("Keine Bewegungsdaten vorhanden",
                     $"Für {figur.Typ} gibt es in der Tabelle {GetBewegungsArt(figur)} der crossref.mdb keinen Eintrag für den Geländetyp {ziel.Gelaendetyp}");
 
             ergebnis.BPKosten = verbrauch.BP;
+
+            // Die Tabelle schreibt 99 für Gelände, das diese Figur überhaupt nicht betreten kann.
+            // Das ist kein Preis, sondern eine Schreibweise - und es als "nicht genug
+            // Bewegungspunkte" zu melden ist schlicht falsch: ein Reiter kommt nicht über das
+            // Meer, auch nicht mit vollem Vorrat. An der Küste stehen dann vier von sechs
+            // Richtungen mit einer Begründung da, die nach Erschöpfung aussieht, und die
+            // Reichweite wirkt willkürlich einseitig.
+            if (ergebnis.BPKosten >= BPUnpassierbar)
+                return SchrittErgebnis.Fehler($"{ziel.Terrain.Name} ist für {figur.Typ} nicht passierbar",
+                    $"{ziel.CreateBezeichner()} ist {ziel.Terrain.Name}; dieses Gelände kann {figur.Typ} nicht betreten - "
+                    + "auch nicht mit vollen Bewegungspunkten.");
+
             if (ergebnis.BPKosten > bpVerfügbar)
                 return SchrittErgebnis.Fehler("Die Einheit hat nicht genug Bewegungspunkte",
                     $"Der Schritt nach {ziel.CreateBezeichner()} ({ziel.Terrain.Name}) kostet {ergebnis.BPKosten} BP, {figur.Bezeichner} hat aber nur noch {bpVerfügbar} von {figur.bp_max} BP");
