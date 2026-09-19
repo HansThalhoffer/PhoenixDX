@@ -1,10 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Drawing;
 using PhoenixDX.Helper;
 using PhoenixModel.View;
 using System;
+using System.Collections.Generic;
 
 namespace PhoenixDX.Structures {
     /// <summary>
@@ -39,12 +40,8 @@ namespace PhoenixDX.Structures {
                 _hexTexture = contentManager.Load<Texture2D>("Images/TilesetV/Info");
                 // Die Texturen werden über den Wert des MarkerTyps indiziert, damit ein neuer Typ
                 // im Model nicht stillschweigend die Farben verschiebt.
-                SetColor(MarkerType.User, Color.Turquoise);
-                SetColor(MarkerType.Info, Color.Yellow);
-                SetColor(MarkerType.Warning, Color.Orange);
-                SetColor(MarkerType.Fatality, Color.Red);
-                SetColor(MarkerType.Bewegung, Color.LightGreen);
-                SetColor(MarkerType.Weg, Color.CornflowerBlue);
+                foreach (var eintrag in Helper.Markerfarben.Farben)
+                    SetColor(eintrag.Key, eintrag.Value);
             }
             catch (Exception ex)
             {
