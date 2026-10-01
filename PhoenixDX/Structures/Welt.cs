@@ -175,6 +175,16 @@ namespace PhoenixDX.Structures {
         /// </summary>
         public void HebeHervor(IEnumerable<KleinfeldPosition> felder, Color farbe) {
             LöscheHervorhebung();
+            FärbeEin(felder, farbe);
+        }
+
+        /// <summary>
+        /// Färbt Kleinfelder ein, ohne die vorhandene Einfärbung zu löschen.
+        ///
+        /// Gebraucht, wenn mehrere Mengen nebeneinander liegen sollen - der Folienzug zeichnet je
+        /// Gattung eine eigene Farbe und kann deshalb nicht jedes Mal von vorn anfangen.
+        /// </summary>
+        public void FärbeEin(IEnumerable<KleinfeldPosition> felder, Color farbe) {
             foreach (var pos in felder) {
                 if (Provinzen.TryGetValue(pos.gf, out var provinz) == false)
                     continue;
@@ -216,6 +226,62 @@ namespace PhoenixDX.Structures {
                 return false;
             gemark.BlinkendesBauwerk = (art, richtung);
             return true;
+        }
+
+        /// <summary>
+        /// Beschriftet Kleinfelder mit einem kurzen Text - die Stärke, die Nummer, was auch immer
+        /// der Aufrufer darauf stehen sehen will.
+        ///
+        /// Die übergebene Zuordnung ersetzt die bisherige vollständig: was nicht darin steht,
+        /// verliert seine Beschriftung. Eine leere Zuordnung räumt alles ab.
+        /// </summary>
+        /// <param name="texte">je Kleinfeld der Text, der darauf stehen soll</param>
+        /// <returns>wieviele Felder tatsächlich beschriftet wurden</returns>
+        public int Beschrifte(IEnumerable<(KleinfeldPosition Feld, string Text)>? texte) {
+            // Gefunden wird über die Koordinaten, nicht über den Bezeichner - so wie bei der
+            // Hervorhebung. Die Kartenstruktur führt ihre eigenen Gemarken; deren Bezeichner ist
+            // nicht derselbe Text wie der des Kleinfeldes aus der Datenbank.
+            LöscheBeschriftung();
+            if (texte == null)
+                return 0;
+
+            int beschriftet = 0;
+            foreach (var (feld, text) in texte) {
+                if (string.IsNullOrEmpty(text))
+                    continue;
+                if (Provinzen.TryGetValue(feld.gf, out var provinz) == false)
+                    continue;
+                var gemark = provinz.GetKleinfeld(feld.kf);
+                if (gemark == null)
+                    continue;
+                if (string.IsNullOrEmpty(gemark.Beschriftung))
+                    beschriftet++;
+                gemark.Beschriftung = text;
+            }
+            return beschriftet;
+        }
+
+        /// <summary>
+        /// Nimmt jede Beschriftung zurück
+        /// </summary>
+        public void LöscheBeschriftung() {
+            foreach (var provinz in Provinzen.Values)
+                foreach (var gemark in provinz.Felder.Values)
+                    gemark.Beschriftung = null;
+        }
+
+        /// <summary>
+        /// Wieviele Kleinfelder gerade beschriftet sind - für einen Test genügt die Anzahl.
+        /// </summary>
+        public int AnzahlBeschriftungen {
+            get {
+                int anzahl = 0;
+                foreach (var provinz in Provinzen.Values)
+                    foreach (var gemark in provinz.Felder.Values)
+                        if (string.IsNullOrEmpty(gemark.Beschriftung) == false)
+                            anzahl++;
+                return anzahl;
+            }
         }
 
         /// <summary>

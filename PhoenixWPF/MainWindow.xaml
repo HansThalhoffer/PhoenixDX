@@ -1,4 +1,4 @@
-﻿<Window x:Class="PhoenixWPF.MainWindow"
+<Window x:Class="PhoenixWPF.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:PhoenixWPF"
@@ -85,6 +85,17 @@
                     <MenuItem Header="Bericht der Generäle" IsCheckable="False"  Click="MenuItem_Click" Tag="Truppen" />
                     <MenuItem Header="Bericht der Historiker" IsCheckable="False"  Click="MenuItem_Click" Tag="TruppenEntwicklung" />
                     <MenuItem Header="Bericht der Mobilisierung" IsCheckable="False"  Click="MenuItem_Click" Tag="Mobilisierung" />
+                </MenuItem>
+                <MenuItem Header="Karte" Name="KartenMenu" SubmenuOpened="KartenMenu_SubmenuOpened">
+                    <MenuItem Header="Stärken auf dem Feld" Name="MenuStärken" IsCheckable="True" Click="MenuItem_Click" Tag="ZeigeStärken" />
+                    <MenuItem Header="Nummern auf dem Feld" Name="MenuNummern" IsCheckable="True" Click="MenuItem_Click" Tag="ZeigeNummern" />
+                    <Separator/>
+                    <MenuItem Header="Beschädigte Rüstorte" Name="MenuBeschädigte" IsCheckable="True" Click="MenuItem_Click" Tag="ZeigeBeschädigte" />
+                    <MenuItem Header="Fest stationierte Heere" Name="MenuStationierte" IsCheckable="True" Click="MenuItem_Click" Tag="ZeigeStationierte" />
+                    <MenuItem Header="Folienzug - alle Wege dieses Zuges" Name="MenuFolienzug" IsCheckable="True" Click="MenuItem_Click" Tag="ZeigeFolienzug" />
+                    <MenuItem Header="Folienzug einstellen..." Click="MenuItem_Click" Tag="FolienzugEinstellen" />
+                    <Separator/>
+                    <MenuItem Header="Alle Kartenanzeigen aus" Click="MenuItem_Click" Tag="KartenanzeigenAus" />
                 </MenuItem>
                 <MenuItem Header="Zug" Name="ZugMenu" SubmenuOpened="ZugMenu_SubmenuOpened">
                     <MenuItem Header="Aktuelle Phase" Name="MenuPhaseAnzeige" IsEnabled="False" />

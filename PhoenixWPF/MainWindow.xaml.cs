@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using PhoenixModel.EventsAndArgs;
 using PhoenixModel.View;
@@ -84,6 +84,22 @@ namespace PhoenixWPF
         }
 
         
+        /// <summary>
+        /// Setzt die Haken des Kartenmenüs auf das, was gerade angezeigt wird.
+        ///
+        /// Die Anzeigen teilen sich zwei Kanäle - den Text auf dem Feld und die Einfärbung -, und
+        /// je Kanal geht nur eine zur Zeit. Die Haken zeigen das, statt es zu verschweigen.
+        /// </summary>
+        private void KartenMenu_SubmenuOpened(object sender, RoutedEventArgs e) {
+            MenuStärken.IsChecked = Kartenanzeigen.Beschriftung
+                == PhoenixModel.View.KartenanzeigeView.Feldbeschriftung.Stärke;
+            MenuNummern.IsChecked = Kartenanzeigen.Beschriftung
+                == PhoenixModel.View.KartenanzeigeView.Feldbeschriftung.Nummer;
+            MenuBeschädigte.IsChecked = Kartenanzeigen.Färbung == Kartenanzeigen.Einfärbung.BeschädigteBauwerke;
+            MenuStationierte.IsChecked = Kartenanzeigen.Färbung == Kartenanzeigen.Einfärbung.StationierteHeere;
+            MenuFolienzug.IsChecked = Kartenanzeigen.Färbung == Kartenanzeigen.Einfärbung.Folienzug;
+        }
+
         /// <summary>
         /// Zeigt im Zug-Menü an, in welcher Phase der Zug gerade ist, und bietet den Wechsel nur an,
         /// wenn er auch möglich ist.
@@ -308,6 +324,28 @@ namespace PhoenixWPF
                         
 
                     // Zug
+                    // Karte
+                    case "ZeigeStärken":
+                        Kartenanzeigen.SetzeBeschriftung(PhoenixModel.View.KartenanzeigeView.Feldbeschriftung.Stärke);
+                        break;
+                    case "ZeigeNummern":
+                        Kartenanzeigen.SetzeBeschriftung(PhoenixModel.View.KartenanzeigeView.Feldbeschriftung.Nummer);
+                        break;
+                    case "ZeigeBeschädigte":
+                        Kartenanzeigen.SetzeFärbung(Kartenanzeigen.Einfärbung.BeschädigteBauwerke);
+                        break;
+                    case "ZeigeStationierte":
+                        Kartenanzeigen.SetzeFärbung(Kartenanzeigen.Einfärbung.StationierteHeere);
+                        break;
+                    case "ZeigeFolienzug":
+                        Kartenanzeigen.SetzeFärbung(Kartenanzeigen.Einfärbung.Folienzug);
+                        break;
+                    case "FolienzugEinstellen":
+                        new Dialogs.FolienzugDialog().ShowDialog();
+                        break;
+                    case "KartenanzeigenAus":
+                        Kartenanzeigen.AllesAus();
+                        break;
                     case "NaechstePhase":
                         NächstePhase();
                         break;

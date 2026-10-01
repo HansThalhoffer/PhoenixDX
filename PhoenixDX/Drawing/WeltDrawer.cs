@@ -148,6 +148,19 @@ namespace PhoenixDX.Drawing {
                         if (textur != null)
                             spriteBatch.Draw(textur, rScreenG, null, Color.Yellow);
                     }
+
+                    // Die Beschriftung liegt zuoberst - sie soll gelesen werden können, auch über
+                    // einer Hervorhebung. Schwarz auf einem hellen Schatten, damit sie auf jedem
+                    // Gelände lesbar bleibt: die Karte ist mal dunkelgrün, mal sandgelb.
+                    if (string.IsNullOrEmpty(gemark.Beschriftung) == false && font != null) {
+                        var maße = font.MeasureString(gemark.Beschriftung);
+                        var mitte = new Vector2(
+                            rScreenG.X + (rScreenG.Width - maße.X) / 2f,
+                            rScreenG.Y + (rScreenG.Height - maße.Y) / 2f);
+                        spriteBatch.DrawString(font, gemark.Beschriftung,
+                            mitte + new Vector2(1f, 1f), Color.White * 0.8f);
+                        spriteBatch.DrawString(font, gemark.Beschriftung, mitte, Color.Black);
+                    }
                 }
             }
             spriteBatch.End();

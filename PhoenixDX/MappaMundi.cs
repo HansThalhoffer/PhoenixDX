@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Drawing;
@@ -302,6 +302,33 @@ namespace PhoenixDX {
             if (_game == null)
                 return 0;
             return _game.HebeHervor(felder, new Color(r, g, b) * deckkraft);
+        }
+
+        /// <summary>
+        /// Schreibt kurze Texte auf die Kleinfelder - die Stärke der Figuren darauf, ihre Nummern,
+        /// oder die Nummer einer Figur, deren Weg darüber führte.
+        ///
+        /// Die Zuordnung ersetzt die bisherige vollständig; null oder eine leere Zuordnung räumt
+        /// die Beschriftung ab.
+        /// </summary>
+        /// <returns>wieviele Felder beschriftet wurden</returns>
+        public int Beschrifte(IEnumerable<(KleinfeldPosition Feld, string Text)>? texte) {
+            return _game?.Beschrifte(texte) ?? 0;
+        }
+
+        /// <summary>
+        /// Nimmt jede Beschriftung zurück
+        /// </summary>
+        public void LöscheBeschriftung() => Beschrifte(null);
+
+        /// <summary>
+        /// Färbt Kleinfelder ein, ohne die vorhandene Einfärbung zu löschen - für mehrere Mengen
+        /// nebeneinander, etwa den Folienzug mit einer Farbe je Gattung.
+        /// </summary>
+        public int FärbeEin(IEnumerable<KleinfeldPosition> felder, byte r, byte g, byte b, float deckkraft = 0.45f) {
+            if (_game == null)
+                return 0;
+            return _game.FärbeEin(felder, new Color(r, g, b) * deckkraft);
         }
 
         /// <summary>

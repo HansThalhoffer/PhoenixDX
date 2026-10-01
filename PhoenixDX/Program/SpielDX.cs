@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PhoenixDX.Drawing;
@@ -439,6 +439,16 @@ namespace PhoenixDX.Program {
         }
 
         /// <summary>
+        /// Färbt Kleinfelder ein, ohne die vorhandene Einfärbung zu löschen.
+        /// </summary>
+        internal int FärbeEin(IEnumerable<KleinfeldPosition> felder, Color farbe) {
+            if (Weltkarte == null)
+                return 0;
+            Weltkarte.FärbeEin(felder, farbe);
+            return Weltkarte.AnzahlHervorhebungen;
+        }
+
+        /// <summary>
         /// Lässt ein Kantenbauwerk auf der Karte blinken.
         /// </summary>
         internal bool LassBlinken(KleinfeldPosition? feld, PhoenixModel.Commands.ConstructionElementType art,
@@ -450,6 +460,12 @@ namespace PhoenixDX.Program {
         /// Nimmt jedes Blinken zurück.
         /// </summary>
         internal void HörAufZuBlinken() => Weltkarte?.HörAufZuBlinken();
+
+        /// <summary>
+        /// Beschriftet Kleinfelder mit einem kurzen Text.
+        /// </summary>
+        internal int Beschrifte(IEnumerable<(KleinfeldPosition Feld, string Text)>? texte)
+            => Weltkarte?.Beschrifte(texte) ?? 0;
 
         /// <summary>
         /// Ist eine der beiden Strg-Tasten unten?

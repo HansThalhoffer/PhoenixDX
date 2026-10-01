@@ -91,6 +91,15 @@ namespace PhoenixDX.Structures {
         public Microsoft.Xna.Framework.Color? Hervorhebung { get; set; } = null;
 
         /// <summary>
+        /// Ein kurzer Text, der auf dem Feld steht - die Stärke der Figuren darauf, ihre Nummern
+        /// oder die Nummer einer Figur, deren Weg über dieses Feld führte. Null heißt: nichts.
+        ///
+        /// Die Karte zeichnete bis dahin überhaupt keinen Text auf die Felder; die Schriftart war
+        /// im Zeichner geladen und blieb unbenutzt.
+        /// </summary>
+        public string? Beschriftung { get; set; } = null;
+
+        /// <summary>
         /// Das Kantenbauwerk, das an dieser Gemark blinken soll - Art und Richtung.
         ///
         /// Ein Wall, eine Strasse, eine Brücke und eine Kaianlage liegen an einer Kante und haben

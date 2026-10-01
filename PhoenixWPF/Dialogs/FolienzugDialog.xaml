@@ -1,0 +1,33 @@
+﻿<Window x:Class="PhoenixWPF.Dialogs.FolienzugDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Folienzug" Height="360" Width="420"
+        WindowStartupLocation="CenterOwner"
+        Background="#202020" Foreground="LightGray">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" TextWrapping="Wrap" Margin="0,0,0,10"
+                   Text="Der Folienzug legt alle Wege dieses Zuges auf einmal über die Karte - eine Farbe je Gattung, die Nummer der Figur auf dem Feld. Welche Gattungen dabei sind, steht hier." />
+
+        <StackPanel Grid.Row="1">
+            <CheckBox Name="CbKrieger" Content="Krieger und Artillerie (schwarz)" Margin="0,4" />
+            <CheckBox Name="CbReiter" Content="Reiter (magenta)" Margin="0,4" />
+            <CheckBox Name="CbSchiffe" Content="Schiffe und Kriegsschiffe (rot)" Margin="0,4" />
+            <CheckBox Name="CbKreaturen" Content="Kreaturen (orange)" Margin="0,4" />
+            <CheckBox Name="CbZauberer" Content="Zauberer (violett)" Margin="0,4" />
+            <CheckBox Name="CbCharaktere" Content="Charaktere (weiss)" Margin="0,4" />
+            <Separator Margin="0,8" />
+            <CheckBox Name="CbStartfeld" Content="Das Feld mitzeigen, auf dem der Zug begann" Margin="0,4" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button Name="OkKnopf" Content="Übernehmen" Width="110" Click="Ok_Click" IsDefault="True" />
+            <Button Content="Abbrechen" Width="110" Margin="8,0,0,0" IsCancel="True" />
+        </StackPanel>
+    </Grid>
+</Window>
