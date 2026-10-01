@@ -1,14 +1,147 @@
 ﻿<Page x:Class="PhoenixWPF.Pages.BuildPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:PhoenixWPF.Pages"
-      mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="BuildPage">
+      mc:Ignorable="d"
+      d:DesignHeight="600" d:DesignWidth="1000"
+      Title="Rüsten">
 
-    <Grid>
-        <TextBlock Text="Rüsten" Margin="10" />
+    <Grid Margin="6">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="240" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Links: die eigenen Rüstorte -->
+        <DockPanel Grid.Column="0" Margin="0,0,6,0">
+            <TextBlock DockPanel.Dock="Top" Text="Deine Rüstorte" FontWeight="Bold" Margin="0,0,0,4" />
+            <ListBox x:Name="RüstortListe" SelectionChanged="RüstortListe_SelectionChanged"
+                     DisplayMemberPath="Beschriftung" />
+        </DockPanel>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="140" />
+            </Grid.RowDefinitions>
+
+            <!-- Kopf: Ort, Kapazität, Reichsschatz -->
+            <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="1" Padding="6" Margin="0,0,0,6">
+                <StackPanel>
+                    <TextBlock x:Name="OrtText" FontWeight="Bold" Text="Kein Rüstort gewählt" />
+                    <TextBlock x:Name="PhasenText" Foreground="DarkRed" TextWrapping="Wrap" Margin="0,2,0,0" />
+                    <TextBlock x:Name="BelagerungsText" Foreground="DarkRed" TextWrapping="Wrap" Margin="0,2,0,0" />
+
+                    <Grid Margin="0,6,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="110" />
+                            <ColumnDefinition Width="110" />
+                            <ColumnDefinition Width="110" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Kapazität" FontWeight="Bold" />
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="vergeben" FontWeight="Bold" />
+                        <TextBlock Grid.Row="0" Grid.Column="3" Text="frei" FontWeight="Bold" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Goldstücke" Margin="0,0,10,0" />
+                        <TextBlock Grid.Row="1" Grid.Column="1" x:Name="KapaGS" />
+                        <TextBlock Grid.Row="1" Grid.Column="2" x:Name="VergebenGS" />
+                        <TextBlock Grid.Row="1" Grid.Column="3" x:Name="FreiGS" FontWeight="Bold" />
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Heerführer" Margin="0,0,10,0" />
+                        <TextBlock Grid.Row="2" Grid.Column="1" x:Name="KapaHF" />
+                        <TextBlock Grid.Row="2" Grid.Column="2" x:Name="VergebenHF" />
+                        <TextBlock Grid.Row="2" Grid.Column="3" x:Name="FreiHF" FontWeight="Bold" />
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Zauberer" Margin="0,0,10,0" />
+                        <TextBlock Grid.Row="3" Grid.Column="1" x:Name="KapaZ" />
+                        <TextBlock Grid.Row="3" Grid.Column="2" x:Name="VergebenZ" />
+                        <TextBlock Grid.Row="3" Grid.Column="3" x:Name="FreiZ" FontWeight="Bold" />
+                    </Grid>
+
+                    <TextBlock x:Name="SchatzText" Margin="0,6,0,0" />
+                </StackPanel>
+            </Border>
+
+            <!-- Die Rüstgüter -->
+            <DataGrid Grid.Row="1" x:Name="KorbGrid" AutoGenerateColumns="False" CanUserAddRows="False"
+                      CanUserSortColumns="False" HeadersVisibility="Column">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Rüstgut" Binding="{Binding Name, Mode=OneWay}"
+                                        IsReadOnly="True" Width="220" />
+                    <DataGridTextColumn Header="GS je Stück" Binding="{Binding Preis, Mode=OneWay}"
+                                        IsReadOnly="True" Width="100">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Right" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Anzahl" Binding="{Binding Anzahl, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                        Width="90">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Right" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Summe GS" Binding="{Binding Summe, Mode=OneWay}"
+                                        IsReadOnly="True" Width="120">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Right" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- Was es kostet und der Knopf -->
+            <Border Grid.Row="2" BorderBrush="Gray" BorderThickness="1" Padding="6" Margin="0,6,0,6">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox x:Name="AusBesonderenEinnahmen" Content="aus besonderen Einnahmen rüsten"
+                                  VerticalAlignment="Center" Checked="Einstellung_Geändert"
+                                  Unchecked="Einstellung_Geändert"
+                                  ToolTip="Halbiert die Kapazität, geht dafür in jedem Monat (Regelwerk 3.3.1)" />
+                        <TextBlock Text="zu bestehender Einheit:" Margin="24,0,6,0" VerticalAlignment="Center" />
+                        <ComboBox x:Name="ZielArt" Width="110" VerticalAlignment="Center"
+                                  SelectionChanged="Einstellung_Geändert" />
+                        <TextBox x:Name="ZielNummer" Width="70" Margin="6,0,0,0" VerticalAlignment="Center"
+                                 TextChanged="Einstellung_Geändert"
+                                 ToolTip="Nummer der Einheit; leer lassen für ein neues Heer" />
+                    </StackPanel>
+
+                    <TextBlock x:Name="SummeText" Margin="0,6,0,0" FontWeight="Bold" />
+                    <TextBlock x:Name="BefehlText" Margin="0,2,0,0" Foreground="Gray" TextWrapping="Wrap" />
+                    <TextBlock x:Name="HinweisText" Margin="0,2,0,0" TextWrapping="Wrap" />
+
+                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                        <Button x:Name="RüstenKnopf" Content="Rüsten" Width="120" Click="Rüsten_Click" IsEnabled="False" />
+                        <Button Content="Eingaben leeren" Width="120" Margin="8,0,0,0" Click="Leeren_Click" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Was hier schon gerüstet wurde -->
+            <DockPanel Grid.Row="3">
+                <TextBlock DockPanel.Dock="Top" Text="In diesem Rüstort gerüstet" FontWeight="Bold" />
+                <TextBlock DockPanel.Dock="Bottom" Foreground="Gray" TextWrapping="Wrap"
+                           Text="Zurückgenommen wird über &quot;Aktueller Zug&quot; - dort steht jede Rüstung dieses Zuges." />
+                <ListBox x:Name="EingestelltListe" />
+            </DockPanel>
+        </Grid>
     </Grid>
 </Page>

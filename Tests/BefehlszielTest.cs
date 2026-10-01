@@ -82,20 +82,41 @@ namespace Tests {
         /// <summary>
         /// Die Befehle des laufenden Zuges zeigen ueberwiegend auf eine Gemark - sonst waere die
         /// Spalte in der Liste leer.
+        ///
+        /// Geprueft wird gegen die Befehlsliste, wie sie gerade aussieht. Was darin steht, haengt
+        /// davon ab, was vorher lief - die Liste ist geteilter Zustand. Der Test verlangt deshalb
+        /// nur dort ein Zielfeld, wo es eines geben muss: bei einem Befehl, der ein Feld
+        /// mitbringt. Vorher verlangte er es von irgendeinem Befehl der Liste und fiel um, sobald
+        /// zufaellig nur solche darin standen, die auf kein Feld zeigen - einmal in vier
+        /// Durchlaeufen.
         /// </summary>
         [StaFact]
         public void DieBefehleDesZugesZeigenAufGemarken() {
             LadeAlles();
 
             var befehle = SharedData.Commands.ToList();
-            if (befehle.Count == 0)
-                return; // in diesem Zug wurde nichts gemacht, dann ist hier nichts zu pruefen
 
             // kein einziger Aufruf wirft, egal welcher Befehlstyp
             foreach (var befehl in befehle)
                 BefehlszielView.GetZielfeld(befehl);
 
-            Assert.Contains(befehle, befehl => BefehlszielView.HatZielfeld(befehl));
+            // Ein Bauauftrag bringt sein Feld mit - der muss eines nennen. Steht keiner in der
+            // Liste, wird einer gebaut, damit der Test etwas prueft statt auszusetzen.
+            var mitFeld = befehle.OfType<ConstructCommand>().FirstOrDefault(bau => bau.Location != null);
+            if (mitFeld != null) {
+                Assert.True(BefehlszielView.HatZielfeld(mitFeld),
+                    $"{mitFeld.CommandString} bringt ein Feld mit, nennt aber keines");
+                return;
+            }
+
+            var feld = SharedData.Map!.Values.First(gemark =>
+                gemark.Nation != null && gemark.Nation.Equals(ProgramView.SelectedNation));
+            var eigener = new ConstructCommand($"Errichte Burg auf {feld.CreateBezeichner()}") {
+                What = ConstructionElementType.Burg,
+                Location = new KleinfeldPosition(feld.gf, feld.kf),
+            };
+            Assert.True(BefehlszielView.HatZielfeld(eigener));
+            Assert.Equal(feld.CreateBezeichner(), BefehlszielView.GetZielfeld(eigener)!.CreateBezeichner());
         }
     }
 }
