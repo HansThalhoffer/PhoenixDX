@@ -153,13 +153,26 @@ namespace PhoenixWPF.Program {
             }
         }
 
-        public void SelectGemark(KleinfeldPosition pos) {
+        /// <summary>
+        /// Wählt ein Kleinfeld aus und führt die Karte dorthin.
+        /// </summary>
+        /// <param name="pos">das Feld, oder eine Figur - die ist auch eine Kleinfeldposition</param>
+        /// <param name="karteNachführen">
+        /// false, wenn die Karte stehen bleiben soll. Gebraucht, wenn die Auswahl von der Karte
+        /// selbst kommt - etwa aus dem Kontextmenü eines Feldes. Dort schaut der Benutzer schon
+        /// hin, und ein Schwenk auf die Mitte reisst ihm das Bild unter den Augen weg.
+        ///
+        /// Aus einer Liste heraus ist das Gegenteil richtig: dort kann das Feld weit weg liegen,
+        /// und ohne Nachführen wüsste niemand, wohin die Auswahl gesprungen ist.
+        /// </param>
+        public void SelectGemark(KleinfeldPosition pos, bool karteNachführen = true) {
             if (SharedData.Map != null && SharedData.Map.IsAddingCompleted) {
-                Main.Map?.Goto(pos);
+                if (karteNachführen)
+                    Main.Map?.Goto(pos);
                 if (pos is ISelectable select)
                     Main.Instance.SelectionHistory.Current = select;
             }
-            
+
         }
 
 

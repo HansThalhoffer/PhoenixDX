@@ -65,10 +65,17 @@ namespace PhoenixWPF.Program {
         ///
         /// Steht der Zug noch in der Rüstphase, ist nichts erreichbar; dann wird gefragt, ob sie
         /// beendet werden soll, und die Anzeige danach aufgefrischt.
+        ///
+        /// <b>Die Karte bleibt dabei stehen.</b> Das Menü gehört zu einem Feld, auf das der
+        /// Benutzer gerade mit der rechten Taste gezeigt hat - er schaut schon hin. Ein Schwenk
+        /// auf die Bildmitte reisst ihm das Bild unter den Augen weg, und genau das ist gemeldet
+        /// worden: "dann springt die Karte an eine andere Stelle". Vor dem Zusammenlegen der
+        /// beiden Untermenüs rief der Eintrag "Mögliche Züge" nur das Hervorheben und bewegte die
+        /// Karte nicht; das Nachführen kam aus dem Untermenü "Spielfiguren" mit.
         /// </summary>
         private static void Wähle(Spielfigur figur) {
             try {
-                Main.Instance.Spiel?.SelectGemark(figur);
+                Main.Instance.Spiel?.SelectGemark(figur, karteNachführen: false);
                 BieteDasEndeDerRüstphaseAn(figur);
                 // Auswählen kann scheitern, ohne dass jemand etwas tut: Spielfigur.Select lässt
                 // nur eigene Figuren zu. Das wortlos zu übergehen wäre das Schlimmste.
