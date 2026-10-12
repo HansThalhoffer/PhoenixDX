@@ -392,6 +392,21 @@ namespace Tests {
             if (Directory.Exists(verzeichnis) == false)
                 return;
 
+            // Erst die Dateien dieser Spielwiese freigeben, dann löschen.
+            //
+            // Der Datenbankwaechter hält die Verbindung zu jeder benutzten Datei offen, und eine
+            // offene Verbindung hält die Datei - das ist der Preis dafür, dass der ACE-Treiber
+            // nicht an der Zahl der Verbindungen stirbt. Ohne diese Zeile schlagen alle fünf
+            // Anläufe fehl, und die Spielwiese bleibt liegen. Gefunden an 169 Verzeichnissen und
+            // 496 MB im Temp-Verzeichnis: jedes mit einer Kopie echter Spieldaten darin, die
+            // dort nicht liegenbleiben soll.
+            //
+            // Ausdrücklich nur die Dateien dieser Spielwiese und nicht SchliesseAlle: das wartet
+            // auf jede Verbindung, die anderswo gerade in Benutzung ist, und schliesst sie dann
+            // weg. Mit SchliesseAlle an dieser Stelle lief der Testlauf statt 35 Sekunden über
+            // zehn Minuten und drei Prüfungen der Dateifreigabe fielen um.
+            Datenbankwaechter.SchliesseFür(verzeichnis);
+
             for (int versuch = 0; versuch < 5; versuch++) {
                 try {
                     Directory.Delete(verzeichnis, true);

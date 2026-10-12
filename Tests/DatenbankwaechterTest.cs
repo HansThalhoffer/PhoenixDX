@@ -106,21 +106,55 @@ namespace Tests {
             wächter.Schliesse();
         }
 
+        /// <summary>
+        /// Lässt einen eigenen Thread die Verbindung halten, bis er freigegeben wird.
+        ///
+        /// <b>Kein async und kein Task.</b> Holen und Zurückgeben müssen auf demselben Thread
+        /// stehen; liegt dazwischen ein <c>await</c>, läuft die Fortsetzung unter Umständen
+        /// woanders, und das Schloss bleibt bis zum Ende des Prozesses beim ersten Thread liegen.
+        /// Genau das ist in der ersten Fassung dieser Prüfungen passiert: zwei Wächter blieben
+        /// gesperrt, drei fremde Prüfungen fielen daran um, und jeder Aufruf von SchliesseAlle
+        /// kostete danach eine halbe Minute. Der Wächter meldet das inzwischen - er konnte es
+        /// damals nicht.
+        /// </summary>
+        private sealed class Halter : IDisposable {
+            private readonly System.Threading.ManualResetEventSlim _hält = new(false);
+            private readonly System.Threading.ManualResetEventSlim _freigeben = new(false);
+            private readonly Thread _thread;
+            public DbConnection? Verbindung;
+
+            public Halter(Datenbankwaechter wächter) {
+                _thread = new Thread(() => {
+                    Verbindung = wächter.Betrete(out _);
+                    _hält.Set();
+                    _freigeben.Wait();
+                    if (Verbindung != null)
+                        wächter.Verlasse();
+                }) { IsBackground = true };
+                _thread.Start();
+                Assert.True(_hält.Wait(TimeSpan.FromSeconds(10)), "Der Halter hat die Verbindung nicht bekommen");
+            }
+
+            public void Dispose() {
+                _freigeben.Set();
+                _thread.Join(TimeSpan.FromSeconds(10));
+                _hält.Dispose();
+                _freigeben.Dispose();
+            }
+        }
+
         [Fact]
-        public async Task EinFremderZugriffWartetUndGibtAuf() {
+        public void EinFremderZugriffWartetUndGibtAuf() {
             var vorher = Datenbankwaechter.Geduld;
             Datenbankwaechter.Geduld = TimeSpan.FromMilliseconds(150);
             try {
                 var wächter = Datenbankwaechter.Hole(NeuerSchlüssel(), () => new Attrappe());
-                Assert.NotNull(wächter.Betrete(out _));
-                try {
-                    // Ein anderer Thread, weil das Schloss je Thread wiedereintrittsfähig ist -
-                    // auf demselben Thread käme er durch, und der Test würde nichts prüfen.
-                    string fehler = string.Empty;
-                    DbConnection? ergebnis = null;
-                    var fremder = Task.Run(() => { ergebnis = wächter.Betrete(out fehler); });
-                    var geduld = Task.Delay(TimeSpan.FromSeconds(10));
-                    Assert.Same(fremder, await Task.WhenAny(fremder, geduld));
+                // Ein anderer Thread hält, weil das Schloss je Thread wiedereintrittsfähig ist -
+                // auf demselben Thread käme der Zugriff durch, und der Test prüfte nichts.
+                using (var halter = new Halter(wächter)) {
+                    Assert.NotNull(halter.Verbindung);
+
+                    var ergebnis = wächter.Betrete(out string fehler);
 
                     // Aufgeben heisst: null und eine Begründung. Früher stand hier das Gegenteil -
                     // es wurde eine eigene Verbindung geöffnet, also genau die Betriebsart, an der
@@ -131,10 +165,7 @@ namespace Tests {
                     Assert.Contains(".mdb", fehler);
                     Assert.DoesNotContain("geheim", fehler);
                 }
-                finally {
-                    wächter.Verlasse();
-                    wächter.Schliesse();
-                }
+                wächter.Schliesse();
             }
             finally {
                 Datenbankwaechter.Geduld = vorher;
@@ -142,7 +173,21 @@ namespace Tests {
         }
 
         [Fact]
-        public async Task EinGescheitertesOeffnenSperrtDieDateiNichtAus() {
+        public void WerAufEinemAnderenThreadZurueckgibtWirdGemeldet() {
+            // Der stille Dauerzustand, den es nicht mehr geben darf: geholt auf einem Thread,
+            // zurückgegeben auf einem anderen. Der Monitor gehört weiter dem ersten, die Datei
+            // bleibt belegt, bis der Prozess endet - und früher sah das von aussen wie ein
+            // gelungenes Zurückgeben aus.
+            var wächter = Datenbankwaechter.Hole(NeuerSchlüssel(), () => new Attrappe());
+            using (var halter = new Halter(wächter)) {
+                Assert.NotNull(halter.Verbindung);
+                Assert.False(wächter.Verlasse(), "Das Zurückgeben vom falschen Thread wurde nicht erkannt");
+            }
+            wächter.Schliesse();
+        }
+
+        [Fact]
+        public void EinGescheitertesOeffnenSperrtDieDateiNichtAus() {
             // Der Fall, der ohne diesen Test unbemerkt bliebe: scheitert das Öffnen, muss das
             // Schloss wieder hergegeben werden. Sonst wäre die Datei nach einem einzigen
             // Fehlversuch bis zum Ende des Prozesses für jeden anderen Ablauf unerreichbar - und
@@ -166,13 +211,13 @@ namespace Tests {
                 scheitern = false;
                 DbConnection? zweiterVersuch = null;
                 string fehler2 = string.Empty;
-                var fremder = Task.Run(() => {
+                var fremder = new Thread(() => {
                     zweiterVersuch = wächter.Betrete(out fehler2);
                     if (zweiterVersuch != null)
                         wächter.Verlasse();
-                });
-                var geduld = Task.Delay(TimeSpan.FromSeconds(10));
-                Assert.Same(fremder, await Task.WhenAny(fremder, geduld));
+                }) { IsBackground = true };
+                fremder.Start();
+                Assert.True(fremder.Join(TimeSpan.FromSeconds(10)), "Der fremde Zugriff hängt");
 
                 Assert.NotNull(zweiterVersuch);
                 Assert.Equal(string.Empty, fehler2);
@@ -230,6 +275,31 @@ namespace Tests {
             wächter.Verlasse();
             Assert.True(wächter.IstOffen);
             wächter.Schliesse();
+        }
+
+        [Fact]
+        public void SchliessenFuerEinVerzeichnisTrifftNurDiesesVerzeichnis() {
+            // Wer ein Verzeichnis abräumen will, muss die Dateien darin freigeben - und nur die.
+            // SchliesseAlle an dieser Stelle wartet auf jede Verbindung, die anderswo gerade in
+            // Benutzung ist, und schliesst sie dann weg: in der Aufräumroutine der Tests hat das
+            // den Lauf von 35 Sekunden auf über zehn Minuten gebracht und drei Prüfungen umgelegt.
+            string verzeichnis = $"C:\\irgendwo\\spielwiese_{Guid.NewGuid():N}";
+            var drin = Datenbankwaechter.Hole(
+                $"Provider=Attrappe;Data Source={verzeichnis}\\Zugdaten.mdb;", () => new Attrappe());
+            var draussen = Datenbankwaechter.Hole(
+                $"Provider=Attrappe;Data Source=C:\\woanders\\{Guid.NewGuid():N}.mdb;", () => new Attrappe());
+
+            Assert.NotNull(drin.Betrete(out _));
+            drin.Verlasse();
+            Assert.NotNull(draussen.Betrete(out _));
+            draussen.Verlasse();
+
+            Datenbankwaechter.SchliesseFür(verzeichnis);
+
+            Assert.False(drin.IstOffen);
+            Assert.True(draussen.IstOffen);
+
+            draussen.Schliesse();
         }
 
         [Fact]

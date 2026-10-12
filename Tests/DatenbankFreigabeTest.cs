@@ -147,5 +147,37 @@ namespace Tests {
                 TestSetup.RäumeAuf(spielwiese);
             }
         }
+
+        /// <summary>
+        /// Eine benutzte Spielwiese muss sich wieder abräumen lassen.
+        ///
+        /// Das klingt nach Hausordnung und ist es nicht: in jeder Spielwiese liegt eine
+        /// <b>Kopie echter Spieldaten</b>. Bleibt sie liegen, verteilt sich der Spielstand übers
+        /// Temp-Verzeichnis. Gefunden an 169 Verzeichnissen und 496 MB, die sich über die Monate
+        /// angesammelt hatten, weil <see cref="TestSetup.RäumeAuf"/> fünf Anläufe nahm, an der
+        /// offen gehaltenen Verbindung scheiterte und dann stillschweigend aufgab.
+        ///
+        /// Der Vertrag steht oben: frei ist die Datei nach
+        /// <see cref="Datenbankwaechter.SchliesseAlle"/>. Wer eine Datenbankdatei anfasst, muss
+        /// ihn einhalten - auch ein Testhelfer.
+        /// </summary>
+        [StaFact]
+        public void EineBenutzteSpielwieseLaesstSichAbraeumen() {
+            TestSetup.Setup();
+            string kopie = ErstelleKopie(out string spielwiese);
+            string passwort = new PhoenixModel.Database.PasswordHolder(TestSetup.ZugdatenPasswort).DecryptedPassword ?? string.Empty;
+
+            using (var db = new AccessDatabase(kopie, passwort)) {
+                Assert.True(db.Open(), "Die Kopie liess sich nicht öffnen");
+                db.Close();
+            }
+            // Geschlossen, aber nicht freigegeben - genau der Zustand, in dem aufgeräumt wird.
+            Assert.False(IstFrei(kopie), "Die Verbindung wird nicht offen gehalten - dann prüft dieser Test nichts");
+
+            TestSetup.RäumeAuf(spielwiese);
+
+            Assert.False(Directory.Exists(spielwiese),
+                "Die Spielwiese liegt noch da, und mit ihr eine Kopie der Zugdaten");
+        }
     }
 }

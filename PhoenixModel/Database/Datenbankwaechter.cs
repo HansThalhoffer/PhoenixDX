@@ -127,6 +127,40 @@ namespace PhoenixModel.Database {
         }
 
         /// <summary>
+        /// Schliesst die Verbindungen zu einer Datei oder zu allem unterhalb eines Verzeichnisses.
+        ///
+        /// <b>Wozu es das neben <see cref="SchliesseAlle"/> gibt:</b> wer ein Verzeichnis abräumen
+        /// will, muss die Dateien darin freigeben - aber nicht die aller anderen. SchliesseAlle
+        /// wartet auf jede Verbindung, die gerade in Benutzung ist, bis zur
+        /// <see cref="Geduld"/>; aus einer Aufräumroutine heraus, die mitten im Betrieb läuft,
+        /// hält das den Ablauf minutenlang auf und schliesst anderen die Verbindung weg, die sie
+        /// noch brauchen.
+        /// </summary>
+        /// <param name="pfad">eine Datenbankdatei oder ein Verzeichnis</param>
+        public static void SchliesseFür(string pfad) {
+            if (string.IsNullOrWhiteSpace(pfad))
+                return;
+
+            string ziel;
+            try { ziel = System.IO.Path.GetFullPath(pfad).TrimEnd(System.IO.Path.DirectorySeparatorChar); }
+            catch { return; }
+            string zielMitTrenner = ziel + System.IO.Path.DirectorySeparatorChar;
+
+            List<Datenbankwaechter> alle;
+            lock (_verzeichnisSchloss) {
+                alle = [.. _wächter.Values];
+            }
+            foreach (var wächter in alle) {
+                string quelle = wächter.Datenquelle;
+                if (quelle.Length == 0)
+                    continue;
+                if (quelle.Equals(ziel, StringComparison.OrdinalIgnoreCase)
+                    || quelle.StartsWith(zielMitTrenner, StringComparison.OrdinalIgnoreCase))
+                    wächter.Schliesse();
+            }
+        }
+
+        /// <summary>
         /// Wieviele Verbindungen gerade offen gehalten werden - für die Prüfung.
         /// </summary>
         public static int AnzahlOffenerVerbindungen {
@@ -202,9 +236,34 @@ namespace PhoenixModel.Database {
         /// <summary>
         /// Gibt die Verbindung zurück. <b>Geschlossen wird sie nicht</b> - genau darum geht es.
         /// </summary>
-        public void Verlasse() {
-            if (System.Threading.Monitor.IsEntered(_schloss))
-                System.Threading.Monitor.Exit(_schloss);
+        /// <returns>
+        /// false, wenn der aufrufende Thread sie gar nicht hält. Dann ist etwas grundsätzlich
+        /// schief: geholt und zurückgegeben werden muss auf <em>demselben</em> Thread.
+        /// </returns>
+        public bool Verlasse() {
+            if (System.Threading.Monitor.IsEntered(_schloss) == false) {
+                // Das ist kein Schönheitsfehler, sondern eine Datei, die bis zum Ende des
+                // Prozesses belegt bleibt: der Monitor gehört weiterhin dem Thread, der sie geholt
+                // hat, und der ist vielleicht schon weg. Jeder andere wartet dann die volle Geduld
+                // ab und gibt auf.
+                //
+                // Der Weg dorthin ist unauffällig: ein await zwischen Holen und Zurückgeben, und
+                // die Fortsetzung läuft auf einem anderen Thread. Genau so ist es in den eigenen
+                // Prüfungen dieser Klasse passiert - zwei Wächter blieben für den Rest des
+                // Testlaufs gesperrt, und drei fremde Prüfungen fielen daran um, eine halbe
+                // Minute Wartezeit je Aufruf von SchliesseAlle.
+                //
+                // Früher stand hier nur ein stilles return. Ein Monitor.Exit vom falschen Thread
+                // hätte geworfen, und das sollte eine Meldung nicht wert sein; dass die Datei
+                // dabei für immer belegt bleibt, war der Preis, den niemand gesehen hat.
+                ProgramView.LogWarning(
+                    $"Die Datenbank {Dateiname} wurde auf einem anderen Thread zurückgegeben als geholt",
+                    "Die Datei bleibt dadurch belegt, bis der Prozess endet. Zwischen dem Holen und dem "
+                    + "Zurückgeben einer Datenbankverbindung darf der Thread nicht wechseln - also kein await.");
+                return false;
+            }
+            System.Threading.Monitor.Exit(_schloss);
+            return true;
         }
 
         /// <summary>
@@ -247,18 +306,32 @@ namespace PhoenixModel.Database {
         /// </summary>
         private string Dateiname {
             get {
+                string pfad = Datenquelle;
+                if (pfad.Length == 0)
+                    return "(unbekannt)";
+                try { return System.IO.Path.GetFileName(pfad); }
+                catch { return "(unbekannt)"; }
+            }
+        }
+
+        /// <summary>
+        /// Der vollständige Pfad der Datenbankdatei, aus dem Schlüssel herausgelesen - leer, wenn
+        /// er nicht darin steht. Wie <see cref="Dateiname"/> gilt: der Schlüssel selbst enthält
+        /// das Passwort und darf nirgends hinaus.
+        /// </summary>
+        private string Datenquelle {
+            get {
                 // "Data Source=C:\...\Zugdaten.mdb;" - alles zwischen dem Gleichheitszeichen und
                 // dem nächsten Semikolon. Steht es anders da, wird nichts geraten.
                 const string marke = "Data Source=";
                 int anfang = _schlüssel.IndexOf(marke, StringComparison.OrdinalIgnoreCase);
                 if (anfang < 0)
-                    return "(unbekannt)";
+                    return string.Empty;
                 anfang += marke.Length;
                 int ende = _schlüssel.IndexOf(';', anfang);
-                string pfad = ende < 0 ? _schlüssel[anfang..] : _schlüssel[anfang..ende];
-                pfad = pfad.Trim().Trim('"');
-                try { return System.IO.Path.GetFileName(pfad); }
-                catch { return "(unbekannt)"; }
+                string pfad = (ende < 0 ? _schlüssel[anfang..] : _schlüssel[anfang..ende]).Trim().Trim('"');
+                try { return System.IO.Path.GetFullPath(pfad).TrimEnd(System.IO.Path.DirectorySeparatorChar); }
+                catch { return string.Empty; }
             }
         }
     }
