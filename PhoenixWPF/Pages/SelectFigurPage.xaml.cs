@@ -60,22 +60,48 @@ namespace PhoenixWPF.Pages {
                     }
 
                 case ViewEventArgs.ViewEventType.UpdateSpielfiguren: {
-                        if (e.Data != null && e.Data is Spielfigur figur) {
-                            int index = EigenschaftlerDataGrid.Items.IndexOf(figur);
-                            string[] toIgnore = { };
-                            List<Eigenschaft> eigList = EigenschaftlerList[0].Eigenschaften;
-                            List<Eigenschaft> columns = eigList.Where(prop => !toIgnore.Contains(prop.Name)).ToList();
-                            int i = 0;
-                            var obj = EigenschaftlerList[index];
-                            foreach (var col in columns) {
-                                var wert = obj.Eigenschaften[i].Wert;
-                                DataGridHelper.SetCellValue(EigenschaftlerDataGrid, index, i, wert != null?wert:"");
-                                i++;
-                            }
-                        }
+                        if (e.Data != null && e.Data is Spielfigur figur)
+                            FrischeZeileAuf(figur);
                         break;
                     }
             }
+        }
+
+        /// <summary>
+        /// Schreibt die Werte einer Figur in ihre Zeile des Gitters.
+        ///
+        /// <b>Gemeldet als Absturz beim Ziehen einer Figur</b> (ArgumentOutOfRangeException in
+        /// dieser Methode). Drei Fehler steckten in der alten Fassung übereinander:
+        ///
+        /// <list type="number">
+        /// <item>Die Zeile wurde über <c>Items.IndexOf</c> gesucht. Spielfigur erbt von
+        /// KleinfeldPosition ein Equals nach gf und kf, also lieferte das die erste Figur
+        /// <em>des Feldes</em> statt der gesuchten - und nach einer Bewegung steht die gesuchte
+        /// Figur auf einem neuen Feld, auf dem schon etwas anderes stehen kann. Jetzt wird über
+        /// die Identität gesucht (<see cref="Gitterzeile.Finde"/>).</item>
+        /// <item>Stand die Figur nicht im Gitter, war die Zeilennummer -1 und der Zugriff auf die
+        /// Liste warf. Das ist der Normalfall, sobald im Kontextmenü ein Filter gesetzt ist -
+        /// dann zeigt das Gitter nur einen Teil der Armee. Jetzt gibt es nichts aufzufrischen.</item>
+        /// <item>Die Spalten kamen aus <c>EigenschaftlerList[0]</c>, die Werte aber aus der
+        /// aufzufrischenden Figur. Krieger, Zauberer, Charaktere und Schiffe haben
+        /// unterschiedlich viele Eigenschaften; die Schleife lief über das Ende der kürzeren
+        /// hinaus. Genau an dieser Zeile ist der Absturz entstanden. Jetzt werden nur so viele
+        /// Spalten bedient, wie die Figur Eigenschaften hat.</item>
+        /// </list>
+        ///
+        /// Die Werte werden von Hand in die Zellen geschrieben, weil Eigenschaft keine Änderung
+        /// meldet und die Liste bei jedem Lesen neu erzeugt wird. Deshalb wird sie hier genau
+        /// einmal gelesen.
+        /// </summary>
+        private void FrischeZeileAuf(Spielfigur figur) {
+            int zeile = Gitterzeile.Finde(EigenschaftlerDataGrid.Items, figur);
+            if (zeile < 0)
+                return;
+
+            var eigenschaften = figur.Eigenschaften;
+            int anzahl = Math.Min(eigenschaften.Count, EigenschaftlerDataGrid.Columns.Count);
+            for (int spalte = 0; spalte < anzahl; spalte++)
+                DataGridHelper.SetCellValue(EigenschaftlerDataGrid, zeile, spalte, eigenschaften[spalte].Wert ?? string.Empty);
         }
 
         public void LoadEigenschaftler() {
