@@ -472,7 +472,7 @@ namespace PhoenixWPF.Program {
                 // der Benutzer hat den Passwortdialog abgebrochen
                 if (string.IsNullOrEmpty(encryptedPassword))
                     break;
-                if (AccessDatabase.TestConnection(databaseLocation, holder.DecryptedPassword, out fehler))
+                if (Datenbankfabrik.PrüfeZugang(databaseLocation, holder.DecryptedPassword, out fehler))
                     return encryptedPassword;
                 SpielWPF.LogWarning($"Das gespeicherte Passwort für {databaseName} passt nicht",
                     $"{fehler}\r\nDas Passwort wird verworfen und erneut abgefragt (Versuch {versuch} von {MaxPasswortVersuche}).");

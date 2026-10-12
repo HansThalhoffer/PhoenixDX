@@ -23,7 +23,7 @@ namespace PhoenixWPF.Database
         public void Load()
         {
             PasswordHolder holder = new(_encryptedpassword);
-            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptedPassword))
+            using (IDatenbank connector = Datenbankfabrik.Erzeuge(_databaseFileName, holder.DecryptedPassword))
             {
                 if (connector?.Open() == false)
                     return;
@@ -68,7 +68,7 @@ namespace PhoenixWPF.Database
         protected override void LoadInBackground()
         {
             PasswordHolder holder = new(_encryptedpassword);
-            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptedPassword))
+            using (IDatenbank connector = Datenbankfabrik.Erzeuge(_databaseFileName, holder.DecryptedPassword))
             {
                 if (connector?.Open() == false)
                     return;

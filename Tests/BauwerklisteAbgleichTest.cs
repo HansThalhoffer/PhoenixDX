@@ -1,4 +1,4 @@
-using PhoenixModel.Database;
+﻿using PhoenixModel.Database;
 using PhoenixModel.ExternalTables;
 using PhoenixModel.View;
 using PhoenixModel.ViewModel;
@@ -185,7 +185,7 @@ namespace Tests {
             finally {
                 // Wer eine Datenbankdatei loeschen will, muss die offen gehaltene
                 // Verbindung zuerst schliessen - siehe DatenbankFreigabeTest.
-                PhoenixWPF.Database.AccessDatabase.SchliesseAlle();
+                Datenbankwaechter.SchliesseAlle();
                 File.Delete(kopie);
                 if (sicherung != null && File.Exists(sicherung))
                     File.Delete(sicherung);

@@ -51,8 +51,8 @@ namespace PhoenixWPF.Database {
             }
 
             string? klartext = new PasswordHolder(verschluesseltesPasswort).DecryptedPassword;
-            using var a = new AccessDatabase(dateiA, klartext);
-            using var b = new AccessDatabase(dateiB, klartext);
+            using IDatenbank a = Datenbankfabrik.Erzeuge(dateiA, klartext);
+            using IDatenbank b = Datenbankfabrik.Erzeuge(dateiB, klartext);
             if (a.Open() == false || b.Open() == false) {
                 bericht.AppendLine("Mindestens eine der beiden Datenbanken liess sich nicht oeffnen.");
                 return new Ergebnis(bericht.ToString(), 0);
@@ -97,7 +97,7 @@ namespace PhoenixWPF.Database {
         /// Vergleicht eine einzelne Tabelle und haengt das Ergebnis an den Bericht an.
         /// </summary>
         /// <returns>die Zahl der Unterschiede in dieser Tabelle</returns>
-        private static int VergleicheTabelle(AccessDatabase a, AccessDatabase b, string tabelle, StringBuilder bericht) {
+        private static int VergleicheTabelle(IDatenbank a, IDatenbank b, string tabelle, StringBuilder bericht) {
             DataTable zeilenA = a.ExecuteQuery($"SELECT * FROM [{tabelle}]");
             DataTable zeilenB = b.ExecuteQuery($"SELECT * FROM [{tabelle}]");
 

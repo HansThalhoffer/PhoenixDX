@@ -1,4 +1,4 @@
-using PhoenixModel.Database;
+﻿using PhoenixModel.Database;
 using PhoenixModel.ViewModel;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.EventsAndArgs;
@@ -83,7 +83,7 @@ namespace PhoenixWPF.Database {
 
         public void Load() {
             PasswordHolder holder = new(_encryptedpassword);
-            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptedPassword)) {
+            using (IDatenbank connector = Datenbankfabrik.Erzeuge(_databaseFileName, holder.DecryptedPassword)) {
                 if (connector?.Open() == false)
                     return;
                 try {
@@ -105,7 +105,7 @@ namespace PhoenixWPF.Database {
 
         protected override void LoadInBackground() {
             PasswordHolder holder = new(_encryptedpassword);
-            using (AccessDatabase connector = new(_databaseFileName, holder.DecryptedPassword)) {
+            using (IDatenbank connector = Datenbankfabrik.Erzeuge(_databaseFileName, holder.DecryptedPassword)) {
                 if (connector?.Open() == false)
                     return;
                 try {
@@ -193,7 +193,7 @@ namespace PhoenixWPF.Database {
             foreach (string alteZugdaten in zugDatenListe) {
                 string aktuellesDatenbank = System.IO.Path.Combine(zugdatenPath, alteZugdaten);
                 aktuellesDatenbank = System.IO.Path.Combine(aktuellesDatenbank, databaseFileName);
-                using (AccessDatabase connector = new(aktuellesDatenbank, holder.DecryptedPassword)) {
+                using (IDatenbank connector = Datenbankfabrik.Erzeuge(aktuellesDatenbank, holder.DecryptedPassword)) {
                     if (connector?.Open() == false)
                         return result;
                     try {
@@ -255,7 +255,7 @@ namespace PhoenixWPF.Database {
                             }
                             // Die Zieldatei wird ersetzt - eine offen gehaltene Verbindung
                             // haelt sie fest.
-                            AccessDatabase.SchliesseAlle();
+                            Datenbankwaechter.SchliesseAlle();
                             File.Move(extracted, aktuelleDatenbank, true);
                             Directory.Delete(Path.Combine(aktuellerPfad, "PZE.NET"), true);
                             if (File.Exists(aktuelleDatenbank) == false) {
@@ -292,7 +292,7 @@ namespace PhoenixWPF.Database {
                 if (File.Exists(aktuelleDatenbank) == false) {
                     continue;
                 }
-                using (AccessDatabase connector = new(aktuelleDatenbank, holder.DecryptedPassword)) {
+                using (IDatenbank connector = Datenbankfabrik.Erzeuge(aktuelleDatenbank, holder.DecryptedPassword)) {
                     if (connector?.Open() == false)
                         return result;
                     try {
@@ -311,7 +311,7 @@ namespace PhoenixWPF.Database {
                     }
                     connector?.Close();
                 }
-                using (AccessDatabase connector = new(aktuelleDatenbank, holder.DecryptedPassword)) {
+                using (IDatenbank connector = Datenbankfabrik.Erzeuge(aktuelleDatenbank, holder.DecryptedPassword)) {
                     if (connector?.Open() == false)
                         return result;
                     try {
@@ -359,7 +359,7 @@ namespace PhoenixWPF.Database {
                 if (File.Exists(aktuelleDatenbank) == false) {
                     continue;
                 }
-                using (AccessDatabase connector = new(aktuelleDatenbank, holder.DecryptedPassword)) {
+                using (IDatenbank connector = Datenbankfabrik.Erzeuge(aktuelleDatenbank, holder.DecryptedPassword)) {
                     if (connector?.Open() == false)
                         return result;
                     try {
@@ -415,7 +415,7 @@ namespace PhoenixWPF.Database {
                 string aktuelleDatenbank = System.IO.Path.Combine(zugdatenPath, alteZugdaten);
                 aktuelleDatenbank = System.IO.Path.Combine(aktuelleDatenbank, databaseFileName);
                 try {
-                    using (AccessDatabase connector = new(aktuelleDatenbank, holder.DecryptedPassword)) {
+                    using (IDatenbank connector = Datenbankfabrik.Erzeuge(aktuelleDatenbank, holder.DecryptedPassword)) {
                         if (connector?.Open() == false)
                             return result;
                         try {

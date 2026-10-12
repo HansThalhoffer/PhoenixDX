@@ -1,4 +1,5 @@
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
+using PhoenixModel.Database;
 using PhoenixModel.View;
 using PhoenixWPF.Program;
 using System;
@@ -7,149 +8,60 @@ using System.Data.Common;
 using System.Collections.Generic;
 using System.Data.OleDb;
 using System.Linq;
-using System.Windows;
 
 namespace PhoenixWPF.Database
 {
     /// <summary>
-    /// Repräsentiert eine Verbindung zu einer Access-Datenbank via OLEDB
+    /// Eine Verbindung zu einer Access-Datenbank über OLE DB.
+    ///
+    /// <b>Was hier drin steht und nirgends sonst:</b> die Erkennung des installierten
+    /// ACE-Treibers, der Bau der Verbindungszeichenfolge samt Passwort, die Abfrage des Schemas
+    /// über <c>GetOleDbSchemaTable</c> und <c>SELECT @@IDENTITY</c>. Das ist der
+    /// Access-eigene Teil; alles andere steht in <see cref="IDatenbank"/> und im
+    /// <see cref="Datenbankwaechter"/> und gilt für jeden Unterbau.
+    ///
+    /// <b>Die Verbindung gehört dieser Klasse nicht.</b> Sie gehört dem Wächter der Datei und
+    /// bleibt offen; <see cref="Open"/> leiht sie aus und sperrt sie dabei für andere,
+    /// <see cref="Close"/> gibt sie zurück. Eine Instanz ist deshalb kurzlebig und gehört in ein
+    /// <c>using</c>. Warum überhaupt offen gehalten wird, steht beim Wächter - kurz: der Treiber
+    /// stürzt an der Zahl der Verbindungen, nicht an der Menge der Abfragen.
     /// </summary>
-    public class AccessDatabase : IDisposable
+    public class AccessDatabase : IDatenbank
     {
-        private OleDbConnection _connection;
+        /// <summary>
+        /// Die ausgeliehene Verbindung, oder null, solange nicht geöffnet ist.
+        /// </summary>
+        private OleDbConnection? _connection;
 
         /// <summary>
-        /// Die Verbindungszeichenfolge, mit der diese Instanz arbeitet - zugleich der Schlüssel
-        /// im Verbindungscache.
+        /// Der Wächter, von dem die Verbindung geliehen wird - null bei einer eigenen.
+        /// </summary>
+        private readonly Datenbankwaechter? _wächter;
+
+        /// <summary>
+        /// Eine eigene Verbindung für die Fälle, die ausdrücklich keine gemeinsame wollen.
+        /// Es gibt genau einen: die Passwortprobe (siehe <see cref="TestConnection"/>).
+        /// </summary>
+        private readonly OleDbConnection? _eigeneVerbindung;
+
+        /// <summary>
+        /// Die Verbindungszeichenfolge - zugleich der Schlüssel des Wächters. <b>Enthält das
+        /// Passwort</b> und darf deshalb in keine Meldung geraten.
         /// </summary>
         private readonly string _verbindungszeichenfolge;
 
         /// <summary>
-        /// Das Schloss der gemeinsam benutzten Verbindung, oder null bei einer eigenen.
+        /// Der Pfad, wie der Aufrufer ihn übergeben hat. Nicht aus der Verbindung zurückgelesen:
+        /// an diesem Namen erkennt der Speicherlauf wieder, in welche Datei ein Datensatz gehört,
+        /// und er muss dazu buchstabengleich mit dem Pfad aus den Einstellungen sein.
         /// </summary>
-        private object? _schloss;
+        private readonly string _datenbankdatei;
 
         /// <summary>
-        /// Wurde das Schloss von dieser Instanz betreten? Nur dann darf es wieder verlassen werden.
+        /// Wurde die gemeinsame Verbindung von dieser Instanz ausgeliehen? Nur dann darf sie
+        /// zurückgegeben werden.
         /// </summary>
-        private bool _betreten = false;
-
-        #region Verbindungscache
-
-        /// <summary>
-        /// Die offen gehaltenen Verbindungen, je Verbindungszeichenfolge eine.
-        ///
-        /// <b>Warum:</b> der Access-Treiber stürzt nicht an der Menge der Abfragen, sondern an der
-        /// Zahl der <em>Verbindungen</em>. Gemessen etwa eine Zugriffsverletzung in
-        /// mso99Lwin32client.dll je 400 Verbindungen, die den Prozess ohne Ausnahme beendet. Ein
-        /// voller Testlauf öffnete 758 Verbindungen und stürzte entsprechend etwa zweimal ab; die
-        /// Anwendung sammelt sie über eine lange Sitzung ebenso an, weil jeder Speicherlauf mit
-        /// Inhalt eine neue öffnet.
-        ///
-        /// Bleibt je Datei eine Verbindung offen, sinkt das auf eine Handvoll je Prozess.
-        ///
-        /// <b>Der Preis:</b> eine offene Verbindung hält die Datei. Wer sie kopieren, packen oder
-        /// ersetzen will - die Zugabgabe etwa -, muss vorher <see cref="SchliesseAlle"/> rufen.
-        /// Das ist der Grund, warum es diese Methode gibt, und nicht bloss Aufräumen.
-        /// </summary>
-        private static readonly Dictionary<string, OleDbConnection> _verbindungen = [];
-
-        /// <summary>
-        /// Je Verbindung ein Schloss: eine OleDbConnection verträgt keine zwei Benutzer zugleich,
-        /// und die Anwendung greift aus mehreren Threads zu (Karte, Oberfläche, Laden im
-        /// Hintergrund). Solange eine AccessDatabase offen ist, gehört ihr die Verbindung allein.
-        /// </summary>
-        private static readonly Dictionary<string, object> _schlösser = [];
-
-        /// <summary>
-        /// Schützt die beiden Verzeichnisse selbst - nicht die Verbindungen darin.
-        /// </summary>
-        private static readonly object _cacheSchloss = new();
-
-        /// <summary>
-        /// Wie lange auf eine belegte Verbindung gewartet wird, bevor eine eigene geöffnet wird.
-        ///
-        /// Ohne diese Grenze könnten sich zwei Threads, die zwei Dateien in verschiedener
-        /// Reihenfolge belegen, gegenseitig blockieren - die Anwendung stünde still und niemand
-        /// wüsste warum. Nach Ablauf gilt wieder das alte Verhalten: eine eigene Verbindung.
-        /// Das ist langsamer und zählt gegen die 400, aber es hängt nichts.
-        /// </summary>
-        private static readonly TimeSpan Geduld = TimeSpan.FromSeconds(30);
-
-        /// <summary>
-        /// Beim Ende des Prozesses werden die offen gehaltenen Verbindungen geschlossen.
-        ///
-        /// Sonst bleibt neben jeder Datenbank ihre Sperrdatei liegen - Access legt eine .ldb an,
-        /// solange jemand verbunden ist, und räumt sie erst beim Schliessen der letzten
-        /// Verbindung weg. Vorher fiel das nicht auf, weil jede Verbindung sofort wieder zuging.
-        /// </summary>
-        static AccessDatabase() {
-            AppDomain.CurrentDomain.ProcessExit += (s, e) => SchliesseAlle();
-        }
-
-        /// <summary>
-        /// Schliesst alle offen gehaltenen Verbindungen und gibt damit die Dateien frei.
-        ///
-        /// Muss gerufen werden, bevor eine Datenbankdatei kopiert, gepackt, verschoben oder
-        /// ersetzt wird. Danach arbeitet alles weiter wie zuvor - die nächste Benutzung öffnet
-        /// eine neue Verbindung.
-        /// </summary>
-        public static void SchliesseAlle() {
-            List<KeyValuePair<string, OleDbConnection>> offen;
-            lock (_cacheSchloss) {
-                offen = [.. _verbindungen];
-                _verbindungen.Clear();
-            }
-            foreach (var eintrag in offen) {
-                // Das Schloss der Verbindung wird mitgenommen: sonst schlösse man sie jemandem
-                // unter den Händen weg, der gerade liest.
-                object schloss;
-                lock (_cacheSchloss) {
-                    if (_schlösser.TryGetValue(eintrag.Key, out var vorhanden) == false)
-                        continue;
-                    schloss = vorhanden;
-                }
-                lock (schloss) {
-                    try {
-                        if (eintrag.Value.State != ConnectionState.Closed)
-                            eintrag.Value.Close();
-                        eintrag.Value.Dispose();
-                    }
-                    catch (Exception ex) {
-                        ProgramView.LogWarning("Eine Datenbankverbindung liess sich nicht schliessen", ex.Message);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Wieviele Verbindungen gerade offen gehalten werden - für die Prüfung.
-        /// </summary>
-        public static int AnzahlOffenerVerbindungen {
-            get { lock (_cacheSchloss) { return _verbindungen.Count; } }
-        }
-
-        private static OleDbConnection HoleVerbindung(string zeichenfolge) {
-            lock (_cacheSchloss) {
-                if (_verbindungen.TryGetValue(zeichenfolge, out var vorhanden))
-                    return vorhanden;
-                var neu = new OleDbConnection(zeichenfolge);
-                _verbindungen[zeichenfolge] = neu;
-                return neu;
-            }
-        }
-
-        private static object HoleSchloss(string zeichenfolge) {
-            lock (_cacheSchloss) {
-                if (_schlösser.TryGetValue(zeichenfolge, out var vorhanden))
-                    return vorhanden;
-                var neu = new object();
-                _schlösser[zeichenfolge] = neu;
-                return neu;
-            }
-        }
-
-        #endregion
+        private bool _geliehen = false;
 
         /// <summary>
         /// Ermittelt die installierte Microsoft ACE OLEDB Provider-Version aus der Windows-Registrierung.
@@ -164,7 +76,7 @@ namespace PhoenixWPF.Database
             string? result = null;
 
             // Überprüft bekannte Versionen des ACE OLEDB Providers
-            string[] versions = { "18.0", "17.0", "16.0", "15.0", "14.0", "12.0", "11.0", "10.0", "8.0", "4.0" }; 
+            string[] versions = { "18.0", "17.0", "16.0", "15.0", "14.0", "12.0", "11.0", "10.0", "8.0", "4.0" };
             foreach (var version in versions)
             {
                 using (var key = Registry.LocalMachine.OpenSubKey($"{registryPath64Bit}{version}"))
@@ -181,9 +93,11 @@ namespace PhoenixWPF.Database
 
         /// <summary>
         /// Standard-SQL-Abfrage zur Rückgabe der letzten automatisch von der Datenbank eingefügten Identität.
+        /// Access kennt dafür @@IDENTITY; ein anderer Unterbau setzt hier etwas anderes ein, und
+        /// genau deshalb nimmt <see cref="DbCommandFacade"/> die Abfrage als Parameter.
         /// </summary>
         static string QueryIdentityAfterInsert =  "SELECT @@IDENTITY;";
-        
+
         /// <summary>
         /// Erstellt eine Verbindung zur Access-Datenbank.
         /// </summary>
@@ -198,7 +112,7 @@ namespace PhoenixWPF.Database
         /// <param name="databaseFilePath">Der Pfad zur Access-Datenbankdatei.</param>
         /// <param name="pw">Optionales Passwort für die Datenbank.</param>
         /// <param name="gemeinsam">
-        /// true, wenn die offen gehaltene Verbindung aus dem Cache benutzt werden soll. false für
+        /// true, wenn die offen gehaltene Verbindung des Wächters benutzt werden soll. false für
         /// Fälle, die ausdrücklich eine eigene brauchen - etwa die Passwortprobe, die auch mit
         /// einem falschen Passwort aufgerufen wird und nichts hinterlassen darf.
         /// </param>
@@ -219,7 +133,7 @@ namespace PhoenixWPF.Database
             {
                 connectionString = $@"Provider={provider};Data Source={databaseFilePath};Persist Security Info=False;";
             }
-            
+
             if (string.IsNullOrEmpty(pw) == false)
             {
                 connectionString += "Jet OLEDB:Database Password=" + pw + ";";
@@ -228,20 +142,19 @@ namespace PhoenixWPF.Database
             //
             // Der Access-Treiber haelt gepoolte Verbindungen nativ offen und wird ueber mehrere
             // Threads hinweg wiederverwendet. Bei dem schnellen Oeffnen und Schliessen, das diese
-            // Anwendung betreibt - beim Speichern eine Verbindung je Datensatz - fuehrt das
+            // Anwendung betrieben hat - beim Speichern eine Verbindung je Datensatz - fuehrt das
             // reproduzierbar zu einer Zugriffsverletzung in mso99Lwin32client.dll und damit zum
             // sofortigen Absturz des Prozesses ohne verwertbare Ausnahme.
             // -4 bedeutet: weder Pooling noch automatische Transaktionsanmeldung.
             connectionString += "OLE DB Services=-4;";
 
             _verbindungszeichenfolge = connectionString;
+            _datenbankdatei = databaseFilePath;
             if (gemeinsam) {
-                _connection = HoleVerbindung(connectionString);
-                _schloss = HoleSchloss(connectionString);
+                _wächter = Datenbankwaechter.Hole(connectionString, () => new OleDbConnection(connectionString));
             }
             else {
-                _connection = new OleDbConnection(connectionString);
-                _schloss = null;
+                _eigeneVerbindung = new OleDbConnection(connectionString);
             }
         }
 
@@ -265,11 +178,12 @@ namespace PhoenixWPF.Database
             try
             {
                 // ausdrücklich eine eigene Verbindung: hier wird auch mit einem falschen Passwort
-                // angeklopft, und das darf im Cache nichts hinterlassen
+                // angeklopft, und das darf beim Wächter nichts hinterlassen
                 using var test = new AccessDatabase(databaseFilePath, pw, gemeinsam: false);
-                if (test._connection.State != ConnectionState.Open)
-                    test._connection.Open();
-                test._connection.Close();
+                var verbindung = test._eigeneVerbindung!;
+                if (verbindung.State != ConnectionState.Open)
+                    verbindung.Open();
+                verbindung.Close();
                 return true;
             }
             catch (Exception ex)
@@ -278,6 +192,7 @@ namespace PhoenixWPF.Database
                 return false;
             }
         }
+
         /// <summary>
         /// Gibt an, ob die Datenbankverbindung aktuell geöffnet ist.
         /// </summary>
@@ -287,59 +202,64 @@ namespace PhoenixWPF.Database
         }
 
         /// <summary>
-        /// Gibt den Namen der verbundenen Datenbank zurück.
+        /// Gibt den Namen der verbundenen Datenbank zurück - leer, solange nicht geöffnet ist.
         /// </summary>
         public string DatabaseName
         {
-            get 
+            get
             {
                 if (IsConnected == false)
                     return string.Empty;
-                return _connection.DataSource;
+                return _datenbankdatei;
             }
         }
 
         /// <summary>
-        /// Opens the database connection.
+        /// Leiht die Verbindung aus und öffnet sie.
+        ///
+        /// Ist sie von einem anderen Ablauf belegt, wird gewartet; nach der
+        /// <see cref="Datenbankwaechter.Geduld"/> wird aufgegeben und false geliefert. <b>Früher
+        /// wurde an dieser Stelle eine eigene Verbindung geöffnet.</b> Das war falsch: unter Last
+        /// wich die Anwendung genau in die Betriebsart aus, an der der Treiber stirbt. Lieber ein
+        /// gemeldeter Fehlschlag als ein Absturz des Prozesses.
         /// </summary>
+        /// <returns>false, wenn die Verbindung nicht zu bekommen war; der Grund ist protokolliert</returns>
         public bool Open()
         {
-            // Die gemeinsame Verbindung gehört ab jetzt dieser Instanz allein, bis sie
-            // geschlossen wird. Wartet jemand zu lange, bekommt er eine eigene - lieber langsam
-            // als hängend.
-            if (_schloss != null && _betreten == false)
-            {
-                if (System.Threading.Monitor.TryEnter(_schloss, Geduld))
-                {
-                    _betreten = true;
+            if (_eigeneVerbindung != null) {
+                try {
+                    if (_eigeneVerbindung.State != ConnectionState.Open)
+                        _eigeneVerbindung.Open();
+                    _connection = _eigeneVerbindung;
+                    return true;
                 }
-                else
-                {
-                    ProgramView.LogWarning("Eine Datenbankverbindung war zu lange belegt",
-                        $"Für {_connection.DataSource} wird ersatzweise eine eigene Verbindung geöffnet. "
-                        + "Das ist langsamer; häufen sich diese Meldungen, greifen zwei Abläufe gleichzeitig zu.");
-                    _connection = new OleDbConnection(_verbindungszeichenfolge);
-                    _schloss = null;
-                }
-            }
-
-            if (_connection.State != ConnectionState.Open)
-            {
-                try
-                {
-                    _connection.Open();
-                }
-                catch (Exception ex)
-                {
-                    ProgramView.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error, "Fehler beim Öffnen der PZE Datenbank", ex.Message));
+                catch (Exception ex) {
+                    ProgramView.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error,
+                        $"Die Datenbank {System.IO.Path.GetFileName(_datenbankdatei)} liess sich nicht öffnen", ex.Message));
                     return false;
                 }
             }
+
+            if (_geliehen)
+                return _connection != null;
+
+            var verbindung = _wächter!.Betrete(out string fehler);
+            if (verbindung == null) {
+                ProgramView.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error,
+                    $"Die Datenbank {System.IO.Path.GetFileName(_datenbankdatei)} liess sich nicht öffnen", fehler));
+                return false;
+            }
+
+            // Der Wächter kennt nur DbConnection; hier unten ist sie immer eine OleDbConnection,
+            // weil der Erzeuger dieser Klasse gehört. Der Schemazugriff und die OleDbCommand
+            // brauchen den konkreten Typ.
+            _connection = (OleDbConnection)verbindung;
+            _geliehen = true;
             return true;
         }
 
         /// <summary>
-        /// Closes the database connection.
+        /// Gibt die Verbindung zurück. Eine gemeinsame bleibt offen - genau darum geht es.
         /// </summary>
         public void Close()
         {
@@ -352,23 +272,20 @@ namespace PhoenixWPF.Database
             }
             _offeneLeseBefehle.Clear();
 
-            // Eine gemeinsame Verbindung bleibt offen - genau darum geht es. Geschlossen wird sie
-            // erst von SchliesseAlle, wenn jemand die Datei braucht.
-            if (_schloss == null && _connection.State != ConnectionState.Closed)
-                _connection.Close();
+            if (_eigeneVerbindung != null) {
+                if (_eigeneVerbindung.State != ConnectionState.Closed)
+                    _eigeneVerbindung.Close();
+                _connection = null;
+                return;
+            }
 
-            if (_betreten)
-            {
-                _betreten = false;
-                System.Threading.Monitor.Exit(_schloss!);
+            if (_geliehen) {
+                _geliehen = false;
+                _connection = null;
+                _wächter!.Verlasse();
             }
         }
 
-        /// <summary>
-        /// Executes a query that returns a result set.
-        /// </summary>
-        /// <param name="query">The SQL query to execute.</param>
-        /// <returns>A DataTable containing the result set.</returns>
         /// <summary>
         /// Die Namen aller Tabellen der Datenbank, ohne die Systemtabellen von Access.
         ///
@@ -377,7 +294,7 @@ namespace PhoenixWPF.Database
         /// </summary>
         public List<string> GetTabellennamen() {
             List<string> namen = [];
-            var schema = _connection.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, [null, null, null, "TABLE"]);
+            var schema = Verbindung.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, [null, null, null, "TABLE"]);
             if (schema == null)
                 return namen;
             foreach (DataRow zeile in schema.Rows) {
@@ -396,7 +313,7 @@ namespace PhoenixWPF.Database
         /// </summary>
         public List<string> GetPrimärschluessel(string tabelle) {
             List<string> spalten = [];
-            var schema = _connection.GetOleDbSchemaTable(OleDbSchemaGuid.Primary_Keys, [null, null, tabelle]);
+            var schema = Verbindung.GetOleDbSchemaTable(OleDbSchemaGuid.Primary_Keys, [null, null, tabelle]);
             if (schema == null)
                 return spalten;
             foreach (DataRow zeile in schema.Rows.Cast<DataRow>().OrderBy(zeile => Convert.ToInt32(zeile["ORDINAL"] is DBNull ? 0 : zeile["ORDINAL"])))
@@ -409,18 +326,13 @@ namespace PhoenixWPF.Database
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Query must be provided.", nameof(query));
 
-            using var command = new OleDbCommand(query, _connection);
+            using var command = new OleDbCommand(query, Verbindung);
             using var adapter = new OleDbDataAdapter(command);
             var result = new DataTable();
             adapter.Fill(result);
             return result;
         }
 
-        /// <summary>
-        /// Executes a query that returns a reader.
-        /// </summary>
-        /// <param name="query">The SQL query to execute.</param>
-        /// <returns>A DataTable containing the result set.</returns>
         /// <summary>
         /// Befehle, die zu noch offenen Lesern gehören und erst danach freigegeben werden dürfen
         /// </summary>
@@ -439,21 +351,31 @@ namespace PhoenixWPF.Database
             // nativen Strukturen weiter. Das ist die Ursache der sporadischen Zugriffsverletzung in
             // mso99Lwin32client.dll, die den ganzen Prozess ohne Ausnahme beendet hat.
             //
-            // Der Befehl bleibt jetzt bis zum Schliessen der Verbindung am Leben. AccessDatabase
-            // ist kurzlebig und wird von den Aufrufern in einem using gehalten.
-            var command = new OleDbCommand(query, _connection);
+            // Der Befehl bleibt jetzt bis zum Close am Leben. AccessDatabase ist kurzlebig und
+            // wird von den Aufrufern in einem using gehalten.
+            var command = new OleDbCommand(query, Verbindung);
             _offeneLeseBefehle.Add(command);
             return command.ExecuteReader();
         }
 
         /// <summary>
-        /// Executes a query that returns a reader.
+        /// Ein Befehlsobjekt für Schreibvorgänge. Es muss vor dem <see cref="Close"/> freigegeben werden.
         /// </summary>
-        /// <param name="query">The SQL query to execute.</param>
-        /// <returns>A DataTable containing the result set.</returns>
         public DbCommand OpenDBCommand()
         {
-            return new DbCommandFacade(_connection.CreateCommand(), QueryIdentityAfterInsert);
+            return new DbCommandFacade(Verbindung.CreateCommand(), QueryIdentityAfterInsert);
+        }
+
+        /// <summary>
+        /// Beginnt eine Transaktion über die ausgeliehene Verbindung.
+        ///
+        /// Access kann das; ein Speicherdurchgang bleibt damit ganz oder gar nicht stehen. Der
+        /// Aufrufer muss sie in einem <c>finally</c> abschliessen - eine offen gelassene
+        /// Transaktion trifft als nächstes einen fremden Ablauf auf derselben Verbindung.
+        /// </summary>
+        public DbTransaction? BeginneTransaktion()
+        {
+            return Verbindung.BeginTransaction();
         }
 
         /// <summary>
@@ -466,7 +388,7 @@ namespace PhoenixWPF.Database
             if (string.IsNullOrWhiteSpace(commandText))
                 throw new ArgumentException("Command text must be provided.", nameof(commandText));
 
-            using var command = new OleDbCommand(commandText, _connection);
+            using var command = new OleDbCommand(commandText, Verbindung);
             return command.ExecuteNonQuery();
         }
 
@@ -480,22 +402,32 @@ namespace PhoenixWPF.Database
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Query must be provided.", nameof(query));
 
-            using var command = new OleDbCommand(query, _connection);
+            using var command = new OleDbCommand(query, Verbindung);
             return command?.ExecuteScalar();
         }
 
         /// <summary>
-        /// Disposes the database connection.
+        /// Die ausgeliehene Verbindung, für alles, was ohne sie nicht geht.
+        ///
+        /// Wer hierauf zugreift, ohne vorher <see cref="Open"/> gerufen zu haben, bekommt eine
+        /// Ausnahme mit einem Satz, der sagt, was fehlt - und nicht eine NullReferenceException
+        /// irgendwo im Treiber.
+        /// </summary>
+        private OleDbConnection Verbindung =>
+            _connection ?? throw new InvalidOperationException(
+                $"Die Datenbank {System.IO.Path.GetFileName(_datenbankdatei)} ist nicht geöffnet. "
+                + "Vor jedem Zugriff muss Open() gerufen und sein Ergebnis geprüft werden.");
+
+        /// <summary>
+        /// Gibt die Verbindung zurück. Eine eigene stirbt mit dieser Instanz, eine gemeinsame
+        /// gehört dem Wächter und bleibt offen.
         /// </summary>
         public void Dispose()
         {
-            bool eigene = _schloss == null;
             Close();
-            // Nur eine eigene Verbindung gehört dieser Instanz und darf mit ihr sterben.
-            if (eigene)
-                _connection.Dispose();
+            _eigeneVerbindung?.Dispose();
         }
 
-       
+
     }
 }

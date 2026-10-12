@@ -1,3 +1,4 @@
+﻿using PhoenixModel.Database;
 using Ionic.Zip;
 using PhoenixWPF.Program;
 using System.IO;
@@ -199,7 +200,7 @@ namespace PhoenixWPF.Database {
         /// </summary>
         private static void LegeAb(string quelle, string zielDatenbank) {
             // Das Ziel wird ueberschrieben - eine offen gehaltene Verbindung haelt es fest.
-            AccessDatabase.SchliesseAlle();
+            Datenbankwaechter.SchliesseAlle();
             string? verzeichnis = Path.GetDirectoryName(zielDatenbank);
             if (string.IsNullOrEmpty(verzeichnis) == false)
                 Directory.CreateDirectory(verzeichnis);

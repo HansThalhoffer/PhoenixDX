@@ -1,4 +1,4 @@
-using PhoenixModel.Database;
+﻿using PhoenixModel.Database;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.Rules;
 using PhoenixModel.View;
@@ -87,8 +87,8 @@ namespace PhoenixWPF.Database {
         /// </param>
         public static ZugabgabeErgebnis Durchführen(string quelle, EncryptedString passwort, int aktuellerZug, bool zielÜberschreiben = false) {
             // Die Datei wird gleich angefasst - offen gehaltene Verbindungen halten sie
-            // fest. Siehe AccessDatabase.SchliesseAlle.
-            AccessDatabase.SchliesseAlle();
+            // fest. Siehe Datenbankwaechter.SchliesseAlle.
+            Datenbankwaechter.SchliesseAlle();
             if (File.Exists(quelle) == false)
                 return ZugabgabeErgebnis.Fehler("Die Zugdatenbank existiert nicht",
                     $"Unter {quelle} liegt keine Datei. Ohne sie lässt sich der Zug nicht abgeben.");
@@ -223,8 +223,8 @@ namespace PhoenixWPF.Database {
             };
         }
 
-        private static AccessDatabase Öffne(string datei, string passwort) {
-            var db = new AccessDatabase(datei, passwort);
+        private static IDatenbank Öffne(string datei, string passwort) {
+            var db = Datenbankfabrik.Erzeuge(datei, passwort);
             if (db.Open() == false) {
                 db.Dispose();
                 throw new IOException($"Die Datenbank {datei} liess sich nicht öffnen");

@@ -1,3 +1,4 @@
+﻿using PhoenixModel.Database;
 using Ionic.Zip;
 using PhoenixWPF.Program;
 using System.IO;
@@ -73,8 +74,8 @@ namespace PhoenixWPF.Database {
 
         private static UebergabeErgebnis Packe(string zugdatenPfad, string? verzeichnis, string archivname, bool überschreiben) {
             // Gleich wird die Datei gepackt - eine offen gehaltene Verbindung haelt sie
-            // fest. Siehe AccessDatabase.SchliesseAlle.
-            AccessDatabase.SchliesseAlle();
+            // fest. Siehe Datenbankwaechter.SchliesseAlle.
+            Datenbankwaechter.SchliesseAlle();
 
             if (File.Exists(zugdatenPfad) == false)
                 return UebergabeErgebnis.Fehler("Die Zugdatenbank existiert nicht",

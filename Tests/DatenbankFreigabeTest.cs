@@ -1,3 +1,4 @@
+﻿using PhoenixModel.Database;
 using PhoenixWPF.Database;
 using System.IO;
 
@@ -13,7 +14,7 @@ namespace Tests {
     ///
     /// <b>Der Vertrag hat sich geaendert.</b> Frueher galt: geschlossen heisst frei. Seit
     /// AccessDatabase je Datei eine Verbindung offen haelt, gilt: frei ist die Datei nach
-    /// <see cref="AccessDatabase.SchliesseAlle"/>. Das Offenhalten ist der Grund, warum der
+    /// <see cref="Datenbankwaechter.SchliesseAlle"/>. Das Offenhalten ist der Grund, warum der
     /// Treiber nicht mehr an der Zahl der Verbindungen stirbt - und SchliesseAlle ist der Preis
     /// dafuer, den die dateianfassenden Stellen zahlen muessen.
     /// </summary>
@@ -58,7 +59,7 @@ namespace Tests {
             string kopie = ErstelleKopie(out string spielwiese);
             string passwort = new PhoenixModel.Database.PasswordHolder(TestSetup.ZugdatenPasswort).DecryptedPassword ?? string.Empty;
 
-            AccessDatabase.SchliesseAlle();
+            Datenbankwaechter.SchliesseAlle();
             try {
                 for (int durchgang = 1; durchgang <= 10; durchgang++) {
                     using (var db = new AccessDatabase(kopie, passwort)) {
@@ -71,20 +72,20 @@ namespace Tests {
                         }
                     }
                 }
-                Assert.Equal(1, AccessDatabase.AnzahlOffenerVerbindungen);
+                Assert.Equal(1, Datenbankwaechter.AnzahlOffenerVerbindungen);
 
                 // solange sie offen ist, gehoert die Datei der Anwendung
                 Assert.False(IstFrei(kopie),
                     "Die Datei ist frei, obwohl eine Verbindung offen gehalten werden sollte");
 
                 // und danach gehoert sie wieder niemandem
-                AccessDatabase.SchliesseAlle();
-                Assert.Equal(0, AccessDatabase.AnzahlOffenerVerbindungen);
+                Datenbankwaechter.SchliesseAlle();
+                Assert.Equal(0, Datenbankwaechter.AnzahlOffenerVerbindungen);
                 Assert.True(IstFrei(kopie),
                     "Nach SchliesseAlle ist die Datei noch belegt. Darauf bauen Zugabgabe und Rückgabe auf.");
             }
             finally {
-                AccessDatabase.SchliesseAlle();
+                Datenbankwaechter.SchliesseAlle();
                 TestSetup.RäumeAuf(spielwiese);
             }
         }
@@ -104,20 +105,20 @@ namespace Tests {
             string kopie = ErstelleKopie(out string spielwiese);
 
             try {
-                AccessDatabase.SchliesseAlle();
+                Datenbankwaechter.SchliesseAlle();
                 for (int durchgang = 1; durchgang <= 3; durchgang++) {
                     Assert.True(TestSetup.LadeZugdatenAusDatei(kopie, PhoenixModel.View.ProgramView.SelectedMonth),
                         $"Durchgang {durchgang}: die Kopie liess sich nicht laden");
                 }
-                Assert.Equal(1, AccessDatabase.AnzahlOffenerVerbindungen);
+                Assert.Equal(1, Datenbankwaechter.AnzahlOffenerVerbindungen);
 
                 // und das ist die Operation, auf die es ankommt: ersetzen, wie es die Rückgabe tut
-                AccessDatabase.SchliesseAlle();
+                Datenbankwaechter.SchliesseAlle();
                 Assert.True(IstFrei(kopie), "Nach SchliesseAlle ist die Zugdatenbank noch belegt");
                 File.Copy(TestSetup.ZugdatenPfad, kopie, true);
             }
             finally {
-                AccessDatabase.SchliesseAlle();
+                Datenbankwaechter.SchliesseAlle();
                 TestSetup.LoadZugdaten(false, false);
                 TestSetup.RäumeAuf(spielwiese);
             }
@@ -134,15 +135,15 @@ namespace Tests {
             string passwort = new PhoenixModel.Database.PasswordHolder(TestSetup.ZugdatenPasswort).DecryptedPassword ?? string.Empty;
 
             try {
-                AccessDatabase.SchliesseAlle();
-                Assert.True(AccessDatabase.TestConnection(kopie, passwort, out string fehler), fehler);
-                Assert.False(AccessDatabase.TestConnection(kopie, "bestimmt-nicht-das-passwort", out _));
+                Datenbankwaechter.SchliesseAlle();
+                Assert.True(Datenbankfabrik.PrüfeZugang(kopie, passwort, out string fehler), fehler);
+                Assert.False(Datenbankfabrik.PrüfeZugang(kopie, "bestimmt-nicht-das-passwort", out _));
 
-                Assert.Equal(0, AccessDatabase.AnzahlOffenerVerbindungen);
+                Assert.Equal(0, Datenbankwaechter.AnzahlOffenerVerbindungen);
                 Assert.True(IstFrei(kopie), "Die Passwortprobe hat die Datei nicht wieder freigegeben");
             }
             finally {
-                AccessDatabase.SchliesseAlle();
+                Datenbankwaechter.SchliesseAlle();
                 TestSetup.RäumeAuf(spielwiese);
             }
         }

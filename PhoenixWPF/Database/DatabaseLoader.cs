@@ -26,7 +26,7 @@ namespace PhoenixWPF.Database
         /// <param name="connector"></param>
         /// <param name="collection"></param>
         /// <param name="felder"></param>
-        protected void Load<T>(AccessDatabase? connector, ref BlockingCollection<T>? collection, string[] felder) where T : IDatabaseTable, new()
+        protected void Load<T>(IDatenbank? connector, ref BlockingCollection<T>? collection, string[] felder) where T : IDatabaseTable, new()
         {
             if (connector != null)
             {
@@ -59,7 +59,7 @@ namespace PhoenixWPF.Database
         }
 
         // andere Collection - hier Dictionary
-        protected void Load<T>(AccessDatabase? connector, ref BlockingDictionary<T>? collection, string[] felder) where T : IDatabaseTable, new()
+        protected void Load<T>(IDatenbank? connector, ref BlockingDictionary<T>? collection, string[] felder) where T : IDatabaseTable, new()
         {
             if (connector == null)
                 return;
@@ -122,7 +122,7 @@ namespace PhoenixWPF.Database
             }
         }
 
-        protected int GetSum(AccessDatabase? connector, string tableName, string fieldName, string? filter = null)
+        protected int GetSum(IDatenbank? connector, string tableName, string fieldName, string? filter = null)
         {
             if (connector == null)
                 return -1;
@@ -146,7 +146,7 @@ namespace PhoenixWPF.Database
         }
 
 
-        protected int GetCount(AccessDatabase? connector, string tableName, string filter)
+        protected int GetCount(IDatenbank? connector, string tableName, string filter)
         {
             if (connector == null)
                 return -1;
@@ -180,7 +180,7 @@ namespace PhoenixWPF.Database
         /// </returns>
         protected bool Save(IDatabaseTable table, EncryptedString encryptedpassword, string databaseFileName) {
             PasswordHolder holder = new(encryptedpassword);
-            using (AccessDatabase connector = new(databaseFileName, holder.DecryptedPassword)) {
+            using (IDatenbank connector = Datenbankfabrik.Erzeuge(databaseFileName, holder.DecryptedPassword)) {
                 if (connector?.Open() == false) {
                     ProgramView.LogError($"Die Datenbank {databaseFileName} liess sich nicht oeffnen",
                         "Es wurde nichts geschrieben.");
@@ -213,7 +213,7 @@ namespace PhoenixWPF.Database
         /// </returns>
         protected bool Insert(IDatabaseTable table, EncryptedString encryptedpassword, string databaseFileName) {
             PasswordHolder holder = new(encryptedpassword);
-            using (AccessDatabase connector = new(databaseFileName, holder.DecryptedPassword)) {
+            using (IDatenbank connector = Datenbankfabrik.Erzeuge(databaseFileName, holder.DecryptedPassword)) {
                 if (connector?.Open() == false) {
                     ProgramView.LogError($"Die Datenbank {databaseFileName} liess sich nicht oeffnen",
                         "Es wurde nichts geschrieben.");
@@ -243,8 +243,19 @@ namespace PhoenixWPF.Database
         /// öffnen ist langsam und bringt den Access-Treiber sporadisch zum Absturz.
         ///
         /// Scheitert ein einzelner Vorgang, wird er protokolliert und die übrigen laufen weiter -
-        /// genauso wie zuvor, als jeder Vorgang seine eigene Verbindung hatte. Ein halb
-        /// geschriebener Speicherdurchgang ist immer noch besser als ein verworfener.
+        /// genauso wie zuvor, als jeder Vorgang seine eigene Verbindung hatte. Eine einzelne
+        /// abgelehnte Zeile soll nicht den ganzen Zug des Spielers wegwerfen.
+        ///
+        /// <b>Der ganze Durchgang steht aber in einer Transaktion</b>, und das ist etwas anderes
+        /// als die Nachsicht gegenüber der einzelnen Zeile. Gemeint ist der andere Fall: der
+        /// ACE-Treiber beendet den Prozess gelegentlich mitten im Schreiben, ohne eine Ausnahme zu
+        /// werfen - kein <c>catch</c> greift dann, keine Meldung erscheint, und in der Datei stand
+        /// bisher die Hälfte eines Durchgangs. Ein Zustand, den niemand gewollt hat und den
+        /// hinterher niemand mehr auseinandersortiert; die ungeklärten 18.000 GS aus Zug 169
+        /// (Offene-Regelfragen.md, Punkt 9) sehen genau so aus. Bricht der Prozess innerhalb der
+        /// Transaktion ab, bleibt die Datei unverändert.
+        ///
+        /// Kann der Unterbau keine Transaktion, wird ohne geschrieben - wie bisher.
         /// </summary>
         /// <returns>die Anzahl der Vorgänge, die tatsächlich durchgelaufen sind</returns>
         protected int SchreibeAlle(IEnumerable<DatabaseQueue.DatabaseQueueItem> vorgänge, EncryptedString encryptedpassword, string databaseFileName) {
@@ -253,7 +264,7 @@ namespace PhoenixWPF.Database
                 return 0;
 
             PasswordHolder holder = new(encryptedpassword);
-            using AccessDatabase connector = new(databaseFileName, holder.DecryptedPassword);
+            using IDatenbank connector = Datenbankfabrik.Erzeuge(databaseFileName, holder.DecryptedPassword);
             if (connector.Open() == false) {
                 ProgramView.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error,
                     $"Die Datenbank {databaseFileName} liess sich nicht öffnen",
@@ -262,9 +273,24 @@ namespace PhoenixWPF.Database
             }
 
             int geschrieben = 0;
+            DbTransaction? transaktion = null;
+            try {
+                transaktion = connector.BeginneTransaktion();
+            }
+            catch (Exception ex) {
+                // Ohne Transaktion ist das Schreiben nicht sicherer als vorher, aber es
+                // funktioniert. Das wortlos zu übergehen wäre falsch - wer die halb geschriebene
+                // Datei später untersucht, muss wissen, dass die Klammer gefehlt hat.
+                ProgramView.LogWarning($"Die Datenbank {databaseFileName} nimmt keine Transaktion an",
+                    $"Die {liste.Count} Änderungen werden ohne Klammer geschrieben. Bricht der Vorgang ab, "
+                    + "bleibt die Datei halb beschrieben. " + ex.Message);
+            }
+
             try {
                 // der Befehl muss vor dem Schliessen der Verbindung freigegeben werden
                 using var command = connector.OpenDBCommand();
+                if (transaktion != null)
+                    command.Transaction = transaktion;
                 foreach (var vorgang in liste) {
                     try {
                         switch (vorgang.Command) {
@@ -285,12 +311,30 @@ namespace PhoenixWPF.Database
                             $"Fehler beim Schreiben in die Tabelle {vorgang.Table.TableName}", ex.Message));
                     }
                 }
+                if (transaktion != null) {
+                    transaktion.Commit();
+                    transaktion.Dispose();
+                    transaktion = null;
+                }
             }
             catch (Exception ex) {
                 ProgramView.Log(new PhoenixModel.Program.LogEntry(PhoenixModel.Program.LogEntry.LogType.Error,
                     $"Fehler beim Speichern in der Datenbank {databaseFileName}", ex.Message));
+                geschrieben = 0;
             }
-            connector.Close();
+            finally {
+                // Eine offen gelassene Transaktion bleibt auf der gemeinsamen Verbindung stehen und
+                // trifft als nächstes einen fremden Ablauf. Sie muss hier weg, auch wenn das
+                // Zurückrollen selbst scheitert.
+                if (transaktion != null) {
+                    try { transaktion.Rollback(); }
+                    catch (Exception ex) {
+                        ProgramView.LogWarning($"Die Änderungen an {databaseFileName} liessen sich nicht zurücknehmen", ex.Message);
+                    }
+                    try { transaktion.Dispose(); } catch { /* sie ist schon hinüber */ }
+                }
+                connector.Close();
+            }
             return geschrieben;
         }
 
@@ -304,7 +348,7 @@ namespace PhoenixWPF.Database
         /// </returns>
         protected bool Delete(IDatabaseTable table, EncryptedString encryptedpassword, string databaseFileName) {
             PasswordHolder holder = new(encryptedpassword);
-            using (AccessDatabase connector = new(databaseFileName, holder.DecryptedPassword)) {
+            using (IDatenbank connector = Datenbankfabrik.Erzeuge(databaseFileName, holder.DecryptedPassword)) {
                 if (connector?.Open() == false) {
                     ProgramView.LogError($"Die Datenbank {databaseFileName} liess sich nicht oeffnen",
                         "Es wurde nichts geschrieben.");

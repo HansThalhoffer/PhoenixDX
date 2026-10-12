@@ -1,4 +1,4 @@
-using PhoenixModel.Database;
+﻿using PhoenixModel.Database;
 using PhoenixModel.dbPZE;
 using PhoenixModel.dbZugdaten;
 using PhoenixModel.Helper;
@@ -130,7 +130,7 @@ namespace PhoenixWPF.Database {
             var vorherigeNation = ProgramView.SelectedNation;
             ProgramView.SelectedNation = reich;
             try {
-                using var db = new AccessDatabase(datei, passwort);
+                using IDatenbank db = Datenbankfabrik.Erzeuge(datei, passwort);
                 if (db.Open() == false) {
                     SpielWPF.LogError($"Die Zugdaten von {reich.Reich} liessen sich nicht öffnen", datei);
                     return null;
@@ -159,7 +159,7 @@ namespace PhoenixWPF.Database {
         /// Liest eine Figurentabelle. Nur gültige Figuren kommen in die Armee: die Tabellen führen
         /// reihenweise leere Plätze mit der Position 0/0.
         /// </summary>
-        private static void Lies<T>(AccessDatabase db, Armee armee, string[] felder, string tabelle, Nation reich)
+        private static void Lies<T>(IDatenbank db, Armee armee, string[] felder, string tabelle, Nation reich)
             where T : Spielfigur, IDatabaseTable, new() {
             string abfrage = $"SELECT {string.Join(", ", felder)} FROM {tabelle} ORDER BY {felder[0]}";
             try {
